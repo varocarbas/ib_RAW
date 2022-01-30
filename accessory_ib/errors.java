@@ -7,9 +7,14 @@ import accessory.strings;
 
 public class errors
 {	
+	public static String check(String type_)
+	{
+		return accessory.errors.check(type_, types.get_all_subtypes());
+	}
+	
 	public static void manage(String type_, boolean exit_)
 	{
-		String type = types.check_subtype(type_);
+		String type = check(type_);
 		if (!strings.is_ok(type)) return;
 		
 		String message = get_message(type);

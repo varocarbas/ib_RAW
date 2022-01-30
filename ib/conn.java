@@ -19,22 +19,45 @@ public class conn
 	private static wrapper wrapper;
 	private static int conn_id; 
 	private static int conn_port;
+
+	public static String check(String type_)
+	{
+		return accessory_ib.types.check_subtype(type_, accessory.keys.ADD);
+	}
+
+	public static boolean is_ok()
+	{		
+		if (!connected) connect();
+
+		if (!connected) errors.manage(types.ERROR_CONN_NONE, false);
+		
+		return connected;
+	}
 	
 	public static boolean start(int conn_id_, String conn_type_)
 	{
 		String error = null;
 		
-		if (!numeric.is_ok(conn_id_, limits.IB_CONN_ID_MIN, limits.IB_CONN_ID_MAX)) error = types.ERROR_CONN_ID;
+		if 
+		(
+			!numeric.is_ok
+			(
+				conn_id_, limits.IB_CONN_ID_MIN, limits.IB_CONN_ID_MAX
+			)
+		) 
+		{
+			error = types.ERROR_CONN_ID;
+		}
 		else 
 		{
 			conn_id = conn_id_;
-			String conn_type = types.check_subtype(conn_type_);
+			String conn_type = check(conn_type_);	
 			
 			if (strings.is_ok(conn_type)) conn_port = get_conn_port(conn_type);
 			else error = types.ERROR_CONN_TYPE;
 		}
-		
-		if (!strings.is_ok(error))
+
+		if (strings.is_ok(error))
 		{
 			errors.manage(error, true);
 			
@@ -89,11 +112,7 @@ public class conn
 		vars.last_id = 0;
 				
 		final EReaderSignal signal = wrapper.getSignal();
-
-		//! [connect]
 		client.eConnect("127.0.0.1", conn_port, conn_id);
-		//! [connect]
-		//! [ereader]
 		final EReader reader = new EReader(client, signal);   
 
 		reader.start();

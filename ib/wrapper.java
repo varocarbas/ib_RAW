@@ -35,32 +35,6 @@ import com.ib.client.TickAttribLast;
 
 public class wrapper implements EWrapper 
 {
-	//! [ib_wrapper]
-		
-	//! [socket_declare]
-	private EReaderSignal readerSignal;
-	private EClientSocket clientSocket;
-	protected int currentOrderId = -1;
-	//! [socket_declare]
-	
-	//! [socket_init]
-	public wrapper() {
-		readerSignal = new EJavaSignal();
-		clientSocket = new EClientSocket(this, readerSignal);
-	}
-	//! [socket_init]
-	public EClientSocket getClient() {
-		return clientSocket;
-	}
-	
-	public EReaderSignal getSignal() {
-		return readerSignal;
-	}
-	
-	public int getCurrentOrderId() {
-		return currentOrderId;
-	}
-	
 	 //! [tickprice]
 	@Override
 	public void tickPrice(int tickerId, int field, double price, TickAttrib attribs) 
@@ -82,17 +56,6 @@ public class wrapper implements EWrapper
 	}
 	//! [ticksize]
 	
-	//! [tickoptioncomputation]
-	@Override
-	public void tickOptionComputation(int tickerId, int field,
-			double impliedVol, double delta, double optPrice,
-			double pvDividend, double gamma, double vega, double theta,
-			double undPrice) {
-		System.out.println("TickOptionComputation. TickerId: "+tickerId+", field: "+field+", ImpliedVolatility: "+impliedVol+", Delta: "+delta
-                +", OptionPrice: "+optPrice+", pvDividend: "+pvDividend+", Gamma: "+gamma+", Vega: "+vega+", Theta: "+theta+", UnderlyingPrice: "+undPrice);
-	}
-	//! [tickoptioncomputation]
-	
 	//! [tickgeneric]
 	@Override
 	public void tickGeneric(int tickerId, int tickType, double value) 
@@ -103,21 +66,6 @@ public class wrapper implements EWrapper
 	}
 	//! [tickgeneric]
 	
-	//! [tickstring]
-	@Override
-	public void tickString(int tickerId, int tickType, String value) {
-		//System.out.println("Tick string. Ticker Id:" + tickerId + ", Type: " + tickType + ", Value: " + value);
-	}
-	//! [tickstring]
-	@Override
-	public void tickEFP(int tickerId, int tickType, double basisPoints,
-			String formattedBasisPoints, double impliedFuture, int holdDays,
-			String futureLastTradeDate, double dividendImpact,
-			double dividendsToLastTradeDate) {
-		System.out.println("TickEFP. "+tickerId+", Type: "+tickType+", BasisPoints: "+basisPoints+", FormattedBasisPoints: "+
-			formattedBasisPoints+", ImpliedFuture: "+impliedFuture+", HoldDays: "+holdDays+", FutureLastTradeDate: "+futureLastTradeDate+
-			", DividendImpact: "+dividendImpact+", DividendsToLastTradeDate: "+dividendsToLastTradeDate);
-	}
 	//! [orderstatus]
 	@Override
 	public void orderStatus
@@ -130,12 +78,6 @@ public class wrapper implements EWrapper
 		//TODO
 	}
 	//! [orderstatus]
-	
-	//! [openorder]
-	@Override
-	public void openOrder(int orderId, Contract contract, Order order,
-			OrderState orderState) { }
-	//! [openorder]
 	
 	//! [openorderend]
 	@Override
@@ -172,14 +114,6 @@ public class wrapper implements EWrapper
 	}
 	//! [updateportfolio]
 	
-	//! [updateaccounttime]
-	@Override
-	public void updateAccountTime(String timeStamp) 
-	{		
-		//System.out.println("UpdateAccountTime. Time: " + timeStamp+"\n");
-	}
-	//! [updateaccounttime]
-	
 	//! [accountdownloadend]
 	@Override
 	public void accountDownloadEnd(String accountName) 
@@ -199,6 +133,125 @@ public class wrapper implements EWrapper
 	}
 	//! [nextvalidid]
 	
+	//! [execdetails]
+	@Override
+	public void execDetails(int reqId, Contract contract, Execution execution) 
+	{
+		//TODO
+		
+		//System.out.println("ExecDetails. "+reqId+" - ["+contract.symbol()+"], ["+contract.secType()+"], ["+contract.currency()+"], ["+execution.execId()+
+		//        "], ["+execution.orderId()+"], ["+execution.shares()+"]"  + ", [" + execution.lastLiquidity() + "]");
+	}
+	//! [execdetails]
+	
+	//! [commissionreport]
+	@Override
+	public void commissionReport(CommissionReport commissionReport) 
+	{
+		//TODO
+		
+		//System.out.println("CommissionReport. ["+commissionReport.execId()+"] - ["+commissionReport.commission()+"] ["+commissionReport.currency()+"] RPNL ["+commissionReport.realizedPNL()+"]");
+	}
+	//! [commissionreport]
+	
+	//! [accountsummary]
+	@Override
+	public void accountSummary
+	(
+		int reqId, String account, String tag, 
+		String value, String currency
+	) 
+	{
+		//TODO
+	}
+	//! [accountsummary]
+	
+	//! [accountsummaryend]
+	@Override
+	public void accountSummaryEnd(int reqId) 
+	{
+		//TODO
+	}
+	//! [accountsummaryend]
+	
+	//! [error]
+	@Override
+	public void error(int id, int errorCode, String errorMsg) 
+	{
+		System.out.println("Error. Id: " + id + ", Code: " + errorCode + ", Msg: " + errorMsg + "\n");
+		
+		//TODO
+	}
+	//! [error]
+	
+	//-----------------------------------------------------
+	//-----------------------------------------------------
+	
+	//! [socket_declare]
+	private EReaderSignal readerSignal;
+	private EClientSocket clientSocket;
+	protected int currentOrderId = -1;
+	//! [socket_declare]
+	
+	//! [socket_init]
+	public wrapper() {
+		readerSignal = new EJavaSignal();
+		clientSocket = new EClientSocket(this, readerSignal);
+	}
+	//! [socket_init]
+	public EClientSocket getClient() {
+		return clientSocket;
+	}
+	
+	public EReaderSignal getSignal() {
+		return readerSignal;
+	}
+	
+	public int getCurrentOrderId() {
+		return currentOrderId;
+	}
+	
+	//! [tickoptioncomputation]
+	@Override
+	public void tickOptionComputation(int tickerId, int field,
+			double impliedVol, double delta, double optPrice,
+			double pvDividend, double gamma, double vega, double theta,
+			double undPrice) {
+		System.out.println("TickOptionComputation. TickerId: "+tickerId+", field: "+field+", ImpliedVolatility: "+impliedVol+", Delta: "+delta
+                +", OptionPrice: "+optPrice+", pvDividend: "+pvDividend+", Gamma: "+gamma+", Vega: "+vega+", Theta: "+theta+", UnderlyingPrice: "+undPrice);
+	}
+	//! [tickoptioncomputation]
+	
+	//! [tickstring]
+	@Override
+	public void tickString(int tickerId, int tickType, String value) {
+		//System.out.println("Tick string. Ticker Id:" + tickerId + ", Type: " + tickType + ", Value: " + value);
+	}
+	//! [tickstring]
+	@Override
+	public void tickEFP(int tickerId, int tickType, double basisPoints,
+			String formattedBasisPoints, double impliedFuture, int holdDays,
+			String futureLastTradeDate, double dividendImpact,
+			double dividendsToLastTradeDate) {
+		System.out.println("TickEFP. "+tickerId+", Type: "+tickType+", BasisPoints: "+basisPoints+", FormattedBasisPoints: "+
+			formattedBasisPoints+", ImpliedFuture: "+impliedFuture+", HoldDays: "+holdDays+", FutureLastTradeDate: "+futureLastTradeDate+
+			", DividendImpact: "+dividendImpact+", DividendsToLastTradeDate: "+dividendsToLastTradeDate);
+	}
+	
+	//! [openorder]
+	@Override
+	public void openOrder(int orderId, Contract contract, Order order,
+			OrderState orderState) { }
+	//! [openorder]
+	
+	//! [updateaccounttime]
+	@Override
+	public void updateAccountTime(String timeStamp) 
+	{		
+		//System.out.println("UpdateAccountTime. Time: " + timeStamp+"\n");
+	}
+	//! [updateaccounttime]
+	
 	//! [contractdetails]
 	@Override
 	public void contractDetails(int reqId, ContractDetails contractDetails) {
@@ -215,17 +268,6 @@ public class wrapper implements EWrapper
 		System.out.println("ContractDetailsEnd. "+reqId+"\n");
 	}
 	//! [contractdetailsend]
-	
-	//! [execdetails]
-	@Override
-	public void execDetails(int reqId, Contract contract, Execution execution) 
-	{
-		//TODO
-		
-		//System.out.println("ExecDetails. "+reqId+" - ["+contract.symbol()+"], ["+contract.secType()+"], ["+contract.currency()+"], ["+execution.execId()+
-		//        "], ["+execution.orderId()+"], ["+execution.shares()+"]"  + ", [" + execution.lastLiquidity() + "]");
-	}
-	//! [execdetails]
 	
 	//! [execdetailsend]
 	@Override
@@ -353,16 +395,6 @@ public class wrapper implements EWrapper
 	}
 	//! [marketdatatype]
 	
-	//! [commissionreport]
-	@Override
-	public void commissionReport(CommissionReport commissionReport) 
-	{
-		//TODO
-		
-		//System.out.println("CommissionReport. ["+commissionReport.execId()+"] - ["+commissionReport.commission()+"] ["+commissionReport.currency()+"] RPNL ["+commissionReport.realizedPNL()+"]");
-	}
-	//! [commissionreport]
-	
 	//! [position]
 	@Override
 	public void position(String account, Contract contract, double pos,
@@ -378,25 +410,6 @@ public class wrapper implements EWrapper
 	}
 	//! [positionend]
 	
-	//! [accountsummary]
-	@Override
-	public void accountSummary
-	(
-		int reqId, String account, String tag, 
-		String value, String currency
-	) 
-	{
-		//TODO
-	}
-	//! [accountsummary]
-	
-	//! [accountsummaryend]
-	@Override
-	public void accountSummaryEnd(int reqId) 
-	{
-		//TODO
-	}
-	//! [accountsummaryend]
 	@Override
 	public void verifyMessageAPI(String apiData) {
 		System.out.println("verifyMessageAPI");
@@ -438,15 +451,7 @@ public class wrapper implements EWrapper
 	public void error(String str) {
 		System.out.println("Error STR");
 	}
-	//! [error]
-	@Override
-	public void error(int id, int errorCode, String errorMsg) 
-	{
-		System.out.println("Error. Id: " + id + ", Code: " + errorCode + ", Msg: " + errorMsg + "\n");
-		
-		//TODO
-	}
-	//! [error]
+
 	@Override
 	public void connectionClosed() {
 		System.out.println("Connection closed");

@@ -17,17 +17,15 @@ public class types
 	
 	//---------------------------
 	
-	public static String check_subtype(String subtype_)
+	public static String check_subtype(String subtype_, String add_remove_)
 	{
-		return accessory.types.check_subtype(subtype_, get_all_subtypes());
+		return accessory.types.check_subtype
+		(
+			subtype_, get_all_subtypes(), add_remove_, IB_CONN
+		);
 	}
 	
-	public static String[] get_subtypes(String type_)
-	{
-		return accessory.types.get_subtypes(type_, get_all_subtypes());
-	}
-	
-	private static String[] get_all_subtypes()
+	public static String[] get_all_subtypes()
 	{
 		return new String[]
 		{
