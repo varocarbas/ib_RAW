@@ -35,6 +35,26 @@ import com.ib.client.TickAttribLast;
 
 public class wrapper implements EWrapper 
 {
+	//! [accountsummary]
+	@Override
+	public void accountSummary(int reqId, String account, String tag, String value, String currency) 
+	{
+		if (reqId != sync.id) return;
+		
+		sync.update(value);
+	}
+	//! [accountsummary]
+	
+	//! [accountsummaryend]
+	@Override
+	public void accountSummaryEnd(int reqId) 
+	{
+		if (reqId != sync.id) return;
+
+		sync.retrieved(true);
+	}
+	//! [accountsummaryend]
+	
 	 //! [tickprice]
 	@Override
 	public void tickPrice(int tickerId, int field, double price, TickAttrib attribs) 
@@ -129,7 +149,7 @@ public class wrapper implements EWrapper
 	public void nextValidId(int orderId) 
 	{
 		currentOrderId = orderId;
-		vars.last_id = orderId;
+		global.last_id = orderId;
 	}
 	//! [nextvalidid]
 	
@@ -153,26 +173,6 @@ public class wrapper implements EWrapper
 		//System.out.println("CommissionReport. ["+commissionReport.execId()+"] - ["+commissionReport.commission()+"] ["+commissionReport.currency()+"] RPNL ["+commissionReport.realizedPNL()+"]");
 	}
 	//! [commissionreport]
-	
-	//! [accountsummary]
-	@Override
-	public void accountSummary
-	(
-		int reqId, String account, String tag, 
-		String value, String currency
-	) 
-	{
-		//TODO
-	}
-	//! [accountsummary]
-	
-	//! [accountsummaryend]
-	@Override
-	public void accountSummaryEnd(int reqId) 
-	{
-		//TODO
-	}
-	//! [accountsummaryend]
 	
 	//! [error]
 	@Override

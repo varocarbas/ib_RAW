@@ -5,24 +5,33 @@ import com.ib.client.EReader;
 import com.ib.client.EReaderSignal;
 
 import accessory.misc;
-import accessory.numeric;
+import accessory.numbers;
 import accessory.strings;
 import accessory_ib.errors;
 import accessory_ib.types;
 
 public class conn 
 {
+	static EClientSocket client;
+	
+	private static final int MIN_ID = 0;
+	private static final int MAX_ID = 31;
+	
+	private static final int PORT_REAL = 7496;
+	private static final int PORT_PAPER = 7497;
+	private static final int PORT_GATEWAY = 4001;
+	private static final int PORT_GATEWAY_PAPER = 4002;
+	
 	private volatile static boolean connected = false;
 	private volatile static boolean first_conn = false;
 	
-	private static EClientSocket client;
 	private static wrapper wrapper;
 	private static int conn_id; 
 	private static int conn_port;
 
 	public static String check(String type_)
 	{
-		return accessory_ib.types.check_subtype(type_, accessory.keys.ADD);
+		return accessory_ib.types.check_conn(type_, accessory.keys.ADD);
 	}
 
 	public static boolean is_ok()
@@ -38,16 +47,7 @@ public class conn
 	{
 		String error = null;
 		
-		if 
-		(
-			!numeric.is_ok
-			(
-				conn_id_, limits.IB_CONN_ID_MIN, limits.IB_CONN_ID_MAX
-			)
-		) 
-		{
-			error = types.ERROR_CONN_ID;
-		}
+		if (!numbers.is_ok(conn_id_, MIN_ID, MAX_ID)) error = types.ERROR_CONN_ID;
 		else 
 		{
 			conn_id = conn_id_;
@@ -109,7 +109,7 @@ public class conn
 	
 	private static void connect_internal()
 	{
-		vars.last_id = 0;
+		global.last_id = 0;
 				
 		final EReaderSignal signal = wrapper.getSignal();
 		client.eConnect("127.0.0.1", conn_port, conn_id);
@@ -160,7 +160,7 @@ public class conn
 
 	    int count = 0;
 	    int max = 3;
-	    while (vars.last_id <= 0)
+	    while (global.last_id <= 0)
 	    {
 	    	misc.pause_min();
 	    	
@@ -173,10 +173,10 @@ public class conn
 	{
 		int port = -1;
 		
-		if (conn_type_.equals(types.IB_CONN_GATEWAY_PAPER)) port = params.IB_PORT_GATEWAY_PAPER;
-		else if (conn_type_.equals(types.IB_CONN_GATEWAY)) port = params.IB_PORT_GATEWAY;
-		else if (conn_type_.equals(types.IB_CONN_REAL)) port = params.IB_PORT_REAL;
-		else if (conn_type_.equals(types.IB_CONN_PAPER)) port = params.IB_PORT_PAPER;
+		if (conn_type_.equals(types.CONN_GATEWAY_PAPER)) port = PORT_GATEWAY_PAPER;
+		else if (conn_type_.equals(types.CONN_GATEWAY)) port = PORT_GATEWAY;
+		else if (conn_type_.equals(types.CONN_REAL)) port = PORT_REAL;
+		else if (conn_type_.equals(types.CONN_PAPER)) port = PORT_PAPER;
 		
 		return port;
 	}

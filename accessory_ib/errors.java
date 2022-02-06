@@ -7,14 +7,9 @@ import accessory.strings;
 
 public class errors
 {	
-	public static String check(String type_)
-	{
-		return accessory.errors.check(type_, types.get_all_subtypes());
-	}
-	
 	public static void manage(String type_, boolean exit_)
 	{
-		String type = check(type_);
+		String type = types.check_error(type_, null);
 		if (!strings.is_ok(type)) return;
 		
 		String message = get_message(type);
@@ -31,7 +26,7 @@ public class errors
 		
 	private static String get_message(String type_)
 	{
-		String message = strings.get_default();
+		String message = strings.DEFAULT;
 		
 		if (type_.equals(types.ERROR_CONN_NONE)) message = "Impossible to connect to IB";
 		else if (type_.equals(types.ERROR_CONN_ID)) message = "Wrong connection ID for IB";

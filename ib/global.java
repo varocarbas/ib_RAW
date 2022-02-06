@@ -1,6 +1,6 @@
 package ib;
 
-public class vars 
+public class global 
 {
 	public static volatile int last_id = 0;
 }
