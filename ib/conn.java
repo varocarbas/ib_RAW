@@ -7,6 +7,8 @@ import com.ib.client.EReaderSignal;
 import accessory.misc;
 import accessory.numbers;
 import accessory.strings;
+import accessory_ib._ini;
+import accessory_ib.defaults;
 import accessory_ib.errors;
 import accessory_ib.types;
 
@@ -29,6 +31,8 @@ public class conn
 	private static int conn_id; 
 	private static int conn_port;
 
+	static { _ini.load(); }
+	
 	public static String check(String type_)
 	{
 		return accessory_ib.types.check_conn(type_, accessory.keys.ADD);
@@ -109,7 +113,7 @@ public class conn
 	
 	private static void connect_internal()
 	{
-		global.last_id = 0;
+		orders.next_id = defaults.ORDER_ID;
 				
 		final EReaderSignal signal = wrapper.getSignal();
 		client.eConnect("127.0.0.1", conn_port, conn_id);
@@ -160,7 +164,7 @@ public class conn
 
 	    int count = 0;
 	    int max = 3;
-	    while (global.last_id <= 0)
+	    while (orders.next_id == defaults.ORDER_ID)
 	    {
 	    	misc.pause_min();
 	    	

@@ -39,8 +39,8 @@ public class wrapper implements EWrapper
 	@Override
 	public void accountSummary(int reqId, String account, String tag, String value, String currency) 
 	{
-		if (reqId != sync.id) return;
-		
+		if (!sync.retrieving || reqId != sync.id) return;
+
 		sync.update(value);
 	}
 	//! [accountsummary]
@@ -49,20 +49,32 @@ public class wrapper implements EWrapper
 	@Override
 	public void accountSummaryEnd(int reqId) 
 	{
-		if (reqId != sync.id) return;
+		if (!sync.retrieving || reqId != sync.id) return;
 
-		sync.retrieved(true);
+		sync.retrieved = true;
 	}
 	//! [accountsummaryend]
+	
+	//! [nextvalidid]
+	@Override
+	public void nextValidId(int orderId) 
+	{
+		currentOrderId = orderId;
+		
+		if (sync.retrieving)
+		{
+			sync.update(orderId);
+			sync.retrieved = true;
+		}
+		else orders.next_id = orderId; //It is also called automatically when it firstly connects.
+	}
+	//! [nextvalidid]
 	
 	 //! [tickprice]
 	@Override
 	public void tickPrice(int tickerId, int field, double price, TickAttrib attribs) 
 	{
-		//TODO
-		
-		//System.out.println(ib.cur_data.get(tickerId).get(vars.TICKER) + " Tick Price. Ticker Id:"+tickerId+", Field: "+field+", Price: "+price+", CanAutoExecute: "+ attribs.canAutoExecute()
-		//+ ", pastLimit: " + attribs.pastLimit() + ", pre-open: " + attribs.preOpen());
+		async.tick_price(tickerId, field, price);
 	}
 	//! [tickprice]
 	
@@ -70,9 +82,7 @@ public class wrapper implements EWrapper
 	@Override
 	public void tickSize(int tickerId, int field, int size) 
 	{
-		//TODO
-
-		//System.out.println(ib.cur_data.get(tickerId).get(vars.TICKER) + " Tick Size. Ticker Id:" + tickerId + ", Field: " + field + ", Size: " + size);
+		async.tick_size(tickerId, field, size);
 	}
 	//! [ticksize]
 	
@@ -80,11 +90,17 @@ public class wrapper implements EWrapper
 	@Override
 	public void tickGeneric(int tickerId, int tickType, double value) 
 	{
-		//TODO
-		
-		//System.out.println("Tick Generic. Ticker Id:" + tickerId + ", Field: " + TickType.getField(tickType) + ", Value: " + value);
+		async.tick_generic(tickerId, tickType, value);
 	}
 	//! [tickgeneric]
+	
+	//! [error]
+	@Override
+	public void error(int id, int errorCode, String errorMsg) 
+	{
+		async.error(id, errorCode, errorMsg);
+	}
+	//! [error]
 	
 	//! [orderstatus]
 	@Override
@@ -144,15 +160,6 @@ public class wrapper implements EWrapper
 	}
 	//! [accountdownloadend]
 	
-	//! [nextvalidid]
-	@Override
-	public void nextValidId(int orderId) 
-	{
-		currentOrderId = orderId;
-		global.last_id = orderId;
-	}
-	//! [nextvalidid]
-	
 	//! [execdetails]
 	@Override
 	public void execDetails(int reqId, Contract contract, Execution execution) 
@@ -173,17 +180,6 @@ public class wrapper implements EWrapper
 		//System.out.println("CommissionReport. ["+commissionReport.execId()+"] - ["+commissionReport.commission()+"] ["+commissionReport.currency()+"] RPNL ["+commissionReport.realizedPNL()+"]");
 	}
 	//! [commissionreport]
-	
-	//! [error]
-	@Override
-	public void error(int id, int errorCode, String errorMsg) 
-	{
-		System.out.println("Error. Id: " + id + ", Code: " + errorCode + ", Msg: " + errorMsg + "\n");
-		
-		//TODO
-	}
-	//! [error]
-	
 	//-----------------------------------------------------
 	//-----------------------------------------------------
 	
