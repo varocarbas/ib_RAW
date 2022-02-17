@@ -40,14 +40,16 @@ public class errors
 	private static String get_message(String type_)
 	{
 		String message = strings.DEFAULT;
-		String separator = accessory.types.SEPARATOR;
+
+		String heading = accessory.keys.ERROR + accessory.types.SEPARATOR;
 		
-		if (type_.contains(types.CONN + separator)) message = get_message_conn(type_);
-		else if (type_.contains(types.SYNC + separator)) message = get_message_sync(type_);
-		else if (type_.contains(types.ORDER + separator)) message = get_message_order(type_);
+		if (strings.contains_start(heading + types.CONN, type_, false)) message = get_message_conn(type_);
+		else if (strings.contains_start(heading + types.ORDER, type_, false)) message = get_message_order(type_);
+		else if (strings.contains_start(heading + types.SYNC, type_, false)) message = get_message_sync(type_);
+		else if (strings.contains_start(heading + types.ASYNC, type_, false)) message = get_message_async(type_);
 		
 		if (!strings.is_ok(message)) return message;
-		
+
 		message = "IB" + misc.SEPARATOR_CONTENT + message;
 		
 		return message;
@@ -64,6 +66,13 @@ public class errors
 		return message;
 	}
 
+	private static String get_message_order(String type_)
+	{
+		String message = strings.DEFAULT;
+		
+		return message;	
+	}
+
 	private static String get_message_sync(String type_)
 	{
 		String message = strings.DEFAULT;
@@ -75,9 +84,11 @@ public class errors
 		return message;	
 	}
 
-	private static String get_message_order(String type_)
+	private static String get_message_async(String type_)
 	{
 		String message = strings.DEFAULT;
+		
+		if (type_.equals(types.ERROR_ASYNC_TIME)) message = "Async call timed out";
 		
 		return message;	
 	}

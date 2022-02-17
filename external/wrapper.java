@@ -1,4 +1,4 @@
-package ib;
+package external;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -33,13 +33,19 @@ import com.ib.client.TickAttrib;
 import com.ib.client.TickAttribBidAsk;
 import com.ib.client.TickAttribLast;
 
+import accessory.strings;
+import accessory_ib.types;
+import ib.async;
+import ib.conn;
+import ib.sync;
+
 public class wrapper implements EWrapper 
 {
 	//! [accountsummary]
 	@Override
 	public void accountSummary(int reqId, String account, String tag, String value, String currency) 
 	{
-		if (!sync.retrieving || reqId != sync.id) return;
+		if (!sync._retrieving || reqId != sync._id) return;
 
 		sync.update(value);
 	}
@@ -49,9 +55,9 @@ public class wrapper implements EWrapper
 	@Override
 	public void accountSummaryEnd(int reqId) 
 	{
-		if (!sync.retrieving || reqId != sync.id) return;
+		if (!sync._retrieving || reqId != sync._id) return;
 
-		sync.retrieved = true;
+		sync._retrieved = true;
 	}
 	//! [accountsummaryend]
 	
@@ -61,12 +67,12 @@ public class wrapper implements EWrapper
 	{
 		currentOrderId = orderId;
 		
-		if (sync.retrieving)
+		if (sync._retrieving)
 		{
 			sync.update(orderId);
-			sync.retrieved = true;
+			sync._retrieved = true;
 		}
-		else orders.next_id = orderId; //It is also called automatically when it firstly connects.
+		else conn._valid_id = true;
 	}
 	//! [nextvalidid]
 	
@@ -85,6 +91,23 @@ public class wrapper implements EWrapper
 		async.tick_size(tickerId, field, size);
 	}
 	//! [ticksize]
+
+	//! [ticksnapshotend]
+	@Override
+	public void tickSnapshotEnd(int reqId) 
+	{
+		//In some cases, reaching this point might take too long and waiting for 
+		//the given sizes via tickSize can appreciably sped it up.
+		if 
+		( 
+			!async._market_retrieving.get(reqId) ||
+			!strings.are_equal(async._market_type, types.ASYNC_MARKET_SNAPSHOT)
+		) 
+		{ return; }
+		
+		async._market_retrieved.put(reqId, true);
+	}
+	//! [ticksnapshotend]
 	
 	//! [tickgeneric]
 	@Override
@@ -370,19 +393,6 @@ public class wrapper implements EWrapper
 	public void deltaNeutralValidation(int reqId, DeltaNeutralContract deltaNeutralContract) {
 		System.out.println("deltaNeutralValidation");
 	}
-	//! [ticksnapshotend]
-	@Override
-	public void tickSnapshotEnd(int reqId) 
-	{
-		//if (ib_global.cur_data.containsKey(reqId))
-		//{
-		//	ib_global.cur_data.remove(reqId);
-		//}
-		//It takes way too long to reach this point.
-		//All the relevant information is retrieved sooner.
-		//System.out.println("TickSnapshotEnd: "+reqId);
-	}
-	//! [ticksnapshotend]
 	
 	//! [marketdatatype]
 	@Override

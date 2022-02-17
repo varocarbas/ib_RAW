@@ -8,14 +8,22 @@ import accessory.misc;
 import accessory.numbers;
 import accessory.strings;
 import accessory_ib._ini;
-import accessory_ib.defaults;
 import accessory_ib.errors;
 import accessory_ib.types;
+import external.wrapper;
 
 public class conn 
 {
-	static EClientSocket client;
+	public static volatile boolean _valid_id = false; 
 	
+	static EClientSocket _client;
+	
+	private static volatile boolean _connected = false;
+	private static volatile boolean _first_conn = false;
+	private static wrapper _wrapper;
+	private static int _id; 
+	private static int _port;
+
 	private static final int MIN_ID = 0;
 	private static final int MAX_ID = 31;
 	
@@ -24,13 +32,6 @@ public class conn
 	private static final int PORT_GATEWAY = 4001;
 	private static final int PORT_GATEWAY_PAPER = 4002;
 	
-	private volatile static boolean connected = false;
-	private volatile static boolean first_conn = false;
-	
-	private static wrapper wrapper;
-	private static int conn_id; 
-	private static int conn_port;
-
 	static { _ini.load(); }
 	
 	public static String check(String type_)
@@ -40,24 +41,24 @@ public class conn
 
 	public static boolean is_ok()
 	{		
-		if (!connected) connect();
+		if (!_connected) connect();
 
-		if (!connected) errors.manage(types.ERROR_CONN_NONE, false);
+		if (!_connected) errors.manage(types.ERROR_CONN_NONE, false);
 		
-		return connected;
+		return _connected;
 	}
 	
-	public static boolean start(int conn_id_, String conn_type_)
+	public static boolean start(int id_, String type_)
 	{
 		String error = null;
 		
-		if (!numbers.is_ok(conn_id_, MIN_ID, MAX_ID)) error = types.ERROR_CONN_ID;
+		if (!numbers.is_ok(id_, MIN_ID, MAX_ID)) error = types.ERROR_CONN_ID;
 		else 
 		{
-			conn_id = conn_id_;
-			String conn_type = check(conn_type_);	
+			_id = id_;
+			String type = check(type_);	
 			
-			if (strings.is_ok(conn_type)) conn_port = get_conn_port(conn_type);
+			if (strings.is_ok(type)) _port = get_conn_port(type);
 			else error = types.ERROR_CONN_TYPE;
 		}
 
@@ -68,44 +69,36 @@ public class conn
 			return false;
 		}
 		
-		wrapper = new wrapper();
-		client = wrapper.getClient();
+		_wrapper = new wrapper();
+		_client = _wrapper.getClient();
 
 		connect();
 		
-		return connected;
+		return _connected;
 	}
 
 	public static void end()
 	{
-		if (client != null) client.eDisconnect();
+		if (_client != null) _client.eDisconnect();
 	}
 	
 	public static boolean check_connection()
 	{
-		if (!connected) connect();
+		if (!_connected) connect();
 		
-		return connected;
-	}
-	
-	private static boolean stop_conn()
-	{
-		boolean stop = false;
-		
-		return stop;
+		return _connected;
 	}
 	
 	private static void connect()
 	{	
-		connected = false;
+		_connected = false;
 		
-		while (!connected)
+		while (!_connected)
 		{	
 			connect_internal();	
 			
-			if (connected) break;
-			if (!first_conn) misc.pause_secs(1);
-			if (stop_conn()) break;
+			if (_connected) break;
+			if (!_first_conn) misc.pause_secs(1);
 			
 			errors.manage(types.ERROR_CONN_NONE, false);
 		}
@@ -113,11 +106,11 @@ public class conn
 	
 	private static void connect_internal()
 	{
-		orders.next_id = defaults.ORDER_ID;
-				
-		final EReaderSignal signal = wrapper.getSignal();
-		client.eConnect("127.0.0.1", conn_port, conn_id);
-		final EReader reader = new EReader(client, signal);   
+		_valid_id = false;
+		
+		final EReaderSignal signal = _wrapper.getSignal();
+		_client.eConnect("127.0.0.1", _port, _id);
+		final EReader reader = new EReader(_client, signal);   
 
 		reader.start();
 
@@ -128,10 +121,10 @@ public class conn
 	    		@Override
 	    		public void run() 
 	    		{
-	    			while (client.isConnected()) 
+	    			while (_client.isConnected()) 
 	    			{
-	    				connected = true;
-	    				first_conn = true;
+	    				_connected = true;
+	    				_first_conn = true;
 	    				signal.waitForSignal();
 	    				try 
 	    				{
@@ -148,15 +141,12 @@ public class conn
 	    						)
 	    					)
 	    					{
-	    						System.out.println
-	    						(
-	    							"Exception: " + message
-	    						);
+	    						System.out.println("Exception: " + message);
 	    					}
 	    				}
 	    			}
 	    			
-	    			connected = false;
+	    			_connected = false;
 	    	    }			
 	    	}
 	    )
@@ -164,7 +154,7 @@ public class conn
 
 	    int count = 0;
 	    int max = 3;
-	    while (orders.next_id == defaults.ORDER_ID)
+	    while (!_valid_id)
 	    {
 	    	misc.pause_min();
 	    	
