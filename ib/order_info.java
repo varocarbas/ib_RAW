@@ -16,7 +16,7 @@ public class order_info
 	public static boolean is_ok(order_info input_)
 	{
 		if (input_ == null) return false;
-		
+
 		return is_ok(input_.type, input_.symbol, input_.quantity, input_.stop, input_.start, input_.id);
 	}
 
@@ -24,11 +24,11 @@ public class order_info
 	{
 		return strings.is_ok(check(type_, symbol_, quantity_, stop_, start_, id_));
 	}
-	
+
 	private static String check(String type_, String symbol_, double quantity_, double stop_, double start_, int id_)
 	{
 		String output = types.check_order_place(type_);
-		
+
 		return
 		(
 			(
@@ -38,11 +38,11 @@ public class order_info
 			? strings.DEFAULT : output
 		);	
 	}
-	
+
 	public order_info (order_info input_)
 	{
 		if (!is_ok(input_)) return;
-		
+
 		type = input_.type;
 		symbol = input_.symbol;
 		quantity = input_.quantity;
@@ -50,14 +50,14 @@ public class order_info
 		stop = input_.stop;
 		start = input_.start;
 	}
-	
+
 	public order_info (String type_, String symbol_, double quantity_, double stop_, double start_)
 	{
 		int id0 = sync.get_next_id();
-		
+
 		String type0 = check(type_, symbol_, quantity_, stop_, start_, id0);
 		if (!strings.is_ok(type0)) return;
-		
+
 		type = type0;
 		symbol = symbol_;
 		quantity = quantity_;

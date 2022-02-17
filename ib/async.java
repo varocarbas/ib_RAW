@@ -29,28 +29,28 @@ public class async
 
 	private static int MIN_ID = 1;
 	private static int MAX_ID = 2500;
-	
+
 	static { _ini.load(); }
-	
+
 	public static boolean snapshot_start(String symbol_, int data_)
 	{
 		return market_start(symbol_, data_, true);
 	}
-	
+
 	public static boolean stream_start(String symbol_, int data_)
 	{
 		return market_start(symbol_, data_, false);
 	}
-	
+
 	public static void stream_end(int id_)
 	{
 		conn._client.cancelMktData(id_);
 	}
-	
+
 	public static void stream_end(String symbol_)
 	{
 		int id = get_id(symbol_);
-		
+
 		stream_end(id);
 	}
 
@@ -63,21 +63,21 @@ public class async
 	{
 		int id = MIN_ID - 1;
 		if (!strings.is_ok(symbol_)) return id;
-		
+
 		for (Entry<Integer, String> item: _market_symbols.entrySet())
 		{
 			if (strings.are_equivalent(symbol_, item.getValue())) return item.getKey();
 		}
-		
+
 		return id;
 	}
-	
+
 	//To manage information retrieved via wrapper.tickPrice().
 	public static void tick_price(int id_, int field_, double price_)
 	{
 		String symbol = arrays.get_value(_market_symbols, id_);
 		if (!strings.is_ok(symbol)) return;
-		
+
 		String key = strings.DEFAULT;
 		if (field_ == constants.TICK_BID) key = keys.BID;
 		else if (field_ == constants.TICK_ASK) key = keys.ASK;
@@ -86,9 +86,9 @@ public class async
 		else if (field_ == constants.TICK_LOW) key = keys.LOW;
 		else if (field_ == constants.TICK_CLOSE) key = keys.CLOSE;		
 		else if (field_ == constants.TICK_OPEN) key = keys.OPEN;	
-		
+
 		if (!strings.is_ok(key)) return;
-		
+
 		market_update(symbol, key, price_);
 	}
 
@@ -97,7 +97,7 @@ public class async
 	{
 		String symbol = arrays.get_value(_market_symbols, id_);
 		if (!strings.is_ok(symbol)) return;
-		
+
 		String key = strings.DEFAULT;
 		if (field_ == constants.TICK_BID_SIZE) key = keys.BID_SIZE;
 		else if (field_ == constants.TICK_ASK_SIZE) key = keys.ASK_SIZE;
@@ -105,7 +105,7 @@ public class async
 		else if (field_ == constants.TICK_VOLUME) 
 		{
 			key = keys.VOLUME;
-			
+
 			if 
 			(
 				_market_retrieving.get(id_) && strings.are_equal(_market_type, types.ASYNC_MARKET_SNAPSHOT) && 
@@ -115,10 +115,10 @@ public class async
 		}
 
 		if (!strings.is_ok(key)) return;
-		
+
 		market_update(symbol, key, size_);
 	}
-	
+
 	//To manage information retrieved via wrapper.tickGeneric().
 	public static void tick_generic(int id_, int tick_, double value_)
 	{
@@ -129,7 +129,7 @@ public class async
 		if (tick_ == constants.TICK_HALTED) key = keys.HALTED;
 
 		if (!strings.is_ok(key)) return;
-		
+
 		market_update(symbol, key, value_);
 	}
 
@@ -143,31 +143,31 @@ public class async
 			items.put("id", strings.from_number_int(id_));
 			items.put("error_code", strings.from_number_int(error_code_));
 			items.put("error_msg", error_msg_);
-			
+
 			String message = arrays.to_string(items, null, null, null);
 			message = "IB " + misc.SEPARATOR_CONTENT + types.ERROR_ASYNC + misc.SEPARATOR_CONTENT + message;
-			
+
 			logs.update(message, null);	
 		}
 	}	
-	
+
 	private static boolean market_start(String symbol_, int data_, boolean is_snapshot_)
 	{
 		boolean is_ok = false;
-		
+
 		String symbol = common.normalise_symbol(symbol_);
 		if (!strings.is_ok(symbol)) return is_ok;
 
 		is_ok = true;
 		if (!arrays.is_ok(db.get_market_info(symbol)))
-		
-		_market_type = (is_snapshot_ ? types.ASYNC_MARKET_SNAPSHOT : types.ASYNC_MARKET_STREAM);
-		
+
+			_market_type = (is_snapshot_ ? types.ASYNC_MARKET_SNAPSHOT : types.ASYNC_MARKET_STREAM);
+
 		if (!numbers.is_ok(_market_id, MIN_ID, MAX_ID)) _market_id = MIN_ID - 1;
 		_market_id++;
-		
+
 		if (strings.are_equal(_market_type, types.ASYNC_MARKET_STREAM)) stream_end(_market_id);
-		
+
 		_market_symbols.put(_market_id, symbol);
 		_market_retrieving.put(_market_id, true);
 		_market_retrieved.put(_market_id, false);
@@ -181,19 +181,19 @@ public class async
 		{
 			if (!arrays.is_ok(db.get_market_info(symbol_))) db.insert_market(db.get_default_vals(), symbol_);
 		}
-		
+
 		if (constants.data_is_ok(data_)) conn._client.reqMarketDataType(data_);
 		conn._client.reqMktData(_market_id, common.get_contract(symbol), "", is_snapshot_, false, null);
-		
+
 		return is_ok;		
 	}
-	
+
 	private static void market_check_memory(String symbol_)
 	{
 		if (!arrays.is_ok(_market)) _market = new HashMap<String, ArrayList<HashMap<String, String>>>();
 		if (!_market.containsKey(symbol_)) _market.put(symbol_, new ArrayList<HashMap<String, String>>());
 		if (!_market_i.containsKey(symbol_)) _market_i.put(symbol_, 0);
-		
+
 		int max = _market.get(symbol_).size() - 1;
 		if (_market_i.get(symbol_) > max) 
 		{
@@ -201,33 +201,33 @@ public class async
 			else _market.get(symbol_).add(new HashMap<String, String>());
 		}
 	}
-	
+
 	private static boolean market_update(String symbol_, String key_, double val_)
 	{
 		boolean is_ok = false;
 		if (!strings.is_ok(symbol_) || !strings.is_ok(key_) || val_ <= 0.0) return is_ok;
-		
+
 		String storage = _config.get_async(types._CONFIG_IB_ASYNC_STORAGE);
 		if (!strings.is_ok(storage)) return is_ok;
-		
+
 		String val = strings.from_number_decimal(val_);
-		
+
 		if (storage.equals(types._CONFIG_IB_ASYNC_STORAGE_DB)) 
 		{	
 			HashMap<String, String> vals = new HashMap<String, String>();
 			vals.put(db.get_col(key_), val); //Every key has an identical col.
 			vals.put(db.get_col(keys.TIME), common.get_market_time());
-			
+
 			is_ok = db.update_market(vals, symbol_);
 		}
 		else if (storage.equals(types._CONFIG_IB_ASYNC_STORAGE_MEMORY)) 
 		{
 			market_check_memory(symbol_);
-			
+
 			_market.get(symbol_).get(_market_i.get(symbol_)).put(key_, val);
 			is_ok = true;
 		}
-		
+
 		return is_ok;
 	}
 }

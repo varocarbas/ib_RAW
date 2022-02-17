@@ -13,7 +13,7 @@ public class _ini
 	{
 		accessory.types.update_aliases(keys.SYMBOL, types._CONFIG_IB_DB_COMMON_COL_SYMBOL);
 		accessory.types.update_aliases(keys.PRICE, types._CONFIG_IB_DB_COMMON_COL_PRICE);
-		
+
 		accessory.types.update_aliases(keys.TIME, types._CONFIG_IB_DB_MARKET_COL_TIME);
 		accessory.types.update_aliases(keys.OPEN, types._CONFIG_IB_DB_MARKET_COL_OPEN);
 		accessory.types.update_aliases(keys.CLOSE, types._CONFIG_IB_DB_MARKET_COL_CLOSE);
@@ -25,7 +25,7 @@ public class _ini
 		accessory.types.update_aliases(keys.BID, types._CONFIG_IB_DB_MARKET_COL_BID);
 		accessory.types.update_aliases(keys.BID_SIZE, types._CONFIG_IB_DB_MARKET_COL_BID_SIZE);
 	}
-	
+
 	private static void load_config()
 	{
 		load_config_root();
@@ -34,21 +34,21 @@ public class _ini
 		load_config_order();
 		load_config_db();		
 	}
-	
+
 	private static void load_config_root()
 	{
 		String type = types._CONFIG_IB;
 
 		accessory._config.update_ini(type, types._CONFIG_IB_CURRENCY, defaults.CURRENCY);
 	}
-	
+
 	private static void load_config_conn()
 	{
 		String type = types._CONFIG_IB_CONN;
 
 		accessory._config.update_ini(type, types._CONFIG_IB_CONN, defaults.CONN);
 	}
-	
+
 	private static void load_config_async()
 	{
 		String type = types._CONFIG_IB_ASYNC;
@@ -57,7 +57,7 @@ public class _ini
 		accessory._config.update_ini(type, types._CONFIG_IB_ASYNC_SNAPSHOT_CONSTANT, defaults.ASYNC_SNAPSHOT_CONSTANT);
 		accessory._config.update_ini(type, types._CONFIG_IB_ASYNC_STORAGE, defaults.ASYNC_STORAGE);
 	}
-	
+
 	private static void load_config_order()
 	{
 		String type = types._CONFIG_IB_ORDER;
@@ -65,7 +65,7 @@ public class _ini
 		accessory._config.update_ini(type, types._CONFIG_IB_ORDER_TIF, defaults.ORDER_TIF);
 		accessory._config.update_ini(type, types._CONFIG_IB_ORDER_QUANTITY_INT, defaults.ORDER_QUANTITY_INT);
 	}
-	
+
 	private static void load_config_db()
 	{
 		String type = types._CONFIG_IB_DB;

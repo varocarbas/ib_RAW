@@ -23,7 +23,7 @@ public class _config
 	{
 		return accessory._config.update(types._CONFIG_IB_CONN, key_, val_);
 	}
-	
+
 	public static String get_async(String key_)
 	{
 		return accessory._config.get(types._CONFIG_IB_ASYNC, key_);
@@ -33,7 +33,7 @@ public class _config
 	{
 		return accessory._config.update(types._CONFIG_IB_ASYNC, key_, val_);
 	}
-	
+
 	public static String get_order(String key_)
 	{
 		return accessory._config.get(types._CONFIG_IB_ORDER, key_);
@@ -43,12 +43,12 @@ public class _config
 	{
 		return accessory._config.update(types._CONFIG_IB_ORDER, key_, val_);
 	}
-	
+
 	public static boolean matches_async(String key_, String val_)
 	{
 		return accessory._config.matches(types._CONFIG_IB_ASYNC, key_, val_);
 	}
-	
+
 	public static String get_db(String key_)
 	{
 		return accessory._config.get(types._CONFIG_IB_DB, key_);

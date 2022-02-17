@@ -17,65 +17,65 @@ public class sync
 {
 	public static volatile boolean _retrieving = false;
 	public static volatile boolean _retrieved = false;
-	
+
 	public static String _type = strings.DEFAULT;
 	public static String _type2 = strings.DEFAULT;
 	public static int _id = defaults.SYNC_ID;
-	
+
 	public static boolean _ignore_max_time = false;
-	
+
 	private static volatile double _decimal_out = numbers.DEFAULT_DEC;
 	private static volatile int _int_out = numbers.DEFAULT_INT;
 	private static volatile ArrayList<Integer> _ints_out = new ArrayList<Integer>();
 	private static volatile HashMap<String, String> _misc_out = new HashMap<String, String>();
 
 	private static final int MAX_SECS_RETRIEVE = 10;
-	
+
 	static { _ini.load(); }
-	
+
 	public static double get_funds()
 	{
 		return (double)get(types.SYNC_GET_FUNDS);
 	}
-	
+
 	public static Integer[] get_open_ids()
 	{
 		return (Integer[])get(types.SYNC_GET_IDS);
 	}
-	
+
 	//Only called when creating a new order, via the corresponding order_info constructor.
 	static int get_next_id()
 	{
 		return (int)get(types.SYNC_GET_ID);
 	}
-	
+
 	private static Object get(String type_)
 	{
 		return get(type_, defaults.SYNC_ID);
 	}
-	
+
 	private static Object get(String type_, int order_id_)
 	{
 		get_ini();
 		retrieve(type_, order_id_); 
-	
+
 		return get_out();
 	}
-	
+
 	private static void get_ini()
 	{
 		get_ini_out(true);
 	}
-	
+
 	private static Object get_out()
 	{
 		return get_ini_out(false);
 	}
-	
+
 	private static Object get_ini_out(boolean ini_)
 	{
 		Object output = null;
-		
+
 		if (_type2.equals(types.SYNC_DATA_INT)) 
 		{
 			if (ini_) _int_out = numbers.DEFAULT_INT;
@@ -99,38 +99,38 @@ public class sync
 
 		return output;
 	}
-	
+
 	public static boolean update(String val_)
 	{
 		return update(strings.to_number_decimal(val_));
 	}
-	
+
 	public static boolean update(double val_)
 	{
 		if (!_type2.equals(types.SYNC_DATA_DECIMAL)) return false;
-		
+
 		_decimal_out = val_;
-		
+
 		return true;
 	}
 
 	public static boolean update(int val_)
 	{
 		boolean is_ok = true;
-		
+
 		if (_type2.equals(types.SYNC_DATA_INTS)) _ints_out.add(val_);
 		else if (_type2.equals(types.SYNC_DATA_INT)) _int_out = val_;
 		else is_ok = false;
-		
+
 		return is_ok;
 	}
-	
+
 	public static boolean update(String key_, String val_)
 	{
 		if (!_type2.equals(types.SYNC_DATA_MISC) || !strings.is_ok(key_)) return false;
-		
+
 		_misc_out.put(key_, val_);
-		
+
 		return true;
 	}
 
@@ -138,21 +138,21 @@ public class sync
 	{
 		String output = strings.DEFAULT;
 		if (!strings.is_ok(input_)) return output;
-		
+
 		if (input_.equals(types.SYNC_GET_ID)) output = types.SYNC_DATA_INT;
 		else if (input_.equals(types.SYNC_GET_FUNDS)) output = types.SYNC_DATA_DECIMAL;
 		else if (input_.equals(types.SYNC_GET_IDS)) output = types.SYNC_DATA_INTS;
-		
+
 		return output;
 	}
-	
+
 	private static boolean retrieve(String type_, int id_)
 	{
 		if (!retrieve_is_ok(type_, id_)) return false;
 
 		_retrieving = true;
 		_retrieved = false;
-		
+
 		if (_type.equals(types.SYNC_GET_FUNDS))
 		{	
 			//accountSummary, accountSummaryEnd
@@ -169,17 +169,17 @@ public class sync
 			conn._client.reqIds(-1); 
 		}
 		else return false;
-		
+
 		return retrieving();
 	}
-	
+
 	private static boolean retrieve_is_ok(String type_, int id_)
 	{
 		String temp = types.check_sync(type_, false);
 		if (!strings.is_ok(temp)) 
 		{
 			accessory_ib.errors.manage(types.ERROR_SYNC_ID, false);
-			
+
 			return false;
 		}
 
@@ -187,7 +187,7 @@ public class sync
 		if (!strings.is_ok(types.check_sync(temp2, true))) 
 		{
 			accessory_ib.errors.manage(types.ERROR_SYNC_ID2, false);
-			
+
 			return false;
 		}
 
@@ -198,32 +198,32 @@ public class sync
 
 		return true;
 	}
-	
+
 	private static boolean retrieving()
 	{
 		boolean is_ok = true;
-		
+
 		long start = time.get_elapsed(0);
-		
+
 		while (true)
 		{
 			if (_retrieved) break;
-			
+
 			long elapsed = time.get_elapsed(start);
 			if (!_ignore_max_time && elapsed >= MAX_SECS_RETRIEVE) 
 			{
 				errors.manage(types.ERROR_SYNC_TIME, false);
 				is_ok = false;
-				
+
 				break;
 			}
-			 
+
 			misc.pause_min();
 		}
-		
+
 		_ignore_max_time = false;
 		_retrieving = false;
-		
+
 		return is_ok;
 	}
 }

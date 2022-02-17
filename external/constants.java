@@ -5,7 +5,7 @@ import accessory.arrays;
 public class constants 
 {
 	//--- To be synced with the corresponding get_all methods.
-	
+
 	//--- To be synced with the info from https://interactivebrokers.github.io/tws-api/tick_types.html.
 	public static final int TICK_BID_SIZE = 0;
 	public static final int TICK_BID = 1;
@@ -19,20 +19,20 @@ public class constants
 	public static final int TICK_CLOSE = 9;
 	public static final int TICK_OPEN = 14;
 	public static final int TICK_HALTED = 49;
-	
+
 	public static final int HALTED_NA = -1;
 	public static final int HALTED_NOT = 0;
 	public static final int HALTED_GENERAL = 1;	
 	public static final int HALTED_VOLATILITY = 2;	
 	//------
-	
+
 	//--- To be synced with the info from https://interactivebrokers.github.io/tws-api/market_data_type.html.
 	public static final int DATA_LIVE = 1;
 	public static final int DATA_FROZEN = 2;
 	public static final int DATA_DELAYED = 3;
 	public static final int DATA_DELAYED_FROZEN = 4;
 	//------
-	
+
 	//--- To be synced with the execution.side values (https://interactivebrokers.github.io/tws-api/classIBApi_1_1Execution.html).
 	public static final String EXEC_SIDE_BOT = "bot";
 	public static final String EXEC_SIDE_SLD = "sld";
@@ -48,7 +48,7 @@ public class constants
 
 	public static final String ORDER_TIF_GTC = "GTC";
 	//------
-	
+
 	//--- To be synced with the info from https://interactivebrokers.github.io/tws-api/message_codes.html.
 	public static final int WARNING_2100 = 2100; //New account data requested from TWS. API client has been unsubscribed from account data.
 	public static final int WARNING_2101 = 2101; //Unable to subscribe to account as the following clients are subscribed to a different account.
@@ -66,29 +66,29 @@ public class constants
 	public static final int WARNING_2168 = 2168; //Etrade Only Not Supported Warning.
 	public static final int WARNING_2169 = 2169; //	Firm Quote Only Not Supported Warning.
 	//------
-	
+
 	//------------
-	
+
 	public static boolean is_warning(int code_)
 	{
 		return arrays.value_exists(get_all_warnings(), code_);
 	}
-	
+
 	public static boolean tick_is_ok(int tick_)
 	{
 		return arrays.value_exists(get_all_tick(), tick_);
 	}
-	
+
 	public static boolean halt_is_ok(int halt_)
 	{
 		return arrays.value_exists(get_all_halted(), halt_);
 	}
-	
+
 	public static boolean data_is_ok(int data_)
 	{
 		return arrays.value_exists(get_all_data(), data_);
 	}
-	
+
 	private static Integer[] get_all_tick()
 	{
 		return new Integer[]
@@ -106,7 +106,7 @@ public class constants
 			HALTED_NA, HALTED_NOT, HALTED_GENERAL, HALTED_VOLATILITY	
 		};
 	}
-	
+
 	private static Integer[] get_all_data()
 	{
 		return new Integer[]
@@ -114,7 +114,7 @@ public class constants
 			DATA_LIVE, DATA_FROZEN, DATA_DELAYED, DATA_DELAYED_FROZEN	
 		};
 	}
-	
+
 	private static Integer[] get_all_warnings()
 	{
 		return new Integer[]
