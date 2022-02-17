@@ -18,10 +18,10 @@ import external.constants;
 
 public class async 
 {	
-	public static String _market_type = strings.DEFAULT;
 	public static volatile HashMap<Integer, Boolean> _market_retrieving = new HashMap<Integer, Boolean>();
 	public static volatile HashMap<Integer, Boolean> _market_retrieved = new HashMap<Integer, Boolean>();
-
+	public static String _market_type = strings.DEFAULT;
+	
 	private static int _market_id = 0;
 	private static HashMap<String, ArrayList<HashMap<String, String>>> _market = new HashMap<String, ArrayList<HashMap<String, String>>>();
 	private static HashMap<Integer, String> _market_symbols = new HashMap<Integer, String>();
@@ -215,7 +215,7 @@ public class async
 		if (storage.equals(types._CONFIG_IB_ASYNC_STORAGE_DB)) 
 		{	
 			HashMap<String, String> vals = new HashMap<String, String>();
-			vals.put(db.get_col(key_), val); //Every key has an identical col.
+			vals.put(db.get_col(key_), val);
 			vals.put(db.get_col(keys.TIME), common.get_market_time());
 
 			is_ok = db.update_market(vals, symbol_);
