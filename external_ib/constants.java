@@ -1,6 +1,7 @@
-package external;
+package external_ib;
 
 import accessory.arrays;
+import accessory_ib._ini;
 
 public class constants 
 {
@@ -66,9 +67,10 @@ public class constants
 	public static final int WARNING_2168 = 2168; //Etrade Only Not Supported Warning.
 	public static final int WARNING_2169 = 2169; //	Firm Quote Only Not Supported Warning.
 	//------
-
 	//------------
 
+	static { _ini.load(); }
+	
 	public static boolean is_warning(int code_)
 	{
 		return arrays.value_exists(get_all_warnings(), code_);

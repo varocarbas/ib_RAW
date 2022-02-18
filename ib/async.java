@@ -14,7 +14,7 @@ import accessory_ib._ini;
 import accessory_ib.db;
 import accessory_ib.keys;
 import accessory_ib.types;
-import external.constants;
+import external_ib.constants;
 
 public class async 
 {	
@@ -136,7 +136,7 @@ public class async
 	//To manage information retrieved via wrapper.error().
 	public static void error(int id_, int error_code_, String error_msg_)
 	{
-		if (constants.is_warning(error_code_)) logs.update_console(error_msg_);
+		if (constants.is_warning(error_code_)) logs.update_screen(error_msg_);
 		else
 		{
 			HashMap<String, String> items = new HashMap<String, String>();
@@ -210,18 +210,14 @@ public class async
 		String storage = _config.get_async(types._CONFIG_IB_ASYNC_STORAGE);
 		if (!strings.is_ok(storage)) return is_ok;
 
-		String val = strings.from_number_decimal(val_);
-
 		if (storage.equals(types._CONFIG_IB_ASYNC_STORAGE_DB)) 
 		{	
-			HashMap<String, String> vals = new HashMap<String, String>();
-			vals.put(db.get_col(key_), val);
-			vals.put(db.get_col(keys.TIME), common.get_market_time());
-
-			is_ok = db.update_market(vals, symbol_);
+			is_ok = db.update_market_val(key_, val_, symbol_);
 		}
 		else if (storage.equals(types._CONFIG_IB_ASYNC_STORAGE_MEMORY)) 
 		{
+			String val = strings.from_number_decimal(val_);
+			
 			market_check_memory(symbol_);
 
 			_market.get(symbol_).get(_market_i.get(symbol_)).put(key_, val);

@@ -1,15 +1,94 @@
 package accessory_ib;
 
+import java.util.HashMap;
+
+import accessory.col;
+import accessory.data;
+import accessory.db;
+import accessory.numbers;
+import accessory.size;
+import accessory.time;
+
 public class _ini 
 {
-	//This method is expected to be called every time a class is loaded.
+	//This method is expected to be called every time a static class is loaded.
 	public static void load() 
 	{
 		load_types();
+		load_tables();
+	}
+	
+	private static void load_tables()
+	{
+		load_tables_market();
+	}
+	
+	private static void load_types()
+	{
+		load_aliases();
 		load_config();
 	}
+	
+	private static void load_tables_market()
+	{
+		String table = types._CONFIG_IB_DB_MARKET_TABLE;
+		if (db.table_exists(table)) return;
+		
+		db.add_table_type(table, types._CONFIG_IB_DB);
+		
+		HashMap<String, col> cols = new HashMap<String, col>(get_common_cols());
+	
+		cols.put(types._CONFIG_IB_DB_MARKET_COL_SYMBOL, new col(new data(accessory.types.DATA_STRING, null), null));
+		
+		String[] prices = new String[] 
+		{
+			types._CONFIG_IB_DB_MARKET_COL_OPEN, types._CONFIG_IB_DB_MARKET_COL_CLOSE, 
+			types._CONFIG_IB_DB_MARKET_COL_LOW, types._CONFIG_IB_DB_MARKET_COL_HIGH, 
+			types._CONFIG_IB_DB_MARKET_COL_ASK, types._CONFIG_IB_DB_MARKET_COL_BID
+		};
+		
+		for (String id: prices)
+		{
+			cols.put(id, get_col_prices());
+		}
+				
+		String[] sizes = new String[] 
+		{
+			types._CONFIG_IB_DB_MARKET_COL_VOLUME, 
+			types._CONFIG_IB_DB_MARKET_COL_ASK_SIZE, 
+			types._CONFIG_IB_DB_MARKET_COL_BID_SIZE
+		};
+		
+		for (String id: sizes)
+		{
+			cols.put(id, get_col_sizes());
+		}
+				
+		accessory.db.add_table(table, cols);
+	}
 
-	private static void load_types()
+	private static HashMap<String, col> get_common_cols()
+	{
+		HashMap<String, col> cols = db.get_default_cols();
+		
+		size temp = new size(0.0, time.get_time_pattern(time.TIME_SHORT).length());
+		cols.put(types._CONFIG_IB_DB_MARKET_COL_TIME, new col(new data(accessory.types.DATA_STRING, temp), null));
+		cols.put(types._CONFIG_IB_DB_MARKET_COL_PRICE, get_col_prices());
+
+		return cols;
+	}
+
+	private static col get_col_prices()
+	{
+		return new col(new data(accessory.types.DATA_DECIMAL, new size(0.0, 1000.0)), null);
+	}
+
+	private static col get_col_sizes()
+	{
+		return new col(new data(accessory.types.DATA_DECIMAL, new size(0.0, numbers.MAX_DEC)), null);
+	}
+
+	private static void load_aliases()
 	{
 		accessory.types.update_aliases(keys.SYMBOL, types._CONFIG_IB_DB_COMMON_COL_SYMBOL);
 		accessory.types.update_aliases(keys.PRICE, types._CONFIG_IB_DB_COMMON_COL_PRICE);

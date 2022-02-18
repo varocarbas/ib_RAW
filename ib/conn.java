@@ -10,7 +10,7 @@ import accessory.strings;
 import accessory_ib._ini;
 import accessory_ib.errors;
 import accessory_ib.types;
-import external.wrapper;
+import external_ib.wrapper;
 
 public class conn 
 {

@@ -15,30 +15,30 @@ import accessory_ib._config;
 import accessory_ib._ini;
 import accessory_ib.keys;
 import accessory_ib.types;
-import external.constants;
+import external_ib.constants;
 
 public class orders 
 {	
-	private static HashMap<Integer, order_info> _orders = new HashMap<Integer, order_info>();
+	private static HashMap<Integer, order> _orders = new HashMap<Integer, order>();
 	private static int MIN_ID = 0;
 
 	static { _ini.load(); }
 
 	public static boolean place(String type_, String symbol_, int quantity_, double stop_, double start_) 
 	{
-		order_info info = new order_info(type_, symbol_, quantity_, stop_, start_);
+		order info = new order(type_, symbol_, quantity_, stop_, start_);
 
-		return (order_info.is_ok(info) ? place_update(info, strings.DEFAULT, numbers.DEFAULT_DEC) : false);
+		return (order.is_ok(info) ? place_update(info, strings.DEFAULT, numbers.DEFAULT_DEC) : false);
 	}
 
 	public static boolean update(String type_, String symbol_, double val_) 
 	{
-		order_info info = get_info(symbol_);
-		if (!order_info.is_ok(info)) return false;
+		order info = get_info(symbol_);
+		if (!order.is_ok(info)) return false;
 
 		String type = types.check_order_update(type_);
 
-		return ((!order_info.is_ok(info) || !strings.is_ok(type)) ? place_update(info, type, val_) : false);
+		return ((!order.is_ok(info) || !strings.is_ok(type)) ? place_update(info, type, val_) : false);
 	}
 
 	public static void cancel(int id_)
@@ -52,17 +52,17 @@ public class orders
 		sync_orders();
 	}
 
-	public static order_info get_info(String symbol_)
+	public static order get_info(String symbol_)
 	{
-		order_info info = null;
+		order info = null;
 
 		String symbol = common.normalise_symbol(symbol_);
 		if (!strings.is_ok(symbol)) return info;
 
-		for (Entry<Integer, order_info> order: _orders.entrySet())
+		for (Entry<Integer, order> order: _orders.entrySet())
 		{
-			info = new order_info(order.getValue());
-			if (symbol.equals(info.symbol)) return info;
+			info = new order(order.getValue());
+			if (symbol.equals(info._symbol)) return info;
 		}
 
 		return info;
@@ -87,14 +87,14 @@ public class orders
 		return open;
 	}	
 
-	private static boolean place_update(order_info info_, String update_type_, double update_val_) 
+	private static boolean place_update(order info_, String update_type_, double update_val_) 
 	{
-		Contract contract = common.get_contract(info_.symbol);
+		Contract contract = common.get_contract(info_._symbol);
 
 		int tot = 2;
 
 		int max_i = tot - 1;
-		int id = info_.id;
+		int id = info_._id;
 		int parent = id;
 
 		for (int i = 0; i <= max_i; i++)
@@ -107,21 +107,21 @@ public class orders
 			conn._client.placeOrder(id, contract, order);
 		}
 
-		if (!strings.is_ok(update_type_)) _orders.put(id, new order_info(info_));
+		if (!strings.is_ok(update_type_)) _orders.put(id, new order(info_));
 		else if (update_type_.equals(types.ORDER_UPDATE_START_VALUE)) update_info(id, keys.START, update_val_); 
 		else if (update_type_.equals(types.ORDER_UPDATE_STOP_VALUE)) update_info(id, keys.STOP, update_val_); 
 
 		return true;
 	}
 
-	private static Order get_order(order_info info_, int id_, int parent_, String update_type_, double update_val_, boolean is_last_)
+	private static Order get_order(order info_, int id_, int parent_, String update_type_, double update_val_, boolean is_last_)
 	{
 		Order order = new Order();
 		order.orderId(id_);
 
 		boolean is_main = (id_ == parent_);
-		boolean is_market = info_.type.equals(types.ORDER_PLACE_MARKET);
-		double val = (is_main ? info_.start : info_.stop);
+		boolean is_market = info_._type.equals(types.ORDER_PLACE_MARKET);
+		double val = (is_main ? info_._start : info_._stop);
 
 		String type2 = null;
 
@@ -162,7 +162,7 @@ public class orders
 		else
 		{
 			String order_type = constants.ORDER_TYPE_STOP;
-			if (is_main && info_.type.equals(types.ORDER_PLACE_LIMIT)) order_type = constants.ORDER_TYPE_LIMIT;
+			if (is_main && info_._type.equals(types.ORDER_PLACE_LIMIT)) order_type = constants.ORDER_TYPE_LIMIT;
 
 			order.orderType(order_type);
 			if (order_type.equals(constants.ORDER_TYPE_STOP)) order.auxPrice(val);	
@@ -173,7 +173,7 @@ public class orders
 		String tif = _config.get_order(types._CONFIG_IB_ORDER_TIF);
 		order.tif(tif);
 
-		double quantity = info_.quantity;
+		double quantity = info_._quantity;
 		if (strings.to_boolean(_config.get_order(types._CONFIG_IB_ORDER_QUANTITY_INT))) quantity = Math.floor(quantity);
 		order.totalQuantity(quantity);
 
@@ -186,10 +186,10 @@ public class orders
 	{
 		if (!_orders.containsKey(id_) || !strings.is_ok(what_)) return false;
 
-		order_info info = new order_info(_orders.get(id_));
+		order info = new order(_orders.get(id_));
 
-		if (what_.equals(keys.START)) info.start = val_;
-		else if (what_.equals(keys.STOP)) info.stop = val_;
+		if (what_.equals(keys.START)) info._start = val_;
+		else if (what_.equals(keys.STOP)) info._stop = val_;
 		else return false;
 
 		_orders.put(id_, info);
@@ -206,7 +206,7 @@ public class orders
 	{		
 		ArrayList<Integer> delete = new ArrayList<Integer>();
 
-		for (Entry<Integer, order_info> order: _orders.entrySet())
+		for (Entry<Integer, order> order: _orders.entrySet())
 		{
 			int id = order.getKey();
 			if (!arrays.value_exists(open_, id)) delete.add(id);

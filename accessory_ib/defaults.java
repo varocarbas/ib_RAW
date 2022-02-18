@@ -1,6 +1,6 @@
 package accessory_ib;
 
-import external.constants;
+import external_ib.constants;
 
 public class defaults 
 {

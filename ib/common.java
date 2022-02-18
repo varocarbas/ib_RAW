@@ -5,10 +5,13 @@ import com.ib.client.Contract;
 import accessory.strings;
 import accessory.time;
 import accessory_ib._config;
+import accessory_ib._ini;
 import accessory_ib.types;
 
 public class common 
 {
+	static { _ini.load(); }
+	
 	public static Contract get_contract(String symbol_)
 	{
 		if (!strings.is_ok(symbol_)) return null;

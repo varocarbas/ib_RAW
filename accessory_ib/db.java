@@ -5,9 +5,12 @@ import java.util.HashMap;
 
 import accessory.arrays;
 import accessory.strings;
+import ib.common;
 
 public class db 
 {	
+	static { _ini.load(); }
+	
 	public static HashMap<String, String> get_market_info(String symbol_)
 	{
 		HashMap<String, String> info = null;
@@ -24,19 +27,19 @@ public class db
 		return info;
 	}
 
-	public static boolean update_market_val(String col_, String val_, String symbol_)
+	public static boolean update_market_val(String key_, double val_, String symbol_)
 	{
-		if (!strings.is_ok(col_) || !strings.is_ok(val_) || !strings.is_ok(symbol_)) return false;
+		if (!strings.is_ok(key_) || !strings.is_ok(symbol_)) return false;
 
-		String where = get_where_symbol(symbol_);
+		HashMap<String, String> vals = get_table_vals_market(key_, val_);
+		if (!arrays.is_ok(vals)) return false;
+		
+		vals.put(get_col(types._CONFIG_IB_DB_MARKET_TABLE, keys.TIME), common.get_market_time());
 
-		HashMap<String, String> vals = new HashMap<String, String>();
-		vals.put(col_, val_);
-
-		return update_market(vals, where);
+		return update_market(vals, symbol_);
 	}
 
-	public static boolean update_market(HashMap<String, String> vals_, String symbol_)
+	private static boolean update_market(HashMap<String, String> vals_, String symbol_)
 	{
 		if (!arrays.is_ok(vals_) || !strings.is_ok(symbol_)) return false;
 
@@ -50,28 +53,34 @@ public class db
 		if (!arrays.is_ok(vals_) || !strings.is_ok(symbol_)) return false;
 
 		HashMap<String, String> vals = new HashMap<String, String>(vals_);
-		vals.put(get_col(keys.SYMBOL), symbol_);
+		vals.put(get_col(types._CONFIG_IB_DB_MARKET_TABLE, keys.SYMBOL), symbol_);
 
 		return insert(types._CONFIG_IB_DB_MARKET_TABLE, vals);
 	}
-
+	
+	private static <x> HashMap<String, String> get_table_vals_market(String key_, double val_)
+	{
+		return accessory.db.get_table_vals(types._CONFIG_IB_DB_MARKET_TABLE, null, key_, val_);
+	}
+	
 	public static HashMap<String, String> get_default_vals()
 	{
 		HashMap<String, String> vals = new HashMap<String, String>();
 
 		String zero = strings.to_string(0.0);
-
-		vals.put(get_col(keys.TIME), "00:00");
-		vals.put(get_col(keys.PRICE), zero);
-		vals.put(get_col(keys.VOLUME), zero);
-		vals.put(get_col(keys.OPEN), zero);
-		vals.put(get_col(keys.CLOSE), zero);
-		vals.put(get_col(keys.HIGH), zero);
-		vals.put(get_col(keys.LOW), zero);
-		vals.put(get_col(keys.BID), zero);
-		vals.put(get_col(keys.BID_SIZE), zero);
-		vals.put(get_col(keys.ASK), zero);
-		vals.put(get_col(keys.ASK_SIZE), zero);
+		String table = types._CONFIG_IB_DB_MARKET_TABLE;
+		
+		vals.put(get_col(table, keys.TIME), "00:00");
+		vals.put(get_col(table, keys.PRICE), zero);
+		vals.put(get_col(table, keys.VOLUME), zero);
+		vals.put(get_col(table, keys.OPEN), zero);
+		vals.put(get_col(table, keys.CLOSE), zero);
+		vals.put(get_col(table, keys.HIGH), zero);
+		vals.put(get_col(table, keys.LOW), zero);
+		vals.put(get_col(table, keys.BID), zero);
+		vals.put(get_col(table, keys.BID_SIZE), zero);
+		vals.put(get_col(table, keys.ASK), zero);
+		vals.put(get_col(table, keys.ASK_SIZE), zero);
 
 		return vals;
 	}
@@ -80,25 +89,13 @@ public class db
 	{
 		if (!strings.is_ok(symbol_)) return strings.DEFAULT;
 
-		return (get_variable(get_col(accessory_ib.types._CONFIG_IB_DB_COMMON_COL_SYMBOL)) + "=" + get_value(symbol_));
+		String table = types._CONFIG_IB_DB_MARKET_TABLE;
+		String col = types._CONFIG_IB_DB_COMMON_COL_SYMBOL;
+		
+		return (get_variable(get_col(table, col)) + "=" + get_value(symbol_));
 	}
 
-	public static String get_col(String key_)
-	{
-		return _config.get_db(key_);
-	}
-
-	private static String get_variable(String input_)
-	{
-		return accessory.db.get_variable(input_);
-	}
-
-	private static String get_value(String input_)
-	{
-		return accessory.db.get_value(input_);	
-	}
-
-	private static boolean update(String type_, HashMap<String, String> vals_, String where_)
+	public static boolean update(String type_, HashMap<String, String> vals_, String where_)
 	{
 		String table = get_table(type_);
 		if (!strings.is_ok(table)) return false;
@@ -117,9 +114,24 @@ public class db
 
 		return accessory.db._is_ok;
 	}
-
-	private static String get_table(String type_)
+	
+	private static String get_table(String table_)
 	{
-		return (strings.is_ok(type_) ? _config.get_db(type_) : strings.DEFAULT);
+		return accessory.db.get_table_name(table_);
+	}
+	
+	private static String get_col(String table_, String col_)
+	{
+		return accessory.db.get_col_name(table_, col_);
+	}
+	
+	private static String get_variable(String input_)
+	{
+		return accessory.db.get_variable(input_);
+	}
+
+	private static String get_value(String input_)
+	{
+		return accessory.db.get_value(input_);	
 	}
 }
