@@ -20,24 +20,24 @@ public class defaults
 	public static final boolean ASYNC_SNAPSHOT_QUICK = true;
 	public static final boolean ASYNC_SNAPSHOT_CONSTANT = true;
 
-	public static final String DB_COMMON_COL_SYMBOL = keys.SYMBOL; 
-	public static final String DB_COMMON_COL_PRICE = keys.PRICE;
+	public static final String DB_COMMON_FIELD_SYMBOL = keys.SYMBOL; 
+	public static final String DB_COMMON_FIELD_PRICE = keys.PRICE;
 
-	public static final String DB_MARKET_TABLE = "ib_market";
-	public static final String DB_MARKET_COL_TIME = keys.TIME;
-	public static final String DB_MARKET_COL_QUANTITY = keys.QUANTITY;
-	public static final String DB_MARKET_COL_VOLUME = keys.VOLUME;
-	public static final String DB_MARKET_COL_SIZE = keys.SIZE;
-	public static final String DB_MARKET_COL_OPEN = keys.OPEN;
-	public static final String DB_MARKET_COL_CLOSE = keys.CLOSE;
-	public static final String DB_MARKET_COL_HIGH = keys.HIGH;
-	public static final String DB_MARKET_COL_LOW = keys.LOW;
-	public static final String DB_MARKET_COL_BID = keys.BID;
-	public static final String DB_MARKET_COL_BID_SIZE = keys.BID_SIZE;
-	public static final String DB_MARKET_COL_ASK = keys.ASK;
-	public static final String DB_MARKET_COL_ASK_SIZE = keys.ASK_SIZE;
-	public static final String DB_MARKET_COL_HALTED = keys.HALTED;
-	public static final String DB_MARKET_COL_HALTED_TOT = keys.HALTED_TOT;
+	public static final String DB_MARKET_SOURCE = "ib_market";
+	public static final String DB_MARKET_FIELD_TIME = keys.TIME;
+	public static final String DB_MARKET_FIELD_QUANTITY = keys.QUANTITY;
+	public static final String DB_MARKET_FIELD_VOLUME = keys.VOLUME;
+	public static final String DB_MARKET_FIELD_SIZE = keys.SIZE;
+	public static final String DB_MARKET_FIELD_OPEN = keys.OPEN;
+	public static final String DB_MARKET_FIELD_CLOSE = keys.CLOSE;
+	public static final String DB_MARKET_FIELD_HIGH = keys.HIGH;
+	public static final String DB_MARKET_FIELD_LOW = keys.LOW;
+	public static final String DB_MARKET_FIELD_BID = keys.BID;
+	public static final String DB_MARKET_FIELD_BID_SIZE = keys.BID_SIZE;
+	public static final String DB_MARKET_FIELD_ASK = keys.ASK;
+	public static final String DB_MARKET_FIELD_ASK_SIZE = keys.ASK_SIZE;
+	public static final String DB_MARKET_FIELD_HALTED = keys.HALTED;
+	public static final String DB_MARKET_FIELD_HALTED_TOT = keys.HALTED_TOT;
 
 	static { _ini.load(); }
 }

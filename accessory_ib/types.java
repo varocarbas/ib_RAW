@@ -27,22 +27,22 @@ public class types
 
 	public static final String _CONFIG_IB_DB = "_config_ib_db";
 	public static final String _CONFIG_IB_DB_COMMON = "_config_ib_db_common";
-	public static final String _CONFIG_IB_DB_COMMON_COL_SYMBOL = "_config_ib_db_common_col_symbol";
-	public static final String _CONFIG_IB_DB_COMMON_COL_PRICE = "_config_ib_db_common_col_price";
+	public static final String _CONFIG_IB_DB_COMMON_FIELD_SYMBOL = "_config_ib_db_common_field_symbol";
+	public static final String _CONFIG_IB_DB_COMMON_FIELD_PRICE = "_config_ib_db_common_field_price";
 	public static final String _CONFIG_IB_DB_MARKET = "_config_ib_db_market";
-	public static final String _CONFIG_IB_DB_MARKET_TABLE = "_config_ib_db_market_table";
-	public static final String _CONFIG_IB_DB_MARKET_COL_TIME = "_config_ib_db_market_col_time";
-	public static final String _CONFIG_IB_DB_MARKET_COL_SYMBOL = _CONFIG_IB_DB_COMMON_COL_SYMBOL;
-	public static final String _CONFIG_IB_DB_MARKET_COL_PRICE = _CONFIG_IB_DB_COMMON_COL_PRICE;
-	public static final String _CONFIG_IB_DB_MARKET_COL_OPEN = "_config_ib_db_market_col_open";
-	public static final String _CONFIG_IB_DB_MARKET_COL_CLOSE = "_config_ib_db_market_col_close";
-	public static final String _CONFIG_IB_DB_MARKET_COL_LOW = "_config_ib_db_market_col_low";
-	public static final String _CONFIG_IB_DB_MARKET_COL_HIGH = "_config_ib_db_market_col_high";
-	public static final String _CONFIG_IB_DB_MARKET_COL_VOLUME = "_config_ib_db_market_col_volume";
-	public static final String _CONFIG_IB_DB_MARKET_COL_ASK = "_config_ib_db_market_col_ask";
-	public static final String _CONFIG_IB_DB_MARKET_COL_ASK_SIZE = "_config_ib_db_market_col_ask_size";
-	public static final String _CONFIG_IB_DB_MARKET_COL_BID = "_config_ib_db_market_col_bid";
-	public static final String _CONFIG_IB_DB_MARKET_COL_BID_SIZE = "_config_ib_db_market_col_bid_size";
+	public static final String _CONFIG_IB_DB_MARKET_SOURCE = "_config_ib_db_market_source";
+	public static final String _CONFIG_IB_DB_MARKET_FIELD_TIME = "_config_ib_db_market_field_time";
+	public static final String _CONFIG_IB_DB_MARKET_FIELD_SYMBOL = _CONFIG_IB_DB_COMMON_FIELD_SYMBOL;
+	public static final String _CONFIG_IB_DB_MARKET_FIELD_PRICE = _CONFIG_IB_DB_COMMON_FIELD_PRICE;
+	public static final String _CONFIG_IB_DB_MARKET_FIELD_OPEN = "_config_ib_db_market_field_open";
+	public static final String _CONFIG_IB_DB_MARKET_FIELD_CLOSE = "_config_ib_db_market_field_close";
+	public static final String _CONFIG_IB_DB_MARKET_FIELD_LOW = "_config_ib_db_market_field_low";
+	public static final String _CONFIG_IB_DB_MARKET_FIELD_HIGH = "_config_ib_db_market_field_high";
+	public static final String _CONFIG_IB_DB_MARKET_FIELD_VOLUME = "_config_ib_db_market_field_volume";
+	public static final String _CONFIG_IB_DB_MARKET_FIELD_ASK = "_config_ib_db_market_field_ask";
+	public static final String _CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE = "_config_ib_db_market_field_ask_size";
+	public static final String _CONFIG_IB_DB_MARKET_FIELD_BID = "_config_ib_db_market_field_bid";
+	public static final String _CONFIG_IB_DB_MARKET_FIELD_BID_SIZE = "_config_ib_db_market_field_bid_size";
 	//------
 
 	public static final String CONN = "conn";
@@ -176,13 +176,13 @@ public class types
 			_CONFIG_IB_ORDER_TIF, _CONFIG_IB_ORDER_QUANTITY_INT,
 			//_CONFIG_IB_DB
 			//_CONFIG_IB_DB_COMMON
-			_CONFIG_IB_DB_COMMON_COL_SYMBOL,  _CONFIG_IB_DB_COMMON_COL_PRICE,
+			_CONFIG_IB_DB_COMMON_FIELD_SYMBOL,  _CONFIG_IB_DB_COMMON_FIELD_PRICE,
 			//_CONFIG_IB_DB_MARKET
-			_CONFIG_IB_DB_MARKET_TABLE,
-			_CONFIG_IB_DB_MARKET_COL_TIME, _CONFIG_IB_DB_MARKET_COL_SYMBOL, _CONFIG_IB_DB_MARKET_COL_PRICE,
-			_CONFIG_IB_DB_MARKET_COL_OPEN, _CONFIG_IB_DB_MARKET_COL_CLOSE, _CONFIG_IB_DB_MARKET_COL_LOW,
-			_CONFIG_IB_DB_MARKET_COL_HIGH, _CONFIG_IB_DB_MARKET_COL_VOLUME, _CONFIG_IB_DB_MARKET_COL_ASK,
-			_CONFIG_IB_DB_MARKET_COL_ASK_SIZE, _CONFIG_IB_DB_MARKET_COL_BID, _CONFIG_IB_DB_MARKET_COL_BID_SIZE, 
+			_CONFIG_IB_DB_MARKET_SOURCE,
+			_CONFIG_IB_DB_MARKET_FIELD_TIME, _CONFIG_IB_DB_MARKET_FIELD_SYMBOL, _CONFIG_IB_DB_MARKET_FIELD_PRICE,
+			_CONFIG_IB_DB_MARKET_FIELD_OPEN, _CONFIG_IB_DB_MARKET_FIELD_CLOSE, _CONFIG_IB_DB_MARKET_FIELD_LOW,
+			_CONFIG_IB_DB_MARKET_FIELD_HIGH, _CONFIG_IB_DB_MARKET_FIELD_VOLUME, _CONFIG_IB_DB_MARKET_FIELD_ASK,
+			_CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE, _CONFIG_IB_DB_MARKET_FIELD_BID, _CONFIG_IB_DB_MARKET_FIELD_BID_SIZE, 
 
 			//CONN
 			CONN_PAPER, CONN_REAL, CONN_GATEWAY, CONN_GATEWAY_PAPER,

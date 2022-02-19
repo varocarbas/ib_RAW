@@ -2,9 +2,9 @@ package accessory_ib;
 
 import java.util.HashMap;
 
-import accessory.col;
 import accessory.data;
 import accessory.db;
+import accessory.field;
 import accessory.numbers;
 import accessory.size;
 import accessory.time;
@@ -15,12 +15,12 @@ public class _ini
 	public static void load() 
 	{
 		load_types();
-		load_tables();
+		load_sources();
 	}
 	
-	private static void load_tables()
+	private static void load_sources()
 	{
-		load_tables_market();
+		load_sources_market();
 	}
 	
 	private static void load_types()
@@ -29,80 +29,80 @@ public class _ini
 		load_config();
 	}
 	
-	private static void load_tables_market()
+	private static void load_sources_market()
 	{
-		String table = types._CONFIG_IB_DB_MARKET_TABLE;
-		if (db.table_exists(table)) return;
+		String source = types._CONFIG_IB_DB_MARKET_SOURCE;
+		if (db.source_exists(source)) return;
 		
-		db.add_table_type(table, types._CONFIG_IB_DB);
+		db.add_source_main(source, types._CONFIG_IB_DB);
 		
-		HashMap<String, col> cols = new HashMap<String, col>(get_common_cols());
+		HashMap<String, field> fields = new HashMap<String, field>(get_common_fields());
 	
-		cols.put(types._CONFIG_IB_DB_MARKET_COL_SYMBOL, new col(new data(accessory.types.DATA_STRING, null), null));
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_SYMBOL, new field(new data(accessory.types.DATA_STRING, null), null));
 		
 		String[] prices = new String[] 
 		{
-			types._CONFIG_IB_DB_MARKET_COL_OPEN, types._CONFIG_IB_DB_MARKET_COL_CLOSE, 
-			types._CONFIG_IB_DB_MARKET_COL_LOW, types._CONFIG_IB_DB_MARKET_COL_HIGH, 
-			types._CONFIG_IB_DB_MARKET_COL_ASK, types._CONFIG_IB_DB_MARKET_COL_BID
+			types._CONFIG_IB_DB_MARKET_FIELD_OPEN, types._CONFIG_IB_DB_MARKET_FIELD_CLOSE, 
+			types._CONFIG_IB_DB_MARKET_FIELD_LOW, types._CONFIG_IB_DB_MARKET_FIELD_HIGH, 
+			types._CONFIG_IB_DB_MARKET_FIELD_ASK, types._CONFIG_IB_DB_MARKET_FIELD_BID
 		};
 		
 		for (String id: prices)
 		{
-			cols.put(id, get_col_prices());
+			fields.put(id, get_field_prices());
 		}
 				
 		String[] sizes = new String[] 
 		{
-			types._CONFIG_IB_DB_MARKET_COL_VOLUME, 
-			types._CONFIG_IB_DB_MARKET_COL_ASK_SIZE, 
-			types._CONFIG_IB_DB_MARKET_COL_BID_SIZE
+			types._CONFIG_IB_DB_MARKET_FIELD_VOLUME, 
+			types._CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE, 
+			types._CONFIG_IB_DB_MARKET_FIELD_BID_SIZE
 		};
 		
 		for (String id: sizes)
 		{
-			cols.put(id, get_col_sizes());
+			fields.put(id, get_field_sizes());
 		}
 				
-		accessory.db.add_table(table, cols);
+		accessory.db.add_source(source, fields);
 	}
 
-	private static HashMap<String, col> get_common_cols()
+	private static HashMap<String, field> get_common_fields()
 	{
-		HashMap<String, col> cols = db.get_default_cols();
+		HashMap<String, field> fields = db.get_default_fields();
 		
 		size temp = new size(0.0, time.get_time_pattern(time.TIME_SHORT).length());
-		cols.put(types._CONFIG_IB_DB_MARKET_COL_TIME, new col(new data(accessory.types.DATA_STRING, temp), null));
-		cols.put(types._CONFIG_IB_DB_MARKET_COL_PRICE, get_col_prices());
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_TIME, new field(new data(accessory.types.DATA_STRING, temp), null));
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_PRICE, get_field_prices());
 
-		return cols;
+		return fields;
 	}
 
-	private static col get_col_prices()
+	private static field get_field_prices()
 	{
-		return new col(new data(accessory.types.DATA_DECIMAL, new size(0.0, 1000.0)), null);
+		return new field(new data(accessory.types.DATA_DECIMAL, new size(0.0, 1000.0)), null);
 	}
 
-	private static col get_col_sizes()
+	private static field get_field_sizes()
 	{
-		return new col(new data(accessory.types.DATA_DECIMAL, new size(0.0, numbers.MAX_DEC)), null);
+		return new field(new data(accessory.types.DATA_DECIMAL, new size(0.0, numbers.MAX_DEC)), null);
 	}
 
 	private static void load_aliases()
 	{
-		accessory.types.update_aliases(keys.SYMBOL, types._CONFIG_IB_DB_COMMON_COL_SYMBOL);
-		accessory.types.update_aliases(keys.PRICE, types._CONFIG_IB_DB_COMMON_COL_PRICE);
+		accessory.types.update_aliases(keys.SYMBOL, types._CONFIG_IB_DB_COMMON_FIELD_SYMBOL);
+		accessory.types.update_aliases(keys.PRICE, types._CONFIG_IB_DB_COMMON_FIELD_PRICE);
 
-		accessory.types.update_aliases(keys.TIME, types._CONFIG_IB_DB_MARKET_COL_TIME);
-		accessory.types.update_aliases(keys.OPEN, types._CONFIG_IB_DB_MARKET_COL_OPEN);
-		accessory.types.update_aliases(keys.CLOSE, types._CONFIG_IB_DB_MARKET_COL_CLOSE);
-		accessory.types.update_aliases(keys.LOW, types._CONFIG_IB_DB_MARKET_COL_LOW);
-		accessory.types.update_aliases(keys.HIGH, types._CONFIG_IB_DB_MARKET_COL_HIGH);
-		accessory.types.update_aliases(keys.VOLUME, types._CONFIG_IB_DB_MARKET_COL_VOLUME);		
-		accessory.types.update_aliases(keys.ASK, types._CONFIG_IB_DB_MARKET_COL_ASK);
-		accessory.types.update_aliases(keys.ASK_SIZE, types._CONFIG_IB_DB_MARKET_COL_ASK_SIZE);
-		accessory.types.update_aliases(keys.BID, types._CONFIG_IB_DB_MARKET_COL_BID);
-		accessory.types.update_aliases(keys.BID_SIZE, types._CONFIG_IB_DB_MARKET_COL_BID_SIZE);
+		accessory.types.update_aliases(keys.TIME, types._CONFIG_IB_DB_MARKET_FIELD_TIME);
+		accessory.types.update_aliases(keys.OPEN, types._CONFIG_IB_DB_MARKET_FIELD_OPEN);
+		accessory.types.update_aliases(keys.CLOSE, types._CONFIG_IB_DB_MARKET_FIELD_CLOSE);
+		accessory.types.update_aliases(keys.LOW, types._CONFIG_IB_DB_MARKET_FIELD_LOW);
+		accessory.types.update_aliases(keys.HIGH, types._CONFIG_IB_DB_MARKET_FIELD_HIGH);
+		accessory.types.update_aliases(keys.VOLUME, types._CONFIG_IB_DB_MARKET_FIELD_VOLUME);		
+		accessory.types.update_aliases(keys.ASK, types._CONFIG_IB_DB_MARKET_FIELD_ASK);
+		accessory.types.update_aliases(keys.ASK_SIZE, types._CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE);
+		accessory.types.update_aliases(keys.BID, types._CONFIG_IB_DB_MARKET_FIELD_BID);
+		accessory.types.update_aliases(keys.BID_SIZE, types._CONFIG_IB_DB_MARKET_FIELD_BID_SIZE);
 	}
 
 	private static void load_config()
@@ -149,19 +149,19 @@ public class _ini
 	{
 		String type = types._CONFIG_IB_DB;
 
-		accessory._config.update_ini(type, types._CONFIG_IB_DB_COMMON_COL_SYMBOL, defaults.DB_COMMON_COL_SYMBOL);
-		accessory._config.update_ini(type, types._CONFIG_IB_DB_COMMON_COL_PRICE, defaults.DB_COMMON_COL_PRICE);
+		accessory._config.update_ini(type, types._CONFIG_IB_DB_COMMON_FIELD_SYMBOL, defaults.DB_COMMON_FIELD_SYMBOL);
+		accessory._config.update_ini(type, types._CONFIG_IB_DB_COMMON_FIELD_PRICE, defaults.DB_COMMON_FIELD_PRICE);
 
-		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_TABLE, defaults.DB_MARKET_TABLE);
-		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_COL_TIME, defaults.DB_MARKET_COL_TIME);
-		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_COL_OPEN, defaults.DB_MARKET_COL_OPEN);
-		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_COL_CLOSE, defaults.DB_MARKET_COL_CLOSE);
-		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_COL_LOW, defaults.DB_MARKET_COL_LOW);
-		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_COL_HIGH, defaults.DB_MARKET_COL_HIGH);
-		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_COL_VOLUME, defaults.DB_MARKET_COL_VOLUME);
-		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_COL_ASK, defaults.DB_MARKET_COL_ASK);
-		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_COL_ASK_SIZE, defaults.DB_MARKET_COL_ASK_SIZE);
-		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_COL_BID, defaults.DB_MARKET_COL_BID);
-		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_COL_BID_SIZE, defaults.DB_MARKET_COL_BID_SIZE);
+		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_SOURCE, defaults.DB_MARKET_SOURCE);
+		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_TIME, defaults.DB_MARKET_FIELD_TIME);
+		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_OPEN, defaults.DB_MARKET_FIELD_OPEN);
+		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_CLOSE, defaults.DB_MARKET_FIELD_CLOSE);
+		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_LOW, defaults.DB_MARKET_FIELD_LOW);
+		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_HIGH, defaults.DB_MARKET_FIELD_HIGH);
+		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_VOLUME, defaults.DB_MARKET_FIELD_VOLUME);
+		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_ASK, defaults.DB_MARKET_FIELD_ASK);
+		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE, defaults.DB_MARKET_FIELD_ASK_SIZE);
+		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_BID, defaults.DB_MARKET_FIELD_BID);
+		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_BID_SIZE, defaults.DB_MARKET_FIELD_BID_SIZE);
 	}
 }

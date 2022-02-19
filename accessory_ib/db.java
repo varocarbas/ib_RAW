@@ -15,8 +15,8 @@ public class db
 	{
 		HashMap<String, String> info = null;
 
-		String type = types._CONFIG_IB_DB_MARKET_TABLE;
-		String table = get_table(type);
+		String source = types._CONFIG_IB_DB_MARKET_SOURCE;
+		String table = get_table(source);
 		if (!strings.is_ok(table) || !strings.is_ok(symbol_)) return info;	
 
 		String where = get_where_symbol(symbol_);
@@ -31,10 +31,10 @@ public class db
 	{
 		if (!strings.is_ok(key_) || !strings.is_ok(symbol_)) return false;
 
-		HashMap<String, String> vals = get_table_vals_market(key_, val_);
+		HashMap<String, String> vals = adapt_inputs_market(key_, val_);
 		if (!arrays.is_ok(vals)) return false;
 		
-		vals.put(get_col(types._CONFIG_IB_DB_MARKET_TABLE, keys.TIME), common.get_market_time());
+		vals.put(get_col(types._CONFIG_IB_DB_MARKET_SOURCE, keys.TIME), common.get_market_time());
 
 		return update_market(vals, symbol_);
 	}
@@ -45,7 +45,7 @@ public class db
 
 		String where = get_where_symbol(symbol_);
 
-		return update(types._CONFIG_IB_DB_MARKET_TABLE, vals_, where);
+		return update(types._CONFIG_IB_DB_MARKET_SOURCE, vals_, where);
 	}
 
 	public static boolean insert_market(HashMap<String, String> vals_, String symbol_)
@@ -53,14 +53,14 @@ public class db
 		if (!arrays.is_ok(vals_) || !strings.is_ok(symbol_)) return false;
 
 		HashMap<String, String> vals = new HashMap<String, String>(vals_);
-		vals.put(get_col(types._CONFIG_IB_DB_MARKET_TABLE, keys.SYMBOL), symbol_);
+		vals.put(get_col(types._CONFIG_IB_DB_MARKET_SOURCE, keys.SYMBOL), symbol_);
 
-		return insert(types._CONFIG_IB_DB_MARKET_TABLE, vals);
+		return insert(types._CONFIG_IB_DB_MARKET_SOURCE, vals);
 	}
 	
-	private static <x> HashMap<String, String> get_table_vals_market(String key_, double val_)
+	private static <x> HashMap<String, String> adapt_inputs_market(String key_, double val_)
 	{
-		return accessory.db.get_table_vals(types._CONFIG_IB_DB_MARKET_TABLE, null, key_, val_);
+		return accessory.db.adapt_inputs(types._CONFIG_IB_DB_MARKET_SOURCE, null, key_, val_);
 	}
 	
 	public static HashMap<String, String> get_default_vals()
@@ -68,19 +68,19 @@ public class db
 		HashMap<String, String> vals = new HashMap<String, String>();
 
 		String zero = strings.to_string(0.0);
-		String table = types._CONFIG_IB_DB_MARKET_TABLE;
+		String source = types._CONFIG_IB_DB_MARKET_SOURCE;
 		
-		vals.put(get_col(table, keys.TIME), "00:00");
-		vals.put(get_col(table, keys.PRICE), zero);
-		vals.put(get_col(table, keys.VOLUME), zero);
-		vals.put(get_col(table, keys.OPEN), zero);
-		vals.put(get_col(table, keys.CLOSE), zero);
-		vals.put(get_col(table, keys.HIGH), zero);
-		vals.put(get_col(table, keys.LOW), zero);
-		vals.put(get_col(table, keys.BID), zero);
-		vals.put(get_col(table, keys.BID_SIZE), zero);
-		vals.put(get_col(table, keys.ASK), zero);
-		vals.put(get_col(table, keys.ASK_SIZE), zero);
+		vals.put(get_col(source, keys.TIME), "00:00");
+		vals.put(get_col(source, keys.PRICE), zero);
+		vals.put(get_col(source, keys.VOLUME), zero);
+		vals.put(get_col(source, keys.OPEN), zero);
+		vals.put(get_col(source, keys.CLOSE), zero);
+		vals.put(get_col(source, keys.HIGH), zero);
+		vals.put(get_col(source, keys.LOW), zero);
+		vals.put(get_col(source, keys.BID), zero);
+		vals.put(get_col(source, keys.BID_SIZE), zero);
+		vals.put(get_col(source, keys.ASK), zero);
+		vals.put(get_col(source, keys.ASK_SIZE), zero);
 
 		return vals;
 	}
@@ -89,15 +89,15 @@ public class db
 	{
 		if (!strings.is_ok(symbol_)) return strings.DEFAULT;
 
-		String table = types._CONFIG_IB_DB_MARKET_TABLE;
-		String col = types._CONFIG_IB_DB_COMMON_COL_SYMBOL;
+		String source = types._CONFIG_IB_DB_MARKET_SOURCE;
+		String field = types._CONFIG_IB_DB_COMMON_FIELD_SYMBOL;
 		
-		return (get_variable(get_col(table, col)) + "=" + get_value(symbol_));
+		return (get_variable(get_col(source, field)) + "=" + get_value(symbol_));
 	}
 
-	public static boolean update(String type_, HashMap<String, String> vals_, String where_)
+	public static boolean update(String source_, HashMap<String, String> vals_, String where_)
 	{
-		String table = get_table(type_);
+		String table = get_table(source_);
 		if (!strings.is_ok(table)) return false;
 
 		accessory.db.update(table, vals_, where_);
@@ -105,9 +105,9 @@ public class db
 		return accessory.db._is_ok;
 	}
 
-	private static boolean insert(String type_, HashMap<String, String> vals_)
+	private static boolean insert(String source_, HashMap<String, String> vals_)
 	{
-		String table = get_table(type_);
+		String table = get_table(source_);
 		if (!strings.is_ok(table)) return false;
 
 		accessory.db.insert(table, vals_);
@@ -115,14 +115,14 @@ public class db
 		return accessory.db._is_ok;
 	}
 	
-	private static String get_table(String table_)
+	private static String get_table(String source_)
 	{
-		return accessory.db.get_table_name(table_);
+		return accessory.db.get_table(source_);
 	}
 	
-	private static String get_col(String table_, String col_)
+	private static String get_col(String source_, String field_)
 	{
-		return accessory.db.get_col_name(table_, col_);
+		return accessory.db.get_col(source_, field_);
 	}
 	
 	private static String get_variable(String input_)
