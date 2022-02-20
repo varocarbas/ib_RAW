@@ -38,32 +38,22 @@ public class _ini
 		
 		HashMap<String, field> fields = new HashMap<String, field>(get_common_fields());
 	
-		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_SYMBOL, new field(new data(accessory.types.DATA_STRING, null), null));
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_SYMBOL, new field(new data(accessory.types.DATA_STRING, new size(0.0, 50.0)), null));
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_VOLUME, new field(new data(accessory.types.DATA_DECIMAL, new size(0.0, numbers.MAX_DEC)), null));
 		
-		String[] prices = new String[] 
+		String[] prices = 
 		{
 			types._CONFIG_IB_DB_MARKET_FIELD_OPEN, types._CONFIG_IB_DB_MARKET_FIELD_CLOSE, 
 			types._CONFIG_IB_DB_MARKET_FIELD_LOW, types._CONFIG_IB_DB_MARKET_FIELD_HIGH, 
-			types._CONFIG_IB_DB_MARKET_FIELD_ASK, types._CONFIG_IB_DB_MARKET_FIELD_BID
+			types._CONFIG_IB_DB_MARKET_FIELD_ASK, types._CONFIG_IB_DB_MARKET_FIELD_BID,
+			types._CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE, types._CONFIG_IB_DB_MARKET_FIELD_BID_SIZE
 		};
 		
 		for (String id: prices)
 		{
-			fields.put(id, get_field_prices());
+			fields.put(id, get_default_decimal_field());
 		}
-				
-		String[] sizes = new String[] 
-		{
-			types._CONFIG_IB_DB_MARKET_FIELD_VOLUME, 
-			types._CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE, 
-			types._CONFIG_IB_DB_MARKET_FIELD_BID_SIZE
-		};
-		
-		for (String id: sizes)
-		{
-			fields.put(id, get_field_sizes());
-		}
-				
+								
 		accessory.db.add_source(source, fields);
 	}
 
@@ -73,19 +63,14 @@ public class _ini
 		
 		size temp = new size(0.0, time.get_time_pattern(time.TIME_SHORT).length());
 		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_TIME, new field(new data(accessory.types.DATA_STRING, temp), null));
-		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_PRICE, get_field_prices());
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_PRICE, get_default_decimal_field());
 
 		return fields;
 	}
 
-	private static field get_field_prices()
+	private static field get_default_decimal_field()
 	{
-		return new field(new data(accessory.types.DATA_DECIMAL, new size(0.0, 1000.0)), null);
-	}
-
-	private static field get_field_sizes()
-	{
-		return new field(new data(accessory.types.DATA_DECIMAL, new size(0.0, numbers.MAX_DEC)), null);
+		return new field(new data(accessory.types.DATA_DECIMAL, new size(0.0, 1000000.0)), null);
 	}
 
 	private static void load_aliases()

@@ -43,6 +43,40 @@ public class sync
 		return (Integer[])get(types.SYNC_GET_IDS);
 	}
 
+	public static boolean update(String val_)
+	{
+		return update(strings.to_number_decimal(val_));
+	}
+
+	public static boolean update(double val_)
+	{
+		if (!_type2.equals(types.SYNC_DATA_DECIMAL)) return false;
+
+		_decimal_out = val_;
+
+		return true;
+	}
+
+	public static boolean update(int val_)
+	{
+		boolean is_ok = true;
+
+		if (_type2.equals(types.SYNC_DATA_INTS)) _ints_out.add(val_);
+		else if (_type2.equals(types.SYNC_DATA_INT)) _int_out = val_;
+		else is_ok = false;
+
+		return is_ok;
+	}
+
+	public static boolean update(String key_, String val_)
+	{
+		if (!_type2.equals(types.SYNC_DATA_MISC) || !strings.is_ok(key_)) return false;
+
+		_misc_out.put(key_, val_);
+
+		return true;
+	}
+
 	//Only called when creating a new order, via the corresponding order_info constructor.
 	static int get_next_id()
 	{
@@ -98,40 +132,6 @@ public class sync
 		}
 
 		return output;
-	}
-
-	public static boolean update(String val_)
-	{
-		return update(strings.to_number_decimal(val_));
-	}
-
-	public static boolean update(double val_)
-	{
-		if (!_type2.equals(types.SYNC_DATA_DECIMAL)) return false;
-
-		_decimal_out = val_;
-
-		return true;
-	}
-
-	public static boolean update(int val_)
-	{
-		boolean is_ok = true;
-
-		if (_type2.equals(types.SYNC_DATA_INTS)) _ints_out.add(val_);
-		else if (_type2.equals(types.SYNC_DATA_INT)) _int_out = val_;
-		else is_ok = false;
-
-		return is_ok;
-	}
-
-	public static boolean update(String key_, String val_)
-	{
-		if (!_type2.equals(types.SYNC_DATA_MISC) || !strings.is_ok(key_)) return false;
-
-		_misc_out.put(key_, val_);
-
-		return true;
 	}
 
 	private static String get_data_type(String input_)
