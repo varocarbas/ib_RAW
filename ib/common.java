@@ -3,7 +3,7 @@ package ib;
 import com.ib.client.Contract;
 
 import accessory.strings;
-import accessory.time;
+import accessory.dates;
 import accessory_ib._config;
 import accessory_ib._ini;
 import accessory_ib.types;
@@ -29,7 +29,7 @@ public class common
 
 	public static String get_market_time()
 	{
-		return time.get_current_time(time.TIME_SHORT, 0);
+		return dates.get_current_time(dates.TIME_SHORT, 0);
 	}
 
 	public static String normalise_symbol(String symbol_)

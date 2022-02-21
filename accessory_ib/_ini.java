@@ -7,7 +7,7 @@ import accessory.db;
 import accessory.field;
 import accessory.numbers;
 import accessory.size;
-import accessory.time;
+import accessory.dates;
 
 public class _ini 
 {
@@ -61,7 +61,7 @@ public class _ini
 	{
 		HashMap<String, field> fields = db.get_default_fields();
 		
-		size temp = new size(0.0, time.get_time_pattern(time.TIME_SHORT).length());
+		size temp = new size(0.0, dates.get_time_pattern(dates.TIME_SHORT).length());
 		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_TIME, new field(new data(accessory.types.DATA_STRING, temp), null));
 		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_PRICE, get_default_decimal_field());
 

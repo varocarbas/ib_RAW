@@ -7,7 +7,7 @@ import accessory.arrays;
 import accessory.misc;
 import accessory.numbers;
 import accessory.strings;
-import accessory.time;
+import accessory.dates;
 import accessory_ib._ini;
 import accessory_ib.defaults;
 import accessory_ib.errors;
@@ -203,13 +203,13 @@ public class sync
 	{
 		boolean is_ok = true;
 
-		long start = time.get_elapsed(0);
+		long start = dates.get_elapsed(0);
 
 		while (true)
 		{
 			if (_retrieved) break;
 
-			long elapsed = time.get_elapsed(start);
+			long elapsed = dates.get_elapsed(start);
 			if (!_ignore_max_time && elapsed >= MAX_SECS_RETRIEVE) 
 			{
 				errors.manage(types.ERROR_SYNC_TIME, false);
