@@ -2,8 +2,8 @@ package accessory_ib;
 
 public class keys 
 {
-	public static String START = "start";
-	public static String STOP = "stop";
+	public static String START = accessory.keys.START;
+	public static String STOP = accessory.keys.STOP;
 	public static String TIME = accessory.keys.TIME;
 	public static String SYMBOL = accessory.keys.SYMBOL;
 	public static String PRICE = accessory.keys.PRICE;
