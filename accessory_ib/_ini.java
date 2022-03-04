@@ -32,10 +32,8 @@ public class _ini
 	private static void load_sources_market()
 	{
 		String source = types._CONFIG_IB_DB_MARKET_SOURCE;
-		if (db.source_exists(source)) return;
-		
-		db.add_source_main(source, types._CONFIG_IB_DB);
-		
+		if (db.source_is_ok(source)) return;
+
 		HashMap<String, field> fields = new HashMap<String, field>(get_common_fields());
 	
 		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_SYMBOL, new field(new data(accessory.types.DATA_STRING, new size(0.0, 50.0)), null));
@@ -55,6 +53,8 @@ public class _ini
 		}
 								
 		accessory.db.add_source(source, fields);
+		
+		db.add_source_main(source, types._CONFIG_IB_DB);
 	}
 
 	private static HashMap<String, field> get_common_fields()
