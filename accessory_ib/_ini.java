@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import accessory.data;
 import accessory.db;
-import accessory.field;
+import accessory.db_field;
 import accessory.numbers;
 import accessory.size;
 import accessory.dates;
@@ -34,10 +34,10 @@ public class _ini
 		String source = types._CONFIG_IB_DB_MARKET_SOURCE;
 		if (db.source_is_ok(source)) return;
 
-		HashMap<String, field> fields = new HashMap<String, field>(get_common_fields());
+		HashMap<String, db_field> fields = new HashMap<String, db_field>(get_common_fields());
 	
-		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_SYMBOL, new field(new data(accessory.types.DATA_STRING, new size(0.0, 50.0)), null));
-		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_VOLUME, new field(new data(accessory.types.DATA_DECIMAL, new size(0.0, numbers.MAX_DEC)), null));
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_SYMBOL, new db_field(new data(accessory.types.DATA_STRING, new size(0.0, 50.0)), null));
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_VOLUME, new db_field(new data(accessory.types.DATA_DECIMAL, new size(0.0, numbers.MAX_DEC)), null));
 		
 		String[] prices = 
 		{
@@ -57,20 +57,20 @@ public class _ini
 		db.add_source_main(source, types._CONFIG_IB_DB);
 	}
 
-	private static HashMap<String, field> get_common_fields()
+	private static HashMap<String, db_field> get_common_fields()
 	{
-		HashMap<String, field> fields = db.get_default_fields();
+		HashMap<String, db_field> fields = db.get_default_fields();
 		
 		size temp = new size(0.0, dates.get_time_pattern(dates.TIME_SHORT).length());
-		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_TIME, new field(new data(accessory.types.DATA_STRING, temp), null));
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_TIME, new db_field(new data(accessory.types.DATA_STRING, temp), null));
 		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_PRICE, get_default_decimal_field());
 
 		return fields;
 	}
 
-	private static field get_default_decimal_field()
+	private static db_field get_default_decimal_field()
 	{
-		return new field(new data(accessory.types.DATA_DECIMAL, new size(0.0, 1000000.0)), null);
+		return new db_field(new data(accessory.types.DATA_DECIMAL, new size(0.0, 1000000.0)), null);
 	}
 
 	private static void load_aliases()
