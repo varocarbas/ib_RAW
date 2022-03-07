@@ -21,6 +21,8 @@ public class _ini
 	private static void load_sources()
 	{
 		load_sources_market();
+		
+		load_sources_mains();
 	}
 	
 	private static void load_types()
@@ -36,8 +38,8 @@ public class _ini
 
 		HashMap<String, db_field> fields = new HashMap<String, db_field>(get_common_fields());
 	
-		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_SYMBOL, new db_field(new data(accessory.types.DATA_STRING, new size(0.0, 50.0)), null));
-		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_VOLUME, new db_field(new data(accessory.types.DATA_DECIMAL, new size(0.0, numbers.MAX_DEC)), null));
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_SYMBOL, new db_field(new data(accessory.types.DATA_STRING, new size(0.0, 50.0, 0)), null));
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_VOLUME, new db_field(new data(accessory.types.DATA_DECIMAL, new size(0.0, numbers.MAX_DEC, accessory.defaults.SIZE_DECIMALS)), null));
 		
 		String[] prices = 
 		{
@@ -53,15 +55,18 @@ public class _ini
 		}
 								
 		accessory.db.add_source(source, fields);
-		
-		db.add_source_main(source, types._CONFIG_IB_DB);
 	}
-
+	
+	private static void load_sources_mains()
+	{
+		db.add_source_main(types._CONFIG_IB_DB_MARKET_SOURCE, types._CONFIG_IB_DB);
+	}
+	
 	private static HashMap<String, db_field> get_common_fields()
 	{
 		HashMap<String, db_field> fields = db.get_default_fields();
 		
-		size temp = new size(0.0, dates.get_time_pattern(dates.TIME_SHORT).length());
+		size temp = new size(0.0, dates.get_time_pattern(dates.TIME_SHORT).length(), 0);
 		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_TIME, new db_field(new data(accessory.types.DATA_STRING, temp), null));
 		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_PRICE, get_default_decimal_field());
 
@@ -70,7 +75,7 @@ public class _ini
 
 	private static db_field get_default_decimal_field()
 	{
-		return new db_field(new data(accessory.types.DATA_DECIMAL, new size(0.0, 1000000.0)), null);
+		return new db_field(new data(accessory.types.DATA_DECIMAL, new size(0.0, 1000000.0, accessory.defaults.SIZE_DECIMALS)), null);
 	}
 
 	private static void load_aliases()
@@ -96,7 +101,7 @@ public class _ini
 		load_config_conn();
 		load_config_async();
 		load_config_order();
-		load_config_db();		
+		load_config_sources();		
 	}
 
 	private static void load_config_root()
@@ -130,7 +135,12 @@ public class _ini
 		accessory._config.update_ini(type, types._CONFIG_IB_ORDER_QUANTITY_INT, defaults.ORDER_QUANTITY_INT);
 	}
 
-	private static void load_config_db()
+	private static void load_config_sources()
+	{
+		load_config_sources_db();
+	}
+	
+	private static void load_config_sources_db()
 	{
 		String type = types._CONFIG_IB_DB;
 
@@ -148,5 +158,7 @@ public class _ini
 		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE, defaults.DB_MARKET_FIELD_ASK_SIZE);
 		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_BID, defaults.DB_MARKET_FIELD_BID);
 		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_BID_SIZE, defaults.DB_MARKET_FIELD_BID_SIZE);
+	
+		accessory._ini.load_config_default_fields(type);
 	}
 }
