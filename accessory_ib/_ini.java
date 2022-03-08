@@ -159,6 +159,6 @@ public class _ini
 		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_BID, defaults.DB_MARKET_FIELD_BID);
 		accessory._config.update_ini(type, types._CONFIG_IB_DB_MARKET_FIELD_BID_SIZE, defaults.DB_MARKET_FIELD_BID_SIZE);
 	
-		accessory._ini.load_config_default_fields(type);
+		accessory.db_ini.load_config_default_fields(type);
 	}
 }
