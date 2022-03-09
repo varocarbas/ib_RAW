@@ -2,7 +2,7 @@ package accessory_ib;
 
 public class _config 
 {	
-	static { _ini.load(); }
+	static { ini.load(); }
 
 	public static String get_root(String key_)
 	{

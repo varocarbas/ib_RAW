@@ -39,5 +39,5 @@ public class defaults
 	public static final String DB_MARKET_FIELD_HALTED = keys.HALTED;
 	public static final String DB_MARKET_FIELD_HALTED_TOT = keys.HALTED_TOT;
 
-	static { _ini.load(); }
+	static { ini.load(); }
 }

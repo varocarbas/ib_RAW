@@ -10,7 +10,7 @@ import accessory.misc;
 import accessory.numbers;
 import accessory.strings;
 import accessory_ib._config;
-import accessory_ib._ini;
+import accessory_ib.ini;
 import accessory_ib.db;
 import accessory_ib.keys;
 import accessory_ib.types;
@@ -30,7 +30,7 @@ public class async
 	private static int MIN_ID = 1;
 	private static int MAX_ID = 2500;
 
-	static { _ini.load(); }
+	static { ini.load(); }
 
 	public static boolean snapshot_start(String symbol_, int data_)
 	{

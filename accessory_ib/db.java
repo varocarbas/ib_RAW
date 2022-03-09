@@ -10,7 +10,7 @@ import ib.common;
 
 public class db 
 {	
-	static { _ini.load(); }
+	static { ini.load(); }
 
 	public static HashMap<String, String> get_market_info(String symbol_)
 	{

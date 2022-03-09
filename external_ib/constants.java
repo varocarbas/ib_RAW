@@ -1,7 +1,7 @@
 package external_ib;
 
 import accessory.arrays;
-import accessory_ib._ini;
+import accessory_ib.ini;
 
 public class constants 
 {
@@ -69,7 +69,7 @@ public class constants
 	//------
 	//------------
 
-	static { _ini.load(); }
+	static { ini.load(); }
 	
 	public static boolean is_warning(int code_)
 	{

@@ -25,5 +25,5 @@ public class keys
 	public static String ORDER_ID = "order_id";
 	public static String EXEC_ID = "exec_id";
 	
-	static { _ini.load(); }
+	static { ini.load(); }
 }

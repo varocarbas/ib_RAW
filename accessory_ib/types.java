@@ -96,7 +96,7 @@ public class types
 	//------
 	//---------------------------
 
-	static { _ini.load(); }
+	static { ini.load(); }
 
 	public static String check_conn(String subtype_, String add_remove_)
 	{
