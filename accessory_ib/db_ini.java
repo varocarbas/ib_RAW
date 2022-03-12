@@ -104,8 +104,8 @@ class db_ini
 
 		HashMap<String, db_field> fields = accessory.db.get_default_fields();
 	
-		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_SYMBOL, new db_field(new data(accessory.types.DATA_STRING, new size(0.0, 50.0, 0)), null));
-		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_VOLUME, new db_field(new data(accessory.types.DATA_DECIMAL, new size(0.0, numbers.MAX_DEC, accessory.defaults.SIZE_DECIMALS)), null));
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_SYMBOL, new db_field(new data(accessory.types.DATA_STRING, new size(0.0, 50.0, 0)), null, null));
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_VOLUME, new db_field(new data(accessory.types.DATA_DECIMAL, new size(0.0, numbers.MAX_DEC, accessory.defaults.SIZE_DECIMALS)), null, null));
 		
 		String[] ids = 
 		{
@@ -125,6 +125,6 @@ class db_ini
 	
 	private static db_field get_default_decimal_field()
 	{
-		return new db_field(new data(accessory.types.DATA_DECIMAL, new size(0.0, 1000000.0, accessory.defaults.SIZE_DECIMALS)), null);
+		return new db_field(new data(accessory.types.DATA_DECIMAL, new size(0.0, 1000000.0, accessory.defaults.SIZE_DECIMALS)), null, null);
 	}
 }

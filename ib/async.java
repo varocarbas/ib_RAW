@@ -216,7 +216,7 @@ public class async
 		}
 		else if (storage.equals(types._CONFIG_IB_ASYNC_STORAGE_MEMORY)) 
 		{
-			String val = strings.from_number_decimal(val_);
+			String val = strings.to_string(val_);
 			
 			market_check_memory(symbol_);
 
