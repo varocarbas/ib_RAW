@@ -41,7 +41,7 @@ public class errors
 	{
 		String message = strings.DEFAULT;
 
-		String heading = accessory.keys.ERROR + accessory.types.SEPARATOR;
+		String heading = "error" + accessory.types.SEPARATOR;
 
 		if (strings.contains_start(heading + types.CONN, type_, false)) message = get_message_conn(type_);
 		else if (strings.contains_start(heading + types.ORDER, type_, false)) message = get_message_order(type_);
