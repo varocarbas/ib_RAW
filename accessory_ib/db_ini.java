@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import accessory.data;
+import accessory.db;
 import accessory.db_field;
 import accessory.numbers;
 import accessory.size;
@@ -14,6 +15,14 @@ class db_ini
 	{
 		load_sources();
 		load_aliases_types();
+	}
+
+	private static void load_sources()
+	{
+		HashMap<String, String> source_mains = new HashMap<String, String>();
+		source_mains.put(types._CONFIG_IB_DB_MARKET_SOURCE, types._CONFIG_IB_DB);
+		
+		load_sources_all(source_mains);
 	}
 	
 	//Method including the aliases and types more closely related to the DB setup.
@@ -82,30 +91,31 @@ class db_ini
 		accessory.db_ini.load_config_sources_default_fields(main_);
 	}
 	
-	private static void load_sources()
-	{
-		HashMap<String, String> source_mains = new HashMap<String, String>();
-		source_mains.put(types._CONFIG_IB_DB_MARKET_SOURCE, types._CONFIG_IB_DB);
-		
-		for (Entry<String, String> item: source_mains.entrySet())
+	private static void load_sources_all(HashMap<String, String> source_mains_)
+	{		
+		for (Entry<String, String> item: source_mains_.entrySet())
 		{
 			String source = item.getKey();
 			String main = item.getValue();
 		
-			if (source.equals(types._CONFIG_IB_DB_MARKET_SOURCE)) load_sources_market(source);
-			
-			accessory.db.add_source_main(source, main);
+			load_sources_source(source);			
+			db.add_source_main(source, main);
 		}
 	}
 	
-	private static void load_sources_market(String source_)
+	private static void load_sources_source(String source_)
+	{
+		if (source_.equals(types._CONFIG_IB_DB_MARKET_SOURCE)) load_sources_source_market(source_);
+	}
+	
+	private static void load_sources_source_market(String source_)
 	{
 		if (accessory.db.source_is_ok(source_)) return;
 
 		HashMap<String, db_field> fields = accessory.db.get_default_fields();
 	
-		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_SYMBOL, new db_field(new data(accessory.types.DATA_STRING, new size(0.0, 50.0, 0)), null, null));
-		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_VOLUME, new db_field(new data(accessory.types.DATA_DECIMAL, new size(0.0, numbers.MAX_DEC, accessory.defaults.SIZE_DECIMALS)), null, null));
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_SYMBOL, new db_field(accessory.types.DATA_STRING, 50, 0));
+		fields.put(types._CONFIG_IB_DB_MARKET_FIELD_VOLUME, new db_field(accessory.types.DATA_DECIMAL, 10, accessory.defaults.SIZE_DECIMALS));
 		
 		String[] ids = 
 		{
@@ -125,6 +135,6 @@ class db_ini
 	
 	private static db_field get_default_decimal_field()
 	{
-		return new db_field(new data(accessory.types.DATA_DECIMAL, new size(0.0, 1000000.0, accessory.defaults.SIZE_DECIMALS)), null, null);
+		return new db_field(accessory.types.DATA_DECIMAL, 10, accessory.defaults.SIZE_DECIMALS);
 	}
 }
