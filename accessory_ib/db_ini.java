@@ -3,18 +3,15 @@ package accessory_ib;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import accessory.data;
 import accessory.db;
 import accessory.db_field;
-import accessory.numbers;
-import accessory.size;
 
 class db_ini 
 {
 	public static void load() 
 	{
-		load_sources();
 		load_aliases_types();
+		load_sources();
 	}
 
 	private static void load_sources()
