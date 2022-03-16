@@ -2,7 +2,6 @@ package accessory_ib;
 
 import java.util.HashMap;
 
-import accessory.keys;
 import accessory.misc;
 import accessory.strings;
 
@@ -19,7 +18,7 @@ public class errors
 		if (!strings.is_ok(message)) return;
 
 		HashMap<String, String> info = new HashMap<String, String>();
-		info.put(keys.MESSAGE, message);
+		info.put("message", message);
 
 		String key = accessory.types._CONFIG_LOGS_OUT_FILE;
 		boolean cur_val = strings.to_boolean(accessory._config.get_logs(key));
