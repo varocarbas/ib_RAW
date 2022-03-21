@@ -1,6 +1,6 @@
 # ib
 
-**CURRENTLY UNDER DEVELOPMENT**
+**--- CURRENTLY UNDER DEVELOPMENT ---**
 
 Library easing the automated communication with Interactive Brokers (IB).
 
