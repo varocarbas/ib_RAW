@@ -16,7 +16,7 @@ public class db
 	{
 		HashMap<String, String> info = null;
 
-		String source = types._CONFIG_IB_DB_MARKET_SOURCE;
+		String source = _types.CONFIG_IB_DB_MARKET_SOURCE;
 		if (!accessory.db.source_is_ok(source)) return info;	
 
 		ArrayList<HashMap<String, String>> temp = accessory.db.select(source, null, get_where_symbol(symbol_, null), 1, null);
@@ -31,14 +31,14 @@ public class db
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		vals.put(key_, val_);
-		vals.put(keys.TIME, common.get_market_time());
+		vals.put(_keys.TIME, common.get_market_time());
 
 		return update_market(vals, symbol_);
 	}
 
 	private static boolean update_market(HashMap<String, Object> vals_, String symbol_)
 	{
-		accessory.db.update(types._CONFIG_IB_DB_MARKET_SOURCE, vals_, get_where_symbol(symbol_, null));
+		accessory.db.update(_types.CONFIG_IB_DB_MARKET_SOURCE, vals_, get_where_symbol(symbol_, null));
 
 		return accessory.db._is_ok;
 	}
@@ -48,9 +48,9 @@ public class db
 		if (!arrays.is_ok(vals_) || !strings.is_ok(symbol_)) return false;
 
 		HashMap<String, String> vals = new HashMap<String, String>(vals_);
-		vals.put(get_col(types._CONFIG_IB_DB_MARKET_SOURCE, keys.SYMBOL), symbol_);
+		vals.put(get_col(_types.CONFIG_IB_DB_MARKET_SOURCE, _keys.SYMBOL), symbol_);
 
-		return insert(types._CONFIG_IB_DB_MARKET_SOURCE, vals);
+		return insert(_types.CONFIG_IB_DB_MARKET_SOURCE, vals);
 	}
 
 	public static HashMap<String, String> get_default_vals()
@@ -58,19 +58,19 @@ public class db
 		HashMap<String, String> vals = new HashMap<String, String>();
 
 		String zero = strings.to_string(0.0);
-		String source = types._CONFIG_IB_DB_MARKET_SOURCE;
+		String source = _types.CONFIG_IB_DB_MARKET_SOURCE;
 
-		vals.put(get_col(source, keys.TIME), "00:00");
-		vals.put(get_col(source, keys.PRICE), zero);
-		vals.put(get_col(source, keys.VOLUME), zero);
-		vals.put(get_col(source, keys.OPEN), zero);
-		vals.put(get_col(source, keys.CLOSE), zero);
-		vals.put(get_col(source, keys.HIGH), zero);
-		vals.put(get_col(source, keys.LOW), zero);
-		vals.put(get_col(source, keys.BID), zero);
-		vals.put(get_col(source, keys.BID_SIZE), zero);
-		vals.put(get_col(source, keys.ASK), zero);
-		vals.put(get_col(source, keys.ASK_SIZE), zero);
+		vals.put(get_col(source, _keys.TIME), "00:00");
+		vals.put(get_col(source, _keys.PRICE), zero);
+		vals.put(get_col(source, _keys.VOLUME), zero);
+		vals.put(get_col(source, _keys.OPEN), zero);
+		vals.put(get_col(source, _keys.CLOSE), zero);
+		vals.put(get_col(source, _keys.HIGH), zero);
+		vals.put(get_col(source, _keys.LOW), zero);
+		vals.put(get_col(source, _keys.BID), zero);
+		vals.put(get_col(source, _keys.BID_SIZE), zero);
+		vals.put(get_col(source, _keys.ASK), zero);
+		vals.put(get_col(source, _keys.ASK_SIZE), zero);
 
 		return vals;
 	}
@@ -85,8 +85,8 @@ public class db
 		(
 			new db_where
 			(
-				types._CONFIG_IB_DB_MARKET_SOURCE, 
-				types._CONFIG_IB_DB_COMMON_FIELD_SYMBOL, symbol_
+				_types.CONFIG_IB_DB_MARKET_SOURCE, 
+				_types.CONFIG_IB_DB_COMMON_FIELD_SYMBOL, symbol_
 			)
 		);
 

@@ -4,9 +4,9 @@ import com.ib.client.Contract;
 
 import accessory.strings;
 import accessory.dates;
-import accessory_ib._config;
+import accessory_ib.config;
 import accessory_ib.ini;
-import accessory_ib.types;
+import accessory_ib._types;
 
 public class common 
 {
@@ -20,7 +20,7 @@ public class common
 
 		contract.symbol(symbol_);
 		contract.secType("STK");
-		contract.currency(_config.get_root(types._CONFIG_IB_CURRENCY));
+		contract.currency(config.get_root(_types.CONFIG_IB_CURRENCY));
 		contract.exchange("SMART");	
 		contract.primaryExch("ISLAND");
 
@@ -29,7 +29,7 @@ public class common
 
 	public static String get_market_time()
 	{
-		return dates.get_current_time(dates.TIME_SHORT, 0);
+		return dates.get_current_time(dates.FORMAT_TIME_SHORT, 0);
 	}
 
 	public static String normalise_symbol(String symbol_)

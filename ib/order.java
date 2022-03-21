@@ -2,7 +2,7 @@ package ib;
 
 import accessory.numbers;
 import accessory.strings;
-import accessory_ib.types;
+import accessory_ib._types;
 
 public class order 
 {
@@ -60,6 +60,6 @@ public class order
 
 	private static String check_type(String type_)
 	{
-		return types.check_order_place(type_);
+		return _types.check_order_place(type_);
 	}
 }

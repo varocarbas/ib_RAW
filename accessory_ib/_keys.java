@@ -1,6 +1,6 @@
 package accessory_ib;
 
-public class keys 
+public class _keys 
 {
 	public static String START = "start";
 	public static String STOP = "stop";
@@ -24,6 +24,7 @@ public class keys
 	public static String FEES = "fees";
 	public static String ORDER_ID = "order_id";
 	public static String EXEC_ID = "exec_id";
-	
-	static { ini.load(); }
+
+	//Method meant to force this class to be loaded when required (e.g., when ini.load() is called).
+	public static void load() { } 
 }

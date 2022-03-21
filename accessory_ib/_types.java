@@ -3,7 +3,7 @@ package accessory_ib;
 import accessory.arrays;
 import accessory.strings;
 
-public class types
+public class _types
 {
 	//------ To be synced with get_all_subtypes().
 
@@ -12,41 +12,41 @@ public class types
 	//Note for DB types: the sources/fields are the types/ids, constant, used in most of the code. 
 	//The tables/cols are the values, variable, only used when performing the corresponding query.
 
-	public static final String _CONFIG_IB = "_config_ib";
-	public static final String _CONFIG_IB_CURRENCY = "_config_ib_currency";
+	public static final String CONFIG_IB = "config_ib";
+	public static final String CONFIG_IB_CURRENCY = "config_ib_currency";
 
-	public static final String _CONFIG_IB_CONN = "_config_ib_conn";
-	public static final String _CONFIG_IB_CONN_TYPE = "_config_ib_conn_type";
+	public static final String CONFIG_IB_CONN = "config_ib_conn";
+	public static final String CONFIG_IB_CONN_TYPE = "config_ib_conn_type";
 
-	public static final String _CONFIG_IB_ASYNC = "_config_ib_async";
-	public static final String _CONFIG_IB_ASYNC_SNAPSHOT_QUICK = "_config_ib_async_snapshot_quick";
-	public static final String _CONFIG_IB_ASYNC_SNAPSHOT_CONSTANT = "_config_ib_async_snapshot_constant";
-	public static final String _CONFIG_IB_ASYNC_STORAGE = "_config_ib_async_storage";
-	public static final String _CONFIG_IB_ASYNC_STORAGE_MEMORY = "_config_ib_async_storage_memory";
-	public static final String _CONFIG_IB_ASYNC_STORAGE_DB = "_config_ib_async_storage_db";
+	public static final String CONFIG_IB_ASYNC = "config_ib_async";
+	public static final String CONFIG_IB_ASYNC_SNAPSHOT_QUICK = "config_ib_async_snapshot_quick";
+	public static final String CONFIG_IB_ASYNC_SNAPSHOT_CONSTANT = "config_ib_async_snapshot_constant";
+	public static final String CONFIG_IB_ASYNC_STORAGE = "config_ib_async_storage";
+	public static final String CONFIG_IB_ASYNC_STORAGE_MEMORY = "config_ib_async_storage_memory";
+	public static final String CONFIG_IB_ASYNC_STORAGE_DB = "config_ib_async_storage_db";
 
-	public static final String _CONFIG_IB_ORDER = "_config_ib_order";
-	public static final String _CONFIG_IB_ORDER_TIF = "_config_ib_order_tif";
-	public static final String _CONFIG_IB_ORDER_QUANTITY_INT = "_config_ib_order_quantity_int";
+	public static final String CONFIG_IB_ORDER = "config_ib_order";
+	public static final String CONFIG_IB_ORDER_TIF = "config_ib_order_tif";
+	public static final String CONFIG_IB_ORDER_QUANTITY_INT = "config_ib_order_quantity_int";
 
-	public static final String _CONFIG_IB_DB = "_config_ib_db";
-	public static final String _CONFIG_IB_DB_COMMON = "_config_ib_db_common";
-	public static final String _CONFIG_IB_DB_COMMON_FIELD_SYMBOL = "_config_ib_db_common_field_symbol";
-	public static final String _CONFIG_IB_DB_COMMON_FIELD_PRICE = "_config_ib_db_common_field_price";
-	public static final String _CONFIG_IB_DB_MARKET = "_config_ib_db_market";
-	public static final String _CONFIG_IB_DB_MARKET_SOURCE = "_config_ib_db_market_source";
-	public static final String _CONFIG_IB_DB_MARKET_FIELD_TIME = "_config_ib_db_market_field_time";
-	public static final String _CONFIG_IB_DB_MARKET_FIELD_SYMBOL = _CONFIG_IB_DB_COMMON_FIELD_SYMBOL;
-	public static final String _CONFIG_IB_DB_MARKET_FIELD_PRICE = _CONFIG_IB_DB_COMMON_FIELD_PRICE;
-	public static final String _CONFIG_IB_DB_MARKET_FIELD_OPEN = "_config_ib_db_market_field_open";
-	public static final String _CONFIG_IB_DB_MARKET_FIELD_CLOSE = "_config_ib_db_market_field_close";
-	public static final String _CONFIG_IB_DB_MARKET_FIELD_LOW = "_config_ib_db_market_field_low";
-	public static final String _CONFIG_IB_DB_MARKET_FIELD_HIGH = "_config_ib_db_market_field_high";
-	public static final String _CONFIG_IB_DB_MARKET_FIELD_VOLUME = "_config_ib_db_market_field_volume";
-	public static final String _CONFIG_IB_DB_MARKET_FIELD_ASK = "_config_ib_db_market_field_ask";
-	public static final String _CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE = "_config_ib_db_market_field_ask_size";
-	public static final String _CONFIG_IB_DB_MARKET_FIELD_BID = "_config_ib_db_market_field_bid";
-	public static final String _CONFIG_IB_DB_MARKET_FIELD_BID_SIZE = "_config_ib_db_market_field_bid_size";
+	public static final String CONFIG_IB_DB = "config_ib_db";
+	public static final String CONFIG_IB_DB_COMMON = "config_ib_db_common";
+	public static final String CONFIG_IB_DB_COMMON_FIELD_SYMBOL = "config_ib_db_common_field_symbol";
+	public static final String CONFIG_IB_DB_COMMON_FIELD_PRICE = "config_ib_db_common_field_price";
+	public static final String CONFIG_IB_DB_MARKET = "config_ib_db_market";
+	public static final String CONFIG_IB_DB_MARKET_SOURCE = "config_ib_db_market_source";
+	public static final String CONFIG_IB_DB_MARKET_FIELD_TIME = "config_ib_db_market_field_time";
+	public static final String CONFIG_IB_DB_MARKET_FIELD_SYMBOL = CONFIG_IB_DB_COMMON_FIELD_SYMBOL;
+	public static final String CONFIG_IB_DB_MARKET_FIELD_PRICE = CONFIG_IB_DB_COMMON_FIELD_PRICE;
+	public static final String CONFIG_IB_DB_MARKET_FIELD_OPEN = "config_ib_db_market_field_open";
+	public static final String CONFIG_IB_DB_MARKET_FIELD_CLOSE = "config_ib_db_market_field_close";
+	public static final String CONFIG_IB_DB_MARKET_FIELD_LOW = "config_ib_db_market_field_low";
+	public static final String CONFIG_IB_DB_MARKET_FIELD_HIGH = "config_ib_db_market_field_high";
+	public static final String CONFIG_IB_DB_MARKET_FIELD_VOLUME = "config_ib_db_market_field_volume";
+	public static final String CONFIG_IB_DB_MARKET_FIELD_ASK = "config_ib_db_market_field_ask";
+	public static final String CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE = "config_ib_db_market_field_ask_size";
+	public static final String CONFIG_IB_DB_MARKET_FIELD_BID = "config_ib_db_market_field_bid";
+	public static final String CONFIG_IB_DB_MARKET_FIELD_BID_SIZE = "config_ib_db_market_field_bid_size";
 	//------
 
 	public static final String CONN = "conn";
@@ -96,21 +96,22 @@ public class types
 	//------
 	//---------------------------
 
-	static { ini.load(); }
+	//Method meant to force this class to be loaded when required (e.g., when ini.load() is called).
+	public static void load() { } 
 
 	public static String check_conn(String subtype_, String add_remove_)
 	{
-		return accessory.types.check_subtype(subtype_, get_subtypes(CONN), null, null);
+		return accessory._types.check_subtype(subtype_, get_subtypes(CONN), null, null);
 	}
 
 	public static String check_async(String subtype_)
 	{
-		return accessory.types.check_subtype(subtype_, get_subtypes(ASYNC), null, null);
+		return accessory._types.check_subtype(subtype_, get_subtypes(ASYNC), null, null);
 	}
 
 	public static String check_sync(String subtype_, boolean is_data_)
 	{
-		return accessory.types.check_subtype(subtype_, get_subtypes_sync(is_data_), null, null);
+		return accessory._types.check_subtype(subtype_, get_subtypes_sync(is_data_), null, null);
 	}
 
 	public static String[] get_subtypes_sync(boolean is_data_)
@@ -125,27 +126,27 @@ public class types
 
 	public static String check_order(String subtype_)
 	{
-		return accessory.types.check_subtype(subtype_, get_subtypes(types.ORDER), null, null);
+		return accessory._types.check_subtype(subtype_, get_subtypes(_types.ORDER), null, null);
 	}
 
 	public static String check_order_place(String subtype_)
 	{
-		return accessory.types.check_subtype(subtype_, get_subtypes(types.ORDER_PLACE), null, null);
+		return accessory._types.check_subtype(subtype_, get_subtypes(_types.ORDER_PLACE), null, null);
 	}
 
 	public static String check_order_update(String subtype_)
 	{
-		return accessory.types.check_subtype(subtype_, get_subtypes(types.ORDER_UPDATE), null, null);
+		return accessory._types.check_subtype(subtype_, get_subtypes(_types.ORDER_UPDATE), null, null);
 	}
 
 	public static String check_error(String subtype_, String[] types_)
 	{
-		return accessory.types.check_subtype(subtype_, get_subtypes_errors(types_), null, null);
+		return accessory._types.check_subtype(subtype_, get_subtypes_errors(types_), null, null);
 	}
 
 	public static String[] get_subtypes_errors(String[] types_)
 	{
-		return accessory.types.get_subtypes
+		return accessory._types.get_subtypes
 		(
 			(arrays.is_ok(types_) ? types_ : get_all_types_error()), get_all_subtypes()
 		);
@@ -161,32 +162,32 @@ public class types
 
 	private static String[] get_subtypes(String type_)
 	{
-		return accessory.types.get_subtypes(type_, get_all_subtypes());
+		return accessory._types.get_subtypes(type_, get_all_subtypes());
 	}
 
 	private static String[] get_all_subtypes()
 	{
 		return new String[]
 		{
-			//_CONFIG_IB
-			_CONFIG_IB_CURRENCY,
-			//_CONFIG_IB_CONN
-			_CONFIG_IB_CONN_TYPE,
-			//_CONFIG_IB_ASYNC
-			_CONFIG_IB_ASYNC_SNAPSHOT_QUICK, 
-			//_CONFIG_IB_ASYNC_STORAGE
-			_CONFIG_IB_ASYNC_STORAGE_MEMORY, _CONFIG_IB_ASYNC_STORAGE_DB,
-			//_CONFIG_IB_ORDER
-			_CONFIG_IB_ORDER_TIF, _CONFIG_IB_ORDER_QUANTITY_INT,
-			//_CONFIG_IB_DB
-			//_CONFIG_IB_DB_COMMON
-			_CONFIG_IB_DB_COMMON_FIELD_SYMBOL,  _CONFIG_IB_DB_COMMON_FIELD_PRICE,
-			//_CONFIG_IB_DB_MARKET
-			_CONFIG_IB_DB_MARKET_SOURCE,
-			_CONFIG_IB_DB_MARKET_FIELD_TIME, _CONFIG_IB_DB_MARKET_FIELD_SYMBOL, _CONFIG_IB_DB_MARKET_FIELD_PRICE,
-			_CONFIG_IB_DB_MARKET_FIELD_OPEN, _CONFIG_IB_DB_MARKET_FIELD_CLOSE, _CONFIG_IB_DB_MARKET_FIELD_LOW,
-			_CONFIG_IB_DB_MARKET_FIELD_HIGH, _CONFIG_IB_DB_MARKET_FIELD_VOLUME, _CONFIG_IB_DB_MARKET_FIELD_ASK,
-			_CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE, _CONFIG_IB_DB_MARKET_FIELD_BID, _CONFIG_IB_DB_MARKET_FIELD_BID_SIZE, 
+			//CONFIG_IB
+			CONFIG_IB_CURRENCY,
+			//CONFIG_IB_CONN
+			CONFIG_IB_CONN_TYPE,
+			//CONFIG_IB_ASYNC
+			CONFIG_IB_ASYNC_SNAPSHOT_QUICK, 
+			//CONFIG_IB_ASYNC_STORAGE
+			CONFIG_IB_ASYNC_STORAGE_MEMORY, CONFIG_IB_ASYNC_STORAGE_DB,
+			//CONFIG_IB_ORDER
+			CONFIG_IB_ORDER_TIF, CONFIG_IB_ORDER_QUANTITY_INT,
+			//CONFIG_IB_DB
+			//CONFIG_IB_DB_COMMON
+			CONFIG_IB_DB_COMMON_FIELD_SYMBOL,  CONFIG_IB_DB_COMMON_FIELD_PRICE,
+			//CONFIG_IB_DB_MARKET
+			CONFIG_IB_DB_MARKET_SOURCE,
+			CONFIG_IB_DB_MARKET_FIELD_TIME, CONFIG_IB_DB_MARKET_FIELD_SYMBOL, CONFIG_IB_DB_MARKET_FIELD_PRICE,
+			CONFIG_IB_DB_MARKET_FIELD_OPEN, CONFIG_IB_DB_MARKET_FIELD_CLOSE, CONFIG_IB_DB_MARKET_FIELD_LOW,
+			CONFIG_IB_DB_MARKET_FIELD_HIGH, CONFIG_IB_DB_MARKET_FIELD_VOLUME, CONFIG_IB_DB_MARKET_FIELD_ASK,
+			CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE, CONFIG_IB_DB_MARKET_FIELD_BID, CONFIG_IB_DB_MARKET_FIELD_BID_SIZE, 
 
 			//CONN
 			CONN_PAPER, CONN_REAL, CONN_GATEWAY, CONN_GATEWAY_PAPER,

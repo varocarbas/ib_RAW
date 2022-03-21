@@ -9,9 +9,9 @@ import accessory.numbers;
 import accessory.strings;
 import accessory.dates;
 import accessory_ib.ini;
-import accessory_ib.defaults;
+import accessory_ib._defaults;
 import accessory_ib.errors;
-import accessory_ib.types;
+import accessory_ib._types;
 
 public class sync 
 {
@@ -20,7 +20,7 @@ public class sync
 
 	public static String _type = strings.DEFAULT;
 	public static String _type2 = strings.DEFAULT;
-	public static int _id = defaults.SYNC_ID;
+	public static int _id = _defaults.SYNC_ID;
 
 	public static boolean _ignore_max_time = false;
 
@@ -35,12 +35,12 @@ public class sync
 
 	public static double get_funds()
 	{
-		return (double)get(types.SYNC_GET_FUNDS);
+		return (double)get(_types.SYNC_GET_FUNDS);
 	}
 
 	public static Integer[] get_open_ids()
 	{
-		return (Integer[])get(types.SYNC_GET_IDS);
+		return (Integer[])get(_types.SYNC_GET_IDS);
 	}
 
 	public static boolean update(String val_)
@@ -50,7 +50,7 @@ public class sync
 
 	public static boolean update(double val_)
 	{
-		if (!_type2.equals(types.SYNC_DATA_DECIMAL)) return false;
+		if (!_type2.equals(_types.SYNC_DATA_DECIMAL)) return false;
 
 		_decimal_out = val_;
 
@@ -61,8 +61,8 @@ public class sync
 	{
 		boolean is_ok = true;
 
-		if (_type2.equals(types.SYNC_DATA_INTS)) _ints_out.add(val_);
-		else if (_type2.equals(types.SYNC_DATA_INT)) _int_out = val_;
+		if (_type2.equals(_types.SYNC_DATA_INTS)) _ints_out.add(val_);
+		else if (_type2.equals(_types.SYNC_DATA_INT)) _int_out = val_;
 		else is_ok = false;
 
 		return is_ok;
@@ -70,7 +70,7 @@ public class sync
 
 	public static boolean update(String key_, String val_)
 	{
-		if (!_type2.equals(types.SYNC_DATA_MISC) || !strings.is_ok(key_)) return false;
+		if (!_type2.equals(_types.SYNC_DATA_MISC) || !strings.is_ok(key_)) return false;
 
 		_misc_out.put(key_, val_);
 
@@ -80,12 +80,12 @@ public class sync
 	//Only called when creating a new order, via the corresponding order_info constructor.
 	static int get_next_id()
 	{
-		return (int)get(types.SYNC_GET_ID);
+		return (int)get(_types.SYNC_GET_ID);
 	}
 
 	private static Object get(String type_)
 	{
-		return get(type_, defaults.SYNC_ID);
+		return get(type_, _defaults.SYNC_ID);
 	}
 
 	private static Object get(String type_, int order_id_)
@@ -110,22 +110,22 @@ public class sync
 	{
 		Object output = null;
 
-		if (_type2.equals(types.SYNC_DATA_INT)) 
+		if (_type2.equals(_types.SYNC_DATA_INT)) 
 		{
 			if (ini_) _int_out = numbers.DEFAULT_INT;
 			else output = _int_out;
 		}
-		else if (_type2.equals(types.SYNC_DATA_DECIMAL)) 
+		else if (_type2.equals(_types.SYNC_DATA_DECIMAL)) 
 		{
 			if (ini_) _decimal_out = numbers.DEFAULT_DEC;
 			else output = _decimal_out;
 		}
-		else if (_type2.equals(types.SYNC_DATA_INTS)) 
+		else if (_type2.equals(_types.SYNC_DATA_INTS)) 
 		{
 			if (ini_) _ints_out = new ArrayList<Integer>();
 			else output = arrays.to_array(_ints_out);
 		}
-		else if (_type2.equals(types.SYNC_DATA_MISC)) 
+		else if (_type2.equals(_types.SYNC_DATA_MISC)) 
 		{
 			if (ini_) _misc_out = new HashMap<String, String>();
 			else output = new HashMap<String, String>(_misc_out);
@@ -139,9 +139,9 @@ public class sync
 		String output = strings.DEFAULT;
 		if (!strings.is_ok(input_)) return output;
 
-		if (input_.equals(types.SYNC_GET_ID)) output = types.SYNC_DATA_INT;
-		else if (input_.equals(types.SYNC_GET_FUNDS)) output = types.SYNC_DATA_DECIMAL;
-		else if (input_.equals(types.SYNC_GET_IDS)) output = types.SYNC_DATA_INTS;
+		if (input_.equals(_types.SYNC_GET_ID)) output = _types.SYNC_DATA_INT;
+		else if (input_.equals(_types.SYNC_GET_FUNDS)) output = _types.SYNC_DATA_DECIMAL;
+		else if (input_.equals(_types.SYNC_GET_IDS)) output = _types.SYNC_DATA_INTS;
 
 		return output;
 	}
@@ -153,17 +153,17 @@ public class sync
 		_retrieving = true;
 		_retrieved = false;
 
-		if (_type.equals(types.SYNC_GET_FUNDS))
+		if (_type.equals(_types.SYNC_GET_FUNDS))
 		{	
 			//accountSummary, accountSummaryEnd
 			conn._client.reqAccountSummary(_id, "All", "AvailableFunds"); 
 		}
-		else if (_type.equals(types.SYNC_GET_IDS))
+		else if (_type.equals(_types.SYNC_GET_IDS))
 		{	
 			//openOrder, openOrderEnd, orderStatus
 			conn._client.reqAllOpenOrders(); 
 		}
-		else if (_type.equals(types.SYNC_GET_ID))
+		else if (_type.equals(_types.SYNC_GET_ID))
 		{	
 			//nextValidId
 			conn._client.reqIds(-1); 
@@ -175,18 +175,18 @@ public class sync
 
 	private static boolean retrieve_is_ok(String type_, int id_)
 	{
-		String temp = types.check_sync(type_, false);
+		String temp = _types.check_sync(type_, false);
 		if (!strings.is_ok(temp)) 
 		{
-			accessory_ib.errors.manage(types.ERROR_SYNC_ID, false);
+			accessory_ib.errors.manage(_types.ERROR_SYNC_ID, false);
 
 			return false;
 		}
 
 		String temp2 = get_data_type(temp);
-		if (!strings.is_ok(types.check_sync(temp2, true))) 
+		if (!strings.is_ok(_types.check_sync(temp2, true))) 
 		{
-			accessory_ib.errors.manage(types.ERROR_SYNC_ID2, false);
+			accessory_ib.errors.manage(_types.ERROR_SYNC_ID2, false);
 
 			return false;
 		}
@@ -212,7 +212,7 @@ public class sync
 			long elapsed = dates.get_elapsed(start);
 			if (!_ignore_max_time && elapsed >= MAX_SECS_RETRIEVE) 
 			{
-				errors.manage(types.ERROR_SYNC_TIME, false);
+				errors.manage(_types.ERROR_SYNC_TIME, false);
 				is_ok = false;
 
 				break;
