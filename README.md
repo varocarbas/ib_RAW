@@ -1,5 +1,8 @@
 # ib
-Library easing the automated communication with Interactive Brokers (IB). **--- CURRENTLY UNDER DEVELOPMENT**
+
+**CURRENTLY UNDER DEVELOPMENT**
+
+Library easing the automated communication with Interactive Brokers (IB).
 
 Required external dependencies:
 - My accessory library for Java ([https://github.com/varocarbas/accessory_java_RAW](https://github.com/varocarbas/accessory_java_RAW)).
