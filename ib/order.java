@@ -2,16 +2,16 @@ package ib;
 
 import accessory.numbers;
 import accessory.strings;
-import accessory_ib._types;
+import accessory_ib.types;
 
 public class order 
 {
 	public String _type = strings.DEFAULT;
 	public String _symbol = strings.DEFAULT;
-	public double _quantity = numbers.DEFAULT_DEC;
+	public double _quantity = numbers.DEFAULT_DECIMAL;
 	public int _id = numbers.DEFAULT_INT;
-	public double _stop = numbers.DEFAULT_DEC;
-	public double _start = numbers.DEFAULT_DEC;
+	public double _stop = numbers.DEFAULT_DECIMAL;
+	public double _start = numbers.DEFAULT_DECIMAL;
 
 	public static boolean is_ok(order input_)
 	{
@@ -60,6 +60,6 @@ public class order
 
 	private static String check_type(String type_)
 	{
-		return _types.check_order_place(type_);
+		return types.check_order_place(type_);
 	}
 }

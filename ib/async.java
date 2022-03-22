@@ -12,8 +12,7 @@ import accessory.strings;
 import accessory_ib.config;
 import accessory_ib.ini;
 import accessory_ib.db;
-import accessory_ib._keys;
-import accessory_ib._types;
+import accessory_ib.types;
 import external_ib.constants;
 
 public class async 
@@ -79,13 +78,13 @@ public class async
 		if (!strings.is_ok(symbol)) return;
 
 		String key = strings.DEFAULT;
-		if (field_ == constants.TICK_BID) key = _keys.BID;
-		else if (field_ == constants.TICK_ASK) key = _keys.ASK;
-		else if (field_ == constants.TICK_LAST) key = _keys.PRICE;
-		else if (field_ == constants.TICK_HIGH) key = _keys.HIGH;
-		else if (field_ == constants.TICK_LOW) key = _keys.LOW;
-		else if (field_ == constants.TICK_CLOSE) key = _keys.CLOSE;		
-		else if (field_ == constants.TICK_OPEN) key = _keys.OPEN;	
+		if (field_ == constants.TICK_BID) key = db.FIELD_BID;
+		else if (field_ == constants.TICK_ASK) key = db.FIELD_ASK;
+		else if (field_ == constants.TICK_LAST) key = db.FIELD_PRICE;
+		else if (field_ == constants.TICK_HIGH) key = db.FIELD_HIGH;
+		else if (field_ == constants.TICK_LOW) key = db.FIELD_LOW;
+		else if (field_ == constants.TICK_CLOSE) key = db.FIELD_CLOSE;		
+		else if (field_ == constants.TICK_OPEN) key = db.FIELD_OPEN;	
 
 		if (!strings.is_ok(key)) return;
 
@@ -99,17 +98,17 @@ public class async
 		if (!strings.is_ok(symbol)) return;
 
 		String key = strings.DEFAULT;
-		if (field_ == constants.TICK_BID_SIZE) key = _keys.BID_SIZE;
-		else if (field_ == constants.TICK_ASK_SIZE) key = _keys.ASK_SIZE;
-		else if (field_ == constants.TICK_LAST_SIZE) key = _keys.SIZE;
+		if (field_ == constants.TICK_BID_SIZE) key = db.FIELD_BID_SIZE;
+		else if (field_ == constants.TICK_ASK_SIZE) key = db.FIELD_ASK_SIZE;
+		else if (field_ == constants.TICK_LAST_SIZE) key = db.FIELD_SIZE;
 		else if (field_ == constants.TICK_VOLUME) 
 		{
-			key = _keys.VOLUME;
+			key = db.FIELD_VOLUME;
 
 			if 
 			(
-				_market_retrieving.get(id_) && strings.are_equal(_market_type, _types.ASYNC_MARKET_SNAPSHOT) && 
-				strings.to_boolean(config.get_async(_types.CONFIG_IB_ASYNC_SNAPSHOT_QUICK))
+				_market_retrieving.get(id_) && strings.are_equal(_market_type, types.ASYNC_MARKET_SNAPSHOT) && 
+				strings.to_boolean(config.get_async(types.CONFIG_IB_ASYNC_SNAPSHOT_QUICK))
 			)
 			{ _market_retrieved.put(id_, true); }
 		}
@@ -126,7 +125,7 @@ public class async
 		if (!strings.is_ok(symbol)) return;
 
 		String key = strings.DEFAULT;
-		if (tick_ == constants.TICK_HALTED) key = _keys.HALTED;
+		if (tick_ == constants.TICK_HALTED) key = db.FIELD_HALTED;
 
 		if (!strings.is_ok(key)) return;
 
@@ -145,7 +144,7 @@ public class async
 			items.put("error_msg", error_msg_);
 
 			String message = arrays.to_string(items, null, null, null);
-			message = "IB " + misc.SEPARATOR_CONTENT + _types.ERROR_ASYNC + misc.SEPARATOR_CONTENT + message;
+			message = "IB " + misc.SEPARATOR_CONTENT + types.ERROR_ASYNC + misc.SEPARATOR_CONTENT + message;
 
 			logs.update(message, null);	
 		}
@@ -161,23 +160,23 @@ public class async
 		is_ok = true;
 		if (!arrays.is_ok(db.get_market_info(symbol)))
 
-			_market_type = (is_snapshot_ ? _types.ASYNC_MARKET_SNAPSHOT : _types.ASYNC_MARKET_STREAM);
+			_market_type = (is_snapshot_ ? types.ASYNC_MARKET_SNAPSHOT : types.ASYNC_MARKET_STREAM);
 
 		if (!numbers.is_ok(_market_id, MIN_ID, MAX_ID)) _market_id = MIN_ID - 1;
 		_market_id++;
 
-		if (strings.are_equal(_market_type, _types.ASYNC_MARKET_STREAM)) stream_end(_market_id);
+		if (strings.are_equal(_market_type, types.ASYNC_MARKET_STREAM)) stream_end(_market_id);
 
 		_market_symbols.put(_market_id, symbol);
 		_market_retrieving.put(_market_id, true);
 		_market_retrieved.put(_market_id, false);
 
-		String storage = config.get_async(_types.CONFIG_IB_ASYNC_STORAGE);
-		if (storage.equals(_types.CONFIG_IB_ASYNC_STORAGE_MEMORY))
+		String storage = config.get_async(types.CONFIG_IB_ASYNC_STORAGE);
+		if (storage.equals(types.CONFIG_IB_ASYNC_STORAGE_MEMORY))
 		{
 			market_check_memory(symbol);
 		}
-		else if (storage.equals(_types.CONFIG_IB_ASYNC_STORAGE_DB))
+		else if (storage.equals(types.CONFIG_IB_ASYNC_STORAGE_DB))
 		{
 			if (!arrays.is_ok(db.get_market_info(symbol_))) db.insert_market(db.get_default_vals(), symbol_);
 		}
@@ -207,14 +206,14 @@ public class async
 		boolean is_ok = false;
 		if (!strings.is_ok(symbol_) || !strings.is_ok(key_) || val_ <= 0.0) return is_ok;
 
-		String storage = config.get_async(_types.CONFIG_IB_ASYNC_STORAGE);
+		String storage = config.get_async(types.CONFIG_IB_ASYNC_STORAGE);
 		if (!strings.is_ok(storage)) return is_ok;
 
-		if (storage.equals(_types.CONFIG_IB_ASYNC_STORAGE_DB)) 
+		if (storage.equals(types.CONFIG_IB_ASYNC_STORAGE_DB)) 
 		{	
 			is_ok = db.update_market_val(key_, val_, symbol_);
 		}
-		else if (storage.equals(_types.CONFIG_IB_ASYNC_STORAGE_MEMORY)) 
+		else if (storage.equals(types.CONFIG_IB_ASYNC_STORAGE_MEMORY)) 
 		{
 			String val = strings.to_string(val_);
 			

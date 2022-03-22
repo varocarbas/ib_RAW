@@ -34,7 +34,7 @@ import com.ib.client.TickAttribBidAsk;
 import com.ib.client.TickAttribLast;
 
 import accessory.strings;
-import accessory_ib._types;
+import accessory_ib.types;
 import ib.async;
 import ib.conn;
 import ib.sync;
@@ -101,7 +101,7 @@ public class wrapper implements EWrapper
 		if 
 		( 
 			!async._market_retrieving.get(reqId) ||
-			!strings.are_equal(async._market_type, _types.ASYNC_MARKET_SNAPSHOT)
+			!strings.are_equal(async._market_type, types.ASYNC_MARKET_SNAPSHOT)
 		) 
 		{ return; }
 		

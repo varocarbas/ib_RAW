@@ -1,9 +1,10 @@
 package accessory_ib;
 
 import accessory.arrays;
+import accessory.ini;
 import accessory.strings;
 
-public class _types
+public class types
 {
 	//------ To be synced with get_all_subtypes().
 
@@ -33,6 +34,7 @@ public class _types
 	public static final String CONFIG_IB_DB_COMMON = "config_ib_db_common";
 	public static final String CONFIG_IB_DB_COMMON_FIELD_SYMBOL = "config_ib_db_common_field_symbol";
 	public static final String CONFIG_IB_DB_COMMON_FIELD_PRICE = "config_ib_db_common_field_price";
+	public static final String CONFIG_IB_DB_COMMON_FIELD_SIZE = "config_ib_db_common_field_size";
 	public static final String CONFIG_IB_DB_MARKET = "config_ib_db_market";
 	public static final String CONFIG_IB_DB_MARKET_SOURCE = "config_ib_db_market_source";
 	public static final String CONFIG_IB_DB_MARKET_FIELD_TIME = "config_ib_db_market_field_time";
@@ -47,6 +49,8 @@ public class _types
 	public static final String CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE = "config_ib_db_market_field_ask_size";
 	public static final String CONFIG_IB_DB_MARKET_FIELD_BID = "config_ib_db_market_field_bid";
 	public static final String CONFIG_IB_DB_MARKET_FIELD_BID_SIZE = "config_ib_db_market_field_bid_size";
+	public static final String CONFIG_IB_DB_MARKET_FIELD_HALTED = "config_ib_db_market_field_halted";
+	public static final String CONFIG_IB_DB_MARKET_FIELD_HALTED_TOT = "config_ib_db_market_field_halted_tot";
 	//------
 
 	public static final String CONN = "conn";
@@ -96,22 +100,21 @@ public class _types
 	//------
 	//---------------------------
 
-	//Method meant to force this class to be loaded when required (e.g., when ini.load() is called).
-	public static void load() { } 
+	static { ini.load(); }
 
 	public static String check_conn(String subtype_, String add_remove_)
 	{
-		return accessory._types.check_subtype(subtype_, get_subtypes(CONN), null, null);
+		return accessory.types.check_subtype(subtype_, get_subtypes(CONN), null, null);
 	}
 
 	public static String check_async(String subtype_)
 	{
-		return accessory._types.check_subtype(subtype_, get_subtypes(ASYNC), null, null);
+		return accessory.types.check_subtype(subtype_, get_subtypes(ASYNC), null, null);
 	}
 
 	public static String check_sync(String subtype_, boolean is_data_)
 	{
-		return accessory._types.check_subtype(subtype_, get_subtypes_sync(is_data_), null, null);
+		return accessory.types.check_subtype(subtype_, get_subtypes_sync(is_data_), null, null);
 	}
 
 	public static String[] get_subtypes_sync(boolean is_data_)
@@ -126,27 +129,27 @@ public class _types
 
 	public static String check_order(String subtype_)
 	{
-		return accessory._types.check_subtype(subtype_, get_subtypes(_types.ORDER), null, null);
+		return accessory.types.check_subtype(subtype_, get_subtypes(types.ORDER), null, null);
 	}
 
 	public static String check_order_place(String subtype_)
 	{
-		return accessory._types.check_subtype(subtype_, get_subtypes(_types.ORDER_PLACE), null, null);
+		return accessory.types.check_subtype(subtype_, get_subtypes(types.ORDER_PLACE), null, null);
 	}
 
 	public static String check_order_update(String subtype_)
 	{
-		return accessory._types.check_subtype(subtype_, get_subtypes(_types.ORDER_UPDATE), null, null);
+		return accessory.types.check_subtype(subtype_, get_subtypes(types.ORDER_UPDATE), null, null);
 	}
 
 	public static String check_error(String subtype_, String[] types_)
 	{
-		return accessory._types.check_subtype(subtype_, get_subtypes_errors(types_), null, null);
+		return accessory.types.check_subtype(subtype_, get_subtypes_errors(types_), null, null);
 	}
 
 	public static String[] get_subtypes_errors(String[] types_)
 	{
-		return accessory._types.get_subtypes
+		return accessory.types.get_subtypes
 		(
 			(arrays.is_ok(types_) ? types_ : get_all_types_error()), get_all_subtypes()
 		);
@@ -162,7 +165,7 @@ public class _types
 
 	private static String[] get_subtypes(String type_)
 	{
-		return accessory._types.get_subtypes(type_, get_all_subtypes());
+		return accessory.types.get_subtypes(type_, get_all_subtypes());
 	}
 
 	private static String[] get_all_subtypes()
@@ -181,14 +184,16 @@ public class _types
 			CONFIG_IB_ORDER_TIF, CONFIG_IB_ORDER_QUANTITY_INT,
 			//CONFIG_IB_DB
 			//CONFIG_IB_DB_COMMON
-			CONFIG_IB_DB_COMMON_FIELD_SYMBOL,  CONFIG_IB_DB_COMMON_FIELD_PRICE,
+			CONFIG_IB_DB_COMMON_FIELD_SYMBOL, CONFIG_IB_DB_COMMON_FIELD_PRICE, CONFIG_IB_DB_COMMON_FIELD_SIZE,
+
 			//CONFIG_IB_DB_MARKET
 			CONFIG_IB_DB_MARKET_SOURCE,
 			CONFIG_IB_DB_MARKET_FIELD_TIME, CONFIG_IB_DB_MARKET_FIELD_SYMBOL, CONFIG_IB_DB_MARKET_FIELD_PRICE,
 			CONFIG_IB_DB_MARKET_FIELD_OPEN, CONFIG_IB_DB_MARKET_FIELD_CLOSE, CONFIG_IB_DB_MARKET_FIELD_LOW,
 			CONFIG_IB_DB_MARKET_FIELD_HIGH, CONFIG_IB_DB_MARKET_FIELD_VOLUME, CONFIG_IB_DB_MARKET_FIELD_ASK,
 			CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE, CONFIG_IB_DB_MARKET_FIELD_BID, CONFIG_IB_DB_MARKET_FIELD_BID_SIZE, 
-
+			CONFIG_IB_DB_MARKET_FIELD_HALTED, CONFIG_IB_DB_MARKET_FIELD_HALTED_TOT,
+			
 			//CONN
 			CONN_PAPER, CONN_REAL, CONN_GATEWAY, CONN_GATEWAY_PAPER,
 

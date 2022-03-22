@@ -13,12 +13,14 @@ import accessory.numbers;
 import accessory.strings;
 import accessory_ib.config;
 import accessory_ib.ini;
-import accessory_ib._keys;
-import accessory_ib._types;
+import accessory_ib.types;
 import external_ib.constants;
 
 public class orders 
 {	
+	public static String START = accessory.types.ACTIONS_START;
+	public static String STOP = accessory.types.ACTIONS_STOP;
+	
 	private static HashMap<Integer, order> _orders = new HashMap<Integer, order>();
 	private static int MIN_ID = 0;
 
@@ -28,7 +30,7 @@ public class orders
 	{
 		order info = new order(type_, symbol_, quantity_, stop_, start_);
 
-		return (order.is_ok(info) ? place_update(info, strings.DEFAULT, numbers.DEFAULT_DEC) : false);
+		return (order.is_ok(info) ? place_update(info, strings.DEFAULT, numbers.DEFAULT_DECIMAL) : false);
 	}
 
 	public static boolean update(String type_, String symbol_, double val_) 
@@ -36,7 +38,7 @@ public class orders
 		order info = get_info(symbol_);
 		if (!order.is_ok(info)) return false;
 
-		String type = _types.check_order_update(type_);
+		String type = types.check_order_update(type_);
 
 		return ((!order.is_ok(info) || !strings.is_ok(type)) ? place_update(info, type, val_) : false);
 	}
@@ -108,8 +110,8 @@ public class orders
 		}
 
 		if (!strings.is_ok(update_type_)) _orders.put(id, new order(info_));
-		else if (update_type_.equals(_types.ORDER_UPDATE_START_VALUE)) update_info(id, _keys.START, update_val_); 
-		else if (update_type_.equals(_types.ORDER_UPDATE_STOP_VALUE)) update_info(id, _keys.STOP, update_val_); 
+		else if (update_type_.equals(types.ORDER_UPDATE_START_VALUE)) update_info(id, START, update_val_); 
+		else if (update_type_.equals(types.ORDER_UPDATE_STOP_VALUE)) update_info(id, STOP, update_val_); 
 
 		return true;
 	}
@@ -120,7 +122,7 @@ public class orders
 		order.orderId(id_);
 
 		boolean is_main = (id_ == parent_);
-		boolean is_market = info_._type.equals(_types.ORDER_PLACE_MARKET);
+		boolean is_market = info_._type.equals(types.ORDER_PLACE_MARKET);
 		double val = (is_main ? info_._start : info_._stop);
 
 		String type2 = null;
@@ -129,10 +131,10 @@ public class orders
 		{
 			type2 = update_type_;
 
-			boolean start_market = strings.are_equal(type2, _types.ORDER_UPDATE_START_MARKET);
-			boolean stop_market = strings.are_equal(type2, _types.ORDER_UPDATE_STOP_MARKET);
+			boolean start_market = strings.are_equal(type2, types.ORDER_UPDATE_START_MARKET);
+			boolean stop_market = strings.are_equal(type2, types.ORDER_UPDATE_STOP_MARKET);
 
-			if (start_market || strings.are_equal(type2, _types.ORDER_UPDATE_START_VALUE))
+			if (start_market || strings.are_equal(type2, types.ORDER_UPDATE_START_VALUE))
 			{
 				if (is_main) 
 				{
@@ -141,7 +143,7 @@ public class orders
 				}
 				else type2 = null;
 			}
-			else if (stop_market || strings.are_equal(type2, _types.ORDER_UPDATE_STOP_VALUE))
+			else if (stop_market || strings.are_equal(type2, types.ORDER_UPDATE_STOP_VALUE))
 			{
 				if (is_main) type2 = null;
 				else 
@@ -162,7 +164,7 @@ public class orders
 		else
 		{
 			String order_type = constants.ORDER_TYPE_STOP;
-			if (is_main && info_._type.equals(_types.ORDER_PLACE_LIMIT)) order_type = constants.ORDER_TYPE_LIMIT;
+			if (is_main && info_._type.equals(types.ORDER_PLACE_LIMIT)) order_type = constants.ORDER_TYPE_LIMIT;
 
 			order.orderType(order_type);
 			if (order_type.equals(constants.ORDER_TYPE_STOP)) order.auxPrice(val);	
@@ -170,11 +172,11 @@ public class orders
 		}
 		if (!is_main) order.parentId(parent_);
 
-		String tif = config.get_order(_types.CONFIG_IB_ORDER_TIF);
+		String tif = config.get_order(types.CONFIG_IB_ORDER_TIF);
 		order.tif(tif);
 
 		double quantity = info_._quantity;
-		if (strings.to_boolean(config.get_order(_types.CONFIG_IB_ORDER_QUANTITY_INT))) quantity = Math.floor(quantity);
+		if (strings.to_boolean(config.get_order(types.CONFIG_IB_ORDER_QUANTITY_INT))) quantity = Math.floor(quantity);
 		order.totalQuantity(quantity);
 
 		order.transmit(is_last_);
@@ -184,12 +186,13 @@ public class orders
 
 	private static boolean update_info(int id_, String what_, double val_)
 	{
-		if (!_orders.containsKey(id_) || !strings.is_ok(what_)) return false;
+		String what = accessory.types.check_what(what_);
+		if (!_orders.containsKey(id_) || !strings.is_ok(what)) return false;
 
 		order info = new order(_orders.get(id_));
 
-		if (what_.equals(_keys.START)) info._start = val_;
-		else if (what_.equals(_keys.STOP)) info._stop = val_;
+		if (what.equals(START)) info._start = val_;
+		else if (what.equals(STOP)) info._stop = val_;
 		else return false;
 
 		_orders.put(id_, info);

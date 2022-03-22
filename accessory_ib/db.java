@@ -10,13 +10,49 @@ import ib.common;
 
 public class db 
 {	
+	public static final String SOURCE_MARKET = types.CONFIG_IB_DB_MARKET_SOURCE;
+	
+	public static final String FIELD_SYMBOL = types.CONFIG_IB_DB_COMMON_FIELD_SYMBOL;
+	public static final String FIELD_PRICE = types.CONFIG_IB_DB_COMMON_FIELD_PRICE;
+	public static final String FIELD_SIZE = types.CONFIG_IB_DB_COMMON_FIELD_SIZE;
+	
+	public static final String FIELD_TIME = types.CONFIG_IB_DB_MARKET_FIELD_TIME;
+	public static final String FIELD_OPEN = types.CONFIG_IB_DB_MARKET_FIELD_OPEN;
+	public static final String FIELD_CLOSE = types.CONFIG_IB_DB_MARKET_FIELD_CLOSE;
+	public static final String FIELD_LOW = types.CONFIG_IB_DB_MARKET_FIELD_LOW;
+	public static final String FIELD_HIGH = types.CONFIG_IB_DB_MARKET_FIELD_HIGH;
+	public static final String FIELD_VOLUME = types.CONFIG_IB_DB_MARKET_FIELD_VOLUME;		
+	public static final String FIELD_ASK = types.CONFIG_IB_DB_MARKET_FIELD_ASK;
+	public static final String FIELD_ASK_SIZE = types.CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE;
+	public static final String FIELD_BID = types.CONFIG_IB_DB_MARKET_FIELD_BID;
+	public static final String FIELD_BID_SIZE = types.CONFIG_IB_DB_MARKET_FIELD_BID_SIZE;
+	public static final String FIELD_HALTED = types.CONFIG_IB_DB_MARKET_FIELD_HALTED;
+	public static final String FIELD_HALTED_TOT = types.CONFIG_IB_DB_MARKET_FIELD_HALTED_TOT;
+	
+	public static final String DEFAULT_SOURCE_MARKET = _defaults.DB_MARKET_SOURCE;
+	public static final String DEFAULT_FIELD_SYMBOL = _defaults.DB_COMMON_FIELD_SYMBOL;
+	public static final String DEFAULT_FIELD_PRICE = _defaults.DB_COMMON_FIELD_PRICE;
+	public static final String DEFAULT_FIELD_SIZE = _defaults.DB_COMMON_FIELD_SIZE;
+	public static final String DEFAULT_FIELD_TIME = _defaults.DB_MARKET_FIELD_TIME;
+	public static final String DEFAULT_FIELD_OPEN = _defaults.DB_MARKET_FIELD_OPEN;
+	public static final String DEFAULT_FIELD_CLOSE = _defaults.DB_MARKET_FIELD_CLOSE;
+	public static final String DEFAULT_FIELD_LOW = _defaults.DB_MARKET_FIELD_LOW;
+	public static final String DEFAULT_FIELD_HIGH = _defaults.DB_MARKET_FIELD_HIGH;
+	public static final String DEFAULT_FIELD_VOLUME = _defaults.DB_MARKET_FIELD_VOLUME;		
+	public static final String DEFAULT_FIELD_ASK = _defaults.DB_MARKET_FIELD_ASK;
+	public static final String DEFAULT_FIELD_ASK_SIZE = _defaults.DB_MARKET_FIELD_ASK_SIZE;
+	public static final String DEFAULT_FIELD_BID = _defaults.DB_MARKET_FIELD_BID;
+	public static final String DEFAULT_FIELD_BID_SIZE = _defaults.DB_MARKET_FIELD_BID_SIZE;
+	public static final String DEFAULT_FIELD_HALTED = _defaults.DB_MARKET_FIELD_HALTED;
+	public static final String DEFAULT_FIELD_HALTED_TOT = _defaults.DB_MARKET_FIELD_HALTED_TOT;
+	
 	static { ini.load(); }
 
 	public static HashMap<String, String> get_market_info(String symbol_)
 	{
 		HashMap<String, String> info = null;
 
-		String source = _types.CONFIG_IB_DB_MARKET_SOURCE;
+		String source = SOURCE_MARKET;
 		if (!accessory.db.source_is_ok(source)) return info;	
 
 		ArrayList<HashMap<String, String>> temp = accessory.db.select(source, null, get_where_symbol(symbol_, null), 1, null);
@@ -31,14 +67,14 @@ public class db
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		vals.put(key_, val_);
-		vals.put(_keys.TIME, common.get_market_time());
+		vals.put(FIELD_TIME, common.get_market_time());
 
 		return update_market(vals, symbol_);
 	}
 
 	private static boolean update_market(HashMap<String, Object> vals_, String symbol_)
 	{
-		accessory.db.update(_types.CONFIG_IB_DB_MARKET_SOURCE, vals_, get_where_symbol(symbol_, null));
+		accessory.db.update(SOURCE_MARKET, vals_, get_where_symbol(symbol_, null));
 
 		return accessory.db._is_ok;
 	}
@@ -48,9 +84,9 @@ public class db
 		if (!arrays.is_ok(vals_) || !strings.is_ok(symbol_)) return false;
 
 		HashMap<String, String> vals = new HashMap<String, String>(vals_);
-		vals.put(get_col(_types.CONFIG_IB_DB_MARKET_SOURCE, _keys.SYMBOL), symbol_);
+		vals.put(get_col(SOURCE_MARKET, FIELD_SYMBOL), symbol_);
 
-		return insert(_types.CONFIG_IB_DB_MARKET_SOURCE, vals);
+		return insert(SOURCE_MARKET, vals);
 	}
 
 	public static HashMap<String, String> get_default_vals()
@@ -58,19 +94,19 @@ public class db
 		HashMap<String, String> vals = new HashMap<String, String>();
 
 		String zero = strings.to_string(0.0);
-		String source = _types.CONFIG_IB_DB_MARKET_SOURCE;
+		String source = SOURCE_MARKET;
 
-		vals.put(get_col(source, _keys.TIME), "00:00");
-		vals.put(get_col(source, _keys.PRICE), zero);
-		vals.put(get_col(source, _keys.VOLUME), zero);
-		vals.put(get_col(source, _keys.OPEN), zero);
-		vals.put(get_col(source, _keys.CLOSE), zero);
-		vals.put(get_col(source, _keys.HIGH), zero);
-		vals.put(get_col(source, _keys.LOW), zero);
-		vals.put(get_col(source, _keys.BID), zero);
-		vals.put(get_col(source, _keys.BID_SIZE), zero);
-		vals.put(get_col(source, _keys.ASK), zero);
-		vals.put(get_col(source, _keys.ASK_SIZE), zero);
+		vals.put(get_col(source, FIELD_TIME), "00:00");
+		vals.put(get_col(source, FIELD_PRICE), zero);
+		vals.put(get_col(source, FIELD_VOLUME), zero);
+		vals.put(get_col(source, FIELD_OPEN), zero);
+		vals.put(get_col(source, FIELD_CLOSE), zero);
+		vals.put(get_col(source, FIELD_HIGH), zero);
+		vals.put(get_col(source, FIELD_LOW), zero);
+		vals.put(get_col(source, FIELD_BID), zero);
+		vals.put(get_col(source, FIELD_BID_SIZE), zero);
+		vals.put(get_col(source, FIELD_ASK), zero);
+		vals.put(get_col(source, FIELD_ASK_SIZE), zero);
 
 		return vals;
 	}
@@ -81,14 +117,7 @@ public class db
 
 		ArrayList<db_where> wheres = (arrays.is_ok(wheres_) ? arrays.to_arraylist(wheres_) : new ArrayList<db_where>());
 
-		wheres.add
-		(
-			new db_where
-			(
-				_types.CONFIG_IB_DB_MARKET_SOURCE, 
-				_types.CONFIG_IB_DB_COMMON_FIELD_SYMBOL, symbol_
-			)
-		);
+		wheres.add(new db_where(SOURCE_MARKET, FIELD_SYMBOL, symbol_));
 
 		return arrays.to_array(wheres);
 	}

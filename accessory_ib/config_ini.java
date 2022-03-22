@@ -29,32 +29,32 @@ class config_ini
 	
 	private static void load_config_root()
 	{
-		String type = _types.CONFIG_IB;
+		String type = types.CONFIG_IB;
 
-		accessory.config.update_ini(type, _types.CONFIG_IB_CURRENCY, _defaults.CURRENCY);
+		accessory.config.update_ini(type, types.CONFIG_IB_CURRENCY, _defaults.CURRENCY);
 	}
 
 	private static void load_config_conn()
 	{
-		String type = _types.CONFIG_IB_CONN;
+		String type = types.CONFIG_IB_CONN;
 
-		accessory.config.update_ini(type, _types.CONFIG_IB_CONN, _defaults.CONN);
+		accessory.config.update_ini(type, types.CONFIG_IB_CONN, _defaults.CONN);
 	}
 
 	private static void load_config_async()
 	{
-		String type = _types.CONFIG_IB_ASYNC;
+		String type = types.CONFIG_IB_ASYNC;
 
-		accessory.config.update_ini(type, _types.CONFIG_IB_ASYNC_SNAPSHOT_QUICK, _defaults.ASYNC_SNAPSHOT_QUICK);
-		accessory.config.update_ini(type, _types.CONFIG_IB_ASYNC_SNAPSHOT_CONSTANT, _defaults.ASYNC_SNAPSHOT_CONSTANT);
-		accessory.config.update_ini(type, _types.CONFIG_IB_ASYNC_STORAGE, _defaults.ASYNC_STORAGE);
+		accessory.config.update_ini(type, types.CONFIG_IB_ASYNC_SNAPSHOT_QUICK, _defaults.ASYNC_SNAPSHOT_QUICK);
+		accessory.config.update_ini(type, types.CONFIG_IB_ASYNC_SNAPSHOT_CONSTANT, _defaults.ASYNC_SNAPSHOT_CONSTANT);
+		accessory.config.update_ini(type, types.CONFIG_IB_ASYNC_STORAGE, _defaults.ASYNC_STORAGE);
 	}
 
 	private static void load_config_order()
 	{
-		String type = _types.CONFIG_IB_ORDER;
+		String type = types.CONFIG_IB_ORDER;
 
-		accessory.config.update_ini(type, _types.CONFIG_IB_ORDER_TIF, _defaults.ORDER_TIF);
-		accessory.config.update_ini(type, _types.CONFIG_IB_ORDER_QUANTITY_INT, _defaults.ORDER_QUANTITY_INT);
+		accessory.config.update_ini(type, types.CONFIG_IB_ORDER_TIF, _defaults.ORDER_TIF);
+		accessory.config.update_ini(type, types.CONFIG_IB_ORDER_QUANTITY_INT, _defaults.ORDER_QUANTITY_INT);
 	}
 }

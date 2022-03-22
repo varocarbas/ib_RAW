@@ -1,8 +1,6 @@
 package accessory_ib;
 
 import accessory._defaults;
-import accessory._keys;
-import accessory._types;
 
 public class ini 
 {
@@ -10,7 +8,7 @@ public class ini
 	//It has to include all the load() methods of all the ini classes.
 	public static void load() 
 	{
-		_load(); //First classes.
+		load_first();
 		
 		config_ini.load();
 		db_ini.load();
@@ -18,10 +16,8 @@ public class ini
 	
 	
 	//Loading all the first classes, the ones whose names start with "_".
-	private static void _load()
+	private static void load_first()
 	{
 		_defaults.load();
-		_types.load();
-		_keys.load();
 	}
 }

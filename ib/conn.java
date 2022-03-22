@@ -9,7 +9,7 @@ import accessory.numbers;
 import accessory.strings;
 import accessory_ib.ini;
 import accessory_ib.errors;
-import accessory_ib._types;
+import accessory_ib.types;
 import external_ib.wrapper;
 
 public class conn 
@@ -36,14 +36,14 @@ public class conn
 
 	public static String check(String type_)
 	{
-		return accessory_ib._types.check_conn(type_, accessory._types.ACTIONS_ADD);
+		return accessory_ib.types.check_conn(type_, accessory.types.ACTIONS_ADD);
 	}
 
 	public static boolean is_ok()
 	{		
 		if (!_connected) connect();
 
-		if (!_connected) errors.manage(_types.ERROR_CONN_NONE, false);
+		if (!_connected) errors.manage(types.ERROR_CONN_NONE, false);
 
 		return _connected;
 	}
@@ -52,14 +52,14 @@ public class conn
 	{
 		String error = null;
 
-		if (!numbers.is_ok(id_, MIN_ID, MAX_ID)) error = _types.ERROR_CONN_ID;
+		if (!numbers.is_ok(id_, MIN_ID, MAX_ID)) error = types.ERROR_CONN_ID;
 		else 
 		{
 			_id = id_;
 			String type = check(type_);	
 
 			if (strings.is_ok(type)) _port = get_conn_port(type);
-			else error = _types.ERROR_CONN_TYPE;
+			else error = types.ERROR_CONN_TYPE;
 		}
 
 		if (strings.is_ok(error))
@@ -100,7 +100,7 @@ public class conn
 			if (_connected) break;
 			if (!_first_conn) misc.pause_secs(1);
 
-			errors.manage(_types.ERROR_CONN_NONE, false);
+			errors.manage(types.ERROR_CONN_NONE, false);
 		}
 	}
 
@@ -167,10 +167,10 @@ public class conn
 	{
 		int port = -1;
 
-		if (conn_type_.equals(_types.CONN_GATEWAY_PAPER)) port = PORT_GATEWAY_PAPER;
-		else if (conn_type_.equals(_types.CONN_GATEWAY)) port = PORT_GATEWAY;
-		else if (conn_type_.equals(_types.CONN_REAL)) port = PORT_REAL;
-		else if (conn_type_.equals(_types.CONN_PAPER)) port = PORT_PAPER;
+		if (conn_type_.equals(types.CONN_GATEWAY_PAPER)) port = PORT_GATEWAY_PAPER;
+		else if (conn_type_.equals(types.CONN_GATEWAY)) port = PORT_GATEWAY;
+		else if (conn_type_.equals(types.CONN_REAL)) port = PORT_REAL;
+		else if (conn_type_.equals(types.CONN_PAPER)) port = PORT_PAPER;
 
 		return port;
 	}
