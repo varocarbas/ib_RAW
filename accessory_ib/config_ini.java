@@ -5,15 +5,10 @@ class config_ini
 	//Method expected to be called from _ini.load().
 	public static void load() 
 	{
-		load_aliases_types();
-	}
-
-	//Method including all the generic aliases and _config types, not easily included in any other ini class.
-	private static void load_aliases_types()
-	{
 		load_types();
 	}
-	
+
+	//Method including all the generic _config types, not easily included in any other ini class.
 	private static void load_types()
 	{
 		load_types_config();

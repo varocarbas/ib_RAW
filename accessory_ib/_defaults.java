@@ -20,25 +20,25 @@ public class _defaults
 	public static final boolean ASYNC_SNAPSHOT_QUICK = true;
 	public static final boolean ASYNC_SNAPSHOT_CONSTANT = true;
 
-	public static final String DB_COMMON_FIELD_SYMBOL = "symbol"; 
-	public static final String DB_COMMON_FIELD_PRICE = "price";
-	public static final String DB_COMMON_FIELD_SIZE = "size";
+	public static final String DB_COMMON_COL_SYMBOL = "symbol"; 
+	public static final String DB_COMMON_COL_PRICE = "price";
+	public static final String DB_COMMON_COL_SIZE = "size";
 	
-	public static final String DB_MARKET_SOURCE = "ib_market";
-	public static final String DB_MARKET_FIELD_TIME = "time";
-	public static final String DB_MARKET_FIELD_QUANTITY = "quantity";
-	public static final String DB_MARKET_FIELD_VOLUME = "volume";
-	public static final String DB_MARKET_FIELD_SIZE = "size";
-	public static final String DB_MARKET_FIELD_OPEN = "open";
-	public static final String DB_MARKET_FIELD_CLOSE = "close";
-	public static final String DB_MARKET_FIELD_HIGH = "high";
-	public static final String DB_MARKET_FIELD_LOW = "low";
-	public static final String DB_MARKET_FIELD_BID = "bid";
-	public static final String DB_MARKET_FIELD_BID_SIZE = "bid_size";
-	public static final String DB_MARKET_FIELD_ASK = "ask";
-	public static final String DB_MARKET_FIELD_ASK_SIZE = "ask_size";
-	public static final String DB_MARKET_FIELD_HALTED = "halted";
-	public static final String DB_MARKET_FIELD_HALTED_TOT = "halted_tot";
+	public static final String DB_MARKET_TABLE = "ib_market";
+	public static final String DB_MARKET_COL_TIME = "time";
+	public static final String DB_MARKET_COL_QUANTITY = "quantity";
+	public static final String DB_MARKET_COL_VOLUME = "volume";
+	public static final String DB_MARKET_COL_SIZE = "size";
+	public static final String DB_MARKET_COL_OPEN = "open";
+	public static final String DB_MARKET_COL_CLOSE = "close";
+	public static final String DB_MARKET_COL_HIGH = "high";
+	public static final String DB_MARKET_COL_LOW = "low";
+	public static final String DB_MARKET_COL_BID = "bid";
+	public static final String DB_MARKET_COL_BID_SIZE = "bid_size";
+	public static final String DB_MARKET_COL_ASK = "ask";
+	public static final String DB_MARKET_COL_ASK_SIZE = "ask_size";
+	public static final String DB_MARKET_COL_HALTED = "halted";
+	public static final String DB_MARKET_COL_HALTED_TOT = "halted_tot";
 
 	//Method meant to force this class to be loaded when required (e.g., when ini.load() is called).
 	public static void load() { } 

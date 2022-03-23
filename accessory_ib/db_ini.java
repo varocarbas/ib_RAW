@@ -48,22 +48,22 @@ class db_ini
 	
 	private static void load_config_sources_db(String main_)
 	{
-		accessory.config.update_ini(main_, db.FIELD_SYMBOL, db.DEFAULT_FIELD_SYMBOL);
-		accessory.config.update_ini(main_, db.FIELD_PRICE, db.DEFAULT_FIELD_PRICE);
+		accessory.config.update_ini(main_, db.FIELD_SYMBOL, db.DEFAULT_COL_SYMBOL);
+		accessory.config.update_ini(main_, db.FIELD_PRICE, db.DEFAULT_COL_PRICE);
 
-		accessory.config.update_ini(main_, db.SOURCE_MARKET, db.DEFAULT_SOURCE_MARKET);
-		accessory.config.update_ini(main_, db.FIELD_TIME, db.DEFAULT_FIELD_TIME);
-		accessory.config.update_ini(main_, db.FIELD_OPEN, db.DEFAULT_FIELD_OPEN);
-		accessory.config.update_ini(main_, db.FIELD_CLOSE, db.DEFAULT_FIELD_CLOSE);
-		accessory.config.update_ini(main_, db.FIELD_LOW, db.DEFAULT_FIELD_LOW);
-		accessory.config.update_ini(main_, db.FIELD_HIGH, db.DEFAULT_FIELD_HIGH);
-		accessory.config.update_ini(main_, db.FIELD_VOLUME, db.DEFAULT_FIELD_VOLUME);
-		accessory.config.update_ini(main_, db.FIELD_ASK, db.DEFAULT_FIELD_ASK);
-		accessory.config.update_ini(main_, db.FIELD_ASK_SIZE, db.DEFAULT_FIELD_ASK_SIZE);
-		accessory.config.update_ini(main_, db.FIELD_BID, db.DEFAULT_FIELD_BID);
-		accessory.config.update_ini(main_, db.FIELD_BID_SIZE, db.DEFAULT_FIELD_BID_SIZE);
-		accessory.config.update_ini(main_, db.FIELD_HALTED, db.DEFAULT_FIELD_HALTED);
-		accessory.config.update_ini(main_, db.FIELD_HALTED_TOT, db.DEFAULT_FIELD_HALTED_TOT);
+		accessory.config.update_ini(main_, db.SOURCE_MARKET, db.DEFAULT_TABLE_MARKET);
+		accessory.config.update_ini(main_, db.FIELD_TIME, db.DEFAULT_COL_TIME);
+		accessory.config.update_ini(main_, db.FIELD_OPEN, db.DEFAULT_COL_OPEN);
+		accessory.config.update_ini(main_, db.FIELD_CLOSE, db.DEFAULT_COL_CLOSE);
+		accessory.config.update_ini(main_, db.FIELD_LOW, db.DEFAULT_COL_LOW);
+		accessory.config.update_ini(main_, db.FIELD_HIGH, db.DEFAULT_COL_HIGH);
+		accessory.config.update_ini(main_, db.FIELD_VOLUME, db.DEFAULT_COL_VOLUME);
+		accessory.config.update_ini(main_, db.FIELD_ASK, db.DEFAULT_COL_ASK);
+		accessory.config.update_ini(main_, db.FIELD_ASK_SIZE, db.DEFAULT_COL_ASK_SIZE);
+		accessory.config.update_ini(main_, db.FIELD_BID, db.DEFAULT_COL_BID);
+		accessory.config.update_ini(main_, db.FIELD_BID_SIZE, db.DEFAULT_COL_BID_SIZE);
+		accessory.config.update_ini(main_, db.FIELD_HALTED, db.DEFAULT_COL_HALTED);
+		accessory.config.update_ini(main_, db.FIELD_HALTED_TOT, db.DEFAULT_COL_HALTED_TOT);
 		
 		accessory.db_ini.load_config_sources_default_fields(main_);
 	}

@@ -18,12 +18,12 @@ import external_ib.constants;
 
 public class orders 
 {	
-	public static String START = accessory.types.ACTIONS_START;
-	public static String STOP = accessory.types.ACTIONS_STOP;
-	
 	private static HashMap<Integer, order> _orders = new HashMap<Integer, order>();
 	private static int MIN_ID = 0;
 
+	private static final String START = accessory.types.action_to_key(accessory.types.ACTIONS_START);
+	private static final String STOP = accessory.types.action_to_key(accessory.types.ACTIONS_STOP);
+	
 	static { ini.load(); }
 
 	public static boolean place(String type_, String symbol_, int quantity_, double stop_, double start_) 
@@ -186,13 +186,12 @@ public class orders
 
 	private static boolean update_info(int id_, String what_, double val_)
 	{
-		String what = accessory.types.check_what(what_);
-		if (!_orders.containsKey(id_) || !strings.is_ok(what)) return false;
+		if (!_orders.containsKey(id_) || !strings.is_ok(what_)) return false;
 
 		order info = new order(_orders.get(id_));
 
-		if (what.equals(START)) info._start = val_;
-		else if (what.equals(STOP)) info._stop = val_;
+		if (what_.equals(START)) info._start = val_;
+		else if (what_.equals(STOP)) info._stop = val_;
 		else return false;
 
 		_orders.put(id_, info);

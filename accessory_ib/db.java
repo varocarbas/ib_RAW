@@ -29,22 +29,22 @@ public class db
 	public static final String FIELD_HALTED = types.CONFIG_IB_DB_MARKET_FIELD_HALTED;
 	public static final String FIELD_HALTED_TOT = types.CONFIG_IB_DB_MARKET_FIELD_HALTED_TOT;
 	
-	public static final String DEFAULT_SOURCE_MARKET = _defaults.DB_MARKET_SOURCE;
-	public static final String DEFAULT_FIELD_SYMBOL = _defaults.DB_COMMON_FIELD_SYMBOL;
-	public static final String DEFAULT_FIELD_PRICE = _defaults.DB_COMMON_FIELD_PRICE;
-	public static final String DEFAULT_FIELD_SIZE = _defaults.DB_COMMON_FIELD_SIZE;
-	public static final String DEFAULT_FIELD_TIME = _defaults.DB_MARKET_FIELD_TIME;
-	public static final String DEFAULT_FIELD_OPEN = _defaults.DB_MARKET_FIELD_OPEN;
-	public static final String DEFAULT_FIELD_CLOSE = _defaults.DB_MARKET_FIELD_CLOSE;
-	public static final String DEFAULT_FIELD_LOW = _defaults.DB_MARKET_FIELD_LOW;
-	public static final String DEFAULT_FIELD_HIGH = _defaults.DB_MARKET_FIELD_HIGH;
-	public static final String DEFAULT_FIELD_VOLUME = _defaults.DB_MARKET_FIELD_VOLUME;		
-	public static final String DEFAULT_FIELD_ASK = _defaults.DB_MARKET_FIELD_ASK;
-	public static final String DEFAULT_FIELD_ASK_SIZE = _defaults.DB_MARKET_FIELD_ASK_SIZE;
-	public static final String DEFAULT_FIELD_BID = _defaults.DB_MARKET_FIELD_BID;
-	public static final String DEFAULT_FIELD_BID_SIZE = _defaults.DB_MARKET_FIELD_BID_SIZE;
-	public static final String DEFAULT_FIELD_HALTED = _defaults.DB_MARKET_FIELD_HALTED;
-	public static final String DEFAULT_FIELD_HALTED_TOT = _defaults.DB_MARKET_FIELD_HALTED_TOT;
+	public static final String DEFAULT_TABLE_MARKET = _defaults.DB_MARKET_TABLE;
+	public static final String DEFAULT_COL_SYMBOL = _defaults.DB_COMMON_COL_SYMBOL;
+	public static final String DEFAULT_COL_PRICE = _defaults.DB_COMMON_COL_PRICE;
+	public static final String DEFAULT_COL_SIZE = _defaults.DB_COMMON_COL_SIZE;
+	public static final String DEFAULT_COL_TIME = _defaults.DB_MARKET_COL_TIME;
+	public static final String DEFAULT_COL_OPEN = _defaults.DB_MARKET_COL_OPEN;
+	public static final String DEFAULT_COL_CLOSE = _defaults.DB_MARKET_COL_CLOSE;
+	public static final String DEFAULT_COL_LOW = _defaults.DB_MARKET_COL_LOW;
+	public static final String DEFAULT_COL_HIGH = _defaults.DB_MARKET_COL_HIGH;
+	public static final String DEFAULT_COL_VOLUME = _defaults.DB_MARKET_COL_VOLUME;		
+	public static final String DEFAULT_COL_ASK = _defaults.DB_MARKET_COL_ASK;
+	public static final String DEFAULT_COL_ASK_SIZE = _defaults.DB_MARKET_COL_ASK_SIZE;
+	public static final String DEFAULT_COL_BID = _defaults.DB_MARKET_COL_BID;
+	public static final String DEFAULT_COL_BID_SIZE = _defaults.DB_MARKET_COL_BID_SIZE;
+	public static final String DEFAULT_COL_HALTED = _defaults.DB_MARKET_COL_HALTED;
+	public static final String DEFAULT_COL_HALTED_TOT = _defaults.DB_MARKET_COL_HALTED_TOT;
 	
 	static { ini.load(); }
 

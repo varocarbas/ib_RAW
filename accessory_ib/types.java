@@ -6,13 +6,17 @@ import accessory.strings;
 
 public class types
 {
-	//------ To be synced with get_all_subtypes().
+	//--------- To be synced with get_all_subtypes().
 
-	//--- To be synced with the corresponding _ini and _config methods/variables.
-	
+	//------ To be synced with the corresponding config methods/variables, mainly via config_ini.
+
 	//Note for DB types: the sources/fields are the types/ids, constant, used in most of the code. 
 	//The tables/cols are the values, variable, only used when performing the corresponding query.
-
+	//The config class deals with the main in-memory setup, including that source-table/field-col mapping.
+	//That is, the given type, the key which remains constant, (e.g., CONFIG_DB_FIELD_WHATEVER) is the 
+	//source/field and the associated value, which can be modified at runtime, (e.g., "whatever") is the 
+	//table/col.
+	
 	public static final String CONFIG_IB = "config_ib";
 	public static final String CONFIG_IB_CURRENCY = "config_ib_currency";
 
@@ -52,7 +56,7 @@ public class types
 	public static final String CONFIG_IB_DB_MARKET_FIELD_HALTED = "config_ib_db_market_field_halted";
 	public static final String CONFIG_IB_DB_MARKET_FIELD_HALTED_TOT = "config_ib_db_market_field_halted_tot";
 	//------
-
+	
 	public static final String CONN = "conn";
 	public static final String CONN_PAPER = "conn_paper";
 	public static final String CONN_REAL = "conn_real";
@@ -97,8 +101,8 @@ public class types
 	public static final String ERROR_SYNC_TIME = "error_sync_time";
 	public static final String ERROR_ASYNC = "error_async";
 	public static final String ERROR_ASYNC_TIME = "error_async_time";
-	//------
-	//---------------------------
+	//---
+	//---------
 
 	static { ini.load(); }
 
