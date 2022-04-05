@@ -203,6 +203,7 @@ public class wrapper implements EWrapper
 		//System.out.println("CommissionReport. ["+commissionReport.execId()+"] - ["+commissionReport.commission()+"] ["+commissionReport.currency()+"] RPNL ["+commissionReport.realizedPNL()+"]");
 	}
 	//! [commissionreport]
+	
 	//-----------------------------------------------------
 	//-----------------------------------------------------
 	
