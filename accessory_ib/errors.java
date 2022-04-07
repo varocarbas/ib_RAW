@@ -32,7 +32,7 @@ public class errors
 			changed = true;
 		}
 
-		accessory.errors.manage(info, exit_);
+		accessory.errors.manage(info);
 
 		if (changed) accessory.config.update_logs(key, cur_val);
 	}

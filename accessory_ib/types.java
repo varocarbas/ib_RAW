@@ -91,6 +91,7 @@ public class types
 	public static final String ORDER_UPDATE_STOP_MARKET = "order_update_stop_market";
 
 	//--- Types to be synced with get_all_types_error().
+	public static final String ERROR = "error";
 	public static final String ERROR_CONN = "error_conn";
 	public static final String ERROR_CONN_NONE = "error_conn_none";
 	public static final String ERROR_CONN_ID = "error_conn_id";
@@ -218,6 +219,7 @@ public class types
 			ORDER_UPDATE_START_VALUE, ORDER_UPDATE_START_MARKET,
 			ORDER_UPDATE_STOP_VALUE, ORDER_UPDATE_STOP_MARKET,
 
+			//ERROR
 			//ERROR_CONN
 			ERROR_CONN_NONE, ERROR_CONN_ID, ERROR_CONN_TYPE,
 			//ERROR_SYNC
