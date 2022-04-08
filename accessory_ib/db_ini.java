@@ -2,6 +2,7 @@ package accessory_ib;
 
 import java.util.HashMap;
 
+import accessory._defaults;
 import accessory.data;
 import accessory.db_field;
 import accessory.errors;
@@ -9,8 +10,7 @@ import accessory.strings;
 
 class db_ini 
 {
-	public static final String ERROR_SETUPS = types.ERROR_IB_INI_DB_SETUPS;
-	public static final String ERROR_SOURCES = types.ERROR_IB_INI_DB_SOURCES;
+	public static final String ERROR_DBS = types.ERROR_IB_INI_DB_DBS;
 	
 	private static boolean _populated = false;
 	
@@ -19,8 +19,7 @@ class db_ini
 		if (_populated) return;
 		
 		String error = strings.DEFAULT;
-		if (!populate_all_setups()) error = ERROR_SETUPS;
-		if (error.equals(strings.DEFAULT) && !populate_all_sources()) error = ERROR_SOURCES;
+		if (!populate_all_dbs()) error = ERROR_DBS;
 
 		_populated = true;
 		if (error.equals(strings.DEFAULT)) return;
@@ -29,22 +28,22 @@ class db_ini
 		errors.manage(error);
 	}
 	
-	private static boolean populate_all_setups()
-	{
-		return true;
-	}
-	
-	private static boolean populate_all_sources()
+	private static boolean populate_all_dbs()
 	{	
 		boolean is_ok = true;
-
-		String main = types.CONFIG_IB_DB; 
+		
+		HashMap<String, Object[]> sources = new HashMap<String, Object[]>();
+		
+		String db = types.CONFIG_IB_DB;
+		String name = _defaults.STRINGS;
+		
 		String source = types.CONFIG_IB_DB_MARKET_SOURCE;
-		String table = "ib_market";		
+		String table = "ib_market";
 		HashMap<String, Object[]> fields = accessory.db_ini.get_fields(get_fields_market(), types.CONFIG_IB_DB_MARKET_FIELD);
-
-		is_ok = accessory.db_ini.populate_source(main, source, table, fields);
-
+		sources = accessory.db_ini.add_source(source, table, fields, sources);
+		
+		is_ok = accessory.db_ini.populate_db(db, name, sources, null);
+		
 		return is_ok;
 	}
 	

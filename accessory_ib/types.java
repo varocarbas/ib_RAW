@@ -79,8 +79,7 @@ public class types
 	public static final String ERROR_IB = "error_ib";
 	public static final String ERROR_IB_INI = "error_ib_ini";
 	public static final String ERROR_IB_INI_DB = "error_ib_ini_db";
-	public static final String ERROR_IB_INI_DB_SETUPS = "error_ib_ini_db_setups";
-	public static final String ERROR_IB_INI_DB_SOURCES = "error_ib_ini_db_sources";
+	public static final String ERROR_IB_INI_DB_DBS = "error_ib_ini_db_dbs";
 	public static final String ERROR_IB_CONN = "error_ib_conn";
 	public static final String ERROR_IB_CONN_NONE = "error_ib_conn_none";
 	public static final String ERROR_IB_CONN_ID = "error_ib_conn_id";
@@ -204,7 +203,8 @@ public class types
 
 			//ERROR_IB
 			//ERROR_IB_INI
-			ERROR_IB_INI_DB, ERROR_IB_INI_DB_SETUPS, ERROR_IB_INI_DB_SOURCES,
+			ERROR_IB_INI_DB, 
+			ERROR_IB_INI_DB_DBS,
 			//ERROR_IB_CONN
 			ERROR_IB_CONN_NONE, ERROR_IB_CONN_ID, ERROR_IB_CONN_TYPE,
 			//ERROR_IB_SYNC
