@@ -12,10 +12,9 @@ public class db
 {	
 	public static final String SOURCE_MARKET = types.CONFIG_IB_DB_MARKET_SOURCE;
 	
-	public static final String FIELD_SYMBOL = types.CONFIG_IB_DB_COMMON_FIELD_SYMBOL;
-	public static final String FIELD_PRICE = types.CONFIG_IB_DB_COMMON_FIELD_PRICE;
-	public static final String FIELD_SIZE = types.CONFIG_IB_DB_COMMON_FIELD_SIZE;
-	
+	public static final String FIELD_SYMBOL = types.CONFIG_IB_DB_MARKET_FIELD_SYMBOL;
+	public static final String FIELD_PRICE = types.CONFIG_IB_DB_MARKET_FIELD_PRICE;
+	public static final String FIELD_SIZE = types.CONFIG_IB_DB_MARKET_FIELD_SIZE;
 	public static final String FIELD_TIME = types.CONFIG_IB_DB_MARKET_FIELD_TIME;
 	public static final String FIELD_OPEN = types.CONFIG_IB_DB_MARKET_FIELD_OPEN;
 	public static final String FIELD_CLOSE = types.CONFIG_IB_DB_MARKET_FIELD_CLOSE;
@@ -28,23 +27,6 @@ public class db
 	public static final String FIELD_BID_SIZE = types.CONFIG_IB_DB_MARKET_FIELD_BID_SIZE;
 	public static final String FIELD_HALTED = types.CONFIG_IB_DB_MARKET_FIELD_HALTED;
 	public static final String FIELD_HALTED_TOT = types.CONFIG_IB_DB_MARKET_FIELD_HALTED_TOT;
-	
-	public static final String DEFAULT_TABLE_MARKET = _defaults.DB_MARKET_TABLE;
-	public static final String DEFAULT_COL_SYMBOL = _defaults.DB_COMMON_COL_SYMBOL;
-	public static final String DEFAULT_COL_PRICE = _defaults.DB_COMMON_COL_PRICE;
-	public static final String DEFAULT_COL_SIZE = _defaults.DB_COMMON_COL_SIZE;
-	public static final String DEFAULT_COL_TIME = _defaults.DB_MARKET_COL_TIME;
-	public static final String DEFAULT_COL_OPEN = _defaults.DB_MARKET_COL_OPEN;
-	public static final String DEFAULT_COL_CLOSE = _defaults.DB_MARKET_COL_CLOSE;
-	public static final String DEFAULT_COL_LOW = _defaults.DB_MARKET_COL_LOW;
-	public static final String DEFAULT_COL_HIGH = _defaults.DB_MARKET_COL_HIGH;
-	public static final String DEFAULT_COL_VOLUME = _defaults.DB_MARKET_COL_VOLUME;		
-	public static final String DEFAULT_COL_ASK = _defaults.DB_MARKET_COL_ASK;
-	public static final String DEFAULT_COL_ASK_SIZE = _defaults.DB_MARKET_COL_ASK_SIZE;
-	public static final String DEFAULT_COL_BID = _defaults.DB_MARKET_COL_BID;
-	public static final String DEFAULT_COL_BID_SIZE = _defaults.DB_MARKET_COL_BID_SIZE;
-	public static final String DEFAULT_COL_HALTED = _defaults.DB_MARKET_COL_HALTED;
-	public static final String DEFAULT_COL_HALTED_TOT = _defaults.DB_MARKET_COL_HALTED_TOT;
 	
 	static { ini.load(); }
 

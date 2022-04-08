@@ -144,7 +144,7 @@ public class async
 			items.put("error_msg", error_msg_);
 
 			String message = arrays.to_string(items, null, null, null);
-			message = "IB " + misc.SEPARATOR_CONTENT + types.ERROR_ASYNC + misc.SEPARATOR_CONTENT + message;
+			message = "IB " + misc.SEPARATOR_CONTENT + types.ERROR_IB_ASYNC + misc.SEPARATOR_CONTENT + message;
 
 			logs.update(message, null, true);	
 		}

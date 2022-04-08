@@ -6,17 +6,6 @@ import accessory.strings;
 
 public class types
 {
-	//--------- To be synced with get_all_subtypes().
-
-	//------ To be synced with the corresponding config methods/variables, mainly via config_ini.
-
-	//Note for DB types: the sources/fields are the types/ids, constant, used in most of the code. 
-	//The tables/cols are the values, variable, only used when performing the corresponding query.
-	//The config class deals with the main in-memory setup, including that source-table/field-col mapping.
-	//That is, the given type, the key which remains constant, (e.g., CONFIG_DB_FIELD_WHATEVER) is the 
-	//source/field and the associated value, which can be modified at runtime, (e.g., "whatever") is the 
-	//table/col.
-	
 	public static final String CONFIG_IB = "config_ib";
 	public static final String CONFIG_IB_CURRENCY = "config_ib_currency";
 
@@ -35,15 +24,13 @@ public class types
 	public static final String CONFIG_IB_ORDER_QUANTITY_INT = "config_ib_order_quantity_int";
 
 	public static final String CONFIG_IB_DB = "config_ib_db";
-	public static final String CONFIG_IB_DB_COMMON = "config_ib_db_common";
-	public static final String CONFIG_IB_DB_COMMON_FIELD_SYMBOL = "config_ib_db_common_field_symbol";
-	public static final String CONFIG_IB_DB_COMMON_FIELD_PRICE = "config_ib_db_common_field_price";
-	public static final String CONFIG_IB_DB_COMMON_FIELD_SIZE = "config_ib_db_common_field_size";
 	public static final String CONFIG_IB_DB_MARKET = "config_ib_db_market";
 	public static final String CONFIG_IB_DB_MARKET_SOURCE = "config_ib_db_market_source";
+	public static final String CONFIG_IB_DB_MARKET_FIELD = "config_ib_db_market_field";
+	public static final String CONFIG_IB_DB_MARKET_FIELD_SIZE = "config_ib_db_market_field_size";
 	public static final String CONFIG_IB_DB_MARKET_FIELD_TIME = "config_ib_db_market_field_time";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_SYMBOL = CONFIG_IB_DB_COMMON_FIELD_SYMBOL;
-	public static final String CONFIG_IB_DB_MARKET_FIELD_PRICE = CONFIG_IB_DB_COMMON_FIELD_PRICE;
+	public static final String CONFIG_IB_DB_MARKET_FIELD_SYMBOL = "config_ib_db_market_field_symbol";
+	public static final String CONFIG_IB_DB_MARKET_FIELD_PRICE = "config_ib_db_market_field_price";
 	public static final String CONFIG_IB_DB_MARKET_FIELD_OPEN = "config_ib_db_market_field_open";
 	public static final String CONFIG_IB_DB_MARKET_FIELD_CLOSE = "config_ib_db_market_field_close";
 	public static final String CONFIG_IB_DB_MARKET_FIELD_LOW = "config_ib_db_market_field_low";
@@ -55,7 +42,6 @@ public class types
 	public static final String CONFIG_IB_DB_MARKET_FIELD_BID_SIZE = "config_ib_db_market_field_bid_size";
 	public static final String CONFIG_IB_DB_MARKET_FIELD_HALTED = "config_ib_db_market_field_halted";
 	public static final String CONFIG_IB_DB_MARKET_FIELD_HALTED_TOT = "config_ib_db_market_field_halted_tot";
-	//------
 	
 	public static final String CONN = "conn";
 	public static final String CONN_PAPER = "conn_paper";
@@ -90,36 +76,37 @@ public class types
 	public static final String ORDER_UPDATE_STOP_VALUE = "order_update_stop_value";
 	public static final String ORDER_UPDATE_STOP_MARKET = "order_update_stop_market";
 
-	//--- Types to be synced with get_all_types_error().
-	public static final String ERROR = "error";
-	public static final String ERROR_CONN = "error_conn";
-	public static final String ERROR_CONN_NONE = "error_conn_none";
-	public static final String ERROR_CONN_ID = "error_conn_id";
-	public static final String ERROR_CONN_TYPE = "error_conn_type";
-	public static final String ERROR_SYNC = "error_sync";
-	public static final String ERROR_SYNC_ID = "error_sync_id";
-	public static final String ERROR_SYNC_ID2 = "error_sync_id2";
-	public static final String ERROR_SYNC_TIME = "error_sync_time";
-	public static final String ERROR_ASYNC = "error_async";
-	public static final String ERROR_ASYNC_TIME = "error_async_time";
-	//---
-	//---------
+	public static final String ERROR_IB = "error_ib";
+	public static final String ERROR_IB_INI = "error_ib_ini";
+	public static final String ERROR_IB_INI_DB = "error_ib_ini_db";
+	public static final String ERROR_IB_INI_DB_SETUPS = "error_ib_ini_db_setups";
+	public static final String ERROR_IB_INI_DB_SOURCES = "error_ib_ini_db_sources";
+	public static final String ERROR_IB_CONN = "error_ib_conn";
+	public static final String ERROR_IB_CONN_NONE = "error_ib_conn_none";
+	public static final String ERROR_IB_CONN_ID = "error_ib_conn_id";
+	public static final String ERROR_IB_CONN_TYPE = "error_ib_conn_type";
+	public static final String ERROR_IB_SYNC = "error_ib_sync";
+	public static final String ERROR_IB_SYNC_ID = "error_ib_sync_id";
+	public static final String ERROR_IB_SYNC_ID2 = "error_ib_sync_id2";
+	public static final String ERROR_IB_SYNC_TIME = "error_ib_sync_time";
+	public static final String ERROR_IB_ASYNC = "error_ib_async";
+	public static final String ERROR_IB_ASYNC_TIME = "error_ib_async_time";
 
 	static { ini.load(); }
 
 	public static String check_conn(String subtype_, String add_remove_)
 	{
-		return accessory.types.check_subtype(subtype_, get_subtypes(CONN), null, null);
+		return accessory.types.check_type(subtype_, get_subtypes(CONN));
 	}
 
 	public static String check_async(String subtype_)
 	{
-		return accessory.types.check_subtype(subtype_, get_subtypes(ASYNC), null, null);
+		return accessory.types.check_type(subtype_, get_subtypes(ASYNC));
 	}
 
 	public static String check_sync(String subtype_, boolean is_data_)
 	{
-		return accessory.types.check_subtype(subtype_, get_subtypes_sync(is_data_), null, null);
+		return accessory.types.check_type(subtype_, get_subtypes_sync(is_data_));
 	}
 
 	public static String[] get_subtypes_sync(boolean is_data_)
@@ -134,22 +121,22 @@ public class types
 
 	public static String check_order(String subtype_)
 	{
-		return accessory.types.check_subtype(subtype_, get_subtypes(types.ORDER), null, null);
+		return accessory.types.check_type(subtype_, get_subtypes(types.ORDER));
 	}
 
 	public static String check_order_place(String subtype_)
 	{
-		return accessory.types.check_subtype(subtype_, get_subtypes(types.ORDER_PLACE), null, null);
+		return accessory.types.check_type(subtype_, get_subtypes(types.ORDER_PLACE));
 	}
 
 	public static String check_order_update(String subtype_)
 	{
-		return accessory.types.check_subtype(subtype_, get_subtypes(types.ORDER_UPDATE), null, null);
+		return accessory.types.check_type(subtype_, get_subtypes(types.ORDER_UPDATE));
 	}
 
 	public static String check_error(String subtype_, String[] types_)
 	{
-		return accessory.types.check_subtype(subtype_, get_subtypes_errors(types_), null, null);
+		return accessory.types.check_type(subtype_, get_subtypes_errors(types_));
 	}
 
 	public static String[] get_subtypes_errors(String[] types_)
@@ -162,10 +149,7 @@ public class types
 
 	private static String[] get_all_types_error()
 	{
-		return new String[]
-		{
-			ERROR_CONN, ERROR_SYNC, ERROR_ASYNC
-		};
+		return new String[] { ERROR_IB_CONN, ERROR_IB_SYNC, ERROR_IB_ASYNC };
 	}
 
 	private static String[] get_subtypes(String type_)
@@ -187,12 +171,11 @@ public class types
 			CONFIG_IB_ASYNC_STORAGE_MEMORY, CONFIG_IB_ASYNC_STORAGE_DB,
 			//CONFIG_IB_ORDER
 			CONFIG_IB_ORDER_TIF, CONFIG_IB_ORDER_QUANTITY_INT,
-			//CONFIG_IB_DB
-			//CONFIG_IB_DB_COMMON
-			CONFIG_IB_DB_COMMON_FIELD_SYMBOL, CONFIG_IB_DB_COMMON_FIELD_PRICE, CONFIG_IB_DB_COMMON_FIELD_SIZE,
 
 			//CONFIG_IB_DB_MARKET
 			CONFIG_IB_DB_MARKET_SOURCE,
+			CONFIG_IB_DB_MARKET_FIELD,
+			CONFIG_IB_DB_MARKET_FIELD_SYMBOL, CONFIG_IB_DB_MARKET_FIELD_PRICE, CONFIG_IB_DB_MARKET_FIELD_SIZE,
 			CONFIG_IB_DB_MARKET_FIELD_TIME, CONFIG_IB_DB_MARKET_FIELD_SYMBOL, CONFIG_IB_DB_MARKET_FIELD_PRICE,
 			CONFIG_IB_DB_MARKET_FIELD_OPEN, CONFIG_IB_DB_MARKET_FIELD_CLOSE, CONFIG_IB_DB_MARKET_FIELD_LOW,
 			CONFIG_IB_DB_MARKET_FIELD_HIGH, CONFIG_IB_DB_MARKET_FIELD_VOLUME, CONFIG_IB_DB_MARKET_FIELD_ASK,
@@ -219,12 +202,14 @@ public class types
 			ORDER_UPDATE_START_VALUE, ORDER_UPDATE_START_MARKET,
 			ORDER_UPDATE_STOP_VALUE, ORDER_UPDATE_STOP_MARKET,
 
-			//ERROR
-			//ERROR_CONN
-			ERROR_CONN_NONE, ERROR_CONN_ID, ERROR_CONN_TYPE,
-			//ERROR_SYNC
-			ERROR_SYNC_ID, ERROR_SYNC_ID2, ERROR_SYNC_TIME
-			//ERROR_ASYNC
+			//ERROR_IB
+			//ERROR_IB_INI
+			ERROR_IB_INI_DB, ERROR_IB_INI_DB_SETUPS, ERROR_IB_INI_DB_SOURCES,
+			//ERROR_IB_CONN
+			ERROR_IB_CONN_NONE, ERROR_IB_CONN_ID, ERROR_IB_CONN_TYPE,
+			//ERROR_IB_SYNC
+			ERROR_IB_SYNC_ID, ERROR_IB_SYNC_ID2, ERROR_IB_SYNC_TIME
+			//ERROR_IB_ASYNC
 		};		
 	}
 }

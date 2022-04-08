@@ -1,117 +1,82 @@
 package accessory_ib;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import accessory.data;
 import accessory.db_field;
-import accessory.size;
+import accessory.errors;
+import accessory.strings;
 
 class db_ini 
 {
-	public static void load() 
+	public static final String ERROR_SETUPS = types.ERROR_IB_INI_DB_SETUPS;
+	public static final String ERROR_SOURCES = types.ERROR_IB_INI_DB_SOURCES;
+	
+	private static boolean _populated = false;
+	
+	public static void populate() 
 	{
-		load_types();
-		load_sources();
-	}
+		if (_populated) return;
+		
+		String error = strings.DEFAULT;
+		if (!populate_all_setups()) error = ERROR_SETUPS;
+		if (error.equals(strings.DEFAULT) && !populate_all_sources()) error = ERROR_SOURCES;
 
-	private static void load_sources()
-	{
-		HashMap<String, String> source_mains = new HashMap<String, String>();
-		source_mains.put(db.SOURCE_MARKET, types.CONFIG_IB_DB);
-		
-		load_sources_all(source_mains);
-	}
-	
-	//Method including the types more closely related to the DB setup.
-	private static void load_types()
-	{
-		load_types_config();
-	}
-	
-	private static void load_types_config()
-	{
-		load_config_sources();
-	}
-	
-	private static void load_config_sources()
-	{
-		String[] mains = new String[] { types.CONFIG_IB_DB  };
-		
-		for (String main: mains)
-		{
-			accessory.db_ini.load_config_sources_default_fields(main);	
-			
-			if (main.equals(types.CONFIG_IB_DB)) load_config_sources_db(main);
-		}
-	}
-	
-	private static void load_config_sources_db(String main_)
-	{
-		accessory.config.update_ini(main_, db.FIELD_SYMBOL, db.DEFAULT_COL_SYMBOL);
-		accessory.config.update_ini(main_, db.FIELD_PRICE, db.DEFAULT_COL_PRICE);
+		_populated = true;
+		if (error.equals(strings.DEFAULT)) return;
 
-		accessory.config.update_ini(main_, db.SOURCE_MARKET, db.DEFAULT_TABLE_MARKET);
-		accessory.config.update_ini(main_, db.FIELD_TIME, db.DEFAULT_COL_TIME);
-		accessory.config.update_ini(main_, db.FIELD_OPEN, db.DEFAULT_COL_OPEN);
-		accessory.config.update_ini(main_, db.FIELD_CLOSE, db.DEFAULT_COL_CLOSE);
-		accessory.config.update_ini(main_, db.FIELD_LOW, db.DEFAULT_COL_LOW);
-		accessory.config.update_ini(main_, db.FIELD_HIGH, db.DEFAULT_COL_HIGH);
-		accessory.config.update_ini(main_, db.FIELD_VOLUME, db.DEFAULT_COL_VOLUME);
-		accessory.config.update_ini(main_, db.FIELD_ASK, db.DEFAULT_COL_ASK);
-		accessory.config.update_ini(main_, db.FIELD_ASK_SIZE, db.DEFAULT_COL_ASK_SIZE);
-		accessory.config.update_ini(main_, db.FIELD_BID, db.DEFAULT_COL_BID);
-		accessory.config.update_ini(main_, db.FIELD_BID_SIZE, db.DEFAULT_COL_BID_SIZE);
-		accessory.config.update_ini(main_, db.FIELD_HALTED, db.DEFAULT_COL_HALTED);
-		accessory.config.update_ini(main_, db.FIELD_HALTED_TOT, db.DEFAULT_COL_HALTED_TOT);
-		
-		accessory.db_ini.load_config_sources_default_fields(main_);
+		errors._exit = true;
+		errors.manage(error);
 	}
 	
-	private static void load_sources_all(HashMap<String, String> source_mains_)
-	{		
-		for (Entry<String, String> item: source_mains_.entrySet())
-		{
-			String source = item.getKey();
-			String main = item.getValue();
-		
-			load_sources_source(source);			
-			accessory.db.add_source_main(source, main);
-		}
-	}
-	
-	private static void load_sources_source(String source_)
+	private static boolean populate_all_setups()
 	{
-		if (source_.equals(db.SOURCE_MARKET)) load_sources_source_market(source_);
+		return true;
 	}
 	
-	private static void load_sources_source_market(String source_)
-	{
-		if (accessory.db.source_is_ok(source_)) return;
+	private static boolean populate_all_sources()
+	{	
+		boolean is_ok = true;
 
-		HashMap<String, db_field> fields = accessory.db.get_default_fields();
+		String main = types.CONFIG_IB_DB; 
+		String source = types.CONFIG_IB_DB_MARKET_SOURCE;
+		String table = "ib_market";		
+		HashMap<String, Object[]> fields = accessory.db_ini.get_fields(get_fields_market(), types.CONFIG_IB_DB_MARKET_FIELD);
+
+		is_ok = accessory.db_ini.populate_source(main, source, table, fields);
+
+		return is_ok;
+	}
 	
-		fields.put(db.FIELD_SYMBOL, new db_field(data.STRING, 50, 0));
-		fields.put(db.FIELD_VOLUME, new db_field(data.DECIMAL, 10, size.DEFAULT_DECIMALS));
-		fields.put(db.FIELD_HALTED, new db_field(data.STRING, 50, 0));
-		fields.put(db.FIELD_HALTED_TOT, new db_field(data.INT, 2, 0));
+	private static HashMap<String, db_field> get_fields_market()
+	{
+		HashMap<String, db_field> info = new HashMap<String, db_field>();
+	
+		info.put(types.CONFIG_IB_DB_MARKET_FIELD_SYMBOL, new db_field(data.STRING, 50, 0));
+		info.put(types.CONFIG_IB_DB_MARKET_FIELD_TIME, new db_field(data.STRING, accessory.dates.SIZE_TIME_SHORT, 0));
+		info.put(types.CONFIG_IB_DB_MARKET_FIELD_VOLUME, new db_field(data.DECIMAL, 10, accessory._defaults.NUMBERS_SIZE_DECIMALS));
+		info.put(types.CONFIG_IB_DB_MARKET_FIELD_HALTED, new db_field(data.STRING, 50, 0));
+		info.put(types.CONFIG_IB_DB_MARKET_FIELD_HALTED_TOT, new db_field(data.INT, 2, 0));
 		
 		String[] ids = 
 		{
-			db.FIELD_OPEN, db.FIELD_CLOSE, db.FIELD_LOW, db.FIELD_HIGH, 
-			db.FIELD_ASK, db.FIELD_BID, db.FIELD_ASK_SIZE, db.FIELD_BID_SIZE
+			types.CONFIG_IB_DB_MARKET_FIELD_PRICE, types.CONFIG_IB_DB_MARKET_FIELD_OPEN, 
+			types.CONFIG_IB_DB_MARKET_FIELD_CLOSE, types.CONFIG_IB_DB_MARKET_FIELD_LOW, 
+			types.CONFIG_IB_DB_MARKET_FIELD_HIGH, types.CONFIG_IB_DB_MARKET_FIELD_ASK, 
+			types.CONFIG_IB_DB_MARKET_FIELD_BID, types.CONFIG_IB_DB_MARKET_FIELD_SIZE, 
+			types.CONFIG_IB_DB_MARKET_FIELD_BID_SIZE
 		};
 		
 		for (String id: ids)
 		{
-			fields.put(id, get_default_decimal_field());
+			info.put(id, get_default_decimal_field());
 		}
-								
-		accessory.db.add_source(source_, fields);
+		
+		return info;
 	}
 	
 	private static db_field get_default_decimal_field()
 	{
-		return new db_field(data.DECIMAL, 10, size.DEFAULT_DECIMALS);
+		return new db_field(data.DECIMAL, 10, accessory._defaults.NUMBERS_SIZE_DECIMALS);
 	}
 }

@@ -178,7 +178,7 @@ public class sync
 		String temp = types.check_sync(type_, false);
 		if (!strings.is_ok(temp)) 
 		{
-			accessory_ib.errors.manage(types.ERROR_SYNC_ID, false);
+			accessory_ib.errors.manage(types.ERROR_IB_SYNC_ID, false);
 
 			return false;
 		}
@@ -186,7 +186,7 @@ public class sync
 		String temp2 = get_data_type(temp);
 		if (!strings.is_ok(types.check_sync(temp2, true))) 
 		{
-			accessory_ib.errors.manage(types.ERROR_SYNC_ID2, false);
+			accessory_ib.errors.manage(types.ERROR_IB_SYNC_ID2, false);
 
 			return false;
 		}
@@ -212,7 +212,7 @@ public class sync
 			long elapsed = dates.get_elapsed(start);
 			if (!_ignore_max_time && elapsed >= MAX_SECS_RETRIEVE) 
 			{
-				errors.manage(types.ERROR_SYNC_TIME, false);
+				errors.manage(types.ERROR_IB_SYNC_TIME, false);
 				is_ok = false;
 
 				break;

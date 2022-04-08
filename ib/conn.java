@@ -43,7 +43,7 @@ public class conn
 	{		
 		if (!_connected) connect();
 
-		if (!_connected) errors.manage(types.ERROR_CONN_NONE, false);
+		if (!_connected) errors.manage(types.ERROR_IB_CONN_NONE, false);
 
 		return _connected;
 	}
@@ -52,14 +52,14 @@ public class conn
 	{
 		String error = null;
 
-		if (!numbers.is_ok(id_, MIN_ID, MAX_ID)) error = types.ERROR_CONN_ID;
+		if (!numbers.is_ok(id_, MIN_ID, MAX_ID)) error = types.ERROR_IB_CONN_ID;
 		else 
 		{
 			_id = id_;
 			String type = check(type_);	
 
 			if (strings.is_ok(type)) _port = get_conn_port(type);
-			else error = types.ERROR_CONN_TYPE;
+			else error = types.ERROR_IB_CONN_TYPE;
 		}
 
 		if (strings.is_ok(error))
@@ -100,7 +100,7 @@ public class conn
 			if (_connected) break;
 			if (!_first_conn) misc.pause_secs(1);
 
-			errors.manage(types.ERROR_CONN_NONE, false);
+			errors.manage(types.ERROR_IB_CONN_NONE, false);
 		}
 	}
 

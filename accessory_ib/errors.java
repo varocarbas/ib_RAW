@@ -23,7 +23,7 @@ public class errors
 
 		String key = logs.FILE;
 		boolean cur_val = strings.to_boolean(accessory.config.get_logs(key));
-		boolean new_val = (exit_ || !type.equals(types.ERROR_CONN_NONE));
+		boolean new_val = (exit_ || !type.equals(types.ERROR_IB_CONN_NONE));
 
 		boolean changed = false;
 		if (new_val != cur_val)
@@ -59,9 +59,9 @@ public class errors
 	{
 		String message = strings.DEFAULT;
 
-		if (type_.equals(types.ERROR_CONN_NONE)) message = "Impossible to connect";
-		else if (type_.equals(types.ERROR_CONN_ID)) message = "Wrong connection ID";
-		else if (type_.equals(types.ERROR_CONN_TYPE)) message = "Wrong connection type";
+		if (type_.equals(types.ERROR_IB_CONN_NONE)) message = "Impossible to connect";
+		else if (type_.equals(types.ERROR_IB_CONN_ID)) message = "Wrong connection ID";
+		else if (type_.equals(types.ERROR_IB_CONN_TYPE)) message = "Wrong connection type";
 
 		return message;
 	}
@@ -77,9 +77,9 @@ public class errors
 	{
 		String message = strings.DEFAULT;
 
-		if (type_.equals(types.ERROR_SYNC_ID)) message = "Wrong sync ID";
-		else if (type_.equals(types.ERROR_SYNC_ID2)) message = "Wrong sync ID2";
-		else if (type_.equals(types.ERROR_SYNC_TIME)) message = "Sync call timed out";
+		if (type_.equals(types.ERROR_IB_SYNC_ID)) message = "Wrong sync ID";
+		else if (type_.equals(types.ERROR_IB_SYNC_ID2)) message = "Wrong sync ID2";
+		else if (type_.equals(types.ERROR_IB_SYNC_TIME)) message = "Sync call timed out";
 
 		return message;	
 	}
@@ -88,7 +88,7 @@ public class errors
 	{
 		String message = strings.DEFAULT;
 
-		if (type_.equals(types.ERROR_ASYNC_TIME)) message = "Async call timed out";
+		if (type_.equals(types.ERROR_IB_ASYNC_TIME)) message = "Async call timed out";
 
 		return message;	
 	}
