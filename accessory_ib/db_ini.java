@@ -5,7 +5,6 @@ import java.util.HashMap;
 import accessory._defaults;
 import accessory.data;
 import accessory.db_field;
-import accessory.errors;
 import accessory.strings;
 
 class db_ini 
@@ -24,8 +23,7 @@ class db_ini
 		_populated = true;
 		if (error.equals(strings.DEFAULT)) return;
 
-		errors._exit = true;
-		errors.manage(error);
+		accessory.ini.manage_error(error);
 	}
 	
 	private static boolean populate_all_dbs()
@@ -36,13 +34,14 @@ class db_ini
 		
 		String db = types.CONFIG_IB_DB;
 		String name = _defaults.STRINGS;
+		HashMap<String, Object> setup_vals = null;
 		
 		String source = types.CONFIG_IB_DB_MARKET_SOURCE;
 		String table = "ib_market";
 		HashMap<String, Object[]> fields = accessory.db_ini.get_fields(get_fields_market(), types.CONFIG_IB_DB_MARKET_FIELD);
 		sources = accessory.db_ini.add_source(source, table, fields, sources);
 		
-		is_ok = accessory.db_ini.populate_db(db, name, sources, null);
+		is_ok = accessory.db_ini.populate_db(db, name, sources, setup_vals);
 		
 		return is_ok;
 	}
