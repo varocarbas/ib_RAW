@@ -7,7 +7,7 @@ import com.ib.client.EReaderSignal;
 import accessory.misc;
 import accessory.numbers;
 import accessory.strings;
-import accessory_ib.ini;
+import accessory_ib._ini;
 import accessory_ib.errors;
 import accessory_ib.types;
 import external_ib.wrapper;
@@ -32,7 +32,7 @@ public class conn
 	private static final int PORT_GATEWAY = 4001;
 	private static final int PORT_GATEWAY_PAPER = 4002;
 
-	static { ini.load(); }
+	static { _ini.load(); }
 
 	public static String check(String type_)
 	{

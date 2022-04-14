@@ -20,6 +20,5 @@ public class _defaults
 	public static final boolean ASYNC_SNAPSHOT_QUICK = true;
 	public static final boolean ASYNC_SNAPSHOT_CONSTANT = true;
 
-	//Method meant to force this class to be loaded when required (e.g., when ini.load() is called).
-	public static void load() { } 
+	public static void populate() { } 
 }

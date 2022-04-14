@@ -8,7 +8,7 @@ import accessory.strings;
 
 public class errors
 {	
-	static { ini.load(); }
+	static { _ini.load(); }
 
 	public static void manage(String type_, boolean exit_)
 	{

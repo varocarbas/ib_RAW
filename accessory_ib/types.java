@@ -1,7 +1,6 @@
 package accessory_ib;
 
 import accessory.arrays;
-import accessory.ini;
 import accessory.strings;
 
 public class types
@@ -91,7 +90,7 @@ public class types
 	public static final String ERROR_IB_ASYNC = "error_ib_async";
 	public static final String ERROR_IB_ASYNC_TIME = "error_ib_async_time";
 
-	static { ini.load(); }
+	static { _ini.load(); }
 
 	public static String check_conn(String subtype_, String add_remove_)
 	{

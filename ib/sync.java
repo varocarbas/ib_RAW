@@ -8,7 +8,7 @@ import accessory.misc;
 import accessory.numbers;
 import accessory.strings;
 import accessory.dates;
-import accessory_ib.ini;
+import accessory_ib._ini;
 import accessory_ib._defaults;
 import accessory_ib.errors;
 import accessory_ib.types;
@@ -31,7 +31,7 @@ public class sync
 
 	private static final int MAX_SECS_RETRIEVE = 10;
 
-	static { ini.load(); }
+	static { _ini.load(); }
 
 	public static double get_funds()
 	{

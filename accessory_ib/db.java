@@ -28,7 +28,7 @@ public class db
 	public static final String FIELD_HALTED = types.CONFIG_IB_DB_MARKET_FIELD_HALTED;
 	public static final String FIELD_HALTED_TOT = types.CONFIG_IB_DB_MARKET_FIELD_HALTED_TOT;
 	
-	static { ini.load(); }
+	static { _ini.load(); }
 
 	public static HashMap<String, String> get_market_info(String symbol_)
 	{

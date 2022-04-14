@@ -5,12 +5,12 @@ import com.ib.client.Contract;
 import accessory.strings;
 import accessory.dates;
 import accessory_ib.config;
-import accessory_ib.ini;
+import accessory_ib._ini;
 import accessory_ib.types;
 
 public class common 
 {
-	static { ini.load(); }
+	static { _ini.load(); }
 	
 	public static Contract get_contract(String symbol_)
 	{
