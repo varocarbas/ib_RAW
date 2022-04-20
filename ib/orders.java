@@ -21,8 +21,8 @@ public class orders
 	private static HashMap<Integer, order> _orders = new HashMap<Integer, order>();
 	private static int MIN_ID = 0;
 
-	private static final String START = accessory.types.action_to_key(accessory.types.ACTIONS_START);
-	private static final String STOP = accessory.types.action_to_key(accessory.types.ACTIONS_STOP);
+	private static final String START = accessory.types.action_to_key(accessory.types.ACTION_START);
+	private static final String STOP = accessory.types.action_to_key(accessory.types.ACTION_STOP);
 	
 	static { _ini.load(); }
 

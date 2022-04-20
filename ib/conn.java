@@ -36,7 +36,7 @@ public class conn
 
 	public static String check(String type_)
 	{
-		return accessory_ib.types.check_conn(type_, accessory.types.ACTIONS_ADD);
+		return accessory_ib.types.check_conn(type_, accessory.types.ACTION_ADD);
 	}
 
 	public static boolean is_ok()
