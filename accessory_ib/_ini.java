@@ -8,7 +8,7 @@ public class _ini extends parent_ini
 	
 	public _ini() { }
 	
-	public static void load() { load_internal(_instance); }
+	public static void populate() { _instance.populate_all(); }
 	
 	protected void populate_first_basic() {  }
 	

@@ -16,7 +16,7 @@ public class _defaults
 
 	public static final int SYNC_ID = 1; 
 
-	public static final String ASYNC_STORAGE = types.CONFIG_IB_ASYNC_STORAGE_DB;
+	public static final String ASYNC_STORAGE = types.CONFIG_ASYNC_STORAGE_DB;
 	public static final boolean ASYNC_SNAPSHOT_QUICK = true;
 	public static final boolean ASYNC_SNAPSHOT_CONSTANT = true;
 

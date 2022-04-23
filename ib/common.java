@@ -10,7 +10,7 @@ import accessory_ib.types;
 
 public class common 
 {
-	static { _ini.load(); }
+	static { _ini.populate(); }
 	
 	public static Contract get_contract(String symbol_)
 	{
@@ -20,17 +20,14 @@ public class common
 
 		contract.symbol(symbol_);
 		contract.secType("STK");
-		contract.currency(config.get_root(types.CONFIG_IB_CURRENCY));
+		contract.currency(config.get_basic(types.CONFIG_BASIC_CURRENCY));
 		contract.exchange("SMART");	
 		contract.primaryExch("ISLAND");
 
 		return contract;
 	}
 
-	public static String get_market_time()
-	{
-		return dates.get_current_time(dates.TIME_SHORT, 0);
-	}
+	public static String get_market_time() { return dates.get_current_time(dates.TIME_SHORT, 0); }
 
 	public static String normalise_symbol(String symbol_)
 	{

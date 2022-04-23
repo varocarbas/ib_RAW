@@ -29,7 +29,7 @@ public class async
 	private static int MIN_ID = 1;
 	private static int MAX_ID = 2500;
 
-	static { _ini.load(); }
+	static { _ini.populate(); }
 
 	public static boolean snapshot_start(String symbol_, int data_)
 	{
@@ -108,7 +108,7 @@ public class async
 			if 
 			(
 				_market_retrieving.get(id_) && strings.are_equal(_market_type, types.ASYNC_MARKET_SNAPSHOT) && 
-				strings.to_boolean(config.get_async(types.CONFIG_IB_ASYNC_SNAPSHOT_QUICK))
+				strings.to_boolean(config.get_async(types.CONFIG_ASYNC_SNAPSHOT_QUICK))
 			)
 			{ _market_retrieved.put(id_, true); }
 		}
@@ -171,12 +171,9 @@ public class async
 		_market_retrieving.put(_market_id, true);
 		_market_retrieved.put(_market_id, false);
 
-		String storage = config.get_async(types.CONFIG_IB_ASYNC_STORAGE);
-		if (storage.equals(types.CONFIG_IB_ASYNC_STORAGE_MEMORY))
-		{
-			market_check_memory(symbol);
-		}
-		else if (storage.equals(types.CONFIG_IB_ASYNC_STORAGE_DB))
+		String storage = config.get_async(types.CONFIG_ASYNC_STORAGE);
+		if (storage.equals(types.CONFIG_ASYNC_STORAGE_MEMORY)) market_check_memory(symbol);
+		else if (storage.equals(types.CONFIG_ASYNC_STORAGE_DB))
 		{
 			if (!arrays.is_ok(db.get_market_info(symbol_))) db.insert_market(db.get_default_vals(), symbol_);
 		}
@@ -206,14 +203,11 @@ public class async
 		boolean is_ok = false;
 		if (!strings.is_ok(symbol_) || !strings.is_ok(key_) || val_ <= 0.0) return is_ok;
 
-		String storage = config.get_async(types.CONFIG_IB_ASYNC_STORAGE);
+		String storage = config.get_async(types.CONFIG_ASYNC_STORAGE);
 		if (!strings.is_ok(storage)) return is_ok;
 
-		if (storage.equals(types.CONFIG_IB_ASYNC_STORAGE_DB)) 
-		{	
-			is_ok = db.update_market_val(key_, val_, symbol_);
-		}
-		else if (storage.equals(types.CONFIG_IB_ASYNC_STORAGE_MEMORY)) 
+		if (storage.equals(types.CONFIG_ASYNC_STORAGE_DB)) is_ok = db.update_market_val(key_, val_, symbol_); 
+		else if (storage.equals(types.CONFIG_ASYNC_STORAGE_MEMORY)) 
 		{
 			String val = strings.to_string(val_);
 			

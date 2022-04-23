@@ -5,42 +5,41 @@ import accessory.strings;
 
 public class types
 {
-	public static final String CONFIG_IB = "config_ib";
-	public static final String CONFIG_IB_CURRENCY = "config_ib_currency";
+	public static final String CONFIG_BASIC_CURRENCY = "config_basic_currency";
 
-	public static final String CONFIG_IB_CONN = "config_ib_conn";
-	public static final String CONFIG_IB_CONN_TYPE = "config_ib_conn_type";
+	public static final String CONFIG_CONN = "config_conn";
+	public static final String CONFIG_CONN_TYPE = "config_conn_type";
 
-	public static final String CONFIG_IB_ASYNC = "config_ib_async";
-	public static final String CONFIG_IB_ASYNC_SNAPSHOT_QUICK = "config_ib_async_snapshot_quick";
-	public static final String CONFIG_IB_ASYNC_SNAPSHOT_CONSTANT = "config_ib_async_snapshot_constant";
-	public static final String CONFIG_IB_ASYNC_STORAGE = "config_ib_async_storage";
-	public static final String CONFIG_IB_ASYNC_STORAGE_MEMORY = "config_ib_async_storage_memory";
-	public static final String CONFIG_IB_ASYNC_STORAGE_DB = "config_ib_async_storage_db";
+	public static final String CONFIG_ASYNC = "config_async";
+	public static final String CONFIG_ASYNC_SNAPSHOT_QUICK = "config_async_snapshot_quick";
+	public static final String CONFIG_ASYNC_SNAPSHOT_CONSTANT = "config_async_snapshot_constant";
+	public static final String CONFIG_ASYNC_STORAGE = "config_async_storage";
+	public static final String CONFIG_ASYNC_STORAGE_MEMORY = "config_async_storage_memory";
+	public static final String CONFIG_ASYNC_STORAGE_DB = "config_async_storage_db";
 
-	public static final String CONFIG_IB_ORDER = "config_ib_order";
-	public static final String CONFIG_IB_ORDER_TIF = "config_ib_order_tif";
-	public static final String CONFIG_IB_ORDER_QUANTITY_INT = "config_ib_order_quantity_int";
+	public static final String CONFIG_ORDER = "config_order";
+	public static final String CONFIG_ORDER_TIF = "config_order_tif";
+	public static final String CONFIG_ORDER_QUANTITY_INT = "config_order_quantity_int";
 
-	public static final String CONFIG_IB_DB = "config_ib_db";
-	public static final String CONFIG_IB_DB_MARKET = "config_ib_db_market";
-	public static final String CONFIG_IB_DB_MARKET_SOURCE = "config_ib_db_market_source";
-	public static final String CONFIG_IB_DB_MARKET_FIELD = "config_ib_db_market_field";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_SIZE = "config_ib_db_market_field_size";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_TIME = "config_ib_db_market_field_time";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_SYMBOL = "config_ib_db_market_field_symbol";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_PRICE = "config_ib_db_market_field_price";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_OPEN = "config_ib_db_market_field_open";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_CLOSE = "config_ib_db_market_field_close";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_LOW = "config_ib_db_market_field_low";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_HIGH = "config_ib_db_market_field_high";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_VOLUME = "config_ib_db_market_field_volume";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_ASK = "config_ib_db_market_field_ask";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE = "config_ib_db_market_field_ask_size";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_BID = "config_ib_db_market_field_bid";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_BID_SIZE = "config_ib_db_market_field_bid_size";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_HALTED = "config_ib_db_market_field_halted";
-	public static final String CONFIG_IB_DB_MARKET_FIELD_HALTED_TOT = "config_ib_db_market_field_halted_tot";
+	public static final String CONFIG_DB_IB = "config_db_ib";
+	public static final String CONFIG_DB_IB_MARKET = "config_db_ib_market";
+	public static final String CONFIG_DB_IB_MARKET_SOURCE = "config_db_ib_market_source";
+	public static final String CONFIG_DB_IB_MARKET_FIELD = "config_db_ib_market_field";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_SIZE = "config_db_ib_market_field_size";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_TIME = "config_db_ib_market_field_time";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_SYMBOL = "config_db_ib_market_field_symbol";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_PRICE = "config_db_ib_market_field_price";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_OPEN = "config_db_ib_market_field_open";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_CLOSE = "config_db_ib_market_field_close";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_LOW = "config_db_ib_market_field_low";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_HIGH = "config_db_ib_market_field_high";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_VOLUME = "config_db_ib_market_field_volume";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_ASK = "config_db_ib_market_field_ask";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_ASK_SIZE = "config_db_ib_market_field_ask_size";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_BID = "config_db_ib_market_field_bid";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_BID_SIZE = "config_db_ib_market_field_bid_size";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_HALTED = "config_db_ib_market_field_halted";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_HALTED_TOT = "config_db_ib_market_field_halted_tot";
 	
 	public static final String CONN = "conn";
 	public static final String CONN_PAPER = "conn_paper";
@@ -90,52 +89,25 @@ public class types
 	public static final String ERROR_IB_ASYNC = "error_ib_async";
 	public static final String ERROR_IB_ASYNC_TIME = "error_ib_async_time";
 
-	static { _ini.load(); }
+	static { _ini.populate(); }
 
-	public static String check_conn(String subtype_, String add_remove_)
-	{
-		return accessory.types.check_type(subtype_, get_subtypes(CONN));
-	}
+	public static String check_conn(String subtype_, String add_remove_) { return accessory.types.check_type(subtype_, get_subtypes(CONN)); }
 
-	public static String check_async(String subtype_)
-	{
-		return accessory.types.check_type(subtype_, get_subtypes(ASYNC));
-	}
+	public static String check_async(String subtype_) { return accessory.types.check_type(subtype_, get_subtypes(ASYNC)); }
 
-	public static String check_sync(String subtype_, boolean is_data_)
-	{
-		return accessory.types.check_type(subtype_, get_subtypes_sync(is_data_));
-	}
+	public static String check_sync(String subtype_, boolean is_data_) { return accessory.types.check_type(subtype_, get_subtypes_sync(is_data_)); }
 
-	public static String[] get_subtypes_sync(boolean is_data_)
-	{		
-		return get_subtypes((is_data_ ? SYNC_DATA : SYNC));
-	}
+	public static String[] get_subtypes_sync(boolean is_data_) { return get_subtypes((is_data_ ? SYNC_DATA : SYNC)); }
 
-	public static boolean is_order(String subtype_)
-	{
-		return strings.is_ok(check_order(subtype_));
-	}
+	public static boolean is_order(String subtype_) { return strings.is_ok(check_order(subtype_)); }
 
-	public static String check_order(String subtype_)
-	{
-		return accessory.types.check_type(subtype_, get_subtypes(types.ORDER));
-	}
+	public static String check_order(String subtype_) { return accessory.types.check_type(subtype_, get_subtypes(types.ORDER)); }
 
-	public static String check_order_place(String subtype_)
-	{
-		return accessory.types.check_type(subtype_, get_subtypes(types.ORDER_PLACE));
-	}
+	public static String check_order_place(String subtype_) { return accessory.types.check_type(subtype_, get_subtypes(types.ORDER_PLACE)); }
 
-	public static String check_order_update(String subtype_)
-	{
-		return accessory.types.check_type(subtype_, get_subtypes(types.ORDER_UPDATE));
-	}
+	public static String check_order_update(String subtype_) { return accessory.types.check_type(subtype_, get_subtypes(types.ORDER_UPDATE)); }
 
-	public static String check_error(String subtype_, String[] types_)
-	{
-		return accessory.types.check_type(subtype_, get_subtypes_errors(types_));
-	}
+	public static String check_error(String subtype_, String[] types_) { return accessory.types.check_type(subtype_, get_subtypes_errors(types_)); }
 
 	public static String[] get_subtypes_errors(String[] types_)
 	{
@@ -145,70 +117,63 @@ public class types
 		);
 	}
 
-	private static String[] get_all_types_error()
-	{
-		return new String[] { ERROR_IB_CONN, ERROR_IB_SYNC, ERROR_IB_ASYNC };
-	}
+	private static String[] get_all_types_error() { return new String[] { ERROR_IB_CONN, ERROR_IB_SYNC, ERROR_IB_ASYNC }; }
 
-	private static String[] get_subtypes(String type_)
-	{
-		return accessory.types.get_subtypes(type_, get_all_subtypes());
-	}
+	private static String[] get_subtypes(String type_) { return accessory.types.get_subtypes(type_, get_all_subtypes()); }
 
 	private static String[] get_all_subtypes()
 	{
 		return new String[]
 		{
-			//CONFIG_IB
-			CONFIG_IB_CURRENCY,
-			//CONFIG_IB_CONN
-			CONFIG_IB_CONN_TYPE,
-			//CONFIG_IB_ASYNC
-			CONFIG_IB_ASYNC_SNAPSHOT_QUICK, 
-			//CONFIG_IB_ASYNC_STORAGE
-			CONFIG_IB_ASYNC_STORAGE_MEMORY, CONFIG_IB_ASYNC_STORAGE_DB,
-			//CONFIG_IB_ORDER
-			CONFIG_IB_ORDER_TIF, CONFIG_IB_ORDER_QUANTITY_INT,
-
-			//CONFIG_IB_DB_MARKET
-			CONFIG_IB_DB_MARKET_SOURCE,
-			CONFIG_IB_DB_MARKET_FIELD,
-			CONFIG_IB_DB_MARKET_FIELD_SYMBOL, CONFIG_IB_DB_MARKET_FIELD_PRICE, CONFIG_IB_DB_MARKET_FIELD_SIZE,
-			CONFIG_IB_DB_MARKET_FIELD_TIME, CONFIG_IB_DB_MARKET_FIELD_SYMBOL, CONFIG_IB_DB_MARKET_FIELD_PRICE,
-			CONFIG_IB_DB_MARKET_FIELD_OPEN, CONFIG_IB_DB_MARKET_FIELD_CLOSE, CONFIG_IB_DB_MARKET_FIELD_LOW,
-			CONFIG_IB_DB_MARKET_FIELD_HIGH, CONFIG_IB_DB_MARKET_FIELD_VOLUME, CONFIG_IB_DB_MARKET_FIELD_ASK,
-			CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE, CONFIG_IB_DB_MARKET_FIELD_BID, CONFIG_IB_DB_MARKET_FIELD_BID_SIZE, 
-			CONFIG_IB_DB_MARKET_FIELD_HALTED, CONFIG_IB_DB_MARKET_FIELD_HALTED_TOT,
+			CONFIG_BASIC_CURRENCY,
+			CONFIG_CONN,
+			CONFIG_CONN_TYPE,
+			CONFIG_ASYNC,
+			CONFIG_ASYNC_SNAPSHOT_QUICK, CONFIG_ASYNC_SNAPSHOT_CONSTANT, 
+			CONFIG_ASYNC_STORAGE,
+			CONFIG_ASYNC_STORAGE_MEMORY, CONFIG_ASYNC_STORAGE_DB,
+			CONFIG_ORDER,
+			CONFIG_ORDER_TIF, CONFIG_ORDER_QUANTITY_INT,
 			
-			//CONN
+			CONFIG_DB_IB,
+			CONFIG_DB_IB_MARKET,
+			CONFIG_DB_IB_MARKET_SOURCE,
+			CONFIG_DB_IB_MARKET_FIELD, CONFIG_DB_IB_MARKET_FIELD_SIZE, CONFIG_DB_IB_MARKET_FIELD_TIME, 
+			CONFIG_DB_IB_MARKET_FIELD_SYMBOL, CONFIG_DB_IB_MARKET_FIELD_PRICE, CONFIG_DB_IB_MARKET_FIELD_OPEN, 
+			CONFIG_DB_IB_MARKET_FIELD_CLOSE, CONFIG_DB_IB_MARKET_FIELD_LOW, CONFIG_DB_IB_MARKET_FIELD_HIGH, 
+			CONFIG_DB_IB_MARKET_FIELD_VOLUME, CONFIG_DB_IB_MARKET_FIELD_ASK, CONFIG_DB_IB_MARKET_FIELD_ASK_SIZE,
+			CONFIG_DB_IB_MARKET_FIELD_BID, CONFIG_DB_IB_MARKET_FIELD_BID_SIZE, CONFIG_DB_IB_MARKET_FIELD_HALTED, 
+			CONFIG_DB_IB_MARKET_FIELD_HALTED_TOT,
+			
+			CONN,
 			CONN_PAPER, CONN_REAL, CONN_GATEWAY, CONN_GATEWAY_PAPER,
 
-			//SYNC
-			//SYNC_GET
-			SYNC_GET_ID, SYNC_GET_FUNDS, SYNC_GET_IDS,
-			//SYNC_DATA
+			SYNC,
+			SYNC_GET,
+			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_IDS,
+			SYNC_DATA,
 			SYNC_DATA_INT, SYNC_DATA_DECIMAL, SYNC_DATA_INTS, SYNC_DATA_MISC,
 
-			//ASYNC
-			//ASYNC_MARKET
+			ASYNC,
+			ASYNC_MARKET,
 			ASYNC_MARKET_SNAPSHOT, ASYNC_MARKET_STREAM,
-
-			//ORDER
-			//ORDER_PLACE
+			
+			ORDER,
+			ORDER_PLACE,
 			ORDER_PLACE_MARKET, ORDER_PLACE_STOP, ORDER_PLACE_LIMIT,
-			//ORDER_UPDATE
-			ORDER_UPDATE_START_VALUE, ORDER_UPDATE_START_MARKET,
-			ORDER_UPDATE_STOP_VALUE, ORDER_UPDATE_STOP_MARKET,
-
-			//ERROR_IB
-			//ERROR_IB_INI
+			ORDER_UPDATE,
+			ORDER_UPDATE_START_VALUE, ORDER_UPDATE_START_MARKET, ORDER_UPDATE_STOP_VALUE, ORDER_UPDATE_STOP_MARKET,
+			
+			ERROR_IB,
+			ERROR_IB_INI,
 			ERROR_IB_INI_DB, 
 			ERROR_IB_INI_DB_DBS,
-			//ERROR_IB_CONN
+			ERROR_IB_CONN,
 			ERROR_IB_CONN_NONE, ERROR_IB_CONN_ID, ERROR_IB_CONN_TYPE,
-			//ERROR_IB_SYNC
-			ERROR_IB_SYNC_ID, ERROR_IB_SYNC_ID2, ERROR_IB_SYNC_TIME
-			//ERROR_IB_ASYNC
+			ERROR_IB_SYNC,
+			ERROR_IB_SYNC_ID, ERROR_IB_SYNC_ID2, ERROR_IB_SYNC_TIME,
+			ERROR_IB_ASYNC,
+			ERROR_IB_ASYNC_TIME
 		};		
 	}
 }

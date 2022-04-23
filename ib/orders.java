@@ -24,7 +24,7 @@ public class orders
 	private static final String START = accessory.types.action_to_key(accessory.types.ACTION_START);
 	private static final String STOP = accessory.types.action_to_key(accessory.types.ACTION_STOP);
 	
-	static { _ini.load(); }
+	static { _ini.populate(); }
 
 	public static boolean place(String type_, String symbol_, int quantity_, double stop_, double start_) 
 	{
@@ -172,11 +172,11 @@ public class orders
 		}
 		if (!is_main) order.parentId(parent_);
 
-		String tif = config.get_order(types.CONFIG_IB_ORDER_TIF);
+		String tif = config.get_order(types.CONFIG_ORDER_TIF);
 		order.tif(tif);
 
 		double quantity = info_._quantity;
-		if (strings.to_boolean(config.get_order(types.CONFIG_IB_ORDER_QUANTITY_INT))) quantity = Math.floor(quantity);
+		if (strings.to_boolean(config.get_order(types.CONFIG_ORDER_QUANTITY_INT))) quantity = Math.floor(quantity);
 		order.totalQuantity(quantity);
 
 		order.transmit(is_last_);

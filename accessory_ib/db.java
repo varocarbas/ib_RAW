@@ -10,25 +10,25 @@ import ib.common;
 
 public class db 
 {	
-	public static final String SOURCE_MARKET = types.CONFIG_IB_DB_MARKET_SOURCE;
+	public static final String SOURCE_MARKET = types.CONFIG_DB_IB_MARKET_SOURCE;
 	
-	public static final String FIELD_SYMBOL = types.CONFIG_IB_DB_MARKET_FIELD_SYMBOL;
-	public static final String FIELD_PRICE = types.CONFIG_IB_DB_MARKET_FIELD_PRICE;
-	public static final String FIELD_SIZE = types.CONFIG_IB_DB_MARKET_FIELD_SIZE;
-	public static final String FIELD_TIME = types.CONFIG_IB_DB_MARKET_FIELD_TIME;
-	public static final String FIELD_OPEN = types.CONFIG_IB_DB_MARKET_FIELD_OPEN;
-	public static final String FIELD_CLOSE = types.CONFIG_IB_DB_MARKET_FIELD_CLOSE;
-	public static final String FIELD_LOW = types.CONFIG_IB_DB_MARKET_FIELD_LOW;
-	public static final String FIELD_HIGH = types.CONFIG_IB_DB_MARKET_FIELD_HIGH;
-	public static final String FIELD_VOLUME = types.CONFIG_IB_DB_MARKET_FIELD_VOLUME;		
-	public static final String FIELD_ASK = types.CONFIG_IB_DB_MARKET_FIELD_ASK;
-	public static final String FIELD_ASK_SIZE = types.CONFIG_IB_DB_MARKET_FIELD_ASK_SIZE;
-	public static final String FIELD_BID = types.CONFIG_IB_DB_MARKET_FIELD_BID;
-	public static final String FIELD_BID_SIZE = types.CONFIG_IB_DB_MARKET_FIELD_BID_SIZE;
-	public static final String FIELD_HALTED = types.CONFIG_IB_DB_MARKET_FIELD_HALTED;
-	public static final String FIELD_HALTED_TOT = types.CONFIG_IB_DB_MARKET_FIELD_HALTED_TOT;
+	public static final String FIELD_SYMBOL = types.CONFIG_DB_IB_MARKET_FIELD_SYMBOL;
+	public static final String FIELD_PRICE = types.CONFIG_DB_IB_MARKET_FIELD_PRICE;
+	public static final String FIELD_SIZE = types.CONFIG_DB_IB_MARKET_FIELD_SIZE;
+	public static final String FIELD_TIME = types.CONFIG_DB_IB_MARKET_FIELD_TIME;
+	public static final String FIELD_OPEN = types.CONFIG_DB_IB_MARKET_FIELD_OPEN;
+	public static final String FIELD_CLOSE = types.CONFIG_DB_IB_MARKET_FIELD_CLOSE;
+	public static final String FIELD_LOW = types.CONFIG_DB_IB_MARKET_FIELD_LOW;
+	public static final String FIELD_HIGH = types.CONFIG_DB_IB_MARKET_FIELD_HIGH;
+	public static final String FIELD_VOLUME = types.CONFIG_DB_IB_MARKET_FIELD_VOLUME;		
+	public static final String FIELD_ASK = types.CONFIG_DB_IB_MARKET_FIELD_ASK;
+	public static final String FIELD_ASK_SIZE = types.CONFIG_DB_IB_MARKET_FIELD_ASK_SIZE;
+	public static final String FIELD_BID = types.CONFIG_DB_IB_MARKET_FIELD_BID;
+	public static final String FIELD_BID_SIZE = types.CONFIG_DB_IB_MARKET_FIELD_BID_SIZE;
+	public static final String FIELD_HALTED = types.CONFIG_DB_IB_MARKET_FIELD_HALTED;
+	public static final String FIELD_HALTED_TOT = types.CONFIG_DB_IB_MARKET_FIELD_HALTED_TOT;
 	
-	static { _ini.load(); }
+	static { _ini.populate(); }
 
 	public static HashMap<String, String> get_market_info(String symbol_)
 	{
