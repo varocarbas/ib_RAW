@@ -52,7 +52,7 @@ class _ini_db extends parent_ini_db
 		
 		for (String id: ids) { info.put(id, get_default_decimal_field()); }
 
-		return add_source(source, db_, get_fields(info, db_, default_fields), sources_);		
+		return add_source(source, db_, info, default_fields, sources_);		
 	}
 	
 	private static db_field get_default_decimal_field() { return new db_field(data.DECIMAL, 10, numbers.DEFAULT_DECIMALS); }

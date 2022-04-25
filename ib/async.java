@@ -53,10 +53,7 @@ public class async
 		stream_end(id);
 	}
 
-	public static String get_symbol(int id_)
-	{
-		return arrays.get_value(_market_symbols, id_);
-	}
+	public static String get_symbol(int id_) { return (String)arrays.get_value(_market_symbols, id_); }
 
 	public static int get_id(String symbol_)
 	{
@@ -74,7 +71,7 @@ public class async
 	//To manage information retrieved via wrapper.tickPrice().
 	public static void tick_price(int id_, int field_, double price_)
 	{
-		String symbol = arrays.get_value(_market_symbols, id_);
+		String symbol = (String)arrays.get_value(_market_symbols, id_);
 		if (!strings.is_ok(symbol)) return;
 
 		String key = strings.DEFAULT;
@@ -94,7 +91,7 @@ public class async
 	//To manage information retrieved via wrapper.tickSize().
 	public static void tick_size(int id_, int field_, int size_)
 	{
-		String symbol = arrays.get_value(_market_symbols, id_);
+		String symbol = (String)arrays.get_value(_market_symbols, id_);
 		if (!strings.is_ok(symbol)) return;
 
 		String key = strings.DEFAULT;
@@ -121,7 +118,7 @@ public class async
 	//To manage information retrieved via wrapper.tickGeneric().
 	public static void tick_generic(int id_, int tick_, double value_)
 	{
-		String symbol = arrays.get_value(_market_symbols, id_);
+		String symbol = (String)arrays.get_value(_market_symbols, id_);
 		if (!strings.is_ok(symbol)) return;
 
 		String key = strings.DEFAULT;
