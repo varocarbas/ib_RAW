@@ -69,7 +69,7 @@ public class constants
 	//---
 	//------
 
-	static { _ini.populate(); }
+	static { _ini.start(); }
 	
 	public static boolean is_warning(int code_)
 	{

@@ -31,7 +31,7 @@ public class sync
 
 	private static final int MAX_SECS_RETRIEVE = 10;
 
-	static { _ini.populate(); }
+	static { _ini.start(); }
 
 	public static double get_funds()
 	{

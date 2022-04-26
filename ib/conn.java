@@ -32,7 +32,7 @@ public class conn
 	private static final int PORT_GATEWAY = 4001;
 	private static final int PORT_GATEWAY_PAPER = 4002;
 
-	static { _ini.populate(); }
+	static { _ini.start(); }
 
 	public static String check(String type_)
 	{

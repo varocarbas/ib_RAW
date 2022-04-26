@@ -2,7 +2,7 @@ package accessory_ib;
 
 public class config 
 {	
-	static { _ini.populate(); }
+	static { _ini.start(); }
 
 	public static String get_basic(String key_) { return accessory.config.get(accessory.types.CONFIG_BASIC, key_); }
 

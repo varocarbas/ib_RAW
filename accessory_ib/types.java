@@ -89,7 +89,7 @@ public class types
 	public static final String ERROR_IB_ASYNC = "error_ib_async";
 	public static final String ERROR_IB_ASYNC_TIME = "error_ib_async_time";
 
-	static { _ini.populate(); }
+	static { _ini.start(); }
 
 	public static String check_conn(String subtype_, String add_remove_) { return accessory.types.check_type(subtype_, get_subtypes(CONN)); }
 

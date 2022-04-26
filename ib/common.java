@@ -10,7 +10,7 @@ import accessory_ib.types;
 
 public class common 
 {
-	static { _ini.populate(); }
+	static { _ini.start(); }
 	
 	public static Contract get_contract(String symbol_)
 	{

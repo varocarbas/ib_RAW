@@ -24,7 +24,7 @@ public class orders
 	private static final String START = accessory.types.action_to_key(accessory.types.ACTION_START);
 	private static final String STOP = accessory.types.action_to_key(accessory.types.ACTION_STOP);
 	
-	static { _ini.populate(); }
+	static { _ini.start(); }
 
 	public static boolean place(String type_, String symbol_, int quantity_, double stop_, double start_) 
 	{

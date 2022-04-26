@@ -29,7 +29,7 @@ public class async
 	private static int MIN_ID = 1;
 	private static int MAX_ID = 2500;
 
-	static { _ini.populate(); }
+	static { _ini.start(); }
 
 	public static boolean snapshot_start(String symbol_, int data_)
 	{
