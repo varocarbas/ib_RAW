@@ -32,7 +32,7 @@ public class _ini extends parent_ini
 
 	protected void populate_first_basic() {  }
 	
-	protected void populate_first_alls() {  }
+	protected void populate_first_alls() { _alls.populate(); }
 
 	protected void populate_first_defaults() { _defaults.populate(); }
 	
