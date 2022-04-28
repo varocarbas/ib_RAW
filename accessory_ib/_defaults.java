@@ -20,5 +20,7 @@ public class _defaults
 	public static final boolean ASYNC_SNAPSHOT_QUICK = true;
 	public static final boolean ASYNC_SNAPSHOT_CONSTANT = true;
 
+	public static final String DB_NAME = "accessory";
+	
 	public static void populate() { } 
 }

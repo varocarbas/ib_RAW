@@ -58,7 +58,7 @@ public class db
 	{
 		accessory.db.update(SOURCE_MARKET, vals_, get_where_symbol(symbol_, null));
 
-		return accessory.db._is_ok;
+		return accessory.db.is_ok(SOURCE_MARKET);
 	}
 
 	public static boolean insert_market(HashMap<String, String> vals_, String symbol_)
@@ -111,7 +111,7 @@ public class db
 
 		accessory.db.insert(table, vals_);
 
-		return accessory.db._is_ok;
+		return accessory.db.is_ok(source_);
 	}
 
 	private static String get_table(String source_)

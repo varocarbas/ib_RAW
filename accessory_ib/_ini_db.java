@@ -25,7 +25,7 @@ class _ini_db extends parent_ini_db
 		HashMap<String, Object[]> sources = new HashMap<String, Object[]>();
 		sources = add_source_market(db, sources);
 		
-		boolean is_ok = populate_db(db, sources, setup_vals);
+		boolean is_ok = populate_db(db, _defaults.DB_NAME, sources, setup_vals);
 		
 		return is_ok;
 	}
