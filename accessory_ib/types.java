@@ -109,13 +109,7 @@ public class types
 
 	public static String check_error(String subtype_, String[] types_) { return accessory.types.check_type(subtype_, get_subtypes_errors(types_)); }
 
-	public static String[] get_subtypes_errors(String[] types_)
-	{
-		return accessory.types.get_subtypes
-		(
-			(arrays.is_ok(types_) ? types_ : get_all_types_error()), get_all_types()
-		);
-	}
+	public static String[] get_subtypes_errors(String[] types_) { return accessory.types.get_subtypes((arrays.is_ok(types_) ? types_ : get_all_types_error()), accessory.types.get_all_types()); }
 
 	static String[] populate_all_config_boolean() { return new String[] { CONFIG_ASYNC_SNAPSHOT_QUICK, CONFIG_ASYNC_SNAPSHOT_CONSTANT, CONFIG_ORDER_QUANTITY_INT }; }
 	
@@ -175,11 +169,7 @@ public class types
 		};		
 	}
 	
-	static String[] get_all_config_boolean() { return accessory._alls.TYPES_CONFIG_BOOLEAN; }
-	
 	private static String[] get_all_types_error() { return new String[] { ERROR_IB_CONN, ERROR_IB_SYNC, ERROR_IB_ASYNC }; }
 
-	private static String[] get_subtypes(String type_) { return accessory.types.get_subtypes(type_, get_all_types()); }
-
-	private static String[] get_all_types() { return accessory._alls.TYPES_ALL; }
+	private static String[] get_subtypes(String type_) { return accessory.types.get_subtypes(type_, accessory.types.get_all_types()); }
 }
