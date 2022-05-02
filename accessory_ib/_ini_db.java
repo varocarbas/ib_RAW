@@ -37,10 +37,10 @@ class _ini_db extends parent_ini_db
 
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
-		info.put(types.CONFIG_DB_IB_MARKET_FIELD_SYMBOL, new db_field(data.STRING, 50, 0));
-		info.put(types.CONFIG_DB_IB_MARKET_FIELD_TIME, new db_field(data.STRING, accessory.dates.SIZE_TIME_SHORT, 0));
+		info.put(types.CONFIG_DB_IB_MARKET_FIELD_SYMBOL, new db_field(data.STRING_SMALL, 50, 0));
+		info.put(types.CONFIG_DB_IB_MARKET_FIELD_TIME, new db_field(data.STRING_SMALL, accessory.dates.SIZE_TIME_SHORT, 0));
 		info.put(types.CONFIG_DB_IB_MARKET_FIELD_VOLUME, new db_field(data.DECIMAL, 10, numbers.DEFAULT_DECIMALS));
-		info.put(types.CONFIG_DB_IB_MARKET_FIELD_HALTED, new db_field(data.STRING, 50, 0));
+		info.put(types.CONFIG_DB_IB_MARKET_FIELD_HALTED, new db_field(data.STRING_SMALL, 50, 0));
 		info.put(types.CONFIG_DB_IB_MARKET_FIELD_HALTED_TOT, new db_field(data.INT, 2, 0));
 		
 		String[] ids = 

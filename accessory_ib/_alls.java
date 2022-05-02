@@ -7,9 +7,9 @@ public class _alls extends parent_ini_first
 	private static _alls _instance = new _alls(); 
 	
 	public _alls() { }
-	public static void populate() { _instance.populate_internal(); }
+	public static void populate() { _instance.populate_internal_common(); }
 	
-	public void populate_internal_vals() 
+	public void populate_internal() 
 	{ 
 		if (_populated) return;
 		
