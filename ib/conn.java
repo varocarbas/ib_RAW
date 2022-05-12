@@ -7,13 +7,15 @@ import com.ib.client.EReaderSignal;
 import accessory.misc;
 import accessory.numbers;
 import accessory.strings;
-import accessory_ib._ini;
 import accessory_ib.errors;
 import accessory_ib.types;
 import external_ib.wrapper;
 
 public class conn 
 {
+	public static final String TYPE = types.CONFIG_CONN_TYPE; 
+	public static final String ID = types.CONFIG_CONN_ID; 
+	
 	public static volatile boolean _valid_id = false; 
 
 	static EClientSocket _client;
@@ -32,8 +34,6 @@ public class conn
 	private static final int PORT_GATEWAY = 4001;
 	private static final int PORT_GATEWAY_PAPER = 4002;
 
-	static { _ini.start(); }
-
 	public static String check(String type_)
 	{
 		return accessory_ib.types.check_conn(type_, accessory.types.ACTION_ADD);
@@ -43,11 +43,13 @@ public class conn
 	{		
 		if (!_connected) connect();
 
-		if (!_connected) errors.manage(types.ERROR_IB_CONN_NONE, false);
+		if (!_connected) errors.manage(types.ERROR_IB_CONN_NONE);
 
 		return _connected;
 	}
 
+	public static boolean start() { return start(strings.to_number_int(accessory_ib.config.get_conn(ID)), accessory_ib.config.get_conn(TYPE)); }
+	
 	public static boolean start(int id_, String type_)
 	{
 		String error = null;
@@ -64,7 +66,7 @@ public class conn
 
 		if (strings.is_ok(error))
 		{
-			errors.manage(error, true);
+			errors.manage(error);
 
 			return false;
 		}
@@ -77,10 +79,7 @@ public class conn
 		return _connected;
 	}
 
-	public static void end()
-	{
-		if (_client != null) _client.eDisconnect();
-	}
+	public static void end() { if (_client != null) _client.eDisconnect(); }
 
 	public static boolean check_connection()
 	{
@@ -100,7 +99,7 @@ public class conn
 			if (_connected) break;
 			if (!_first_conn) misc.pause_secs(1);
 
-			errors.manage(types.ERROR_IB_CONN_NONE, false);
+			errors.manage(types.ERROR_IB_CONN_NONE);
 		}
 	}
 

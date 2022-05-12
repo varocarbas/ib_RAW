@@ -2,8 +2,6 @@ package accessory_ib;
 
 public class config 
 {	
-	static { _ini.start(); }
-
 	public static String get_basic(String key_) { return accessory.config.get(accessory.types.CONFIG_BASIC, key_); }
 
 	public static boolean update_basic(String key_, String val_) { return accessory.config.update(accessory.types.CONFIG_BASIC, key_, val_); }

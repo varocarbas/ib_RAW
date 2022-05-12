@@ -1,7 +1,6 @@
 package external_ib;
 
 import accessory.arrays;
-import accessory_ib._ini;
 
 public class constants 
 {
@@ -68,8 +67,6 @@ public class constants
 	public static final int WARNING_2169 = 2169; //	Firm Quote Only Not Supported Warning.
 	//---
 	//------
-
-	static { _ini.start(); }
 	
 	public static boolean is_warning(int code_)
 	{

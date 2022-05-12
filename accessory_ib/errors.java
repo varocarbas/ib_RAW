@@ -2,51 +2,36 @@ package accessory_ib;
 
 import java.util.HashMap;
 
-import accessory.logs;
+import accessory.generic;
 import accessory.misc;
 import accessory.strings;
 
 public class errors
 {	
-	static { _ini.start(); }
-
-	public static void manage(String type_, boolean exit_)
+	public static void manage(String type_)
 	{
-		String type = types.check_error(type_, null);
+		String type = check(type_);
 		if (!strings.is_ok(type)) return;
 
-		String message = get_message(type);
-		if (!strings.is_ok(message)) return;
-
 		HashMap<String, String> info = new HashMap<String, String>();
-		info.put("message", message);
-
-		String key = logs.FILE;
-		boolean cur_val = strings.to_boolean(accessory.config.get_logs(key));
-		boolean new_val = (exit_ || !type.equals(types.ERROR_IB_CONN_NONE));
-
-		boolean changed = false;
-		if (new_val != cur_val)
-		{
-			accessory.config.update_logs(key, new_val);
-			changed = true;
-		}
-
+		info.put(generic.TYPE, type);
+		
+		String message = get_message(type);
+		if (strings.is_ok(message)) info.put(generic.MESSAGE, message);
+		
 		accessory.errors.manage(info);
-
-		if (changed) accessory.config.update_logs(key, cur_val);
 	}
 
+	public static String check(String type_) { return accessory.types.check_type(type_, types.ERROR_IB); }
+	
 	private static String get_message(String type_)
 	{
 		String message = strings.DEFAULT;
 
-		String heading = "error" + accessory.types.SEPARATOR;
-
-		if (strings.contains_start(heading + types.CONN, type_, false)) message = get_message_conn(type_);
-		else if (strings.contains_start(heading + types.ORDER, type_, false)) message = get_message_order(type_);
-		else if (strings.contains_start(heading + types.SYNC, type_, false)) message = get_message_sync(type_);
-		else if (strings.contains_start(heading + types.ASYNC, type_, false)) message = get_message_async(type_);
+		if (is_conn(type_)) message = get_message_conn(type_);
+		else if (is_order(type_)) message = get_message_order(type_);
+		else if (is_sync(type_)) message = get_message_sync(type_);
+		else if (is_async(type_)) message = get_message_async(type_);
 
 		if (!strings.is_ok(message)) return message;
 
@@ -55,6 +40,14 @@ public class errors
 		return message;
 	}
 
+	private static boolean is_conn(String type_) { return strings.is_ok(accessory.types.check_type(type_, types.CONN)); }
+
+	private static boolean is_order(String type_) { return strings.is_ok(accessory.types.check_type(type_, types.ORDER)); }
+
+	private static boolean is_sync(String type_) { return strings.is_ok(accessory.types.check_type(type_, types.SYNC)); }
+
+	private static boolean is_async(String type_) { return strings.is_ok(accessory.types.check_type(type_, types.ASYNC)); }
+	
 	private static String get_message_conn(String type_)
 	{
 		String message = strings.DEFAULT;

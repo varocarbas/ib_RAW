@@ -27,8 +27,6 @@ public class db
 	public static final String FIELD_BID_SIZE = types.CONFIG_DB_IB_MARKET_FIELD_BID_SIZE;
 	public static final String FIELD_HALTED = types.CONFIG_DB_IB_MARKET_FIELD_HALTED;
 	public static final String FIELD_HALTED_TOT = types.CONFIG_DB_IB_MARKET_FIELD_HALTED_TOT;
-	
-	static { _ini.start(); }
 
 	public static HashMap<String, String> get_market_info(String symbol_)
 	{

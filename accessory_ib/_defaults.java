@@ -4,7 +4,8 @@ import external_ib.constants;
 
 public class _defaults 
 {
-	public static final String CONN = types.CONN_GATEWAY;
+	public static final String CONN_TYPE = types.CONN_GATEWAY;
+	public static final int CONN_ID = 18; 
 
 	public static final String CURRENCY = "USD"; //Format compatible with Contract.currency.
 
@@ -13,7 +14,7 @@ public class _defaults
 
 	public static final int DATA = constants.DATA_LIVE;
 	public static final String EXEC_SIDE = constants.EXEC_SIDE_SLD;
-
+	
 	public static final int SYNC_ID = 1; 
 
 	public static final String ASYNC_STORAGE = types.CONFIG_ASYNC_STORAGE_DB;

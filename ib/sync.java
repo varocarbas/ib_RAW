@@ -8,7 +8,6 @@ import accessory.misc;
 import accessory.numbers;
 import accessory.strings;
 import accessory.dates;
-import accessory_ib._ini;
 import accessory_ib._defaults;
 import accessory_ib.errors;
 import accessory_ib.types;
@@ -31,17 +30,9 @@ public class sync
 
 	private static final int MAX_SECS_RETRIEVE = 10;
 
-	static { _ini.start(); }
+	public static double get_funds() { return (double)get(types.SYNC_GET_FUNDS); }
 
-	public static double get_funds()
-	{
-		return (double)get(types.SYNC_GET_FUNDS);
-	}
-
-	public static Integer[] get_open_ids()
-	{
-		return (Integer[])get(types.SYNC_GET_IDS);
-	}
+	public static Integer[] get_open_ids() { return (Integer[])get(types.SYNC_GET_IDS); }
 
 	public static boolean update(String val_)
 	{
@@ -78,15 +69,9 @@ public class sync
 	}
 
 	//Only called when creating a new order, via the corresponding order_info constructor.
-	static int get_next_id()
-	{
-		return (int)get(types.SYNC_GET_ID);
-	}
+	static int get_next_id() { return (int)get(types.SYNC_GET_ID); }
 
-	private static Object get(String type_)
-	{
-		return get(type_, _defaults.SYNC_ID);
-	}
+	private static Object get(String type_) { return get(type_, _defaults.SYNC_ID); }
 
 	private static Object get(String type_, int order_id_)
 	{
@@ -96,15 +81,9 @@ public class sync
 		return get_out();
 	}
 
-	private static void get_ini()
-	{
-		get_ini_out(true);
-	}
+	private static void get_ini() { get_ini_out(true); }
 
-	private static Object get_out()
-	{
-		return get_ini_out(false);
-	}
+	private static Object get_out() { return get_ini_out(false); }
 
 	private static Object get_ini_out(boolean ini_)
 	{
@@ -178,7 +157,7 @@ public class sync
 		String temp = types.check_sync(type_, false);
 		if (!strings.is_ok(temp)) 
 		{
-			accessory_ib.errors.manage(types.ERROR_IB_SYNC_ID, false);
+			accessory_ib.errors.manage(types.ERROR_IB_SYNC_ID);
 
 			return false;
 		}
@@ -186,7 +165,7 @@ public class sync
 		String temp2 = get_data_type(temp);
 		if (!strings.is_ok(types.check_sync(temp2, true))) 
 		{
-			accessory_ib.errors.manage(types.ERROR_IB_SYNC_ID2, false);
+			accessory_ib.errors.manage(types.ERROR_IB_SYNC_ID2);
 
 			return false;
 		}
@@ -209,10 +188,9 @@ public class sync
 		{
 			if (_retrieved) break;
 
-			long elapsed = dates.get_elapsed(start);
-			if (!_ignore_max_time && elapsed >= MAX_SECS_RETRIEVE) 
+			if (!_ignore_max_time && dates.get_elapsed(start) >= MAX_SECS_RETRIEVE) 
 			{
-				errors.manage(types.ERROR_IB_SYNC_TIME, false);
+				errors.manage(types.ERROR_IB_SYNC_TIME);
 				is_ok = false;
 
 				break;

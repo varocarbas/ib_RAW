@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import accessory.parent_ini_config;
 
-class _ini_config extends parent_ini_config 
+public class _ini_config extends parent_ini_config 
 {
 	private static _ini_config _instance = new _ini_config();
 	
@@ -35,7 +35,8 @@ class _ini_config extends parent_ini_config
 		String type = types.CONFIG_CONN;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(types.CONFIG_CONN, _defaults.CONN);
+		vals.put(types.CONFIG_CONN_TYPE, _defaults.CONN_TYPE);
+		vals.put(types.CONFIG_CONN_ID, _defaults.CONN_ID);
 
 		return populate(type, null, vals);
 	}

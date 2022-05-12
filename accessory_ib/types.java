@@ -9,7 +9,8 @@ public class types
 
 	public static final String CONFIG_CONN = "config_conn";
 	public static final String CONFIG_CONN_TYPE = "config_conn_type";
-
+	public static final String CONFIG_CONN_ID = "config_conn_id";
+	
 	public static final String CONFIG_ASYNC = "config_async";
 	public static final String CONFIG_ASYNC_SNAPSHOT_QUICK = "config_async_snapshot_quick";
 	public static final String CONFIG_ASYNC_SNAPSHOT_CONSTANT = "config_async_snapshot_constant";
@@ -89,11 +90,9 @@ public class types
 	public static final String ERROR_IB_ASYNC = "error_ib_async";
 	public static final String ERROR_IB_ASYNC_TIME = "error_ib_async_time";
 
-	static { _ini.start(); }
+	public static String check_conn(String subtype_, String add_remove_) { return accessory.types.check_type(subtype_, CONN); }
 
-	public static String check_conn(String subtype_, String add_remove_) { return accessory.types.check_type(subtype_, get_subtypes(CONN)); }
-
-	public static String check_async(String subtype_) { return accessory.types.check_type(subtype_, get_subtypes(ASYNC)); }
+	public static String check_async(String subtype_) { return accessory.types.check_type(subtype_, ASYNC); }
 
 	public static String check_sync(String subtype_, boolean is_data_) { return accessory.types.check_type(subtype_, get_subtypes_sync(is_data_)); }
 
@@ -101,13 +100,11 @@ public class types
 
 	public static boolean is_order(String subtype_) { return strings.is_ok(check_order(subtype_)); }
 
-	public static String check_order(String subtype_) { return accessory.types.check_type(subtype_, get_subtypes(types.ORDER)); }
+	public static String check_order(String subtype_) { return accessory.types.check_type(subtype_, types.ORDER); }
 
-	public static String check_order_place(String subtype_) { return accessory.types.check_type(subtype_, get_subtypes(types.ORDER_PLACE)); }
+	public static String check_order_place(String subtype_) { return accessory.types.check_type(subtype_, types.ORDER_PLACE); }
 
-	public static String check_order_update(String subtype_) { return accessory.types.check_type(subtype_, get_subtypes(types.ORDER_UPDATE)); }
-
-	public static String check_error(String subtype_, String[] types_) { return accessory.types.check_type(subtype_, get_subtypes_errors(types_)); }
+	public static String check_order_update(String subtype_) { return accessory.types.check_type(subtype_, types.ORDER_UPDATE); }
 
 	public static String[] get_subtypes_errors(String[] types_) { return accessory.types.get_subtypes((arrays.is_ok(types_) ? types_ : get_all_types_error()), accessory.types.get_all_types()); }
 
@@ -119,7 +116,7 @@ public class types
 		{
 			CONFIG_BASIC_CURRENCY,
 			CONFIG_CONN,
-			CONFIG_CONN_TYPE,
+			CONFIG_CONN_TYPE, CONFIG_CONN_ID,
 			CONFIG_ASYNC,
 			CONFIG_ASYNC_SNAPSHOT_QUICK, CONFIG_ASYNC_SNAPSHOT_CONSTANT, 
 			CONFIG_ASYNC_STORAGE,

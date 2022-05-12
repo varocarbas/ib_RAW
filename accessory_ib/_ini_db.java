@@ -8,7 +8,7 @@ import accessory.db_field;
 import accessory.numbers;
 import accessory.parent_ini_db;
 
-class _ini_db extends parent_ini_db 
+public class _ini_db extends parent_ini_db 
 {
 	private static _ini_db _instance = new _ini_db();
 	
