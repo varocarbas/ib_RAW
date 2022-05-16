@@ -27,7 +27,7 @@ public class common
 		return contract;
 	}
 
-	public static String get_market_time() { return dates.get_current_time(dates.TIME_SHORT, 0); }
+	public static String get_market_time() { return dates.get_now_string(dates.FORMAT_TIME_SHORT); }
 
 	public static String normalise_symbol(String symbol_)
 	{

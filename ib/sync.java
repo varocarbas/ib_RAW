@@ -196,7 +196,7 @@ public class sync
 				break;
 			}
 
-			misc.pause_min();
+			misc.pause_loop();
 		}
 
 		_ignore_max_time = false;

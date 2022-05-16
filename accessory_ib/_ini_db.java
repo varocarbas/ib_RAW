@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import accessory.arrays;
 import accessory.data;
+import accessory.dates;
 import accessory.db_field;
 import accessory.numbers;
 import accessory.parent_ini_db;
@@ -37,11 +38,11 @@ public class _ini_db extends parent_ini_db
 
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
-		info.put(types.CONFIG_DB_IB_MARKET_FIELD_SYMBOL, new db_field(data.STRING_SMALL, 50, 0));
-		info.put(types.CONFIG_DB_IB_MARKET_FIELD_TIME, new db_field(data.STRING_SMALL, accessory.dates.SIZE_TIME_SHORT, 0));
+		info.put(types.CONFIG_DB_IB_MARKET_FIELD_SYMBOL, new db_field(data.STRING_SMALL, 50));
+		info.put(types.CONFIG_DB_IB_MARKET_FIELD_TIME, new db_field(data.STRING_SMALL, accessory.dates.get_length(dates.FORMAT_TIME_SHORT)));
 		info.put(types.CONFIG_DB_IB_MARKET_FIELD_VOLUME, new db_field(data.DECIMAL, 10, numbers.DEFAULT_DECIMALS));
-		info.put(types.CONFIG_DB_IB_MARKET_FIELD_HALTED, new db_field(data.STRING_SMALL, 50, 0));
-		info.put(types.CONFIG_DB_IB_MARKET_FIELD_HALTED_TOT, new db_field(data.INT, 2, 0));
+		info.put(types.CONFIG_DB_IB_MARKET_FIELD_HALTED, new db_field(data.STRING_SMALL, 50));
+		info.put(types.CONFIG_DB_IB_MARKET_FIELD_HALTED_TOT, new db_field(data.INT, 2));
 		
 		String[] ids = 
 		{
@@ -54,7 +55,7 @@ public class _ini_db extends parent_ini_db
 		
 		for (String id: ids) { info.put(id, get_default_decimal_field()); }
 
-		return add_source(source, db_, info, default_fields, sources_);		
+		return add_source(source, null, db_, info, default_fields, sources_);		
 	}
 	
 	private static db_field get_default_decimal_field() { return new db_field(data.DECIMAL, 10, numbers.DEFAULT_DECIMALS); }

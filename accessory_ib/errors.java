@@ -2,7 +2,7 @@ package accessory_ib;
 
 import java.util.HashMap;
 
-import accessory.generic;
+import accessory._keys;
 import accessory.misc;
 import accessory.strings;
 
@@ -14,10 +14,10 @@ public class errors
 		if (!strings.is_ok(type)) return;
 
 		HashMap<String, String> info = new HashMap<String, String>();
-		info.put(generic.TYPE, type);
+		info.put(_keys.TYPE, type);
 		
 		String message = get_message(type);
-		if (strings.is_ok(message)) info.put(generic.MESSAGE, message);
+		if (strings.is_ok(message)) info.put(_keys.MESSAGE, message);
 		
 		accessory.errors.manage(info);
 	}

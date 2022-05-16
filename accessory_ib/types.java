@@ -23,12 +23,17 @@ public class types
 	public static final String CONFIG_ORDER_QUANTITY_INT = "config_order_quantity_int";
 
 	public static final String CONFIG_DB_IB = "config_db_ib";
+
+	public static final String CONFIG_DB_IB_COMMON = "config_db_ib_common";
+	public static final String CONFIG_DB_IB_COMMON_FIELD = "config_db_ib_common_field";
+	public static final String CONFIG_DB_IB_COMMON_FIELD_SYMBOL = "config_db_ib_common_field_symbol";
+	
 	public static final String CONFIG_DB_IB_MARKET = "config_db_ib_market";
 	public static final String CONFIG_DB_IB_MARKET_SOURCE = "config_db_ib_market_source";
 	public static final String CONFIG_DB_IB_MARKET_FIELD = "config_db_ib_market_field";
 	public static final String CONFIG_DB_IB_MARKET_FIELD_SIZE = "config_db_ib_market_field_size";
 	public static final String CONFIG_DB_IB_MARKET_FIELD_TIME = "config_db_ib_market_field_time";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_SYMBOL = "config_db_ib_market_field_symbol";
+	public static final String CONFIG_DB_IB_MARKET_FIELD_SYMBOL = CONFIG_DB_IB_COMMON_FIELD_SYMBOL;
 	public static final String CONFIG_DB_IB_MARKET_FIELD_PRICE = "config_db_ib_market_field_price";
 	public static final String CONFIG_DB_IB_MARKET_FIELD_OPEN = "config_db_ib_market_field_open";
 	public static final String CONFIG_DB_IB_MARKET_FIELD_CLOSE = "config_db_ib_market_field_close";
@@ -125,6 +130,10 @@ public class types
 			CONFIG_ORDER_TIF, CONFIG_ORDER_QUANTITY_INT,
 			
 			CONFIG_DB_IB,
+			CONFIG_DB_IB_COMMON,
+			CONFIG_DB_IB_COMMON_FIELD,
+			CONFIG_DB_IB_COMMON_FIELD_SYMBOL,
+			
 			CONFIG_DB_IB_MARKET,
 			CONFIG_DB_IB_MARKET_SOURCE,
 			CONFIG_DB_IB_MARKET_FIELD, CONFIG_DB_IB_MARKET_FIELD_SIZE, CONFIG_DB_IB_MARKET_FIELD_TIME, 

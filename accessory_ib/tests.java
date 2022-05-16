@@ -22,7 +22,7 @@ public class tests extends parent_tests
 		String name0 = "main";
 		int level = 0;
 		
-		parent_tests.update_console(name0, true, level);		
+		update_screen(name0, true, level);		
 
 		conn.start();
 		
@@ -30,28 +30,25 @@ public class tests extends parent_tests
 
 		conn.end();
 		
-		parent_tests.update_console(name0, false, level);
+		update_screen(name0, false, level);
 		
 		return outputs;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public static HashMap<String, HashMap<String, Boolean>> run_sync(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
-		HashMap<String, Boolean> outputs = new HashMap<String, Boolean>();
+		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
 
 		Class<?> class0 = sync.class;
 		String name0 = class0.getName();
-		parent_tests.update_console(name0, true, 1);
+		update_screen(name0, true, 1);
 		
-		String[] names = new String[] { "get_funds", "get_open_ids" };
+		String[] methods = new String[] { "get_funds", "get_open_ids" };
 		
-		for (String name: names) { outputs.put(name, parent_tests.run_method(class0, name, null, null, null)); }
-
-		HashMap<String, HashMap<String, Boolean>> outputs2 = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
-		outputs2.put(name0, outputs);
+		outputs.put(name0, run_methods(class0, methods));
 		
-		return outputs2;
+		return outputs;	
 	}
 
 	public static HashMap<String, HashMap<String, Boolean>> run_async(HashMap<String, HashMap<String, Boolean>> outputs_)

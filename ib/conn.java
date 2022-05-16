@@ -155,7 +155,7 @@ public class conn
 		int max = 3;
 		while (!_valid_id)
 		{
-			misc.pause_min();
+			misc.pause_loop();
 
 			count++;
 			if (count >= max) break;
