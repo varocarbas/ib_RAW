@@ -112,8 +112,6 @@ public class types
 	public static String check_order_update(String subtype_) { return accessory.types.check_type(subtype_, types.ORDER_UPDATE); }
 
 	public static String[] get_subtypes_errors(String[] types_) { return accessory.types.get_subtypes((arrays.is_ok(types_) ? types_ : get_all_types_error()), accessory.types.get_all_types()); }
-
-	static String[] populate_all_config_boolean() { return new String[] { CONFIG_ASYNC_SNAPSHOT_QUICK, CONFIG_ASYNC_SNAPSHOT_CONSTANT, CONFIG_ORDER_QUANTITY_INT }; }
 	
 	static String[] populate_all_types()
 	{

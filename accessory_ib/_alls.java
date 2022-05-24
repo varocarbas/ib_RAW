@@ -13,7 +13,7 @@ public class _alls extends parent_ini_first
 	{ 
 		if (_populated) return;
 		
-		accessory._alls.populate_types(types.populate_all_types(), types.populate_all_config_boolean());
+		accessory._alls.populate_types(types.populate_all_types());
 		
 		_populated = true;
 	}

@@ -4,6 +4,7 @@ import com.ib.client.EClientSocket;
 import com.ib.client.EReader;
 import com.ib.client.EReaderSignal;
 
+import accessory.generic;
 import accessory.misc;
 import accessory.numbers;
 import accessory.strings;
@@ -132,16 +133,7 @@ public class conn
 						catch (Exception e) 
 						{
 							String message = e.getMessage();
-							if 
-							(
-								message != null && !message.equals
-								(
-									"empty String"
-								)
-							)
-							{
-								System.out.println("Exception: " + message);
-							}
+							if (message != null && !message.equals("empty String")) generic.to_screen("Exception: " + message);
 						}
 					}
 
