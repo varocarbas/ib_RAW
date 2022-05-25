@@ -4,7 +4,7 @@ import external_ib.constants;
 
 public class _defaults 
 {
-	public static final String CONN_TYPE = types.CONN_GATEWAY;
+	public static final String CONN_TYPE = types.CONN_GATEWAY_REAL;
 	public static final int CONN_ID = 18; 
 
 	public static final String CURRENCY = "USD"; //Format compatible with Contract.currency.
@@ -22,6 +22,8 @@ public class _defaults
 	public static final boolean ASYNC_SNAPSHOT_CONSTANT = true;
 
 	public static final String DB_NAME = "accessory";
+
+	public static final String ERRORS_WARNING = "WARNING";
 	
 	public static void populate() { } 
 }

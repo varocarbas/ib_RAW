@@ -3,86 +3,69 @@ package accessory_ib;
 import java.util.HashMap;
 
 import accessory._keys;
+import accessory.logs;
 import accessory.misc;
 import accessory.strings;
+import ib.conn;
+import ib.sync;
 
 public class errors
 {	
+	public static final String DEFAULT_WARNING = _defaults.ERRORS_WARNING;
+	
+	public static void manage(HashMap<String, String> items_) { accessory.errors.manage(get_info(null, get_message(items_))); }
+	
 	public static void manage(String type_)
 	{
 		String type = check(type_);
 		if (!strings.is_ok(type)) return;
 
-		HashMap<String, String> info = new HashMap<String, String>();
-		info.put(_keys.TYPE, type);
+		accessory.errors.manage(get_info(type, get_message(type)));
+	}
+
+	public static void manage_warning(String message_) 
+	{ 
+		String message = message_;
+		if (!strings.is_ok(message_)) message = DEFAULT_WARNING;
 		
-		String message = get_message(type);
-		if (strings.is_ok(message)) info.put(_keys.MESSAGE, message);
-		
-		accessory.errors.manage(info);
+		logs.update_screen(message);
 	}
 
 	public static String check(String type_) { return accessory.types.check_type(type_, types.ERROR_IB); }
+	
+	private static HashMap<String, String> get_info(String type_, String message_) 
+	{ 
+		HashMap<String, String> info = new HashMap<String, String>();
+		
+		if (strings.is_ok(type_)) info.put(_keys.TYPE, type_);
+		if (strings.is_ok(message_)) info.put(_keys.MESSAGE, message_);
+		
+		return info;
+	}
+
+	private static String get_message(HashMap<String, String> info_) { return get_message_common(accessory.errors.to_string(info_)); }
 	
 	private static String get_message(String type_)
 	{
 		String message = strings.DEFAULT;
 
-		if (is_conn(type_)) message = get_message_conn(type_);
-		else if (is_order(type_)) message = get_message_order(type_);
-		else if (is_sync(type_)) message = get_message_sync(type_);
-		else if (is_async(type_)) message = get_message_async(type_);
+		if (is_conn(type_)) message = conn.get_error_message(type_);
+		else if (is_sync(type_)) message = sync.get_error_message(type_);
 
-		if (!strings.is_ok(message)) return message;
+		return get_message_common(message);
+	}
 
+	private static String get_message_common(String message_) 
+	{ 
+		String message = message_;
+		
+		if (!strings.is_ok(message)) message = accessory.errors.DEFAULT_MESSAGE;
 		message = "IB" + misc.SEPARATOR_CONTENT + message;
-
-		return message;
+		
+		return message; 
 	}
-
-	private static boolean is_conn(String type_) { return strings.is_ok(accessory.types.check_type(type_, types.CONN)); }
-
-	private static boolean is_order(String type_) { return strings.is_ok(accessory.types.check_type(type_, types.ORDER)); }
-
-	private static boolean is_sync(String type_) { return strings.is_ok(accessory.types.check_type(type_, types.SYNC)); }
-
-	private static boolean is_async(String type_) { return strings.is_ok(accessory.types.check_type(type_, types.ASYNC)); }
 	
-	private static String get_message_conn(String type_)
-	{
-		String message = strings.DEFAULT;
+	private static boolean is_conn(String type_) { return strings.is_ok(conn.check_error(type_)); }
 
-		if (type_.equals(types.ERROR_IB_CONN_NONE)) message = "Impossible to connect";
-		else if (type_.equals(types.ERROR_IB_CONN_ID)) message = "Wrong connection ID";
-		else if (type_.equals(types.ERROR_IB_CONN_TYPE)) message = "Wrong connection type";
-
-		return message;
-	}
-
-	private static String get_message_order(String type_)
-	{
-		String message = strings.DEFAULT;
-
-		return message;	
-	}
-
-	private static String get_message_sync(String type_)
-	{
-		String message = strings.DEFAULT;
-
-		if (type_.equals(types.ERROR_IB_SYNC_ID)) message = "Wrong sync ID";
-		else if (type_.equals(types.ERROR_IB_SYNC_ID2)) message = "Wrong sync ID2";
-		else if (type_.equals(types.ERROR_IB_SYNC_TIME)) message = "Sync call timed out";
-
-		return message;	
-	}
-
-	private static String get_message_async(String type_)
-	{
-		String message = strings.DEFAULT;
-
-		if (type_.equals(types.ERROR_IB_ASYNC_TIME)) message = "Async call timed out";
-
-		return message;	
-	}
+	private static boolean is_sync(String type_) { return strings.is_ok(sync.check_error(type_)); }
 }

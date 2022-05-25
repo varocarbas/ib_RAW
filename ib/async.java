@@ -4,18 +4,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import accessory._keys;
 import accessory.arrays;
-import accessory.logs;
-import accessory.misc;
 import accessory.numbers;
 import accessory.strings;
 import accessory_ib.config;
 import accessory_ib.db;
+import accessory_ib.errors;
 import accessory_ib.types;
 import external_ib.constants;
 
 public class async 
 {	
+	public static final String ERROR_GENERIC = types.ERROR_IB_ASYNC_GENERIC;
+	
 	public static volatile HashMap<Integer, Boolean> _market_retrieving = new HashMap<Integer, Boolean>();
 	public static volatile HashMap<Integer, Boolean> _market_retrieved = new HashMap<Integer, Boolean>();
 	public static String _market_type = strings.DEFAULT;
@@ -129,18 +131,16 @@ public class async
 	//To manage information retrieved via wrapper.error().
 	public static void error(int id_, int error_code_, String error_msg_)
 	{
-		if (constants.is_warning(error_code_)) logs.update_screen(error_msg_);
+		if (constants.is_warning(error_code_)) errors.manage_warning(error_msg_);
 		else
 		{
 			HashMap<String, String> items = new HashMap<String, String>();
+			items.put(_keys.TYPE, ERROR_GENERIC);
 			items.put("id", strings.from_number_int(id_));
 			items.put("error_code", strings.from_number_int(error_code_));
 			items.put("error_msg", error_msg_);
 
-			String message = arrays.to_string(items, null, null, null);
-			message = "IB " + misc.SEPARATOR_CONTENT + types.ERROR_IB_ASYNC + misc.SEPARATOR_CONTENT + message;
-
-			logs.update(message, null, true);	
+			errors.manage(items);
 		}
 	}	
 

@@ -1,8 +1,5 @@
 package accessory_ib;
 
-import accessory.arrays;
-import accessory.strings;
-
 public class types
 {
 	public static final String CONFIG_BASIC_CURRENCY = "config_basic_currency";
@@ -48,9 +45,9 @@ public class types
 	public static final String CONFIG_DB_IB_MARKET_FIELD_HALTED_TOT = "config_db_ib_market_field_halted_tot";
 	
 	public static final String CONN = "conn";
-	public static final String CONN_PAPER = "conn_paper";
-	public static final String CONN_REAL = "conn_real";
-	public static final String CONN_GATEWAY = "conn_gateway";
+	public static final String CONN_TWS_REAL = "conn_tws_real";
+	public static final String CONN_TWS_PAPER = "conn_tws_paper";
+	public static final String CONN_GATEWAY_REAL = "conn_gateway_real";
 	public static final String CONN_GATEWAY_PAPER = "conn_gateway_paper";	
 
 	public static final String SYNC = "sync";
@@ -93,25 +90,7 @@ public class types
 	public static final String ERROR_IB_SYNC_ID2 = "error_ib_sync_id2";
 	public static final String ERROR_IB_SYNC_TIME = "error_ib_sync_time";
 	public static final String ERROR_IB_ASYNC = "error_ib_async";
-	public static final String ERROR_IB_ASYNC_TIME = "error_ib_async_time";
-
-	public static String check_conn(String subtype_, String add_remove_) { return accessory.types.check_type(subtype_, CONN); }
-
-	public static String check_async(String subtype_) { return accessory.types.check_type(subtype_, ASYNC); }
-
-	public static String check_sync(String subtype_, boolean is_data_) { return accessory.types.check_type(subtype_, get_subtypes_sync(is_data_)); }
-
-	public static String[] get_subtypes_sync(boolean is_data_) { return get_subtypes((is_data_ ? SYNC_DATA : SYNC)); }
-
-	public static boolean is_order(String subtype_) { return strings.is_ok(check_order(subtype_)); }
-
-	public static String check_order(String subtype_) { return accessory.types.check_type(subtype_, types.ORDER); }
-
-	public static String check_order_place(String subtype_) { return accessory.types.check_type(subtype_, types.ORDER_PLACE); }
-
-	public static String check_order_update(String subtype_) { return accessory.types.check_type(subtype_, types.ORDER_UPDATE); }
-
-	public static String[] get_subtypes_errors(String[] types_) { return accessory.types.get_subtypes((arrays.is_ok(types_) ? types_ : get_all_types_error()), accessory.types.get_all_types()); }
+	public static final String ERROR_IB_ASYNC_GENERIC = "error_ib_async_generic";
 	
 	static String[] populate_all_types()
 	{
@@ -142,7 +121,7 @@ public class types
 			CONFIG_DB_IB_MARKET_FIELD_HALTED_TOT,
 			
 			CONN,
-			CONN_PAPER, CONN_REAL, CONN_GATEWAY, CONN_GATEWAY_PAPER,
+			CONN_TWS_REAL, CONN_TWS_PAPER, CONN_GATEWAY_REAL, CONN_GATEWAY_PAPER,
 
 			SYNC,
 			SYNC_GET,
@@ -169,11 +148,7 @@ public class types
 			ERROR_IB_SYNC,
 			ERROR_IB_SYNC_ID, ERROR_IB_SYNC_ID2, ERROR_IB_SYNC_TIME,
 			ERROR_IB_ASYNC,
-			ERROR_IB_ASYNC_TIME
+			ERROR_IB_ASYNC_GENERIC,
 		};		
 	}
-	
-	private static String[] get_all_types_error() { return new String[] { ERROR_IB_CONN, ERROR_IB_SYNC, ERROR_IB_ASYNC }; }
-
-	private static String[] get_subtypes(String type_) { return accessory.types.get_subtypes(type_, accessory.types.get_all_types()); }
 }
