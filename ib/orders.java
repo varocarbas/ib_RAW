@@ -10,12 +10,13 @@ import com.ib.client.Order;
 import accessory.arrays;
 import accessory.misc;
 import accessory.numbers;
+import accessory.parent_static;
 import accessory.strings;
 import accessory_ib.config;
 import accessory_ib.types;
 import external_ib.constants;
 
-public class orders 
+public class orders extends parent_static
 {	
 	private static HashMap<Integer, order> _orders = new HashMap<Integer, order>();
 	private static int MIN_ID = 0;
@@ -23,6 +24,8 @@ public class orders
 	private static final String START = accessory.types.action_to_key(accessory.types.ACTION_START);
 	private static final String STOP = accessory.types.action_to_key(accessory.types.ACTION_STOP);
 
+	public static String get_id() { return accessory.types.get_id(types.ID_ORDERS); }
+	
 	public static boolean place(String type_, String symbol_, int quantity_, double stop_, double start_) 
 	{
 		order info = new order(type_, symbol_, quantity_, stop_, start_);
@@ -213,9 +216,6 @@ public class orders
 			if (!arrays.value_exists(open_, id)) delete.add(id);
 		}
 
-		for (int id: delete)
-		{
-			_orders.remove(id);
-		}
+		for (int id: delete) { _orders.remove(id); }
 	}
 }

@@ -13,8 +13,12 @@ public class errors
 {	
 	public static final String DEFAULT_WARNING = _defaults.ERRORS_WARNING;
 	
-	public static void manage(HashMap<String, String> items_) { accessory.errors.manage(get_info(null, get_message(items_))); }
-	
+	public static void manage(HashMap<String, String> info_) { manage(null, info_); }
+
+	public static void manage(String type_, HashMap<String, String> info_) { accessory.errors.manage(get_info(type_, get_message(info_))); }
+
+	public static void manage(String type_, String message_) { accessory.errors.manage(get_info(type_, message_)); }
+
 	public static void manage(String type_)
 	{
 		String type = check(type_);

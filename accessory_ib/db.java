@@ -1,124 +1,127 @@
 package accessory_ib;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import accessory.arrays;
+import accessory.data;
+import accessory.db_field;
 import accessory.db_where;
 import accessory.strings;
-import ib.common;
 
 public class db 
 {	
+	public static final String FIELD_SYMBOL = types.CONFIG_DB_FIELD_SYMBOL;
+	public static final String FIELD_PRICE = types.CONFIG_DB_FIELD_PRICE;
+	public static final String FIELD_SIZE = types.CONFIG_DB_FIELD_SIZE;
+	public static final String FIELD_TIME = types.CONFIG_DB_FIELD_TIME;
+	public static final String FIELD_OPEN = types.CONFIG_DB_FIELD_OPEN;
+	public static final String FIELD_CLOSE = types.CONFIG_DB_FIELD_CLOSE;
+	public static final String FIELD_LOW = types.CONFIG_DB_FIELD_LOW;
+	public static final String FIELD_HIGH = types.CONFIG_DB_FIELD_HIGH;
+	public static final String FIELD_VOLUME = types.CONFIG_DB_FIELD_VOLUME;		
+	public static final String FIELD_ASK = types.CONFIG_DB_FIELD_ASK;
+	public static final String FIELD_ASK_SIZE = types.CONFIG_DB_FIELD_ASK_SIZE;
+	public static final String FIELD_BID = types.CONFIG_DB_FIELD_BID;
+	public static final String FIELD_BID_SIZE = types.CONFIG_DB_FIELD_BID_SIZE;
+	public static final String FIELD_HALTED = types.CONFIG_DB_FIELD_HALTED;
+	public static final String FIELD_HALTED_TOT = types.CONFIG_DB_FIELD_HALTED_TOT;
+
 	public static final String SOURCE_MARKET = types.CONFIG_DB_IB_MARKET_SOURCE;
+
+	public static final String DEFAULT_SOURCE = SOURCE_MARKET;
+
+	public static HashMap<String, String> get_vals(String symbol_) { return get_vals(DEFAULT_SOURCE, symbol_); }
 	
-	public static final String FIELD_SYMBOL = types.CONFIG_DB_IB_MARKET_FIELD_SYMBOL;
-	public static final String FIELD_PRICE = types.CONFIG_DB_IB_MARKET_FIELD_PRICE;
-	public static final String FIELD_SIZE = types.CONFIG_DB_IB_MARKET_FIELD_SIZE;
-	public static final String FIELD_TIME = types.CONFIG_DB_IB_MARKET_FIELD_TIME;
-	public static final String FIELD_OPEN = types.CONFIG_DB_IB_MARKET_FIELD_OPEN;
-	public static final String FIELD_CLOSE = types.CONFIG_DB_IB_MARKET_FIELD_CLOSE;
-	public static final String FIELD_LOW = types.CONFIG_DB_IB_MARKET_FIELD_LOW;
-	public static final String FIELD_HIGH = types.CONFIG_DB_IB_MARKET_FIELD_HIGH;
-	public static final String FIELD_VOLUME = types.CONFIG_DB_IB_MARKET_FIELD_VOLUME;		
-	public static final String FIELD_ASK = types.CONFIG_DB_IB_MARKET_FIELD_ASK;
-	public static final String FIELD_ASK_SIZE = types.CONFIG_DB_IB_MARKET_FIELD_ASK_SIZE;
-	public static final String FIELD_BID = types.CONFIG_DB_IB_MARKET_FIELD_BID;
-	public static final String FIELD_BID_SIZE = types.CONFIG_DB_IB_MARKET_FIELD_BID_SIZE;
-	public static final String FIELD_HALTED = types.CONFIG_DB_IB_MARKET_FIELD_HALTED;
-	public static final String FIELD_HALTED_TOT = types.CONFIG_DB_IB_MARKET_FIELD_HALTED_TOT;
+	public static HashMap<String, String> get_vals(String source_, String symbol_) { return accessory.db.select_one(source_, null, get_where_symbol(symbol_), null); }
 
-	public static HashMap<String, String> get_market_info(String symbol_)
-	{
-		HashMap<String, String> info = null;
+	public static boolean symbol_exists(String symbol_) { return symbol_exists(DEFAULT_SOURCE, symbol_); }
+	
+	public static boolean symbol_exists(String source_, String symbol_) { return strings.is_ok(accessory.db.select_one_string(source_, FIELD_SYMBOL, get_where_symbol(symbol_), null)); }
 
-		String source = SOURCE_MARKET;
-		if (!accessory.db.source_is_ok(source)) return info;	
+	public static boolean insert() { return insert(get_default_vals()); }
 
-		ArrayList<HashMap<String, String>> temp = accessory.db.select(source, null, get_where_symbol(symbol_, null), 1, null);
-		if (arrays.is_ok(temp)) info = new HashMap<String, String>(temp.get(0));
+	public static boolean insert(String source_) { return insert(source_, get_default_vals(source_)); }
+	
+	public static boolean insert(HashMap<String, Object> vals_) { return update(DEFAULT_SOURCE, vals_); }
 
-		return info;
-	}
-
-	public static boolean update_market_val(String key_, double val_, String symbol_)
-	{
-		if (!strings.is_ok(key_) || !strings.is_ok(symbol_)) return false;
-
-		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(key_, val_);
-		vals.put(FIELD_TIME, common.get_market_time());
-
-		return update_market(vals, symbol_);
-	}
-
-	private static boolean update_market(HashMap<String, Object> vals_, String symbol_)
-	{
-		accessory.db.update(SOURCE_MARKET, vals_, get_where_symbol(symbol_, null));
-
-		return accessory.db.is_ok(SOURCE_MARKET);
-	}
-
-	public static boolean insert_market(HashMap<String, String> vals_, String symbol_)
-	{
-		if (!arrays.is_ok(vals_) || !strings.is_ok(symbol_)) return false;
-
-		HashMap<String, String> vals = new HashMap<String, String>(vals_);
-		vals.put(get_col(SOURCE_MARKET, FIELD_SYMBOL), symbol_);
-
-		return insert(SOURCE_MARKET, vals);
-	}
-
-	public static HashMap<String, String> get_default_vals()
-	{
-		HashMap<String, String> vals = new HashMap<String, String>();
-
-		String zero = strings.to_string(0.0);
-		String source = SOURCE_MARKET;
-
-		vals.put(get_col(source, FIELD_TIME), "00:00");
-		vals.put(get_col(source, FIELD_PRICE), zero);
-		vals.put(get_col(source, FIELD_VOLUME), zero);
-		vals.put(get_col(source, FIELD_OPEN), zero);
-		vals.put(get_col(source, FIELD_CLOSE), zero);
-		vals.put(get_col(source, FIELD_HIGH), zero);
-		vals.put(get_col(source, FIELD_LOW), zero);
-		vals.put(get_col(source, FIELD_BID), zero);
-		vals.put(get_col(source, FIELD_BID_SIZE), zero);
-		vals.put(get_col(source, FIELD_ASK), zero);
-		vals.put(get_col(source, FIELD_ASK_SIZE), zero);
-
-		return vals;
-	}
-
-	public static db_where[] get_where_symbol(String symbol_, db_where[] wheres_)
-	{	
-		if (!strings.is_ok(symbol_)) return wheres_;
-
-		ArrayList<db_where> wheres = (arrays.is_ok(wheres_) ? arrays.to_arraylist(wheres_) : new ArrayList<db_where>());
-
-		wheres.add(new db_where(SOURCE_MARKET, FIELD_SYMBOL, symbol_));
-
-		return arrays.to_array(wheres);
-	}
-
-	private static boolean insert(String source_, HashMap<String, String> vals_)
-	{
-		String table = get_table(source_);
-		if (!strings.is_ok(table)) return false;
-
-		accessory.db.insert(table, vals_);
+	public static boolean insert(String source_, HashMap<String, Object> vals_) 
+	{ 
+		accessory.db.insert(source_, vals_);
 
 		return accessory.db.is_ok(source_);
 	}
 
-	private static String get_table(String source_)
+	public static boolean update(String symbol_) { return update(DEFAULT_SOURCE, symbol_, get_default_vals()); }
+
+	public static boolean update(String source_, String symbol_) { return update(source_, symbol_, get_default_vals(source_)); }
+
+	public static boolean update_number(String symbol_, String field_, double val_) { return update(DEFAULT_SOURCE, symbol_, field_, val_); }
+	
+	public static boolean update(String source_, String symbol_, String field_, Object val_)
 	{
-		return accessory.db.get_table(source_);
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		vals.put(field_, val_);
+		
+		return update(source_, symbol_, vals);
 	}
 
-	private static String get_col(String source_, String field_)
+	public static boolean update(HashMap<String, Object> vals_) { return update(DEFAULT_SOURCE, vals_); }
+
+	public static boolean update(String source_, HashMap<String, Object> vals_) { return update(source_, null, vals_); }
+	
+	public static boolean update(String source_, String symbol_, HashMap<String, Object> vals_)
 	{
-		return accessory.db.get_col(source_, field_);
+		String where = get_where_symbol(source_, (strings.is_ok(symbol_) ? symbol_ : get_symbol(vals_)));
+		
+		//accessory.db.insert_update(source_, vals_, where);
+		accessory.db.update(source_, vals_, where);
+		
+		return accessory.db.is_ok(source_);
+	}
+
+	public static String get_where_symbol(String symbol_) { return get_where_symbol(DEFAULT_SOURCE, symbol_); }
+
+	public static String get_where_symbol(String source_, String symbol_) { return (new db_where(source_, FIELD_SYMBOL, symbol_)).toString(); }
+
+	public static HashMap<String, Object> get_default_vals() { return get_default_vals(DEFAULT_SOURCE); }
+	
+	public static HashMap<String, Object> get_default_vals(String source_)
+	{
+		HashMap<String, db_field> fields = accessory.db.get_source_fields(source_);
+		if (!arrays.is_ok(fields)) return null;
+	
+		HashMap<String, Object> output = new HashMap<String, Object>();
+		
+		for (Entry<String, db_field> item: fields.entrySet())
+		{
+			String field = item.getKey();
+			
+			output.put(field, get_default_val(source_, field, item.getValue().get_type()));
+		}
+
+		return output;
+	}
+
+	private static Object get_default_val(String source_, String field_, String type_)
+	{
+		Object output = null;
+		
+		if (strings.are_equal(source_, SOURCE_MARKET))
+		{
+			if (strings.are_equal(field_, FIELD_TIME)) output = "00:00";
+		}
+		if (output != null || !strings.is_ok(type_)) return output;
+		
+		if (data.is_number(type_)) output = 0;
+		
+		return (output == null ? strings.DEFAULT : output);
+	}
+
+	private static String get_symbol(HashMap<String, Object> vals_) 
+	{ 
+		Object output = arrays.get_value(vals_, FIELD_SYMBOL); 
+		
+		return (output == null ? strings.DEFAULT : (String)output);
 	}
 }

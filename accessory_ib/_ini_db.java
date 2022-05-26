@@ -38,19 +38,19 @@ public class _ini_db extends parent_ini_db
 
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
-		info.put(types.CONFIG_DB_IB_MARKET_FIELD_SYMBOL, new db_field(data.STRING_SMALL, 50));
-		info.put(types.CONFIG_DB_IB_MARKET_FIELD_TIME, new db_field(data.STRING_SMALL, accessory.dates.get_length(dates.FORMAT_TIME_SHORT)));
-		info.put(types.CONFIG_DB_IB_MARKET_FIELD_VOLUME, new db_field(data.DECIMAL, 10, numbers.DEFAULT_DECIMALS));
-		info.put(types.CONFIG_DB_IB_MARKET_FIELD_HALTED, new db_field(data.STRING_SMALL, 50));
-		info.put(types.CONFIG_DB_IB_MARKET_FIELD_HALTED_TOT, new db_field(data.INT, 2));
+		info.put(types.CONFIG_DB_FIELD_SYMBOL, new db_field(data.STRING_SMALL, 50));
+		info.put(types.CONFIG_DB_FIELD_TIME, new db_field(data.STRING_SMALL, accessory.dates.get_length(dates.FORMAT_TIME_SHORT)));
+		info.put(types.CONFIG_DB_FIELD_VOLUME, new db_field(data.DECIMAL, 10, numbers.DEFAULT_DECIMALS));
+		info.put(types.CONFIG_DB_FIELD_HALTED, new db_field(data.STRING_SMALL, 50));
+		info.put(types.CONFIG_DB_FIELD_HALTED_TOT, new db_field(data.INT, 2));
 		
 		String[] ids = 
 		{
-			types.CONFIG_DB_IB_MARKET_FIELD_PRICE, types.CONFIG_DB_IB_MARKET_FIELD_OPEN, 
-			types.CONFIG_DB_IB_MARKET_FIELD_CLOSE, types.CONFIG_DB_IB_MARKET_FIELD_LOW, 
-			types.CONFIG_DB_IB_MARKET_FIELD_HIGH, types.CONFIG_DB_IB_MARKET_FIELD_ASK, 
-			types.CONFIG_DB_IB_MARKET_FIELD_BID, types.CONFIG_DB_IB_MARKET_FIELD_SIZE, 
-			types.CONFIG_DB_IB_MARKET_FIELD_BID_SIZE
+			types.CONFIG_DB_FIELD_PRICE, types.CONFIG_DB_FIELD_OPEN, 
+			types.CONFIG_DB_FIELD_CLOSE, types.CONFIG_DB_FIELD_LOW, 
+			types.CONFIG_DB_FIELD_HIGH, types.CONFIG_DB_FIELD_ASK, 
+			types.CONFIG_DB_FIELD_BID, types.CONFIG_DB_FIELD_SIZE, 
+			types.CONFIG_DB_FIELD_BID_SIZE
 		};
 		
 		for (String id: ids) { info.put(id, get_default_decimal_field()); }

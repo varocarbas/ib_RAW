@@ -4,16 +4,16 @@ import com.ib.client.EClientSocket;
 import com.ib.client.EReader;
 import com.ib.client.EReaderSignal;
 
-import accessory.generic;
 import accessory.misc;
 import accessory.numbers;
+import accessory.parent_static;
 import accessory.strings;
 import accessory_ib.config;
 import accessory_ib.errors;
 import accessory_ib.types;
 import external_ib.wrapper;
 
-public class conn 
+public class conn extends parent_static 
 {
 	public static final String TYPE = types.CONFIG_CONN_TYPE; 
 	public static final String ID = types.CONFIG_CONN_ID; 
@@ -26,6 +26,7 @@ public class conn
 	public static final String ERROR_NONE = types.ERROR_IB_CONN_NONE;
 	public static final String ERROR_ID = types.ERROR_IB_CONN_ID;
 	public static final String ERROR_TYPE = types.ERROR_IB_CONN_TYPE;
+	public static final String ERROR_GENERIC = types.ERROR_IB_CONN_GENERIC;
 	
 	public static volatile boolean _valid_id = false; 
 
@@ -45,6 +46,8 @@ public class conn
 	private static final int PORT_GATEWAY_REAL = 4001;
 	private static final int PORT_GATEWAY_PAPER = 4002;
 
+	public static String get_id() { return accessory.types.get_id(types.ID_CONN); }
+	
 	public static boolean is_ok()
 	{		
 		if (!_connected) connect();
@@ -156,7 +159,7 @@ public class conn
 						catch (Exception e) 
 						{
 							String message = e.getMessage();
-							if (message != null && !message.equals("empty String")) generic.to_screen("Exception: " + message);
+							if (!strings.are_equal(message, "empty String")) accessory_ib.errors.manage(ERROR_GENERIC, message);
 						}
 					}
 

@@ -6,13 +6,14 @@ import java.util.HashMap;
 import accessory.arrays;
 import accessory.misc;
 import accessory.numbers;
+import accessory.parent_static;
 import accessory.strings;
 import accessory.dates;
 import accessory_ib._defaults;
 import accessory_ib.errors;
 import accessory_ib.types;
 
-public class sync 
+public class sync extends parent_static 
 {
 	public static final String GET_ID = types.SYNC_GET_ID;
 	public static final String GET_IDS = types.SYNC_GET_IDS;
@@ -34,8 +35,6 @@ public class sync
 	public static String _type2 = strings.DEFAULT;
 	public static int _id = _defaults.SYNC_ID;
 
-	public static boolean _ignore_max_time = false;
-
 	private static volatile double _decimal_out = numbers.DEFAULT_DECIMAL;
 	private static volatile int _int_out = numbers.DEFAULT_INT;
 	private static volatile ArrayList<Integer> _ints_out = new ArrayList<Integer>();
@@ -43,14 +42,15 @@ public class sync
 
 	private static final int MAX_SECS_RETRIEVE = 10;
 
+	public static String get_id() { return accessory.types.get_id(types.ID_SYNC); }
+
+	public static int get_next_id() { return (int)get(GET_ID); }
+	
 	public static double get_funds() { return (double)get(GET_FUNDS); }
 
 	public static Integer[] get_open_ids() { return (Integer[])get(GET_IDS); }
 
-	public static boolean update(String val_)
-	{
-		return update(strings.to_number_decimal(val_));
-	}
+	public static boolean update(String val_) { return update(strings.to_number_decimal(val_)); }
 
 	public static boolean update(double val_)
 	{
@@ -98,9 +98,6 @@ public class sync
 
 		return message;	
 	}
-	
-	//Only called when creating a new order, via the corresponding order_info constructor.
-	static int get_next_id() { return (int)get(GET_ID); }
 
 	private static Object get(String type_) { return get(type_, _defaults.SYNC_ID); }
 
@@ -163,6 +160,8 @@ public class sync
 		_retrieving = true;
 		_retrieved = false;
 
+		boolean cannot_fail = true;
+		
 		if (_type.equals(GET_FUNDS))
 		{	
 			//accountSummary, accountSummaryEnd
@@ -170,6 +169,8 @@ public class sync
 		}
 		else if (_type.equals(GET_IDS))
 		{	
+			cannot_fail = false;
+			
 			//openOrder, openOrderEnd, orderStatus
 			conn._client.reqAllOpenOrders(); 
 		}
@@ -180,7 +181,7 @@ public class sync
 		}
 		else return false;
 
-		return retrieving();
+		return start_retrieval(cannot_fail);
 	}
 
 	private static boolean retrieve_is_ok(String type_, int id_)
@@ -209,7 +210,7 @@ public class sync
 		return true;
 	}
 
-	private static boolean retrieving()
+	private static boolean start_retrieval(boolean cannot_fail_)
 	{
 		boolean is_ok = true;
 
@@ -219,9 +220,9 @@ public class sync
 		{
 			if (_retrieved) break;
 
-			if (!_ignore_max_time && dates.get_elapsed(start) >= MAX_SECS_RETRIEVE) 
+			if (dates.get_elapsed(start) >= MAX_SECS_RETRIEVE) 
 			{
-				errors.manage(ERROR_TIME);
+				if (cannot_fail_) errors.manage(ERROR_TIME);
 				is_ok = false;
 
 				break;
@@ -230,7 +231,6 @@ public class sync
 			misc.pause_loop();
 		}
 
-		_ignore_max_time = false;
 		_retrieving = false;
 
 		return is_ok;

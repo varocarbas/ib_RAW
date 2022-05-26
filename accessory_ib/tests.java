@@ -44,7 +44,7 @@ public class tests extends parent_tests
 		String name0 = class0.getName();
 		update_screen(name0, true, 1);
 		
-		String[] methods = new String[] { "get_funds", "get_open_ids" };
+		String[] methods = new String[] { "get_next_id", "get_funds", "get_open_ids" };
 		
 		outputs.put(name0, run_methods(class0, methods));
 		

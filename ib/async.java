@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import accessory._keys;
 import accessory.arrays;
 import accessory.numbers;
+import accessory.parent_static;
 import accessory.strings;
 import accessory_ib.config;
 import accessory_ib.db;
@@ -14,7 +15,7 @@ import accessory_ib.errors;
 import accessory_ib.types;
 import external_ib.constants;
 
-public class async 
+public class async extends parent_static 
 {	
 	public static final String ERROR_GENERIC = types.ERROR_IB_ASYNC_GENERIC;
 	
@@ -30,6 +31,8 @@ public class async
 	private static int MIN_ID = 1;
 	private static int MAX_ID = 2500;
 
+	public static String get_id() { return accessory.types.get_id(types.ID_ASYNC); }
+	
 	public static boolean snapshot_start(String symbol_, int data_)
 	{
 		return market_start(symbol_, data_, true);
@@ -146,15 +149,10 @@ public class async
 
 	private static boolean market_start(String symbol_, int data_, boolean is_snapshot_)
 	{
-		boolean is_ok = false;
-
 		String symbol = common.normalise_symbol(symbol_);
-		if (!strings.is_ok(symbol)) return is_ok;
+		if (!strings.is_ok(symbol)) return false;
 
-		is_ok = true;
-		if (!arrays.is_ok(db.get_market_info(symbol)))
-
-			_market_type = (is_snapshot_ ? types.ASYNC_MARKET_SNAPSHOT : types.ASYNC_MARKET_STREAM);
+		_market_type = (is_snapshot_ ? types.ASYNC_MARKET_SNAPSHOT : types.ASYNC_MARKET_STREAM);
 
 		if (!numbers.is_ok(_market_id, MIN_ID, MAX_ID)) _market_id = MIN_ID - 1;
 		_market_id++;
@@ -169,13 +167,13 @@ public class async
 		if (storage.equals(types.CONFIG_ASYNC_STORAGE_MEMORY)) market_check_memory(symbol);
 		else if (storage.equals(types.CONFIG_ASYNC_STORAGE_DB))
 		{
-			if (!arrays.is_ok(db.get_market_info(symbol_))) db.insert_market(db.get_default_vals(), symbol_);
+			if (!db.symbol_exists(symbol)) db.insert();
 		}
 
 		if (constants.data_is_ok(data_)) conn._client.reqMarketDataType(data_);
 		conn._client.reqMktData(_market_id, common.get_contract(symbol), "", is_snapshot_, false, null);
 
-		return is_ok;		
+		return true;		
 	}
 
 	private static void market_check_memory(String symbol_)
@@ -200,7 +198,7 @@ public class async
 		String storage = config.get_async(types.CONFIG_ASYNC_STORAGE);
 		if (!strings.is_ok(storage)) return is_ok;
 
-		if (storage.equals(types.CONFIG_ASYNC_STORAGE_DB)) is_ok = db.update_market_val(key_, val_, symbol_); 
+		if (storage.equals(types.CONFIG_ASYNC_STORAGE_DB)) is_ok = db.update_number(symbol_, key_, val_); 
 		else if (storage.equals(types.CONFIG_ASYNC_STORAGE_MEMORY)) 
 		{
 			String val = strings.to_string(val_);

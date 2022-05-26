@@ -19,30 +19,32 @@ public class types
 	public static final String CONFIG_ORDER_TIF = "config_order_tif";
 	public static final String CONFIG_ORDER_QUANTITY_INT = "config_order_quantity_int";
 
-	public static final String CONFIG_DB_IB = "config_db_ib";
+	public static final String CONFIG_DB_FIELD = "config_db_field";
+	public static final String CONFIG_DB_FIELD_SIZE = "config_db_field_size";
+	public static final String CONFIG_DB_FIELD_TIME = "config_db_field_time";
+	public static final String CONFIG_DB_FIELD_SYMBOL = "config_db_field_symbol";
+	public static final String CONFIG_DB_FIELD_PRICE = "config_db_field_price";
+	public static final String CONFIG_DB_FIELD_OPEN = "config_db_field_open";
+	public static final String CONFIG_DB_FIELD_CLOSE = "config_db_field_close";
+	public static final String CONFIG_DB_FIELD_LOW = "config_db_field_low";
+	public static final String CONFIG_DB_FIELD_HIGH = "config_db_field_high";
+	public static final String CONFIG_DB_FIELD_VOLUME = "config_db_field_volume";
+	public static final String CONFIG_DB_FIELD_ASK = "config_db_field_ask";
+	public static final String CONFIG_DB_FIELD_ASK_SIZE = "config_db_field_ask_size";
+	public static final String CONFIG_DB_FIELD_BID = "config_db_field_bid";
+	public static final String CONFIG_DB_FIELD_BID_SIZE = "config_db_field_bid_size";
+	public static final String CONFIG_DB_FIELD_HALTED = "config_db_field_halted";
+	public static final String CONFIG_DB_FIELD_HALTED_TOT = "config_db_field_halted_tot";
 
-	public static final String CONFIG_DB_IB_COMMON = "config_db_ib_common";
-	public static final String CONFIG_DB_IB_COMMON_FIELD = "config_db_ib_common_field";
-	public static final String CONFIG_DB_IB_COMMON_FIELD_SYMBOL = "config_db_ib_common_field_symbol";
-	
+	public static final String CONFIG_DB_IB = "config_db_ib";
 	public static final String CONFIG_DB_IB_MARKET = "config_db_ib_market";
 	public static final String CONFIG_DB_IB_MARKET_SOURCE = "config_db_ib_market_source";
-	public static final String CONFIG_DB_IB_MARKET_FIELD = "config_db_ib_market_field";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_SIZE = "config_db_ib_market_field_size";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_TIME = "config_db_ib_market_field_time";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_SYMBOL = CONFIG_DB_IB_COMMON_FIELD_SYMBOL;
-	public static final String CONFIG_DB_IB_MARKET_FIELD_PRICE = "config_db_ib_market_field_price";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_OPEN = "config_db_ib_market_field_open";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_CLOSE = "config_db_ib_market_field_close";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_LOW = "config_db_ib_market_field_low";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_HIGH = "config_db_ib_market_field_high";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_VOLUME = "config_db_ib_market_field_volume";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_ASK = "config_db_ib_market_field_ask";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_ASK_SIZE = "config_db_ib_market_field_ask_size";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_BID = "config_db_ib_market_field_bid";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_BID_SIZE = "config_db_ib_market_field_bid_size";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_HALTED = "config_db_ib_market_field_halted";
-	public static final String CONFIG_DB_IB_MARKET_FIELD_HALTED_TOT = "config_db_ib_market_field_halted_tot";
+
+	public static final String ID_ASYNC = "id_async";
+	public static final String ID_COMMON = "id_common";
+	public static final String ID_CONN = "id_conn";
+	public static final String ID_ORDERS = "id_orders";
+	public static final String ID_SYNC = "id_sync";
 	
 	public static final String CONN = "conn";
 	public static final String CONN_TWS_REAL = "conn_tws_real";
@@ -85,6 +87,7 @@ public class types
 	public static final String ERROR_IB_CONN_NONE = "error_ib_conn_none";
 	public static final String ERROR_IB_CONN_ID = "error_ib_conn_id";
 	public static final String ERROR_IB_CONN_TYPE = "error_ib_conn_type";
+	public static final String ERROR_IB_CONN_GENERIC = "error_ib_conn_generic";
 	public static final String ERROR_IB_SYNC = "error_ib_sync";
 	public static final String ERROR_IB_SYNC_ID = "error_ib_sync_id";
 	public static final String ERROR_IB_SYNC_ID2 = "error_ib_sync_id2";
@@ -105,20 +108,19 @@ public class types
 			CONFIG_ASYNC_STORAGE_MEMORY, CONFIG_ASYNC_STORAGE_DB,
 			CONFIG_ORDER,
 			CONFIG_ORDER_TIF, CONFIG_ORDER_QUANTITY_INT,
-			
-			CONFIG_DB_IB,
-			CONFIG_DB_IB_COMMON,
-			CONFIG_DB_IB_COMMON_FIELD,
-			CONFIG_DB_IB_COMMON_FIELD_SYMBOL,
-			
+
+			CONFIG_DB_FIELD, 
+			CONFIG_DB_FIELD_SIZE, CONFIG_DB_FIELD_TIME, CONFIG_DB_FIELD_SYMBOL, 
+			CONFIG_DB_FIELD_PRICE, CONFIG_DB_FIELD_OPEN, CONFIG_DB_FIELD_CLOSE, 
+			CONFIG_DB_FIELD_LOW, CONFIG_DB_FIELD_HIGH, CONFIG_DB_FIELD_VOLUME, 
+			CONFIG_DB_FIELD_ASK, CONFIG_DB_FIELD_ASK_SIZE, CONFIG_DB_FIELD_BID, 
+			CONFIG_DB_FIELD_BID_SIZE, CONFIG_DB_FIELD_HALTED, CONFIG_DB_FIELD_HALTED_TOT,
+
+			CONFIG_DB_IB,		
 			CONFIG_DB_IB_MARKET,
 			CONFIG_DB_IB_MARKET_SOURCE,
-			CONFIG_DB_IB_MARKET_FIELD, CONFIG_DB_IB_MARKET_FIELD_SIZE, CONFIG_DB_IB_MARKET_FIELD_TIME, 
-			CONFIG_DB_IB_MARKET_FIELD_SYMBOL, CONFIG_DB_IB_MARKET_FIELD_PRICE, CONFIG_DB_IB_MARKET_FIELD_OPEN, 
-			CONFIG_DB_IB_MARKET_FIELD_CLOSE, CONFIG_DB_IB_MARKET_FIELD_LOW, CONFIG_DB_IB_MARKET_FIELD_HIGH, 
-			CONFIG_DB_IB_MARKET_FIELD_VOLUME, CONFIG_DB_IB_MARKET_FIELD_ASK, CONFIG_DB_IB_MARKET_FIELD_ASK_SIZE,
-			CONFIG_DB_IB_MARKET_FIELD_BID, CONFIG_DB_IB_MARKET_FIELD_BID_SIZE, CONFIG_DB_IB_MARKET_FIELD_HALTED, 
-			CONFIG_DB_IB_MARKET_FIELD_HALTED_TOT,
+			
+			ID_ASYNC, ID_COMMON, ID_CONN, ID_ORDERS, ID_SYNC,
 			
 			CONN,
 			CONN_TWS_REAL, CONN_TWS_PAPER, CONN_GATEWAY_REAL, CONN_GATEWAY_PAPER,
@@ -144,7 +146,7 @@ public class types
 			ERROR_IB_INI_DB, 
 			ERROR_IB_INI_DB_DBS,
 			ERROR_IB_CONN,
-			ERROR_IB_CONN_NONE, ERROR_IB_CONN_ID, ERROR_IB_CONN_TYPE,
+			ERROR_IB_CONN_NONE, ERROR_IB_CONN_ID, ERROR_IB_CONN_TYPE, ERROR_IB_CONN_GENERIC,
 			ERROR_IB_SYNC,
 			ERROR_IB_SYNC_ID, ERROR_IB_SYNC_ID2, ERROR_IB_SYNC_TIME,
 			ERROR_IB_ASYNC,

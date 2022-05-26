@@ -4,13 +4,13 @@ import com.ib.client.Contract;
 
 import accessory.strings;
 import accessory.dates;
+import accessory.parent_static;
 import accessory_ib.config;
-import accessory_ib._ini;
 import accessory_ib.types;
 
-public class common 
+public class common extends parent_static 
 {
-	static { _ini.start(); }
+	public static String get_id() { return accessory.types.get_id(types.ID_COMMON); }
 	
 	public static Contract get_contract(String symbol_)
 	{
