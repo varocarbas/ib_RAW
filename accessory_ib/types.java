@@ -9,11 +9,10 @@ public class types
 	public static final String CONFIG_CONN_ID = "config_conn_id";
 	
 	public static final String CONFIG_ASYNC = "config_async";
-	public static final String CONFIG_ASYNC_SNAPSHOT_QUICK = "config_async_snapshot_quick";
-	public static final String CONFIG_ASYNC_SNAPSHOT_CONSTANT = "config_async_snapshot_constant";
-	public static final String CONFIG_ASYNC_STORAGE = "config_async_storage";
-	public static final String CONFIG_ASYNC_STORAGE_MEMORY = "config_async_storage_memory";
-	public static final String CONFIG_ASYNC_STORAGE_DB = "config_async_storage_db";
+	public static final String CONFIG_ASYNC_MARKET = "config_async_market";
+	public static final String CONFIG_ASYNC_MARKET_SNAPSHOT = "config_async_market_snapshot";
+	public static final String CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK = "config_async_market_snapshot_quick";
+	public static final String CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP = "config_async_market_snapshot_nonstop";
 
 	public static final String CONFIG_ORDER = "config_order";
 	public static final String CONFIG_ORDER_TIF = "config_order_tif";
@@ -41,6 +40,7 @@ public class types
 	public static final String CONFIG_DB_IB_MARKET_SOURCE = "config_db_ib_market_source";
 
 	public static final String ID_ASYNC = "id_async";
+	public static final String ID_ASYNC_MARKET = "id_async_market";
 	public static final String ID_COMMON = "id_common";
 	public static final String ID_CONN = "id_conn";
 	public static final String ID_ORDERS = "id_orders";
@@ -57,11 +57,11 @@ public class types
 	public static final String SYNC_GET_FUNDS = "sync_get_funds";
 	public static final String SYNC_GET_ID = "sync_get_id";
 	public static final String SYNC_GET_IDS = "sync_get_ids";
-	public static final String SYNC_DATA = "sync_data";
-	public static final String SYNC_DATA_INT = "sync_data_int";
-	public static final String SYNC_DATA_DECIMAL = "sync_data_decimal";
-	public static final String SYNC_DATA_INTS = "sync_data_ints";
-	public static final String SYNC_DATA_MISC = "sync_data_misc";
+	public static final String SYNC_OUT = "sync_data";
+	public static final String SYNC_OUT_INT = "sync_data_int";
+	public static final String SYNC_OUT_DECIMAL = "sync_data_decimal";
+	public static final String SYNC_OUT_INTS = "sync_data_ints";
+	public static final String SYNC_OUT_MISC = "sync_data_misc";
 
 	public static final String ASYNC = "async";
 	public static final String ASYNC_MARKET = "async_market";
@@ -80,6 +80,7 @@ public class types
 	public static final String ORDER_UPDATE_STOP_MARKET = "order_update_stop_market";
 
 	public static final String ERROR_IB = "error_ib";
+	public static final String ERROR_IB_GENERIC = "error_ib_generic";
 	public static final String ERROR_IB_INI = "error_ib_ini";
 	public static final String ERROR_IB_INI_DB = "error_ib_ini_db";
 	public static final String ERROR_IB_INI_DB_DBS = "error_ib_ini_db_dbs";
@@ -92,20 +93,18 @@ public class types
 	public static final String ERROR_IB_SYNC_ID = "error_ib_sync_id";
 	public static final String ERROR_IB_SYNC_ID2 = "error_ib_sync_id2";
 	public static final String ERROR_IB_SYNC_TIME = "error_ib_sync_time";
-	public static final String ERROR_IB_ASYNC = "error_ib_async";
-	public static final String ERROR_IB_ASYNC_GENERIC = "error_ib_async_generic";
 	
 	static String[] populate_all_types()
-	{
+	{		
 		return new String[]
 		{
 			CONFIG_BASIC_CURRENCY,
 			CONFIG_CONN,
 			CONFIG_CONN_TYPE, CONFIG_CONN_ID,
 			CONFIG_ASYNC,
-			CONFIG_ASYNC_SNAPSHOT_QUICK, CONFIG_ASYNC_SNAPSHOT_CONSTANT, 
-			CONFIG_ASYNC_STORAGE,
-			CONFIG_ASYNC_STORAGE_MEMORY, CONFIG_ASYNC_STORAGE_DB,
+			CONFIG_ASYNC_MARKET,
+			CONFIG_ASYNC_MARKET_SNAPSHOT,
+			CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK, CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP, 
 			CONFIG_ORDER,
 			CONFIG_ORDER_TIF, CONFIG_ORDER_QUANTITY_INT,
 
@@ -120,7 +119,9 @@ public class types
 			CONFIG_DB_IB_MARKET,
 			CONFIG_DB_IB_MARKET_SOURCE,
 			
-			ID_ASYNC, ID_COMMON, ID_CONN, ID_ORDERS, ID_SYNC,
+			ID_ASYNC,
+			ID_ASYNC_MARKET,
+			ID_COMMON, ID_CONN, ID_ORDERS, ID_SYNC,
 			
 			CONN,
 			CONN_TWS_REAL, CONN_TWS_PAPER, CONN_GATEWAY_REAL, CONN_GATEWAY_PAPER,
@@ -128,8 +129,8 @@ public class types
 			SYNC,
 			SYNC_GET,
 			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_IDS,
-			SYNC_DATA,
-			SYNC_DATA_INT, SYNC_DATA_DECIMAL, SYNC_DATA_INTS, SYNC_DATA_MISC,
+			SYNC_OUT,
+			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_MISC,
 
 			ASYNC,
 			ASYNC_MARKET,
@@ -142,15 +143,14 @@ public class types
 			ORDER_UPDATE_START_VALUE, ORDER_UPDATE_START_MARKET, ORDER_UPDATE_STOP_VALUE, ORDER_UPDATE_STOP_MARKET,
 			
 			ERROR_IB,
+			ERROR_IB_GENERIC,
 			ERROR_IB_INI,
 			ERROR_IB_INI_DB, 
 			ERROR_IB_INI_DB_DBS,
 			ERROR_IB_CONN,
 			ERROR_IB_CONN_NONE, ERROR_IB_CONN_ID, ERROR_IB_CONN_TYPE, ERROR_IB_CONN_GENERIC,
 			ERROR_IB_SYNC,
-			ERROR_IB_SYNC_ID, ERROR_IB_SYNC_ID2, ERROR_IB_SYNC_TIME,
-			ERROR_IB_ASYNC,
-			ERROR_IB_ASYNC_GENERIC,
+			ERROR_IB_SYNC_ID, ERROR_IB_SYNC_ID2, ERROR_IB_SYNC_TIME
 		};		
 	}
 }

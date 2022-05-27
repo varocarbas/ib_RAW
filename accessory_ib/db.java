@@ -39,9 +39,9 @@ public class db
 	
 	public static boolean symbol_exists(String source_, String symbol_) { return strings.is_ok(accessory.db.select_one_string(source_, FIELD_SYMBOL, get_where_symbol(symbol_), null)); }
 
-	public static boolean insert() { return insert(get_default_vals()); }
+	public static boolean insert(String symbol_) { return insert(DEFAULT_SOURCE, symbol_); }
 
-	public static boolean insert(String source_) { return insert(source_, get_default_vals(source_)); }
+	public static boolean insert(String source_, String symbol_) { return insert(source_, get_default_vals(source_, symbol_)); }
 	
 	public static boolean insert(HashMap<String, Object> vals_) { return update(DEFAULT_SOURCE, vals_); }
 
@@ -54,7 +54,7 @@ public class db
 
 	public static boolean update(String symbol_) { return update(DEFAULT_SOURCE, symbol_, get_default_vals()); }
 
-	public static boolean update(String source_, String symbol_) { return update(source_, symbol_, get_default_vals(source_)); }
+	public static boolean update(String source_, String symbol_) { return update(source_, symbol_, get_default_vals(source_, symbol_)); }
 
 	public static boolean update_number(String symbol_, String field_, double val_) { return update(DEFAULT_SOURCE, symbol_, field_, val_); }
 	
@@ -84,9 +84,11 @@ public class db
 
 	public static String get_where_symbol(String source_, String symbol_) { return (new db_where(source_, FIELD_SYMBOL, symbol_)).toString(); }
 
-	public static HashMap<String, Object> get_default_vals() { return get_default_vals(DEFAULT_SOURCE); }
+	public static HashMap<String, Object> get_default_vals() { return get_default_vals(DEFAULT_SOURCE, null); }
+
+	public static HashMap<String, Object> get_default_vals(String symbol_) { return get_default_vals(DEFAULT_SOURCE, symbol_); }
 	
-	public static HashMap<String, Object> get_default_vals(String source_)
+	public static HashMap<String, Object> get_default_vals(String source_, String symbol_)
 	{
 		HashMap<String, db_field> fields = accessory.db.get_source_fields(source_);
 		if (!arrays.is_ok(fields)) return null;
@@ -95,9 +97,17 @@ public class db
 		
 		for (Entry<String, db_field> item: fields.entrySet())
 		{
-			String field = item.getKey();
+			String key = item.getKey();
+			Object val = null; 
+					
+			if (key.equals(FIELD_SYMBOL))
+			{
+				if (strings.is_ok(symbol_)) val = symbol_;
+				else continue;
+			}
+			else val = get_default_val(source_, key, item.getValue().get_type());
 			
-			output.put(field, get_default_val(source_, field, item.getValue().get_type()));
+			output.put(key, val);
 		}
 
 		return output;

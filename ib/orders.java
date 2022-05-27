@@ -14,7 +14,6 @@ import accessory.parent_static;
 import accessory.strings;
 import accessory_ib.config;
 import accessory_ib.types;
-import external_ib.constants;
 
 public class orders extends parent_static
 {	
@@ -157,20 +156,20 @@ public class orders extends parent_static
 			else type2 = null;
 		}
 
-		String action = constants.ORDER_ACTION_BUY;
-		if (is_main && is_market) action = constants.ORDER_ACTION_SELL;
+		String action = external_ib.orders.ACTION_BUY;
+		if (is_main && is_market) action = external_ib.orders.ACTION_SELL;
 
 		order.action(action);
 
-		if (is_market && is_main) order.orderType(constants.ORDER_TYPE_MARKET);
+		if (is_market && is_main) order.orderType(external_ib.orders.TYPE_MARKET);
 		else
 		{
-			String order_type = constants.ORDER_TYPE_STOP;
-			if (is_main && info_.get_type().equals(types.ORDER_PLACE_LIMIT)) order_type = constants.ORDER_TYPE_LIMIT;
+			String order_type = external_ib.orders.TYPE_STOP;
+			if (is_main && info_.get_type().equals(types.ORDER_PLACE_LIMIT)) order_type = external_ib.orders.TYPE_LIMIT;
 
 			order.orderType(order_type);
-			if (order_type.equals(constants.ORDER_TYPE_STOP)) order.auxPrice(val);	
-			else if (order_type.equals(constants.ORDER_TYPE_LIMIT)) order.lmtPrice(val);	
+			if (order_type.equals(external_ib.orders.TYPE_STOP)) order.auxPrice(val);	
+			else if (order_type.equals(external_ib.orders.TYPE_LIMIT)) order.lmtPrice(val);	
 		}
 		if (!is_main) order.parentId(parent_);
 

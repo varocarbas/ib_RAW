@@ -33,97 +33,73 @@ import com.ib.client.TickAttrib;
 import com.ib.client.TickAttribBidAsk;
 import com.ib.client.TickAttribLast;
 
+import accessory.arrays;
 import accessory.strings;
-import accessory_ib.types;
+import accessory_ib.errors;
 import ib.async;
+import ib.async_market;
 import ib.conn;
 import ib.sync;
 
 public class wrapper implements EWrapper 
 {
-	//! [accountsummary]
 	@Override
-	public void accountSummary(int reqId, String account, String tag, String value, String currency) 
+	public void accountSummary(int id_, String account_, String tag_, String value_, String currency_) 
 	{
-		if (!sync._retrieving || reqId != sync._id) return;
+		if (!sync._retrieving || id_ != sync._id) return;
 
-		sync.update(value);
+		sync.update(value_);
 	}
-	//! [accountsummary]
 	
-	//! [accountsummaryend]
 	@Override
-	public void accountSummaryEnd(int reqId) 
+	public void accountSummaryEnd(int id_) 
 	{
-		if (!sync._retrieving || reqId != sync._id) return;
+		if (!sync._retrieving || id_ != sync._id) return;
 
 		sync._retrieved = true;
 	}
-	//! [accountsummaryend]
 	
-	//! [nextvalidid]
 	@Override
-	public void nextValidId(int orderId) 
+	public void nextValidId(int id_) 
 	{
-		currentOrderId = orderId;
+		currentOrderId = id_;
 		
 		if (sync._retrieving)
 		{
-			sync.update(orderId);
+			sync.update(id_);
+			
 			sync._retrieved = true;
 		}
-		else conn._valid_id = true;
+		else conn._id_is_ok = true;
 	}
-	//! [nextvalidid]
 	
-	 //! [tickprice]
 	@Override
-	public void tickPrice(int tickerId, int field, double price, TickAttrib attribs) 
-	{
-		async.tick_price(tickerId, field, price);
-	}
-	//! [tickprice]
+	public void tickPrice(int id_, int field_, double price_, TickAttrib attribs_) { async_market.wrapper_tickPrice(id_, field_, price_); }
 	
-	//! [ticksize]
 	@Override
-	public void tickSize(int tickerId, int field, int size) 
-	{
-		async.tick_size(tickerId, field, size);
-	}
-	//! [ticksize]
+	public void tickSize(int id_, int field_, int size_) { async_market.wrapper_tickSize(id_, field_, size_); }
 
-	//! [ticksnapshotend]
 	@Override
-	public void tickSnapshotEnd(int reqId) 
+	public void tickSnapshotEnd(int id_) 
 	{
-		//In some cases, reaching this point might take too long and waiting for 
-		//the given sizes via tickSize can appreciably sped it up.
-		if 
-		( 
-			!async._market_retrieving.get(reqId) ||
-			!strings.are_equal(async._market_type, types.ASYNC_MARKET_SNAPSHOT)
-		) 
-		{ return; }
+		//In some cases, reaching this point might take too long and relying on tickSize could
+		//appreciably speed everything up. That is, all the relevant information is assumed to 
+		//have already been received right after getting certain size value.
 		
-		async._market_retrieved.put(reqId, true);
+		if (!async._retrieving.contains(id_) || !strings.are_equal((String)arrays.get_value(async._types, id_), async_market.TYPE_SNAPSHOT)) return;
+		
+		async_market.snapshot_end(id_);
 	}
-	//! [ticksnapshotend]
 	
-	//! [tickgeneric]
 	@Override
-	public void tickGeneric(int tickerId, int tickType, double value) 
-	{
-		async.tick_generic(tickerId, tickType, value);
-	}
-	//! [tickgeneric]
+	public void tickGeneric(int ticker_id_, int tick_type_, double value_) { async_market.wrapper_tickGeneric(ticker_id_, tick_type_, value_); }
 	
-	//! [error]
 	@Override
-	public void error(int id, int errorCode, String errorMsg) 
-	{
-		async.error(id, errorCode, errorMsg);
-	}
-	//! [error]
+	public void error(int id_, int error_code_, String error_message_) { errors.wrapper_error(id_, error_code_, error_message_); }
+	
+	public EClientSocket getClient() { return clientSocket; }
+	
+	public EReaderSignal getSignal() { return readerSignal; }
 	
 	//! [orderstatus]
 	@Override
@@ -219,13 +195,6 @@ public class wrapper implements EWrapper
 		clientSocket = new EClientSocket(this, readerSignal);
 	}
 	//! [socket_init]
-	public EClientSocket getClient() {
-		return clientSocket;
-	}
-	
-	public EReaderSignal getSignal() {
-		return readerSignal;
-	}
 	
 	public int getCurrentOrderId() {
 		return currentOrderId;

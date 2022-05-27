@@ -46,9 +46,8 @@ public class _ini_config extends parent_ini_config
 		String type = types.CONFIG_ASYNC;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(types.CONFIG_ASYNC_SNAPSHOT_QUICK, _defaults.ASYNC_SNAPSHOT_QUICK);
-		vals.put(types.CONFIG_ASYNC_SNAPSHOT_CONSTANT, _defaults.ASYNC_SNAPSHOT_CONSTANT);
-		vals.put(types.CONFIG_ASYNC_STORAGE, _defaults.ASYNC_STORAGE);
+		vals.put(types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK, _defaults.ASYNC_SNAPSHOT_QUICK);
+		vals.put(types.CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP, _defaults.ASYNC_SNAPSHOT_NONSTOP);
 		
 		return populate(type, null, vals);
 	}

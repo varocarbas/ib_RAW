@@ -19,10 +19,10 @@ public class sync extends parent_static
 	public static final String GET_IDS = types.SYNC_GET_IDS;
 	public static final String GET_FUNDS = types.SYNC_GET_FUNDS;
 
-	public static final String DATA_DECIMAL = types.SYNC_DATA_DECIMAL;
-	public static final String DATA_INT = types.SYNC_DATA_INT;
-	public static final String DATA_INTS = types.SYNC_DATA_INTS;
-	public static final String DATA_MISC = types.SYNC_DATA_MISC;
+	public static final String OUT_DECIMAL = types.SYNC_OUT_DECIMAL;
+	public static final String OUT_INT = types.SYNC_OUT_INT;
+	public static final String OUT_INTS = types.SYNC_OUT_INTS;
+	public static final String OUT_MISC = types.SYNC_OUT_MISC;
 
 	public static final String ERROR_ID = types.ERROR_IB_SYNC_ID;
 	public static final String ERROR_ID2 = types.ERROR_IB_SYNC_ID2;
@@ -35,12 +35,12 @@ public class sync extends parent_static
 	public static String _type2 = strings.DEFAULT;
 	public static int _id = _defaults.SYNC_ID;
 
-	private static volatile double _decimal_out = numbers.DEFAULT_DECIMAL;
-	private static volatile int _int_out = numbers.DEFAULT_INT;
-	private static volatile ArrayList<Integer> _ints_out = new ArrayList<Integer>();
-	private static volatile HashMap<String, String> _misc_out = new HashMap<String, String>();
+	private static volatile double _out_decimal = numbers.DEFAULT_DECIMAL;
+	private static volatile int _out_int = numbers.DEFAULT_INT;
+	private static volatile ArrayList<Integer> _out_ints = new ArrayList<Integer>();
+	private static volatile HashMap<String, String> _out_misc = new HashMap<String, String>();
 
-	private static final int MAX_SECS_RETRIEVE = 10;
+	private static final long DEFAULT_TIMEOUT = _defaults.SYNC_TIMEOUT;
 
 	public static String get_id() { return accessory.types.get_id(types.ID_SYNC); }
 
@@ -54,9 +54,9 @@ public class sync extends parent_static
 
 	public static boolean update(double val_)
 	{
-		if (!_type2.equals(DATA_DECIMAL)) return false;
+		if (!_type2.equals(OUT_DECIMAL)) return false;
 
-		_decimal_out = val_;
+		_out_decimal = val_;
 
 		return true;
 	}
@@ -65,8 +65,8 @@ public class sync extends parent_static
 	{
 		boolean is_ok = true;
 
-		if (_type2.equals(DATA_INTS)) _ints_out.add(val_);
-		else if (_type2.equals(DATA_INT)) _int_out = val_;
+		if (_type2.equals(OUT_INTS)) _out_ints.add(val_);
+		else if (_type2.equals(OUT_INT)) _out_int = val_;
 		else is_ok = false;
 
 		return is_ok;
@@ -74,14 +74,14 @@ public class sync extends parent_static
 
 	public static boolean update(String key_, String val_)
 	{
-		if (!_type2.equals(DATA_MISC) || !strings.is_ok(key_)) return false;
+		if (!_type2.equals(OUT_MISC) || !strings.is_ok(key_)) return false;
 
-		_misc_out.put(key_, val_);
+		_out_misc.put(key_, val_);
 
 		return true;
 	}
 
-	public static String check(String type_, boolean is_data_) { return accessory.types.check_type(type_, (is_data_ ? types.SYNC_DATA : types.SYNC)); }
+	public static String check(String type_, boolean is_data_) { return accessory.types.check_type(type_, (is_data_ ? types.SYNC_OUT : types.SYNC)); }
 	
 	public static String check_error(String type_) { return accessory.types.check_type(type_, types.ERROR_IB_SYNC); }
 
@@ -117,25 +117,25 @@ public class sync extends parent_static
 	{
 		Object output = null;
 
-		if (_type2.equals(DATA_INT)) 
+		if (_type2.equals(OUT_INT)) 
 		{
-			if (ini_) _int_out = numbers.DEFAULT_INT;
-			else output = _int_out;
+			if (ini_) _out_int = numbers.DEFAULT_INT;
+			else output = _out_int;
 		}
-		else if (_type2.equals(DATA_DECIMAL)) 
+		else if (_type2.equals(OUT_DECIMAL)) 
 		{
-			if (ini_) _decimal_out = numbers.DEFAULT_DECIMAL;
-			else output = _decimal_out;
+			if (ini_) _out_decimal = numbers.DEFAULT_DECIMAL;
+			else output = _out_decimal;
 		}
-		else if (_type2.equals(DATA_INTS)) 
+		else if (_type2.equals(OUT_INTS)) 
 		{
-			if (ini_) _ints_out = new ArrayList<Integer>();
-			else output = arrays.to_array(_ints_out);
+			if (ini_) _out_ints = new ArrayList<Integer>();
+			else output = arrays.to_array(_out_ints);
 		}
-		else if (_type2.equals(DATA_MISC)) 
+		else if (_type2.equals(OUT_MISC)) 
 		{
-			if (ini_) _misc_out = new HashMap<String, String>();
-			else output = new HashMap<String, String>(_misc_out);
+			if (ini_) _out_misc = new HashMap<String, String>();
+			else output = new HashMap<String, String>(_out_misc);
 		}
 
 		return output;
@@ -146,9 +146,9 @@ public class sync extends parent_static
 		String output = strings.DEFAULT;
 		if (!strings.is_ok(input_)) return output;
 
-		if (input_.equals(GET_ID)) output = DATA_INT;
-		else if (input_.equals(GET_FUNDS)) output = DATA_DECIMAL;
-		else if (input_.equals(GET_IDS)) output = DATA_INTS;
+		if (input_.equals(GET_ID)) output = OUT_INT;
+		else if (input_.equals(GET_FUNDS)) output = OUT_DECIMAL;
+		else if (input_.equals(GET_IDS)) output = OUT_INTS;
 
 		return output;
 	}
@@ -160,6 +160,7 @@ public class sync extends parent_static
 		_retrieving = true;
 		_retrieved = false;
 
+		long timeout = DEFAULT_TIMEOUT;
 		boolean cannot_fail = true;
 		
 		if (_type.equals(GET_FUNDS))
@@ -169,6 +170,7 @@ public class sync extends parent_static
 		}
 		else if (_type.equals(GET_IDS))
 		{	
+			timeout = 3;
 			cannot_fail = false;
 			
 			//openOrder, openOrderEnd, orderStatus
@@ -181,7 +183,7 @@ public class sync extends parent_static
 		}
 		else return false;
 
-		return start_retrieval(cannot_fail);
+		return start_retrieval(timeout, cannot_fail);
 	}
 
 	private static boolean retrieve_is_ok(String type_, int id_)
@@ -210,7 +212,7 @@ public class sync extends parent_static
 		return true;
 	}
 
-	private static boolean start_retrieval(boolean cannot_fail_)
+	private static boolean start_retrieval(long timeout_, boolean cannot_fail_)
 	{
 		boolean is_ok = true;
 
@@ -220,7 +222,7 @@ public class sync extends parent_static
 		{
 			if (_retrieved) break;
 
-			if (dates.get_elapsed(start) >= MAX_SECS_RETRIEVE) 
+			if (dates.get_elapsed(start) >= timeout_) 
 			{
 				if (cannot_fail_) errors.manage(ERROR_TIME);
 				is_ok = false;

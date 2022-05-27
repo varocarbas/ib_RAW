@@ -10,8 +10,25 @@ import ib.conn;
 import ib.sync;
 
 public class errors
-{	
+{
+	public static final String ERROR_GENERIC = types.ERROR_IB_GENERIC;
+	
 	public static final String DEFAULT_WARNING = _defaults.ERRORS_WARNING;
+
+	public static void wrapper_error(int id_, int error_code_, String error_msg_)
+	{
+		if (external_ib.errors.is_warning(error_code_)) manage_warning(error_msg_);
+		else
+		{
+			HashMap<String, String> items = new HashMap<String, String>();
+			items.put(_keys.TYPE, ERROR_GENERIC);
+			items.put("id", strings.from_number_int(id_));
+			items.put("error_code", strings.from_number_int(error_code_));
+			items.put("error_msg", error_msg_);
+
+			errors.manage(items);
+		}
+	}	
 	
 	public static void manage(HashMap<String, String> info_) { manage(null, info_); }
 

@@ -28,7 +28,7 @@ public class conn extends parent_static
 	public static final String ERROR_TYPE = types.ERROR_IB_CONN_TYPE;
 	public static final String ERROR_GENERIC = types.ERROR_IB_CONN_GENERIC;
 	
-	public static volatile boolean _valid_id = false; 
+	public static volatile boolean _id_is_ok = false; 
 
 	static EClientSocket _client;
 
@@ -132,7 +132,7 @@ public class conn extends parent_static
 
 	private static void connect_internal()
 	{
-		_valid_id = false;
+		_id_is_ok = false;
 
 		final EReaderSignal signal = _wrapper.getSignal();
 		
@@ -171,7 +171,7 @@ public class conn extends parent_static
 
 		int count = 0;
 		int max = 3;
-		while (!_valid_id)
+		while (!_id_is_ok)
 		{
 			misc.pause_loop();
 
