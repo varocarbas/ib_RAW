@@ -23,7 +23,7 @@ public class orders extends parent_static
 	private static final String START = accessory.types.action_to_key(accessory.types.ACTION_START);
 	private static final String STOP = accessory.types.action_to_key(accessory.types.ACTION_STOP);
 
-	public static String get_id() { return accessory.types.get_id(types.ID_ORDERS); }
+	public static String get_class_id() { return accessory.types.get_id(types.ID_ORDERS); }
 	
 	public static boolean place(String type_, String symbol_, int quantity_, double stop_, double start_) 
 	{

@@ -9,6 +9,7 @@ import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
 import accessory.dates;
+import accessory_ib._alls;
 import accessory_ib._defaults;
 import accessory_ib.errors;
 import accessory_ib.types;
@@ -24,25 +25,25 @@ public class sync extends parent_static
 	public static final String OUT_INTS = types.SYNC_OUT_INTS;
 	public static final String OUT_MISC = types.SYNC_OUT_MISC;
 
+	public static final String ERROR_GET = types.ERROR_IB_SYNC_GET;
 	public static final String ERROR_ID = types.ERROR_IB_SYNC_ID;
-	public static final String ERROR_ID2 = types.ERROR_IB_SYNC_ID2;
 	public static final String ERROR_TIME = types.ERROR_IB_SYNC_TIME;
 	
 	public static volatile boolean _retrieving = false;
-	public static volatile boolean _retrieved = false;
 
-	public static String _type = strings.DEFAULT;
-	public static String _type2 = strings.DEFAULT;
-	public static int _id = _defaults.SYNC_ID;
+	private static final int DEFAULT_ID = _defaults.SYNC_ID;
+	private static final long DEFAULT_TIMEOUT = _defaults.SYNC_TIMEOUT;
+
+	private static int _id = DEFAULT_ID;
+	private static String _get = strings.DEFAULT;
+	private static String _out = strings.DEFAULT;
 
 	private static volatile double _out_decimal = numbers.DEFAULT_DECIMAL;
 	private static volatile int _out_int = numbers.DEFAULT_INT;
 	private static volatile ArrayList<Integer> _out_ints = new ArrayList<Integer>();
 	private static volatile HashMap<String, String> _out_misc = new HashMap<String, String>();
 
-	private static final long DEFAULT_TIMEOUT = _defaults.SYNC_TIMEOUT;
-
-	public static String get_id() { return accessory.types.get_id(types.ID_SYNC); }
+	public static String get_class_id() { return accessory.types.get_id(types.ID_SYNC); }
 
 	public static int get_next_id() { return (int)get(GET_ID); }
 	
@@ -54,7 +55,7 @@ public class sync extends parent_static
 
 	public static boolean update(double val_)
 	{
-		if (!_type2.equals(OUT_DECIMAL)) return false;
+		if (!strings.are_equal(_out, OUT_DECIMAL)) return false;
 
 		_out_decimal = val_;
 
@@ -65,8 +66,8 @@ public class sync extends parent_static
 	{
 		boolean is_ok = true;
 
-		if (_type2.equals(OUT_INTS)) _out_ints.add(val_);
-		else if (_type2.equals(OUT_INT)) _out_int = val_;
+		if (!strings.are_equal(_out, OUT_INTS)) _out_ints.add(val_);
+		else if (!strings.are_equal(_out, OUT_INT)) _out_int = val_;
 		else is_ok = false;
 
 		return is_ok;
@@ -74,14 +75,16 @@ public class sync extends parent_static
 
 	public static boolean update(String key_, String val_)
 	{
-		if (!_type2.equals(OUT_MISC) || !strings.is_ok(key_)) return false;
+		if (!strings.are_equal(_out, OUT_MISC) || !strings.is_ok(key_)) return false;
 
 		_out_misc.put(key_, val_);
 
 		return true;
 	}
 
-	public static String check(String type_, boolean is_data_) { return accessory.types.check_type(type_, (is_data_ ? types.SYNC_OUT : types.SYNC)); }
+	public static String check_get(String type_) { return accessory.types.check_type(type_, types.SYNC_GET); }
+
+	public static String check_out(String type_) { return accessory.types.check_type(type_, types.SYNC_OUT); }
 	
 	public static String check_error(String type_) { return accessory.types.check_type(type_, types.ERROR_IB_SYNC); }
 
@@ -92,83 +95,109 @@ public class sync extends parent_static
 		String type = check_error(type_);
 		if (!strings.is_ok(type)) return message;
 		
-		if (type.equals(ERROR_ID)) message = "Wrong sync ID";
-		else if (type.equals(ERROR_ID2)) message = "Wrong sync ID2";
-		else if (type.equals(ERROR_TIME)) message = "Sync call timed out";
+		if (type.equals(ERROR_GET)) message = "Wrong sync_get type";
+		else if (type.equals(ERROR_ID)) message = "Wrong id";
+		else if (type.equals(ERROR_TIME)) message = "Retrieval timed out";
 
 		return message;	
 	}
 
-	private static Object get(String type_) { return get(type_, _defaults.SYNC_ID); }
+	public static HashMap<String, String> populate_all_get_outs()
+	{		
+		HashMap<String, String> all = new HashMap<String, String>();
+		
+		all.put(GET_ID, OUT_INT);
+		all.put(GET_FUNDS, OUT_DECIMAL);
+		all.put(GET_IDS, OUT_INTS);
 
-	private static Object get(String type_, int order_id_)
+		return all;
+	}
+	
+	public static boolean is_ok(int id_) { return (_retrieving && id_is_ok(id_)); }
+	
+	public static boolean id_is_ok(int id_) { return (_id == id_); }
+	
+	private static HashMap<String, String> get_all_get_outs() { return _alls.SYNC_GET_OUTS; }
+	
+	private static Object get(String type_) { return get(type_, DEFAULT_ID); }
+
+	private static Object get(String type_, int id_)
 	{
-		get_ini();
-		retrieve(type_, order_id_); 
+		if (!get_ini(type_, id_)) return null;
+		
+		retrieve(); 
 
 		return get_out();
 	}
 
-	private static void get_ini() { get_ini_out(true); }
+	private static boolean get_ini(String type_, int id_) { return (boolean)get_ini_out(type_, id_, true); }
 
-	private static Object get_out() { return get_ini_out(false); }
+	private static Object get_out() { return get_ini_out(null, DEFAULT_ID, false); }
 
-	private static Object get_ini_out(boolean ini_)
+	private static Object get_ini_out(String type_, int id_, boolean is_ini_)
 	{
 		Object output = null;
+		if (is_ini_ && !ini_is_ok(type_, id_)) return false;
 
-		if (_type2.equals(OUT_INT)) 
+		if (_out.equals(OUT_INT)) 
 		{
-			if (ini_) _out_int = numbers.DEFAULT_INT;
+			if (is_ini_) _out_int = numbers.DEFAULT_INT;
 			else output = _out_int;
 		}
-		else if (_type2.equals(OUT_DECIMAL)) 
+		else if (_out.equals(OUT_DECIMAL)) 
 		{
-			if (ini_) _out_decimal = numbers.DEFAULT_DECIMAL;
+			if (is_ini_) _out_decimal = numbers.DEFAULT_DECIMAL;
 			else output = _out_decimal;
 		}
-		else if (_type2.equals(OUT_INTS)) 
+		else if (_out.equals(OUT_INTS)) 
 		{
-			if (ini_) _out_ints = new ArrayList<Integer>();
+			if (is_ini_) _out_ints = new ArrayList<Integer>();
 			else output = arrays.to_array(_out_ints);
 		}
-		else if (_type2.equals(OUT_MISC)) 
+		else if (_out.equals(OUT_MISC)) 
 		{
-			if (ini_) _out_misc = new HashMap<String, String>();
+			if (is_ini_) _out_misc = new HashMap<String, String>();
 			else output = new HashMap<String, String>(_out_misc);
 		}
 
-		return output;
+		return (is_ini_ ? true : output);
 	}
 
-	private static String get_data_type(String input_)
+	private static boolean ini_is_ok(String get_, int id_)
 	{
-		String output = strings.DEFAULT;
-		if (!strings.is_ok(input_)) return output;
+		String get = check_get(get_);
+		
+		String error = null;
+		if (!strings.is_ok(get)) error = ERROR_GET;
+		else if (!common.req_id_is_ok(id_)) error = ERROR_ID; 
 
-		if (input_.equals(GET_ID)) output = OUT_INT;
-		else if (input_.equals(GET_FUNDS)) output = OUT_DECIMAL;
-		else if (input_.equals(GET_IDS)) output = OUT_INTS;
+		if (error != null)
+		{
+			accessory_ib.errors.manage(error);
 
-		return output;
+			return false;
+		}
+
+		_get = get;
+		_out = get_all_get_outs().get(_get);		
+		_id = id_;
+
+		return true;
 	}
 
-	private static boolean retrieve(String type_, int id_)
+	private static boolean retrieve()
 	{
-		if (!retrieve_is_ok(type_, id_)) return false;
-
-		_retrieving = true;
-		_retrieved = false;
-
 		long timeout = DEFAULT_TIMEOUT;
 		boolean cannot_fail = true;
-		
-		if (_type.equals(GET_FUNDS))
+
+		_retrieving = true;
+
+		if (_get.equals(GET_FUNDS))
 		{	
 			//accountSummary, accountSummaryEnd
 			conn._client.reqAccountSummary(_id, "All", "AvailableFunds"); 
 		}
-		else if (_type.equals(GET_IDS))
+		else if (_get.equals(GET_IDS))
 		{	
 			timeout = 3;
 			cannot_fail = false;
@@ -176,52 +205,24 @@ public class sync extends parent_static
 			//openOrder, openOrderEnd, orderStatus
 			conn._client.reqAllOpenOrders(); 
 		}
-		else if (_type.equals(GET_ID))
+		else if (_get.equals(GET_ID))
 		{	
 			//nextValidId
 			conn._client.reqIds(-1); 
 		}
 		else return false;
 
-		return start_retrieval(timeout, cannot_fail);
+		return wait(timeout, cannot_fail);
 	}
 
-	private static boolean retrieve_is_ok(String type_, int id_)
-	{
-		String temp = check(type_, false);
-		if (!strings.is_ok(temp)) 
-		{
-			accessory_ib.errors.manage(ERROR_ID);
-
-			return false;
-		}
-
-		String temp2 = get_data_type(temp);
-		if (!strings.is_ok(check(temp2, true))) 
-		{
-			accessory_ib.errors.manage(ERROR_ID2);
-
-			return false;
-		}
-
-		_id = id_;
-		_type = temp;
-		_type2 = temp2;
-		_retrieved = false;
-
-		return true;
-	}
-
-	private static boolean start_retrieval(long timeout_, boolean cannot_fail_)
+	private static boolean wait(long timeout_, boolean cannot_fail_)
 	{
 		boolean is_ok = true;
 
 		long start = dates.get_elapsed(0);
 
-		while (true)
+		while (_retrieving)
 		{
-			if (_retrieved) break;
-
 			if (dates.get_elapsed(start) >= timeout_) 
 			{
 				if (cannot_fail_) errors.manage(ERROR_TIME);
@@ -234,7 +235,7 @@ public class sync extends parent_static
 		}
 
 		_retrieving = false;
-
+		
 		return is_ok;
 	}
 }

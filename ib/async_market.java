@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import accessory.arrays;
-import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
 import accessory_ib.config;
@@ -30,10 +29,10 @@ public class async_market  extends parent_static
 	public static final int ASK_SIZE = market.TICK_ASK_SIZE;
 	public static final int BID_SIZE = market.TICK_BID_SIZE;
 		
-	private static int _id = async.MIN_ID - 1;
+	private static int _id = common.WRONG_ID;
 	private static HashMap<Integer, String> _symbols = new HashMap<Integer, String>();
 
-	public static String get_id() { return accessory.types.get_id(types.ID_ASYNC_MARKET); }
+	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC_MARKET); }
 
 	public static void wrapper_tickPrice(int id_, int field_, double price_)
 	{
@@ -87,7 +86,7 @@ public class async_market  extends parent_static
 		update_db(symbol, key, value_);
 	}
 
-	public static boolean is_snapshot(int id_) { return strings.are_equal((String)arrays.get_value(async._types, id_), TYPE_SNAPSHOT); }
+	public static boolean is_snapshot(int id_) { return async.type_is_ok(id_, TYPE_SNAPSHOT); }
 
 	public static boolean snapshot_is_quick() { return strings.to_boolean(config.get_async(types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK)); }
 
@@ -112,15 +111,15 @@ public class async_market  extends parent_static
 	
 	public static int get_id(String symbol_)
 	{
-		int id = async.MIN_ID - 1;
-		if (!strings.is_ok(symbol_)) return id;
+		int output = common.WRONG_ID;
+		if (!strings.is_ok(symbol_)) return output;
 
 		for (Entry<Integer, String> item: _symbols.entrySet())
 		{
 			if (strings.are_equivalent(symbol_, item.getValue())) return item.getKey();
 		}
 
-		return id;
+		return output;
 	}
 
 	private static boolean start(String symbol_, int data_type_, boolean is_snapshot_)
@@ -128,12 +127,10 @@ public class async_market  extends parent_static
 		String symbol = common.normalise_symbol(symbol_);
 		if (!strings.is_ok(symbol)) return false;
 
-		if (!numbers.is_ok(_id, async.MIN_ID, async.MAX_ID)) _id = async.MIN_ID - 1;
-		_id++;
+		_id = common.get_req_id(_id);
 
 		_symbols.put(_id, symbol);
-		async._retrieving.add(_id);
-		async._types.put(_id, (is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM));
+		async.add(_id, (is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM));
 
 		if (!db.symbol_exists(symbol)) db.insert(symbol);
 		if (market.data_is_ok(data_type_)) conn._client.reqMarketDataType(data_type_);
@@ -143,11 +140,7 @@ public class async_market  extends parent_static
 		return true;		
 	}
 
-	private static void end_common(int id_)
-	{
-		arrays.remove_value(async._retrieving, id_); 
-		arrays.remove_key(async._types, id_);		
-	}
+	private static void end_common(int id_) { async.remove(id_); }
 	
 	private static boolean update_db(String symbol_, String key_, double val_)
 	{

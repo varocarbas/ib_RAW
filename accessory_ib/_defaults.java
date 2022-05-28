@@ -7,7 +7,11 @@ public class _defaults
 {
 	public static final String CONN_TYPE = types.CONN_GATEWAY_REAL;
 	public static final int CONN_ID = 18; 
-
+	public static final int CONN_PORT_TWS_REAL = 7496;
+	public static final int CONN_PORT_TWS_PAPER = 7497;
+	public static final int CONN_PORT_GATEWAY_REAL = 4001;
+	public static final int CONN_PORT_GATEWAY_PAPER = 4002;	
+	
 	public static final String CURRENCY = "USD"; //Format compatible with Contract.currency.
 
 	public static final String ORDER_TIF = orders.TIF_GTC; 

@@ -8,6 +8,7 @@ import accessory.misc;
 import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
+import accessory_ib._defaults;
 import accessory_ib.config;
 import accessory_ib.errors;
 import accessory_ib.types;
@@ -15,9 +16,6 @@ import external_ib.wrapper;
 
 public class conn extends parent_static 
 {
-	public static final String TYPE = types.CONFIG_CONN_TYPE; 
-	public static final String ID = types.CONFIG_CONN_ID; 
-	
 	public static final String TWS_REAL = types.CONN_TWS_REAL;
 	public static final String TWS_PAPER = types.CONN_TWS_PAPER;
 	public static final String GATEWAY_REAL = types.CONN_GATEWAY_REAL;
@@ -28,25 +26,26 @@ public class conn extends parent_static
 	public static final String ERROR_TYPE = types.ERROR_IB_CONN_TYPE;
 	public static final String ERROR_GENERIC = types.ERROR_IB_CONN_GENERIC;
 	
-	public static volatile boolean _id_is_ok = false; 
+	public static volatile boolean _started = false; 
 
 	static EClientSocket _client;
-
-	private static volatile boolean _connected = false;
-	private static volatile boolean _first_conn = false;
-	private static wrapper _wrapper;
-	private static int _id; 
-	private static int _port;
 
 	private static final int MIN_ID = 0;
 	private static final int MAX_ID = 31;
 
-	private static final int PORT_TWS_REAL = 7496;
-	private static final int PORT_TWS_PAPER = 7497;
-	private static final int PORT_GATEWAY_REAL = 4001;
-	private static final int PORT_GATEWAY_PAPER = 4002;
+	private static final int PORT_TWS_REAL = _defaults.CONN_PORT_TWS_REAL;
+	private static final int PORT_TWS_PAPER = _defaults.CONN_PORT_TWS_PAPER;
+	private static final int PORT_GATEWAY_REAL = _defaults.CONN_PORT_GATEWAY_REAL;
+	private static final int PORT_GATEWAY_PAPER = _defaults.CONN_PORT_GATEWAY_PAPER;
 
-	public static String get_id() { return accessory.types.get_id(types.ID_CONN); }
+	private static volatile boolean _connected = false;
+	private static volatile boolean _first_conn = false;
+	
+	private static wrapper _wrapper;
+	private static int _id; 
+	private static int _port;
+
+	public static String get_class_id() { return accessory.types.get_id(types.ID_CONN); }
 	
 	public static boolean is_ok()
 	{		
@@ -57,7 +56,7 @@ public class conn extends parent_static
 		return _connected;
 	}
 
-	public static boolean start() { return start(strings.to_number_int(config.get_conn(ID)), config.get_conn(TYPE)); }
+	public static boolean start() { return start(strings.to_number_int(config.get_conn(types.CONFIG_CONN_ID)), config.get_conn(types.CONFIG_CONN_TYPE)); }
 	
 	public static boolean start(int id_, String type_)
 	{
@@ -132,7 +131,7 @@ public class conn extends parent_static
 
 	private static void connect_internal()
 	{
-		_id_is_ok = false;
+		_started = false;
 
 		final EReaderSignal signal = _wrapper.getSignal();
 		
@@ -171,7 +170,7 @@ public class conn extends parent_static
 
 		int count = 0;
 		int max = 3;
-		while (!_id_is_ok)
+		while (!_started)
 		{
 			misc.pause_loop();
 

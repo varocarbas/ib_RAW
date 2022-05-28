@@ -33,8 +33,6 @@ import com.ib.client.TickAttrib;
 import com.ib.client.TickAttribBidAsk;
 import com.ib.client.TickAttribLast;
 
-import accessory.arrays;
-import accessory.strings;
 import accessory_ib.errors;
 import ib.async;
 import ib.async_market;
@@ -46,7 +44,7 @@ public class wrapper implements EWrapper
 	@Override
 	public void accountSummary(int id_, String account_, String tag_, String value_, String currency_) 
 	{
-		if (!sync._retrieving || id_ != sync._id) return;
+		if (!sync.is_ok(id_)) return;
 
 		sync.update(value_);
 	}
@@ -54,9 +52,9 @@ public class wrapper implements EWrapper
 	@Override
 	public void accountSummaryEnd(int id_) 
 	{
-		if (!sync._retrieving || id_ != sync._id) return;
+		if (!sync.is_ok(id_)) return;
 
-		sync._retrieved = true;
+		sync._retrieving = false;
 	}
 	
 	@Override
@@ -68,9 +66,9 @@ public class wrapper implements EWrapper
 		{
 			sync.update(id_);
 			
-			sync._retrieved = true;
+			sync._retrieving = true;
 		}
-		else conn._id_is_ok = true;
+		else conn._started = true;
 	}
 	
 	@Override
@@ -86,7 +84,7 @@ public class wrapper implements EWrapper
 		//appreciably speed everything up. That is, all the relevant information is assumed to 
 		//have already been received right after getting certain size value.
 		
-		if (!async._retrieving.contains(id_) || !strings.are_equal((String)arrays.get_value(async._types, id_), async_market.TYPE_SNAPSHOT)) return;
+		if (async.is_ok(id_, async_market.TYPE_SNAPSHOT)) return;
 		
 		async_market.snapshot_end(id_);
 	}

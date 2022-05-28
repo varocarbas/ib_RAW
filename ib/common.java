@@ -4,14 +4,31 @@ import com.ib.client.Contract;
 
 import accessory.strings;
 import accessory.dates;
+import accessory.numbers;
 import accessory.parent_static;
 import accessory_ib.config;
 import accessory_ib.types;
 
 public class common extends parent_static 
 {
-	public static String get_id() { return accessory.types.get_id(types.ID_COMMON); }
+	private static int MIN_ID = 1;
+	private static int MAX_ID = 2500;
 	
+	public static int WRONG_ID = MIN_ID - 1;
+	
+	public static String get_class_id() { return accessory.types.get_id(types.ID_COMMON); }
+	
+	public static boolean req_id_is_ok(int id_) { return numbers.is_ok(id_, MIN_ID, MAX_ID); }
+	
+	public static int get_req_id() { return get_req_id(WRONG_ID); }
+	
+	public static int get_req_id(int last_) 
+	{ 
+		int id = last_ + 1;
+
+		return (req_id_is_ok(id) ? id : MIN_ID); 
+	}
+
 	public static Contract get_contract(String symbol_)
 	{
 		if (!strings.is_ok(symbol_)) return null;

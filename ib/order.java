@@ -67,9 +67,8 @@ public class order extends parent
 
 		return 
 		(
-			_temp_type.equals(order2_._type) && _temp_symbol.equals(order2_._symbol) &&
-			(_quantity == order2_._quantity) && (_id == order2_._id) && 
-			(_stop == order2_._stop) && (_start == order2_._start)
+			_temp_type.equals(order2_._type) && _temp_symbol.equals(order2_._symbol) && (_quantity == order2_._quantity) && 
+			(_id == order2_._id) && (_stop == order2_._stop) && (_start == order2_._start)
 		);		
 	}
 
