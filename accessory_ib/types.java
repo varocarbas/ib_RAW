@@ -2,8 +2,6 @@ package accessory_ib;
 
 public class types
 {
-	public static final String CONFIG_BASIC_CURRENCY = "config_basic_currency";
-
 	public static final String CONFIG_CONN = "config_conn";
 	public static final String CONFIG_CONN_TYPE = "config_conn_type";
 	public static final String CONFIG_CONN_ID = "config_conn_id";
@@ -17,6 +15,12 @@ public class types
 	public static final String CONFIG_ORDER = "config_order";
 	public static final String CONFIG_ORDER_TIF = "config_order_tif";
 	public static final String CONFIG_ORDER_QUANTITY_INT = "config_order_quantity_int";
+
+	public static final String CONFIG_CONTRACT = "config_contract";
+	public static final String CONFIG_CONTRACT_SECURITY_TYPE = "config_contract_security_type";
+	public static final String CONFIG_CONTRACT_CURRENCY = "config_contract_currency";
+	public static final String CONFIG_CONTRACT_EXCHANGE = "config_contract_exchange";
+	public static final String CONFIG_CONTRACT_PRIMARY_EXCHANGE = "config_contract_primary_exchange";
 
 	public static final String CONFIG_DB_FIELD = "config_db_field";
 	public static final String CONFIG_DB_FIELD_SIZE = "config_db_field_size";
@@ -57,11 +61,11 @@ public class types
 	public static final String SYNC_GET_FUNDS = "sync_get_funds";
 	public static final String SYNC_GET_ID = "sync_get_id";
 	public static final String SYNC_GET_IDS = "sync_get_ids";
-	public static final String SYNC_OUT = "sync_data";
-	public static final String SYNC_OUT_INT = "sync_data_int";
-	public static final String SYNC_OUT_DECIMAL = "sync_data_decimal";
-	public static final String SYNC_OUT_INTS = "sync_data_ints";
-	public static final String SYNC_OUT_MISC = "sync_data_misc";
+	public static final String SYNC_OUT = "sync_out";
+	public static final String SYNC_OUT_INT = "sync_out_int";
+	public static final String SYNC_OUT_DECIMAL = "sync_out_decimal";
+	public static final String SYNC_OUT_INTS = "sync_out_ints";
+	public static final String SYNC_OUT_MISC = "sync_out_misc";
 
 	public static final String ASYNC = "async";
 	public static final String ASYNC_MARKET = "async_market";
@@ -93,21 +97,28 @@ public class types
 	public static final String ERROR_IB_SYNC_GET = "error_ib_sync_get";
 	public static final String ERROR_IB_SYNC_ID = "error_ib_sync_id";
 	public static final String ERROR_IB_SYNC_TIME = "error_ib_sync_time";
+	public static final String ERROR_IB_CONTRACT = "error_ib_contract";
+	public static final String ERROR_IB_CONTRACT_INFO = "error_ib_contract_info";
 	
 	static String[] populate_all_types()
 	{		
 		return new String[]
 		{
-			CONFIG_BASIC_CURRENCY,
 			CONFIG_CONN,
 			CONFIG_CONN_TYPE, CONFIG_CONN_ID,
+	
 			CONFIG_ASYNC,
 			CONFIG_ASYNC_MARKET,
 			CONFIG_ASYNC_MARKET_SNAPSHOT,
 			CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK, CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP, 
+		
 			CONFIG_ORDER,
 			CONFIG_ORDER_TIF, CONFIG_ORDER_QUANTITY_INT,
-
+			
+			CONFIG_CONTRACT,
+			CONFIG_CONTRACT_SECURITY_TYPE, CONFIG_CONTRACT_CURRENCY, 
+			CONFIG_CONTRACT_EXCHANGE, CONFIG_CONTRACT_PRIMARY_EXCHANGE,
+			
 			CONFIG_DB_FIELD, 
 			CONFIG_DB_FIELD_SIZE, CONFIG_DB_FIELD_TIME, CONFIG_DB_FIELD_SYMBOL, 
 			CONFIG_DB_FIELD_PRICE, CONFIG_DB_FIELD_OPEN, CONFIG_DB_FIELD_CLOSE, 
@@ -150,7 +161,8 @@ public class types
 			ERROR_IB_CONN,
 			ERROR_IB_CONN_NONE, ERROR_IB_CONN_ID, ERROR_IB_CONN_TYPE, ERROR_IB_CONN_GENERIC,
 			ERROR_IB_SYNC,
-			ERROR_IB_SYNC_GET, ERROR_IB_SYNC_ID, ERROR_IB_SYNC_TIME
+			ERROR_IB_SYNC_GET, ERROR_IB_SYNC_ID, ERROR_IB_SYNC_TIME,
+			ERROR_IB_CONTRACT_INFO
 		};		
 	}
 }

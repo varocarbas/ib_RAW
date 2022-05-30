@@ -1,11 +1,11 @@
 package ib;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import accessory.arrays;
 import accessory.parent_static;
 import accessory.strings;
+import accessory_ib._alls;
 import accessory_ib.config;
 import accessory_ib.db;
 import accessory_ib.types;
@@ -36,54 +36,31 @@ public class async_market  extends parent_static
 
 	public static void wrapper_tickPrice(int id_, int field_, double price_)
 	{
-		String symbol = (String)arrays.get_value(_symbols, id_);
-		if (!strings.is_ok(symbol)) return;
+		String field = (String)arrays.get_value(get_all_prices(), field_);
+		if (!strings.is_ok(field)) return;
 
-		String key = strings.DEFAULT;
-		
-		if (field_ == BID) key = db.FIELD_BID;
-		else if (field_ == ASK) key = db.FIELD_ASK;
-		else if (field_ == PRICE) key = db.FIELD_PRICE;
-		else if (field_ == HIGH) key = db.FIELD_HIGH;
-		else if (field_ == LOW) key = db.FIELD_LOW;
-		else if (field_ == CLOSE) key = db.FIELD_CLOSE;		
-		else if (field_ == OPEN) key = db.FIELD_OPEN;	
-		if (!strings.is_ok(key)) return;
-
-		update_db(symbol, key, price_);
+		update_db(id_, field, price_);
 	}
 
 	public static void wrapper_tickSize(int id_, int field_, int size_)
 	{
-		String symbol = (String)arrays.get_value(_symbols, id_);
-		if (!strings.is_ok(symbol)) return;
-
-		String key = strings.DEFAULT;
+		String field = (String)arrays.get_value(get_all_sizes(), field_);
+		if (!strings.is_ok(field)) return;
 		
-		if (field_ == BID_SIZE) key = db.FIELD_BID_SIZE;
-		else if (field_ == ASK_SIZE) key = db.FIELD_ASK_SIZE;
-		else if (field_ == SIZE) key = db.FIELD_SIZE;
-		else if (field_ == VOLUME) 
+		if (field_ == VOLUME)
 		{
-			key = db.FIELD_VOLUME;
 			if (is_snapshot(id_) && snapshot_is_quick()) snapshot_end(id_);
 		}
-		if (!strings.is_ok(key)) return;
 
-		update_db(symbol, key, size_);
+		update_db(id_, field, size_);
 	}
 	
 	public static void wrapper_tickGeneric(int id_, int tick_, double value_)
 	{
-		String symbol = (String)arrays.get_value(_symbols, id_);
-		if (!strings.is_ok(symbol)) return;
+		String field = (String)arrays.get_value(get_all_generics(), tick_);
+		if (!strings.is_ok(field)) return;
 
-		String key = strings.DEFAULT;
-
-		if (tick_ == HALTED) key = db.FIELD_HALTED;
-		if (!strings.is_ok(key)) return;
-
-		update_db(symbol, key, value_);
+		update_db(id_, field, value_);
 	}
 
 	public static boolean is_snapshot(int id_) { return async.type_is_ok(id_, TYPE_SNAPSHOT); }
@@ -109,25 +86,56 @@ public class async_market  extends parent_static
 	
 	public static String get_symbol(int id_) { return (String)arrays.get_value(_symbols, id_); }
 	
-	public static int get_id(String symbol_)
-	{
-		int output = common.WRONG_ID;
-		if (!strings.is_ok(symbol_)) return output;
+	public static int get_id(String symbol_) { return (int)arrays.get_key(_symbols, symbol_); }
 
-		for (Entry<Integer, String> item: _symbols.entrySet())
-		{
-			if (strings.are_equivalent(symbol_, item.getValue())) return item.getKey();
-		}
-
-		return output;
+	public static HashMap<Integer, String> populate_all_prices()
+	{		
+		HashMap<Integer, String> all = new HashMap<Integer, String>();
+			
+		all.put(PRICE, db.FIELD_PRICE);
+		all.put(OPEN, db.FIELD_OPEN);
+		all.put(CLOSE, db.FIELD_CLOSE);
+		all.put(LOW, db.FIELD_LOW);
+		all.put(HIGH, db.FIELD_HIGH);
+		all.put(ASK, db.FIELD_ASK);
+		all.put(BID, db.FIELD_BID);
+		
+		return all;
 	}
 
+	public static HashMap<Integer, String> populate_all_sizes()
+	{		
+		HashMap<Integer, String> all = new HashMap<Integer, String>();
+		
+		all.put(VOLUME, db.FIELD_VOLUME);
+		all.put(SIZE, db.FIELD_SIZE);
+		all.put(ASK_SIZE, db.FIELD_ASK_SIZE);
+		all.put(BID_SIZE, db.FIELD_BID_SIZE);
+		
+		return all;
+	}
+
+	public static HashMap<Integer, String> populate_all_generics()
+	{		
+		HashMap<Integer, String> all = new HashMap<Integer, String>();			
+
+		all.put(HALTED, db.FIELD_HALTED);
+		
+		return all;
+	}
+	
+	private static HashMap<Integer, String> get_all_prices() { return _alls.ASYNC_MARKET_PRICES; }
+	
+	private static HashMap<Integer, String> get_all_sizes() { return _alls.ASYNC_MARKET_SIZES; }
+	
+	private static HashMap<Integer, String> get_all_generics() { return _alls.ASYNC_MARKET_GENERICS; }
+	
 	private static boolean start(String symbol_, int data_type_, boolean is_snapshot_)
 	{
 		String symbol = common.normalise_symbol(symbol_);
 		if (!strings.is_ok(symbol)) return false;
 
-		_id = common.get_req_id(_id);
+		_id = common.get_next_id(_id);
 
 		_symbols.put(_id, symbol);
 		async.add(_id, (is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM));
@@ -142,13 +150,11 @@ public class async_market  extends parent_static
 
 	private static void end_common(int id_) { async.remove(id_); }
 	
-	private static boolean update_db(String symbol_, String key_, double val_)
+	private static boolean update_db(int id_, String field_, double val_)
 	{
-		boolean is_ok = false;
-		if (!strings.is_ok(symbol_) || !strings.is_ok(key_) || val_ <= 0.0) return is_ok;
+		String symbol = (String)arrays.get_value(_symbols, id_);
+		if (!strings.is_ok(symbol) || !strings.is_ok(field_) || val_ <= 0.0) return false;
 
-		is_ok = db.update_number(symbol_, key_, val_);
-
-		return is_ok;
+		return db.update_number(symbol, field_, val_);
 	}
 }

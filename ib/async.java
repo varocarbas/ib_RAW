@@ -25,7 +25,7 @@ public class async extends parent_static
 	
 	public static boolean add(int id_, String type_) 
 	{ 
-		if (!common.req_id_is_ok(id_) || !strings.is_ok(type_)) return false;
+		if (!common.id_is_ok(id_) || !strings.is_ok(type_)) return false;
 		
 		_ids.add(id_);
 		_types.put(id_, type_);

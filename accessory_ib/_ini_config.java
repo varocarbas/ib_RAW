@@ -14,20 +14,10 @@ public class _ini_config extends parent_ini_config
 
 	protected void populate_all_internal()
 	{
-		load_config_basic();
 		load_config_conn();
 		load_config_async();
 		load_config_order();
-	}
-	
-	private boolean load_config_basic()
-	{
-		String type = accessory.types.CONFIG_BASIC;
-
-		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(types.CONFIG_BASIC_CURRENCY, _defaults.CURRENCY);
-
-		return populate(type, null, vals);
+		load_config_contract();
 	}
 
 	private boolean load_config_conn()
@@ -57,8 +47,23 @@ public class _ini_config extends parent_ini_config
 		String type = types.CONFIG_ORDER;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
+		
 		vals.put(types.CONFIG_ORDER_TIF, _defaults.ORDER_TIF);
 		vals.put(types.CONFIG_ORDER_QUANTITY_INT, _defaults.ORDER_QUANTITY_INT);
+		
+		return populate(type, null, vals);
+	}
+
+	private boolean load_config_contract()
+	{
+		String type = types.CONFIG_CONTRACT;
+
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		
+		vals.put(types.CONFIG_CONTRACT_CURRENCY, _defaults.CONTRACT_CURRENCY);
+		vals.put(types.CONFIG_CONTRACT_SECURITY_TYPE, _defaults.CONTRACT_SECURITY_TYPE);
+		vals.put(types.CONFIG_CONTRACT_EXCHANGE, _defaults.CONTRACT_EXCHANGE);
+		vals.put(types.CONFIG_CONTRACT_PRIMARY_EXCHANGE, _defaults.CONTRACT_PRIMARY_EXCHANGE);
 		
 		return populate(type, null, vals);
 	}

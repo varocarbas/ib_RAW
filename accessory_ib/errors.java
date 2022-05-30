@@ -3,6 +3,7 @@ package accessory_ib;
 import java.util.HashMap;
 
 import accessory._keys;
+import accessory.arrays;
 import accessory.logs;
 import accessory.misc;
 import accessory.strings;
@@ -15,34 +16,30 @@ public class errors
 	
 	public static final String DEFAULT_WARNING = _defaults.ERRORS_WARNING;
 
-	public static void wrapper_error(int id_, int error_code_, String error_msg_)
+	public static void wrapper_error(int id_, int code_, String message_)
 	{
-		if (external_ib.errors.is_warning(error_code_)) manage_warning(error_msg_);
+		if (is_warning(code_)) manage_warning(message_);
 		else
 		{
-			HashMap<String, String> items = new HashMap<String, String>();
-			items.put(_keys.TYPE, ERROR_GENERIC);
-			items.put("id", strings.from_number_int(id_));
-			items.put("error_code", strings.from_number_int(error_code_));
-			items.put("error_msg", error_msg_);
+			HashMap<String, Object> info = new HashMap<String, Object>();
 
-			errors.manage(items);
+			info.put(_keys.ID, id_);
+			info.put("code", code_);
+			if (strings.is_ok(message_)) info.put(_keys.MESSAGE, message_);
+
+			manage_internal(ERROR_GENERIC, null, info);
 		}
 	}	
 	
-	public static void manage(HashMap<String, String> info_) { manage(null, info_); }
+	public static boolean is_warning(int code_) { return external_ib.errors.is_warning(code_); }
+	
+	public static void manage(String type_, String message_) { manage_internal(type_, message_, null); }
+	
+	public static void manage(HashMap<String, Object> info_) { manage_internal(null, null, info_); }
 
-	public static void manage(String type_, HashMap<String, String> info_) { accessory.errors.manage(get_info(type_, get_message(info_))); }
+	public static void manage(String type_, HashMap<String, Object> info_) { manage_internal(type_, null, info_); }
 
-	public static void manage(String type_, String message_) { accessory.errors.manage(get_info(type_, message_)); }
-
-	public static void manage(String type_)
-	{
-		String type = check(type_);
-		if (!strings.is_ok(type)) return;
-
-		accessory.errors.manage(get_info(type, get_message(type)));
-	}
+	public static void manage(String type_) { manage_internal(type_, null, null); }
 
 	public static void manage_warning(String message_) 
 	{ 
@@ -54,17 +51,16 @@ public class errors
 
 	public static String check(String type_) { return accessory.types.check_type(type_, types.ERROR_IB); }
 	
-	private static HashMap<String, String> get_info(String type_, String message_) 
-	{ 
-		HashMap<String, String> info = new HashMap<String, String>();
+	private static void manage_internal(String type_, String message_, HashMap<String, Object> info_)
+	{	
+		String message = message_;
+		if (!strings.is_ok(message)) message = get_message(type_);
+	
+		HashMap<String, Object> info = arrays.get_new_hashmap_xy(info_);
+		if (strings.is_ok(message)) info.put(_keys.MESSAGE, message);
 		
-		if (strings.is_ok(type_)) info.put(_keys.TYPE, type_);
-		if (strings.is_ok(message_)) info.put(_keys.MESSAGE, message_);
-		
-		return info;
+		accessory.errors.manage(type_, null, info);
 	}
-
-	private static String get_message(HashMap<String, String> info_) { return get_message_common(accessory.errors.to_string(info_)); }
 	
 	private static String get_message(String type_)
 	{

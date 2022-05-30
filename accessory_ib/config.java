@@ -2,10 +2,6 @@ package accessory_ib;
 
 public class config 
 {	
-	public static String get_basic(String key_) { return accessory.config.get(accessory.types.CONFIG_BASIC, key_); }
-
-	public static boolean update_basic(String key_, String val_) { return accessory.config.update(accessory.types.CONFIG_BASIC, key_, val_); }
-
 	public static String get_conn(String key_) { return accessory.config.get(types.CONFIG_CONN, key_); }
 
 	public static boolean update_conn(String key_, String val_) { return accessory.config.update(types.CONFIG_CONN, key_, val_); }
@@ -17,6 +13,10 @@ public class config
 	public static String get_order(String key_) { return accessory.config.get(types.CONFIG_ORDER, key_); }
 
 	public static boolean update_order(String key_, String val_) { return accessory.config.update(types.CONFIG_ORDER, key_, val_); }
+
+	public static String get_contract(String key_) { return accessory.config.get(types.CONFIG_CONTRACT, key_); }
+
+	public static boolean update_contract(String key_, String val_) { return accessory.config.update(types.CONFIG_CONTRACT, key_, val_); }
 
 	public static boolean matches_async(String key_, String val_) { return accessory.config.matches(types.CONFIG_ASYNC, key_, val_); }
 

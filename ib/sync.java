@@ -66,8 +66,8 @@ public class sync extends parent_static
 	{
 		boolean is_ok = true;
 
-		if (!strings.are_equal(_out, OUT_INTS)) _out_ints.add(val_);
-		else if (!strings.are_equal(_out, OUT_INT)) _out_int = val_;
+		if (strings.are_equal(_out, OUT_INTS)) _out_ints.add(val_);
+		else if (strings.are_equal(_out, OUT_INT)) _out_int = val_;
 		else is_ok = false;
 
 		return is_ok;
@@ -169,7 +169,7 @@ public class sync extends parent_static
 		
 		String error = null;
 		if (!strings.is_ok(get)) error = ERROR_GET;
-		else if (!common.req_id_is_ok(id_)) error = ERROR_ID; 
+		else if (!common.id_is_ok(id_)) error = ERROR_ID; 
 
 		if (error != null)
 		{

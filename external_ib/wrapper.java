@@ -61,21 +61,31 @@ public class wrapper implements EWrapper
 	public void nextValidId(int id_) 
 	{
 		currentOrderId = id_;
-		
-		if (sync._retrieving)
+
+		if (sync._retrieving) 
 		{
 			sync.update(id_);
-			
-			sync._retrieving = true;
+
+			sync._retrieving = false;
 		}
 		else conn._started = true;
 	}
 	
 	@Override
-	public void tickPrice(int id_, int field_, double price_, TickAttrib attribs_) { async_market.wrapper_tickPrice(id_, field_, price_); }
+	public void tickPrice(int id_, int field_, double price_, TickAttrib attribs_) 
+	{
+		if (!async.id_is_ok(id_)) return;
+		
+		async_market.wrapper_tickPrice(id_, field_, price_); 
+	}
 	
 	@Override
-	public void tickSize(int id_, int field_, int size_) { async_market.wrapper_tickSize(id_, field_, size_); }
+	public void tickSize(int id_, int field_, int size_) 
+	{ 
+		if (!async.id_is_ok(id_)) return;
+		
+		async_market.wrapper_tickSize(id_, field_, size_); 
+	}
 
 	@Override
 	public void tickSnapshotEnd(int id_) 
@@ -93,7 +103,7 @@ public class wrapper implements EWrapper
 	public void tickGeneric(int ticker_id_, int tick_type_, double value_) { async_market.wrapper_tickGeneric(ticker_id_, tick_type_, value_); }
 	
 	@Override
-	public void error(int id_, int error_code_, String error_message_) { errors.wrapper_error(id_, error_code_, error_message_); }
+	public void error(int id_, int code_, String message_) { errors.wrapper_error(id_, code_, message_); }
 	
 	public EClientSocket getClient() { return clientSocket; }
 	
