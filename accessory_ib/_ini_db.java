@@ -50,7 +50,7 @@ public class _ini_db extends parent_ini_db
 			types.CONFIG_DB_FIELD_CLOSE, types.CONFIG_DB_FIELD_LOW, 
 			types.CONFIG_DB_FIELD_HIGH, types.CONFIG_DB_FIELD_ASK, 
 			types.CONFIG_DB_FIELD_BID, types.CONFIG_DB_FIELD_SIZE, 
-			types.CONFIG_DB_FIELD_BID_SIZE
+			types.CONFIG_DB_FIELD_BID_SIZE, types.CONFIG_DB_FIELD_ASK_SIZE
 		};
 		
 		for (String id: ids) { info.put(id, get_default_decimal_field()); }

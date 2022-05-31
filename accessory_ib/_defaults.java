@@ -25,12 +25,12 @@ public class _defaults
 	public static final String MARKET_TYPE = types.ASYNC_MARKET_SNAPSHOT;
 	public static final int MARKET_DATA = market.DATA_LIVE;
 	
-	public static final int SYNC_ID = 1; 
 	public static final long SYNC_TIMEOUT = 10l; 
 	
 	public static final boolean ASYNC_SNAPSHOT_QUICK = true;
 	public static final boolean ASYNC_SNAPSHOT_NONSTOP = true;
-
+	public static final int ASYNC_DATA_TYPE = market.DATA_LIVE;
+	
 	public static final String DB_NAME = accessory.db.DEFAULT_DB_NAME;
 
 	public static final String ERRORS_WARNING = "WARNING";

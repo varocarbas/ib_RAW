@@ -26,22 +26,24 @@ public class sync extends parent_static
 	public static final String OUT_MISC = types.SYNC_OUT_MISC;
 
 	public static final String ERROR_GET = types.ERROR_IB_SYNC_GET;
-	public static final String ERROR_ID = types.ERROR_IB_SYNC_ID;
 	public static final String ERROR_TIME = types.ERROR_IB_SYNC_TIME;
 	
 	public static volatile boolean _retrieving = false;
 
-	private static final int DEFAULT_ID = _defaults.SYNC_ID;
-	private static final long DEFAULT_TIMEOUT = _defaults.SYNC_TIMEOUT;
+	static final int MIN_REQ_ID = common.MIN_REQ_ID_SYNC;
+	static final int MAX_REQ_ID = common.MAX_REQ_ID_SYNC;
 
-	private static int _id = DEFAULT_ID;
-	private static String _get = strings.DEFAULT;
-	private static String _out = strings.DEFAULT;
+	static int _id = MIN_REQ_ID;
+	
+	private static final long DEFAULT_TIMEOUT = _defaults.SYNC_TIMEOUT;
 
 	private static volatile double _out_decimal = numbers.DEFAULT_DECIMAL;
 	private static volatile int _out_int = numbers.DEFAULT_INT;
 	private static volatile ArrayList<Integer> _out_ints = new ArrayList<Integer>();
 	private static volatile HashMap<String, String> _out_misc = new HashMap<String, String>();
+
+	private static String _get = strings.DEFAULT;
+	private static String _out = strings.DEFAULT;
 
 	public static String get_class_id() { return accessory.types.get_id(types.ID_SYNC); }
 
@@ -96,7 +98,6 @@ public class sync extends parent_static
 		if (!strings.is_ok(type)) return message;
 		
 		if (type.equals(ERROR_GET)) message = "Wrong sync_get type";
-		else if (type.equals(ERROR_ID)) message = "Wrong id";
 		else if (type.equals(ERROR_TIME)) message = "Retrieval timed out";
 
 		return message;	
@@ -118,26 +119,25 @@ public class sync extends parent_static
 	public static boolean id_is_ok(int id_) { return (_id == id_); }
 	
 	private static HashMap<String, String> get_all_get_outs() { return _alls.SYNC_GET_OUTS; }
-	
-	private static Object get(String type_) { return get(type_, DEFAULT_ID); }
 
-	private static Object get(String type_, int id_)
+	private static Object get(String type_)
 	{
-		if (!get_ini(type_, id_)) return null;
+		common.get_req_id(true);
+		if (!get_ini(type_)) return null;
 		
 		retrieve(); 
 
 		return get_out();
 	}
 
-	private static boolean get_ini(String type_, int id_) { return (boolean)get_ini_out(type_, id_, true); }
+	private static boolean get_ini(String type_) { return (boolean)get_ini_out(type_, true); }
 
-	private static Object get_out() { return get_ini_out(null, DEFAULT_ID, false); }
+	private static Object get_out() { return get_ini_out(null, false); }
 
-	private static Object get_ini_out(String type_, int id_, boolean is_ini_)
+	private static Object get_ini_out(String type_, boolean is_ini_)
 	{
 		Object output = null;
-		if (is_ini_ && !ini_is_ok(type_, id_)) return false;
+		if (is_ini_ && !ini_is_ok(type_)) return false;
 
 		if (_out.equals(OUT_INT)) 
 		{
@@ -163,13 +163,12 @@ public class sync extends parent_static
 		return (is_ini_ ? true : output);
 	}
 
-	private static boolean ini_is_ok(String get_, int id_)
+	private static boolean ini_is_ok(String get_)
 	{
 		String get = check_get(get_);
 		
 		String error = null;
 		if (!strings.is_ok(get)) error = ERROR_GET;
-		else if (!common.id_is_ok(id_)) error = ERROR_ID; 
 
 		if (error != null)
 		{
@@ -180,7 +179,7 @@ public class sync extends parent_static
 
 		_get = get;
 		_out = get_all_get_outs().get(_get);		
-		_id = id_;
+		_id = common.get_req_id(true);
 
 		return true;
 	}

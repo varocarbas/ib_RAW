@@ -99,7 +99,7 @@ public class db
 		{
 			String key = item.getKey();
 			Object val = null; 
-					
+			
 			if (key.equals(FIELD_SYMBOL))
 			{
 				if (strings.is_ok(symbol_)) val = symbol_;

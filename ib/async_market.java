@@ -1,11 +1,16 @@
 package ib;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import accessory.arrays;
+import accessory.dates;
+import accessory.generic;
+import accessory.misc;
 import accessory.parent_static;
 import accessory.strings;
 import accessory_ib._alls;
+import accessory_ib._defaults;
 import accessory_ib.config;
 import accessory_ib.db;
 import accessory_ib.types;
@@ -28,10 +33,13 @@ public class async_market  extends parent_static
 	public static final int SIZE = market.TICK_LAST_SIZE;
 	public static final int ASK_SIZE = market.TICK_ASK_SIZE;
 	public static final int BID_SIZE = market.TICK_BID_SIZE;
-		
-	private static int _id = common.WRONG_ID;
-	private static HashMap<Integer, String> _symbols = new HashMap<Integer, String>();
 
+	public static final int DEFAULT_DATA_TYPE = _defaults.ASYNC_DATA_TYPE;
+	
+	private static boolean _stop_all = false;
+	private static HashMap<Integer, String> _symbols = new HashMap<Integer, String>();
+	private static HashMap<Integer, Integer> _data_types = new HashMap<Integer, Integer>();
+	
 	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC_MARKET); }
 
 	public static void wrapper_tickPrice(int id_, int field_, double price_)
@@ -49,7 +57,7 @@ public class async_market  extends parent_static
 		
 		if (field_ == VOLUME)
 		{
-			if (is_snapshot(id_) && snapshot_is_quick()) snapshot_end(id_);
+			if (is_snapshot(id_) && snapshot_is_quick()) stop_snapshot(id_);
 		}
 
 		update_db(id_, field, size_);
@@ -63,28 +71,69 @@ public class async_market  extends parent_static
 		update_db(id_, field, value_);
 	}
 
-	public static boolean is_snapshot(int id_) { return async.type_is_ok(id_, TYPE_SNAPSHOT); }
+	public static void stop_all()
+	{		
+		if (!arrays.is_ok(async._ids)) return;
+	
+		_stop_all = true;
+		
+		for (Entry<Integer, String> item: async._ids.entrySet())
+		{
+			int id = item.getKey();
+			
+			if (is_snapshot(id)) stop_snapshot(id);
+			else stop_stream(id);	
+		}		
+	}
+	
+	public static boolean is_snapshot(int id_) { return async.is_ok(id_, TYPE_SNAPSHOT); }
 
 	public static boolean snapshot_is_quick() { return strings.to_boolean(config.get_async(types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK)); }
 
 	public static boolean snapshot_is_nonstop() { return strings.to_boolean(config.get_async(types.CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP)); }
 
-	public static boolean snapshot_start(String symbol_, int data_type_) { return start(symbol_, data_type_, true); }
+	public static boolean start_snapshot(String symbol_) { return start_snapshot(symbol_, DEFAULT_DATA_TYPE); }
 
-	public static boolean stream_start(String symbol_, int data_type_) { return start(symbol_, data_type_, false); }
+	public static boolean start_snapshot(String symbol_, int data_type_) { return start(symbol_, data_type_, true); }
 
-	public static void snapshot_end(int id_) { end_common(id_); }
+	public static boolean start_stream(String symbol_) { return start_stream(symbol_, DEFAULT_DATA_TYPE); }
+
+	public static boolean start_stream(String symbol_, int data_type_) { return start(symbol_, data_type_, false); }
+
+	public static void stop_snapshot(int id_) 
+	{ 	
+		if (!is_snapshot(id_)) return;
+		
+		String symbol = null;
+		int data_type = 0;
+		
+		boolean restart = snapshot_is_nonstop();
+		
+		if (restart)
+		{
+			symbol = get_symbol(id_);
+			data_type = get_data_type(id_);
+		}
+		
+		stop_common(id_); 
+		
+		if (snapshot_is_nonstop() && !_stop_all) start_snapshot(symbol, data_type);
+	}
 	
-	public static void stream_end(String symbol_) { stream_end(get_id(symbol_)); }
+	public static void stop_stream(String symbol_) { stop_stream(get_id(symbol_)); }
 
-	public static void stream_end(int id_) 
+	public static void stop_stream(int id_) 
 	{
-		end_common(id_);
+		if (is_snapshot(id_)) return;
+		
+		stop_common(id_);
 		
 		conn._client.cancelMktData(id_); 
 	}
 	
 	public static String get_symbol(int id_) { return (String)arrays.get_value(_symbols, id_); }
+	
+	public static int get_data_type(int id_) { return (int)arrays.get_value(_data_types, id_); }
 	
 	public static int get_id(String symbol_) { return (int)arrays.get_key(_symbols, symbol_); }
 
@@ -133,28 +182,61 @@ public class async_market  extends parent_static
 	private static boolean start(String symbol_, int data_type_, boolean is_snapshot_)
 	{
 		String symbol = common.normalise_symbol(symbol_);
-		if (!strings.is_ok(symbol)) return false;
-
-		_id = common.get_next_id(_id);
-
-		_symbols.put(_id, symbol);
-		async.add(_id, (is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM));
+		if (!strings.is_ok(symbol) || arrays.value_exists(_symbols, symbol)) return false;
+		
+		_stop_all = false;
+		
+		int data_type = (market.data_is_ok(data_type_) ? data_type_ : DEFAULT_DATA_TYPE);
+		int id = add(symbol, data_type, is_snapshot_);
 
 		if (!db.symbol_exists(symbol)) db.insert(symbol);
-		if (market.data_is_ok(data_type_)) conn._client.reqMarketDataType(data_type_);
-
-		conn._client.reqMktData(_id, common.get_contract(symbol), "", is_snapshot_, false, null);
+		
+		conn._client.reqMarketDataType(data_type);
+		conn._client.reqMktData(id, common.get_contract(symbol), "", is_snapshot_, false, null);
 
 		return true;		
 	}
 
-	private static void end_common(int id_) { async.remove(id_); }
+	private static int add(String symbol_, int data_type_, boolean is_snapshot_)
+	{
+		int id = async.add((is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM));
+
+		to_screen(id, symbol_, "added");
+		
+		_symbols.put(id, symbol_);
+		_data_types.put(id, data_type_);
+
+		return id;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static void stop_common(int id_) 
+	{ 
+		String symbol = get_symbol(id_);
+		
+		async.remove(id_);
+		
+		_symbols = (HashMap<Integer, String>)arrays.remove_key(_symbols, id_);
+		_data_types = (HashMap<Integer, Integer>)arrays.remove_key(_data_types, id_);
+		
+		to_screen(id_, symbol, "removed");
+	}
 	
 	private static boolean update_db(int id_, String field_, double val_)
 	{
 		String symbol = (String)arrays.get_value(_symbols, id_);
 		if (!strings.is_ok(symbol) || !strings.is_ok(field_) || val_ <= 0.0) return false;
 
+		to_screen(id_, symbol, "updated");
+
 		return db.update_number(symbol, field_, val_);
+	}
+	
+	private static void to_screen(int id_, String symbol_, String message_) 
+	{ 
+		String message = dates.get_now_string(dates.FORMAT_TIME_FULL);
+		message += misc.SEPARATOR_CONTENT + symbol_ + " (" + id_ + ") " + message_;
+		
+		generic.to_screen(message); 
 	}
 }

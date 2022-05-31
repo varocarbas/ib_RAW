@@ -1,9 +1,12 @@
 package accessory_ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
+import accessory.misc;
 import accessory.parent_tests;
+import ib.async_market;
 import ib.conn;
 import ib.sync;
 
@@ -27,7 +30,8 @@ public class tests extends parent_tests
 		conn.start();
 		
 		outputs = run_sync(outputs);
-
+		outputs = run_async(outputs);
+		
 		conn.end();
 		
 		update_screen(name0, false, level);
@@ -55,6 +59,42 @@ public class tests extends parent_tests
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = new HashMap<String, HashMap<String, Boolean>>();
 
+		accessory.tests.create_table(accessory_ib.db.SOURCE_MARKET);
+		
+		Class<?> class0 = async_market.class;
+		String name0 = class0.getName();
+		update_screen(name0, true, 1);
+
+		String[] symbols = new String[] { "GOOG", "AAPL" };
+		int pause1 = 5;
+		int pause2 = 5;
+		
+		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
+		String name = "start_snapshot";
+		
+		ArrayList<Object> args = new ArrayList<Object>();
+		args.add(symbols[0]);
+
+		boolean is_ok = run_method(class0, name, new Class<?>[] { String.class }, args, null);
+		
+		misc.pause_secs(pause1);
+		output.put(name, is_ok);
+
+		name = "start_stream";
+		
+		args = new ArrayList<Object>();
+		args.add(symbols[1]);
+
+		is_ok = run_method(class0, name, new Class<?>[] { String.class }, args, null);
+		
+		misc.pause_secs(pause1);
+		output.put(name, is_ok);
+		
+		outputs.put(name0, output);
+		
+		async_market.stop_all();
+		misc.pause_secs(pause2);
+		
 		return outputs;
 	}
 }
