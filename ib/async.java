@@ -9,12 +9,9 @@ import accessory_ib.types;
 
 public class async extends parent_static 
 {	
-	static final int MIN_REQ_ID = common.MIN_REQ_ID_ASYNC;
-	static final int MAX_REQ_ID = common.MAX_REQ_ID_ASYNC;
+	static volatile int _last_id = common.MIN_REQ_ID_SYNC;
 	
-	static int _last_id = MIN_REQ_ID;
-	
-	static HashMap<Integer, String> _ids = new HashMap<Integer, String>();
+	static volatile HashMap<Integer, String> _ids = new HashMap<Integer, String>();
 
 	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC); }
 

@@ -59,13 +59,13 @@ public class tests extends parent_tests
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = new HashMap<String, HashMap<String, Boolean>>();
 
-		accessory.tests.create_table(accessory_ib.db.SOURCE_MARKET);
+		accessory.tests.create_table(db.SOURCE_MARKET);
 		
 		Class<?> class0 = async_market.class;
 		String name0 = class0.getName();
 		update_screen(name0, true, 1);
 
-		String[] symbols = new String[] { "GOOG", "AAPL" };
+		String[] symbols = get_symbols();
 		int pause1 = 5;
 		int pause2 = 5;
 		
@@ -97,4 +97,6 @@ public class tests extends parent_tests
 		
 		return outputs;
 	}
+	
+	private static String[] get_symbols() { return new String[] { "GOOG", "AAPL" }; }
 }

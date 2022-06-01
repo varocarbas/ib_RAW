@@ -100,7 +100,7 @@ public class wrapper implements EWrapper
 	}
 	
 	@Override
-	public void tickGeneric(int ticker_id_, int tick_type_, double value_) { async_market.wrapper_tickGeneric(ticker_id_, tick_type_, value_); }
+	public void tickGeneric(int id_, int tick_, double value_) { async_market.wrapper_tickGeneric(id_, tick_, value_); }
 	
 	@Override
 	public void error(int id_, int code_, String message_) { errors.wrapper_error(id_, code_, message_); }

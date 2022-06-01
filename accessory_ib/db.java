@@ -74,7 +74,6 @@ public class db
 	{
 		String where = get_where_symbol(source_, (strings.is_ok(symbol_) ? symbol_ : get_symbol(vals_)));
 		
-		//accessory.db.insert_update(source_, vals_, where);
 		accessory.db.update(source_, vals_, where);
 		
 		return accessory.db.is_ok(source_);

@@ -1,7 +1,10 @@
 package ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+
+import com.ib.client.Contract;
 
 import accessory.arrays;
 import accessory.dates;
@@ -16,7 +19,7 @@ import accessory_ib.db;
 import accessory_ib.types;
 import external_ib.market;
 
-public class async_market  extends parent_static 
+public class async_market extends parent_static 
 {
 	public static final String TYPE_SNAPSHOT = types.ASYNC_MARKET_SNAPSHOT;
 	public static final String TYPE_STREAM = types.ASYNC_MARKET_STREAM;
@@ -36,10 +39,11 @@ public class async_market  extends parent_static
 
 	public static final int DEFAULT_DATA_TYPE = _defaults.ASYNC_DATA_TYPE;
 	
-	private static boolean _stop_all = false;
-	private static HashMap<Integer, String> _symbols = new HashMap<Integer, String>();
-	private static HashMap<Integer, Integer> _data_types = new HashMap<Integer, Integer>();
-	
+	private static volatile boolean _stop_all = false;
+	private static volatile HashMap<Integer, String> _symbols = new HashMap<Integer, String>();
+	private static volatile HashMap<Integer, Integer> _data_types = new HashMap<Integer, Integer>();
+	private static volatile ArrayList<String> _in_db = new ArrayList<String>();
+		
 	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC_MARKET); }
 
 	public static void wrapper_tickPrice(int id_, int field_, double price_)
@@ -83,7 +87,9 @@ public class async_market  extends parent_static
 			
 			if (is_snapshot(id)) stop_snapshot(id);
 			else stop_stream(id);	
-		}		
+		}
+		
+		_in_db = new ArrayList<String>();
 	}
 	
 	public static boolean is_snapshot(int id_) { return async.is_ok(id_, TYPE_SNAPSHOT); }
@@ -115,8 +121,7 @@ public class async_market  extends parent_static
 			data_type = get_data_type(id_);
 		}
 		
-		stop_common(id_); 
-		
+		stop_common(id_);		
 		if (snapshot_is_nonstop() && !_stop_all) start_snapshot(symbol, data_type);
 	}
 	
@@ -189,10 +194,17 @@ public class async_market  extends parent_static
 		int data_type = (market.data_is_ok(data_type_) ? data_type_ : DEFAULT_DATA_TYPE);
 		int id = add(symbol, data_type, is_snapshot_);
 
-		if (!db.symbol_exists(symbol)) db.insert(symbol);
+		if (!_in_db.contains(symbol)) 
+		{
+			_in_db.add(symbol);
+			db.insert(symbol);
+		}
+		
+		Contract contract = common.get_contract(symbol);
+		if (contract == null) return false;
 		
 		conn._client.reqMarketDataType(data_type);
-		conn._client.reqMktData(id, common.get_contract(symbol), "", is_snapshot_, false, null);
+		conn._client.reqMktData(id, contract, "", is_snapshot_, false, null);
 
 		return true;		
 	}

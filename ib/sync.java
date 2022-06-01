@@ -3,6 +3,9 @@ package ib;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.ib.client.Contract;
+import com.ib.client.Order;
+
 import accessory.arrays;
 import accessory.misc;
 import accessory.numbers;
@@ -20,6 +23,9 @@ public class sync extends parent_static
 	public static final String GET_IDS = types.SYNC_GET_IDS;
 	public static final String GET_FUNDS = types.SYNC_GET_FUNDS;
 
+	public static final String ORDER_CANCEL = types.SYNC_ORDER_CANCEL;
+	public static final String ORDER_PLACE_UPDATE = types.SYNC_ORDER_PLACE_UPDATE;
+	
 	public static final String OUT_DECIMAL = types.SYNC_OUT_DECIMAL;
 	public static final String OUT_INT = types.SYNC_OUT_INT;
 	public static final String OUT_INTS = types.SYNC_OUT_INTS;
@@ -30,10 +36,7 @@ public class sync extends parent_static
 	
 	public static volatile boolean _retrieving = false;
 
-	static final int MIN_REQ_ID = common.MIN_REQ_ID_SYNC;
-	static final int MAX_REQ_ID = common.MAX_REQ_ID_SYNC;
-
-	static int _id = MIN_REQ_ID;
+	static int _id = common.MIN_REQ_ID_SYNC;
 	
 	private static final long DEFAULT_TIMEOUT = _defaults.SYNC_TIMEOUT;
 
@@ -50,9 +53,10 @@ public class sync extends parent_static
 	public static int get_next_id() { return (int)get(GET_ID); }
 	
 	public static double get_funds() { return (double)get(GET_FUNDS); }
-
-	public static Integer[] get_open_ids() { return (Integer[])get(GET_IDS); }
-
+	
+	@SuppressWarnings("unchecked")
+	public static ArrayList<Integer> get_open_ids() { return (ArrayList<Integer>)get(GET_IDS); }
+	
 	public static boolean update(String val_) { return update(strings.to_number_decimal(val_)); }
 
 	public static boolean update(double val_)
@@ -87,6 +91,8 @@ public class sync extends parent_static
 	public static String check_get(String type_) { return accessory.types.check_type(type_, types.SYNC_GET); }
 
 	public static String check_out(String type_) { return accessory.types.check_type(type_, types.SYNC_OUT); }
+
+	public static String check_order(String type_) { return accessory.types.check_type(type_, types.SYNC_ORDER); }
 	
 	public static String check_error(String type_) { return accessory.types.check_type(type_, types.ERROR_IB_SYNC); }
 
@@ -113,13 +119,35 @@ public class sync extends parent_static
 
 		return all;
 	}
-	
-	public static boolean is_ok(int id_) { return (_retrieving && id_is_ok(id_)); }
-	
-	public static boolean id_is_ok(int id_) { return (_id == id_); }
-	
+		
+	public static boolean is_ok(int id_) { return (_retrieving && (_id == id_)); }
+
+	static boolean cancel_order(int id_) { return execute_order(ORDER_CANCEL, id_, null, null); }
+
+	static boolean place_update_order(int id_, Contract contract_, Order order_) { return execute_order(ORDER_PLACE_UPDATE, id_, contract_, order_); }
+
 	private static HashMap<String, String> get_all_get_outs() { return _alls.SYNC_GET_OUTS; }
 
+	private static boolean execute_order(String type_, int id_, Contract contract_, Order order_)
+	{
+		if (common.req_id_is_ok_sync(id_)) return false;
+		
+		if (type_.equals(ORDER_CANCEL)) 
+		{
+			conn._client.cancelOrder(id_);
+			
+			misc.pause_secs(1);
+		}
+		else 
+		{
+			if (contract_ == null || order_ == null) return false;
+			
+			conn._client.placeOrder(id_, contract_, order_);
+		}
+		
+		return true;
+	}
+	
 	private static Object get(String type_)
 	{
 		common.get_req_id(true);
@@ -152,12 +180,12 @@ public class sync extends parent_static
 		else if (_out.equals(OUT_INTS)) 
 		{
 			if (is_ini_) _out_ints = new ArrayList<Integer>();
-			else output = arrays.to_array(_out_ints);
+			else output = arrays.get_new(_out_ints);
 		}
 		else if (_out.equals(OUT_MISC)) 
 		{
 			if (is_ini_) _out_misc = new HashMap<String, String>();
-			else output = new HashMap<String, String>(_out_misc);
+			else output = arrays.get_new(_out_misc);
 		}
 
 		return (is_ini_ ? true : output);

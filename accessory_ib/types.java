@@ -6,15 +6,16 @@ public class types
 	public static final String CONFIG_CONN_TYPE = "config_conn_type";
 	public static final String CONFIG_CONN_ID = "config_conn_id";
 	
+	public static final String CONFIG_SYNC = "config_sync";
+	public static final String CONFIG_SYNC_ORDERS = "config_sync_orders";
+	public static final String CONFIG_SYNC_ORDERS_TIF = "config_sync_orders_tif";
+	public static final String CONFIG_SYNC_ORDERS_QUANTITY_INT = "config_sync_orders_quantity_int";
+	
 	public static final String CONFIG_ASYNC = "config_async";
 	public static final String CONFIG_ASYNC_MARKET = "config_async_market";
 	public static final String CONFIG_ASYNC_MARKET_SNAPSHOT = "config_async_market_snapshot";
 	public static final String CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK = "config_async_market_snapshot_quick";
 	public static final String CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP = "config_async_market_snapshot_nonstop";
-
-	public static final String CONFIG_ORDER = "config_order";
-	public static final String CONFIG_ORDER_TIF = "config_order_tif";
-	public static final String CONFIG_ORDER_QUANTITY_INT = "config_order_quantity_int";
 
 	public static final String CONFIG_CONTRACT = "config_contract";
 	public static final String CONFIG_CONTRACT_SECURITY_TYPE = "config_contract_security_type";
@@ -43,12 +44,12 @@ public class types
 	public static final String CONFIG_DB_IB_MARKET = "config_db_ib_market";
 	public static final String CONFIG_DB_IB_MARKET_SOURCE = "config_db_ib_market_source";
 
-	public static final String ID_ASYNC = "id_async";
-	public static final String ID_ASYNC_MARKET = "id_async_market";
 	public static final String ID_COMMON = "id_common";
 	public static final String ID_CONN = "id_conn";
-	public static final String ID_ORDERS = "id_orders";
+	public static final String ID_ASYNC = "id_async";
+	public static final String ID_ASYNC_MARKET = "id_async_market";
 	public static final String ID_SYNC = "id_sync";
+	public static final String ID_SYNC_ORDERS = "id_sync_orders";
 	
 	public static final String CONN = "conn";
 	public static final String CONN_TWS_REAL = "conn_tws_real";
@@ -61,27 +62,29 @@ public class types
 	public static final String SYNC_GET_FUNDS = "sync_get_funds";
 	public static final String SYNC_GET_ID = "sync_get_id";
 	public static final String SYNC_GET_IDS = "sync_get_ids";
+	public static final String SYNC_ORDER = "sync_order";
+	public static final String SYNC_ORDER_CANCEL = "sync_order_cancel";
+	public static final String SYNC_ORDER_PLACE_UPDATE = "sync_order_place_update";
 	public static final String SYNC_OUT = "sync_out";
 	public static final String SYNC_OUT_INT = "sync_out_int";
 	public static final String SYNC_OUT_DECIMAL = "sync_out_decimal";
 	public static final String SYNC_OUT_INTS = "sync_out_ints";
 	public static final String SYNC_OUT_MISC = "sync_out_misc";
+	public static final String SYNC_ORDERS = "sync_orders";
+	public static final String SYNC_ORDERS_PLACE = "sync_orders_place";
+	public static final String SYNC_ORDERS_PLACE_MARKET = "sync_orders_place_market";
+	public static final String SYNC_ORDERS_PLACE_STOP = "sync_orders_place_stop";
+	public static final String SYNC_ORDERS_PLACE_LIMIT = "sync_orders_place_limit";
+	public static final String SYNC_ORDERS_UPDATE = "sync_orders_update";
+	public static final String SYNC_ORDERS_UPDATE_START_VALUE = "sync_orders_update_start_value";
+	public static final String SYNC_ORDERS_UPDATE_START_MARKET = "sync_orders_update_start_market";
+	public static final String SYNC_ORDERS_UPDATE_STOP_VALUE = "sync_orders_update_stop_value";
+	public static final String SYNC_ORDERS_UPDATE_STOP_MARKET = "sync_orders_update_stop_market";
 
 	public static final String ASYNC = "async";
 	public static final String ASYNC_MARKET = "async_market";
 	public static final String ASYNC_MARKET_SNAPSHOT = "async_market_snapshot";
 	public static final String ASYNC_MARKET_STREAM = "async_market_stream";
-
-	public static final String ORDER = "order";
-	public static final String ORDER_PLACE = "order_place";
-	public static final String ORDER_PLACE_MARKET = "order_place_market";
-	public static final String ORDER_PLACE_STOP = "order_place_stop";
-	public static final String ORDER_PLACE_LIMIT = "order_place_limit";
-	public static final String ORDER_UPDATE = "order_update";
-	public static final String ORDER_UPDATE_START_VALUE = "order_update_start_value";
-	public static final String ORDER_UPDATE_START_MARKET = "order_update_start_market";
-	public static final String ORDER_UPDATE_STOP_VALUE = "order_update_stop_value";
-	public static final String ORDER_UPDATE_STOP_MARKET = "order_update_stop_market";
 
 	public static final String ERROR_IB = "error_ib";
 	public static final String ERROR_IB_GENERIC = "error_ib_generic";
@@ -105,14 +108,14 @@ public class types
 		{
 			CONFIG_CONN,
 			CONFIG_CONN_TYPE, CONFIG_CONN_ID,
+			
+			CONFIG_SYNC_ORDERS,
+			CONFIG_SYNC_ORDERS_TIF, CONFIG_SYNC_ORDERS_QUANTITY_INT,
 	
 			CONFIG_ASYNC,
 			CONFIG_ASYNC_MARKET,
 			CONFIG_ASYNC_MARKET_SNAPSHOT,
 			CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK, CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP, 
-		
-			CONFIG_ORDER,
-			CONFIG_ORDER_TIF, CONFIG_ORDER_QUANTITY_INT,
 			
 			CONFIG_CONTRACT,
 			CONFIG_CONTRACT_SECURITY_TYPE, CONFIG_CONTRACT_CURRENCY, 
@@ -131,7 +134,9 @@ public class types
 			
 			ID_ASYNC,
 			ID_ASYNC_MARKET,
-			ID_COMMON, ID_CONN, ID_ORDERS, ID_SYNC,
+			ID_SYNC,
+			ID_SYNC_ORDERS,
+			ID_COMMON, ID_CONN,
 			
 			CONN,
 			CONN_TWS_REAL, CONN_TWS_PAPER, CONN_GATEWAY_REAL, CONN_GATEWAY_PAPER,
@@ -139,19 +144,21 @@ public class types
 			SYNC,
 			SYNC_GET,
 			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_IDS,
+			SYNC_ORDER,
+			SYNC_ORDER_CANCEL, SYNC_ORDER_PLACE_UPDATE,
 			SYNC_OUT,
 			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_MISC,
+			SYNC_ORDERS,
+			SYNC_ORDERS_PLACE,
+			SYNC_ORDERS_PLACE_MARKET, SYNC_ORDERS_PLACE_STOP, SYNC_ORDERS_PLACE_LIMIT,
+			SYNC_ORDERS_UPDATE,
+			SYNC_ORDERS_UPDATE_START_VALUE, SYNC_ORDERS_UPDATE_START_MARKET, SYNC_ORDERS_UPDATE_STOP_VALUE, 
+			SYNC_ORDERS_UPDATE_STOP_MARKET,
 
 			ASYNC,
 			ASYNC_MARKET,
 			ASYNC_MARKET_SNAPSHOT, ASYNC_MARKET_STREAM,
-			
-			ORDER,
-			ORDER_PLACE,
-			ORDER_PLACE_MARKET, ORDER_PLACE_STOP, ORDER_PLACE_LIMIT,
-			ORDER_UPDATE,
-			ORDER_UPDATE_START_VALUE, ORDER_UPDATE_START_MARKET, ORDER_UPDATE_STOP_VALUE, ORDER_UPDATE_STOP_MARKET,
-			
+						
 			ERROR_IB,
 			ERROR_IB_GENERIC,
 			ERROR_IB_INI,

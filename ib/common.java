@@ -21,9 +21,9 @@ public class common extends parent_static
 	public static final String ERROR_CONTRACT_INFO = types.ERROR_IB_CONTRACT_INFO;
 	
 	static final int MIN_REQ_ID_SYNC = 1;
-	static final int MAX_REQ_ID_SYNC = 4;
-	static final int MIN_REQ_ID_ASYNC = 5;
-	static final int MAX_REQ_ID_ASYNC = 2500;
+	static final int MAX_REQ_ID_SYNC = 499;
+	static final int MIN_REQ_ID_ASYNC = 500;
+	static final int MAX_REQ_ID_ASYNC = 3000;
 	
 	public static String get_class_id() { return accessory.types.get_id(types.ID_COMMON); }
 	
@@ -72,6 +72,10 @@ public class common extends parent_static
 		return symbol;
 	}
 	
+	public static boolean req_id_is_ok_sync(int id_) { return id_is_ok(id_, MIN_REQ_ID_SYNC, MAX_REQ_ID_SYNC); }
+	
+	public static boolean req_id_is_ok_async(int id_) { return id_is_ok(id_, MIN_REQ_ID_ASYNC, MAX_REQ_ID_ASYNC); }
+		
 	static int get_req_id(boolean is_sync_) 
 	{ 
 		int id = 0;
@@ -80,12 +84,12 @@ public class common extends parent_static
 		
 		if (is_sync_)
 		{
-			id = get_req_id_internal(sync._id, sync.MIN_REQ_ID, sync.MAX_REQ_ID);
+			id = get_req_id_internal(sync._id, MIN_REQ_ID_SYNC, MAX_REQ_ID_SYNC);
 			sync._id = id;
 		}
 		else
 		{
-			id = get_req_id_internal(async._last_id, async.MIN_REQ_ID, async.MAX_REQ_ID);
+			id = get_req_id_internal(async._last_id, MIN_REQ_ID_ASYNC, MAX_REQ_ID_ASYNC);
 			async._last_id = id;		
 		}
 		

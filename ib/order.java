@@ -5,7 +5,6 @@ import java.util.HashMap;
 import accessory.numbers;
 import accessory.parent;
 import accessory.strings;
-import accessory_ib.types;
 
 public class order extends parent
 {
@@ -21,7 +20,7 @@ public class order extends parent
 		
 	public static boolean are_equal(order order1_, order order2_) { return are_equal_common(order1_, order2_); }
 
-	public static String check_type(String type_) { return accessory.types.check_type(type_, types.ORDER_PLACE); }
+	public static String check_type(String type_) { return sync_orders.check_place(type_); }
 
 	public static String check_symbol(String symbol_) { return (strings.is_ok(symbol_) ? symbol_.trim().toUpperCase() : strings.DEFAULT); }
 
@@ -95,7 +94,7 @@ public class order extends parent
 		_temp_type = check_type(type_);
 		_temp_symbol = check_symbol(symbol_);
 		
-		return (strings.are_ok(new String[] { _temp_type, _temp_symbol }) && quantity_ > 0 && stop_ > 0 && start_ > 0 && orders.id_is_ok(id_));
+		return (strings.are_ok(new String[] { _temp_type, _temp_symbol }) && quantity_ > 0 && stop_ > 0 && start_ > 0 && common.req_id_is_ok_sync(id_));
 	}
 
 	private void populate(String type_, String symbol_, double quantity_, double stop_, double start_, int id_)

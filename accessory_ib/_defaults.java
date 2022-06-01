@@ -13,10 +13,6 @@ public class _defaults
 	public static final int CONN_PORT_GATEWAY_REAL = 4001;
 	public static final int CONN_PORT_GATEWAY_PAPER = 4002;	
 	
-	public static final String ORDER_TIF = orders.TIF_GTC; 
-	public static final String ORDER_EXEC_SIDE = orders.EXEC_SIDE_SOLD;
-	public static final boolean ORDER_QUANTITY_INT = true;
-
 	public static final String CONTRACT_CURRENCY = "USD";
 	public static final String CONTRACT_SECURITY_TYPE = contracts.SECURITY_STOCK_ETF;
 	public static final String CONTRACT_EXCHANGE = "SMART";
@@ -26,6 +22,8 @@ public class _defaults
 	public static final int MARKET_DATA = market.DATA_LIVE;
 	
 	public static final long SYNC_TIMEOUT = 10l; 
+	public static final String SYNC_ORDERS_TIF = orders.TIF_GTC; 
+	public static final boolean SYNC_ORDERS_QUANTITY_INT = true;
 	
 	public static final boolean ASYNC_SNAPSHOT_QUICK = true;
 	public static final boolean ASYNC_SNAPSHOT_NONSTOP = true;
