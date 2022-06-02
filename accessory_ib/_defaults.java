@@ -6,7 +6,7 @@ import external_ib.orders;
 
 public class _defaults 
 {
-	public static final String CONN_TYPE = types.CONN_GATEWAY_REAL;
+	public static final String CONN_TYPE = types.CONFIG_CONN_TYPE_GATEWAY_REAL;
 	public static final int CONN_ID = 18; 
 	public static final int CONN_PORT_TWS_REAL = 7496;
 	public static final int CONN_PORT_TWS_PAPER = 7497;

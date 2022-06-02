@@ -39,7 +39,7 @@ public class _ini_config extends parent_ini_config
 		
 		vals.put(types.CONFIG_SYNC_ORDERS_TIF, _defaults.SYNC_ORDERS_TIF);
 		vals.put(types.CONFIG_SYNC_ORDERS_QUANTITY_INT, _defaults.SYNC_ORDERS_QUANTITY_INT);
-		
+
 		return populate(type, null, vals);
 	}
 	

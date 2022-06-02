@@ -29,10 +29,10 @@ public class common extends parent_static
 	
 	public static Contract get_contract(String symbol_)
 	{
-		String security = config.get_contract(SECURITY_TYPE);
-		String currency = config.get_contract(CURRENCY);
-		String exchange = config.get_contract(EXCHANGE);
-		String primary_exchange = config.get_contract(PRIMARY_EXCHANGE);
+		String security = (String)config.get_contract(SECURITY_TYPE);
+		String currency = (String)config.get_contract(CURRENCY);
+		String exchange = (String)config.get_contract(EXCHANGE);
+		String primary_exchange = (String)config.get_contract(PRIMARY_EXCHANGE);
 		
 		if (!strings.is_ok(symbol_) || !external_ib.contracts.security_is_ok(security) || !strings.are_ok(new String[] { currency, exchange, primary_exchange })) 
 		{

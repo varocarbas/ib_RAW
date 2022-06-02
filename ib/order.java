@@ -2,18 +2,18 @@ package ib;
 
 import java.util.HashMap;
 
-import accessory.numbers;
 import accessory.parent;
 import accessory.strings;
 
 public class order extends parent
 {
+	private int _id_main = sync.WRONG_ID;
+	private int _id_sec = sync.WRONG_ID;	
 	private String _type = strings.DEFAULT;
 	private String _symbol = strings.DEFAULT;
-	private double _quantity = numbers.DEFAULT_DECIMAL;
-	private int _id = numbers.DEFAULT_INT;
-	private double _stop = numbers.DEFAULT_DECIMAL;
-	private double _start = numbers.DEFAULT_DECIMAL;
+	private double _quantity = sync_orders.WRONG_VALUE;
+	private double _stop = sync_orders.WRONG_VALUE;
+	private double _start = sync_orders.WRONG_VALUE;
 
 	private String _temp_type = strings.DEFAULT;
 	private String _temp_symbol = strings.DEFAULT;
@@ -32,8 +32,10 @@ public class order extends parent
 
 	public String get_symbol() { return _symbol; }
 	
-	public int get_id() { return _id; }
-
+	public int get_id_main() { return _id_main; }
+	
+	public int get_id_sec() { return _id_sec; }
+	
 	public double get_quantity() { return _quantity; }
 
 	public double get_stop() { return _stop; }
@@ -46,12 +48,13 @@ public class order extends parent
 	
 	public String toString()
 	{
-		if (!is_ok(_type, _symbol, _quantity, _stop, _start, _id)) return strings.DEFAULT;
+		if (!is_ok(_type, _symbol, _quantity, _stop, _start, _id_main)) return strings.DEFAULT;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
+		vals.put("id_main", _id_main);
+		vals.put("id_sec", _id_sec);
 		vals.put("type", _type);
-		vals.put("id", _id);
 		vals.put("symbol", _symbol);
 		vals.put("quantity", _quantity);
 		vals.put("stop", _stop);
@@ -67,7 +70,7 @@ public class order extends parent
 		return 
 		(
 			_temp_type.equals(order2_._type) && _temp_symbol.equals(order2_._symbol) && (_quantity == order2_._quantity) && 
-			(_id == order2_._id) && (_stop == order2_._stop) && (_start == order2_._start)
+			(_id_main == order2_._id_main) && (_id_sec == order2_._id_sec) && (_stop == order2_._stop) && (_start == order2_._start)
 		);		
 	}
 
@@ -76,34 +79,35 @@ public class order extends parent
 		instantiate_common();
 		if (input_ == null || !input_.is_ok()) return;
 
-		populate(_temp_type, _temp_symbol, input_._quantity, input_._stop, input_._start, input_._id);
+		populate(_temp_type, _temp_symbol, input_._quantity, input_._stop, input_._start, input_._id_main);
 	}
 
-	private void instantiate(String type_, String symbol_, double quantity_, double stop_, double start_, int id_)
+	private void instantiate(String type_, String symbol_, double quantity_, double stop_, double start_, int id_main_)
 	{
 		instantiate_common();
-		if (!is_ok(type_, symbol_, quantity_, stop_, start_, id_)) return;
+		if (!is_ok(type_, symbol_, quantity_, stop_, start_, id_main_)) return;
 
-		populate(_temp_type, _temp_symbol, quantity_, stop_, start_, id_);
+		populate(_temp_type, _temp_symbol, quantity_, stop_, start_, id_main_);
 	}
 
-	public boolean is_ok() { return is_ok(_type, _symbol, _quantity, _stop, _start, _id); }
+	public boolean is_ok() { return is_ok(_type, _symbol, _quantity, _stop, _start, _id_main); }
 			
-	private boolean is_ok(String type_, String symbol_, double quantity_, double stop_, double start_, int id_)
+	private boolean is_ok(String type_, String symbol_, double quantity_, double stop_, double start_, int id_main_)
 	{
 		_temp_type = check_type(type_);
 		_temp_symbol = check_symbol(symbol_);
 		
-		return (strings.are_ok(new String[] { _temp_type, _temp_symbol }) && quantity_ > 0 && stop_ > 0 && start_ > 0 && common.req_id_is_ok_sync(id_));
+		return (strings.are_ok(new String[] { _temp_type, _temp_symbol }) && quantity_ > 0 && stop_ > 0 && start_ > 0 && common.req_id_is_ok_sync(id_main_));
 	}
 
-	private void populate(String type_, String symbol_, double quantity_, double stop_, double start_, int id_)
+	private void populate(String type_, String symbol_, double quantity_, double stop_, double start_, int id_main_)
 	{
 		_type = type_;
 		_symbol = symbol_;
 		_quantity = quantity_;
 		_stop = stop_;
 		_start = start_;
-		_id = id_;
+		_id_main = id_main_;
+		_id_sec = sync_orders.get_id_sec(id_main_);
 	}
 }

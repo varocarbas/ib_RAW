@@ -94,9 +94,9 @@ public class async_market extends parent_static
 	
 	public static boolean is_snapshot(int id_) { return async.is_ok(id_, TYPE_SNAPSHOT); }
 
-	public static boolean snapshot_is_quick() { return strings.to_boolean(config.get_async(types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK)); }
+	public static boolean snapshot_is_quick() { return (boolean)config.get_async(types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK); }
 
-	public static boolean snapshot_is_nonstop() { return strings.to_boolean(config.get_async(types.CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP)); }
+	public static boolean snapshot_is_nonstop() { return (boolean)config.get_async(types.CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP); }
 
 	public static boolean start_snapshot(String symbol_) { return start_snapshot(symbol_, DEFAULT_DATA_TYPE); }
 

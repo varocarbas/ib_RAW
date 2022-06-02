@@ -4,6 +4,10 @@ public class types
 {
 	public static final String CONFIG_CONN = "config_conn";
 	public static final String CONFIG_CONN_TYPE = "config_conn_type";
+	public static final String CONFIG_CONN_TYPE_TWS_REAL = "config_conn_type_tws_real";
+	public static final String CONFIG_CONN_TYPE_TWS_PAPER = "config_conn_type_tws_paper";
+	public static final String CONFIG_CONN_TYPE_GATEWAY_REAL = "config_conn_type_gateway_real";
+	public static final String CONFIG_CONN_TYPE_GATEWAY_PAPER = "config_conn_type_gateway_paper";
 	public static final String CONFIG_CONN_ID = "config_conn_id";
 	
 	public static final String CONFIG_SYNC = "config_sync";
@@ -49,13 +53,7 @@ public class types
 	public static final String ID_ASYNC = "id_async";
 	public static final String ID_ASYNC_MARKET = "id_async_market";
 	public static final String ID_SYNC = "id_sync";
-	public static final String ID_SYNC_ORDERS = "id_sync_orders";
-	
-	public static final String CONN = "conn";
-	public static final String CONN_TWS_REAL = "conn_tws_real";
-	public static final String CONN_TWS_PAPER = "conn_tws_paper";
-	public static final String CONN_GATEWAY_REAL = "conn_gateway_real";
-	public static final String CONN_GATEWAY_PAPER = "conn_gateway_paper";	
+	public static final String ID_SYNC_ORDERS = "id_sync_orders";	
 
 	public static final String SYNC = "sync";
 	public static final String SYNC_GET = "sync_get";
@@ -107,8 +105,13 @@ public class types
 		return new String[]
 		{
 			CONFIG_CONN,
-			CONFIG_CONN_TYPE, CONFIG_CONN_ID,
+			CONFIG_CONN_TYPE, 
+			CONFIG_CONN_TYPE_TWS_REAL, CONFIG_CONN_TYPE_TWS_PAPER, CONFIG_CONN_TYPE_GATEWAY_REAL, 
+			CONFIG_CONN_TYPE_GATEWAY_PAPER,
 			
+			CONFIG_CONN_ID,
+			
+			CONFIG_SYNC,
 			CONFIG_SYNC_ORDERS,
 			CONFIG_SYNC_ORDERS_TIF, CONFIG_SYNC_ORDERS_QUANTITY_INT,
 	
@@ -137,9 +140,6 @@ public class types
 			ID_SYNC,
 			ID_SYNC_ORDERS,
 			ID_COMMON, ID_CONN,
-			
-			CONN,
-			CONN_TWS_REAL, CONN_TWS_PAPER, CONN_GATEWAY_REAL, CONN_GATEWAY_PAPER,
 
 			SYNC,
 			SYNC_GET,

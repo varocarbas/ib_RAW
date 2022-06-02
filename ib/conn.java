@@ -16,10 +16,10 @@ import external_ib.wrapper;
 
 public class conn extends parent_static 
 {
-	public static final String TWS_REAL = types.CONN_TWS_REAL;
-	public static final String TWS_PAPER = types.CONN_TWS_PAPER;
-	public static final String GATEWAY_REAL = types.CONN_GATEWAY_REAL;
-	public static final String GATEWAY_PAPER = types.CONN_GATEWAY_PAPER;
+	public static final String TYPE_TWS_REAL = types.CONFIG_CONN_TYPE_TWS_REAL;
+	public static final String TYPE_TWS_PAPER = types.CONFIG_CONN_TYPE_TWS_PAPER;
+	public static final String TYPE_GATEWAY_REAL = types.CONFIG_CONN_TYPE_GATEWAY_REAL;
+	public static final String TYPE_GATEWAY_PAPER = types.CONFIG_CONN_TYPE_GATEWAY_PAPER;
 	
 	public static final String ERROR_NONE = types.ERROR_IB_CONN_NONE;
 	public static final String ERROR_ID = types.ERROR_IB_CONN_ID;
@@ -56,7 +56,7 @@ public class conn extends parent_static
 		return _connected;
 	}
 
-	public static boolean start() { return start(strings.to_number_int(config.get_conn(types.CONFIG_CONN_ID)), config.get_conn(types.CONFIG_CONN_TYPE)); }
+	public static boolean start() { return start((int)config.get_conn(types.CONFIG_CONN_ID), (String)config.get_conn(types.CONFIG_CONN_TYPE)); }
 	
 	public static boolean start(int id_, String type_)
 	{
@@ -65,12 +65,12 @@ public class conn extends parent_static
 		if (!numbers.is_ok(id_, MIN_ID, MAX_ID)) error = ERROR_ID;
 		else 
 		{
-			String type = accessory.types.check_type(type_, types.CONN);	
+			String type = accessory.types.check_type(type_, types.CONFIG_CONN);	
 			if (!strings.is_ok(type)) error = ERROR_TYPE;
 			else
 			{
 				_id = id_;
-				_port = get_conn_port(type);
+				_port = get_port(type);
 			}
 		}
 
@@ -179,14 +179,14 @@ public class conn extends parent_static
 		}	
 	}
 
-	private static int get_conn_port(String conn_type_)
+	private static int get_port(String type_)
 	{
 		int port = -1;
 
-		if (conn_type_.equals(types.CONN_TWS_REAL)) port = PORT_TWS_REAL;
-		else if (conn_type_.equals(types.CONN_TWS_PAPER)) port = PORT_TWS_PAPER;
-		else if (conn_type_.equals(types.CONN_GATEWAY_REAL)) port = PORT_GATEWAY_REAL;
-		else if (conn_type_.equals(types.CONN_GATEWAY_PAPER)) port = PORT_GATEWAY_PAPER;
+		if (type_.equals(TYPE_TWS_REAL)) port = PORT_TWS_REAL;
+		else if (type_.equals(TYPE_TWS_PAPER)) port = PORT_TWS_PAPER;
+		else if (type_.equals(TYPE_GATEWAY_REAL)) port = PORT_GATEWAY_REAL;
+		else if (type_.equals(TYPE_GATEWAY_PAPER)) port = PORT_GATEWAY_PAPER;
 
 		return port;
 	}

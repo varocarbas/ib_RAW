@@ -9,6 +9,7 @@ import accessory.parent_tests;
 import ib.async_market;
 import ib.conn;
 import ib.sync;
+import ib.sync_orders;
 
 public class tests extends parent_tests 
 {
@@ -51,6 +52,45 @@ public class tests extends parent_tests
 		String[] methods = new String[] { "get_next_id", "get_funds", "get_open_ids" };
 		
 		outputs.put(name0, run_methods(class0, methods));
+		
+		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
+
+		String[] symbols = get_symbols();
+		int pause = 5;
+		
+		class0 = sync_orders.class;
+		
+		String name = "place";
+		
+		String type = sync_orders.TYPE_PLACE_LIMIT;
+		String symbol = symbols[0]; 
+		double quantity = 1;
+		double stop = 2100;
+		double start = 2500;
+		
+		ArrayList<Object> args = new ArrayList<Object>();
+		args.add(type);
+		args.add(symbol);
+		args.add(quantity);
+		args.add(stop);
+		args.add(start);
+		
+		boolean is_ok = run_method(class0, name, new Class<?>[] { String.class, String.class, double.class, double.class, double.class }, args, null);
+		output.put(name, is_ok);	
+		
+		if (!is_ok) return outputs;
+		
+		misc.pause_secs(pause);
+		
+		name = "cancel";
+		
+		int id = sync_orders._last_id_main;
+		
+		args = new ArrayList<Object>();
+		args.add(id);
+		
+		is_ok = run_method(class0, name, new Class<?>[] { int.class }, args, null);
+		output.put(name, is_ok);		
 		
 		return outputs;	
 	}

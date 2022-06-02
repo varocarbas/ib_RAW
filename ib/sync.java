@@ -31,6 +31,8 @@ public class sync extends parent_static
 	public static final String OUT_INTS = types.SYNC_OUT_INTS;
 	public static final String OUT_MISC = types.SYNC_OUT_MISC;
 
+	public static final int WRONG_ID = common.MIN_REQ_ID_SYNC - 1;
+	
 	public static final String ERROR_GET = types.ERROR_IB_SYNC_GET;
 	public static final String ERROR_TIME = types.ERROR_IB_SYNC_TIME;
 	
@@ -121,7 +123,7 @@ public class sync extends parent_static
 	}
 		
 	public static boolean is_ok(int id_) { return (_retrieving && (_id == id_)); }
-
+	
 	static boolean cancel_order(int id_) { return execute_order(ORDER_CANCEL, id_, null, null); }
 
 	static boolean place_update_order(int id_, Contract contract_, Order order_) { return execute_order(ORDER_PLACE_UPDATE, id_, contract_, order_); }
@@ -130,8 +132,8 @@ public class sync extends parent_static
 
 	private static boolean execute_order(String type_, int id_, Contract contract_, Order order_)
 	{
-		if (common.req_id_is_ok_sync(id_)) return false;
-		
+		if (!common.req_id_is_ok_sync(id_)) return false;
+
 		if (type_.equals(ORDER_CANCEL)) 
 		{
 			conn._client.cancelOrder(id_);

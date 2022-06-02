@@ -109,26 +109,17 @@ public class wrapper implements EWrapper
 	
 	public EReaderSignal getSignal() { return readerSignal; }
 	
-	//! [orderstatus]
 	@Override
-	public void orderStatus
-	(
-		int orderId, String status, double filled, double remaining, 
-		double avgFillPrice, int permId, int parentId, double lastFillPrice, 
-		int clientId, String whyHeld, double mktCapPrice
-	) 
+	public void orderStatus(int id, String status, double filled, double remaining, double avg_fill_price, int perm_id, int parent_id, double last_fill_price, int client_id, String why_held, double mkt_cap_price) 
 	{		
-		//TODO
+		sync.update(id);
 	}
-	//! [orderstatus]
 	
-	//! [openorderend]
 	@Override
 	public void openOrderEnd() 
 	{
-		//TODO
+		sync._retrieving = false;
 	}
-	//! [openorderend]
 	
 	//! [updateaccountvalue]
 	@Override
