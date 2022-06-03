@@ -21,7 +21,7 @@ public class common extends parent_static
 	public static final String ERROR_CONTRACT_INFO = types.ERROR_IB_CONTRACT_INFO;
 	
 	static final int MIN_REQ_ID_SYNC = 1;
-	static final int MAX_REQ_ID_SYNC = 499;
+	static final int MAX_REQ_ID_SYNC = 495; //There has to be a gap to account for scenarios of acceptable invalid sync IDs like the ones which sync_orders.get_id_sec() might return.
 	static final int MIN_REQ_ID_ASYNC = 500;
 	static final int MAX_REQ_ID_ASYNC = 3000;
 	

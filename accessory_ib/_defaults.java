@@ -29,6 +29,7 @@ public class _defaults
 	public static final boolean ASYNC_SNAPSHOT_NONSTOP = true;
 	public static final int ASYNC_DATA_TYPE = market.DATA_LIVE;
 	
+	public static final String DB = types.CONFIG_DB_IB;
 	public static final String DB_NAME = accessory.db.DEFAULT_DB_NAME;
 
 	public static final String ERRORS_WARNING = "WARNING";

@@ -111,7 +111,9 @@ public class wrapper implements EWrapper
 	
 	@Override
 	public void orderStatus(int id, String status, double filled, double remaining, double avg_fill_price, int perm_id, int parent_id, double last_fill_price, int client_id, String why_held, double mkt_cap_price) 
-	{		
+	{	
+		if (!sync._retrieving) return;
+		
 		sync.update(id);
 	}
 	

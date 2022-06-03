@@ -43,6 +43,7 @@ public class types
 	public static final String CONFIG_DB_FIELD_BID_SIZE = "config_db_field_bid_size";
 	public static final String CONFIG_DB_FIELD_HALTED = "config_db_field_halted";
 	public static final String CONFIG_DB_FIELD_HALTED_TOT = "config_db_field_halted_tot";
+	public static final String CONFIG_DB_FIELD_ENABLED = "config_db_field_enabled";
 
 	public static final String CONFIG_DB_IB = "config_db_ib";
 	public static final String CONFIG_DB_IB_MARKET = "config_db_ib_market";
@@ -130,7 +131,8 @@ public class types
 			CONFIG_DB_FIELD_LOW, CONFIG_DB_FIELD_HIGH, CONFIG_DB_FIELD_VOLUME, 
 			CONFIG_DB_FIELD_ASK, CONFIG_DB_FIELD_ASK_SIZE, CONFIG_DB_FIELD_BID, 
 			CONFIG_DB_FIELD_BID_SIZE, CONFIG_DB_FIELD_HALTED, CONFIG_DB_FIELD_HALTED_TOT,
-
+			CONFIG_DB_FIELD_ENABLED, 
+		
 			CONFIG_DB_IB,		
 			CONFIG_DB_IB_MARKET,
 			CONFIG_DB_IB_MARKET_SOURCE,

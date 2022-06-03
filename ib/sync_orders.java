@@ -56,11 +56,11 @@ public class sync_orders extends parent_static
 		return ((order == null || !strings.is_ok(type)) ? place_update(order, type, val_) : false);
 	}
 	
-	public static void cancel(int id_)
+	public static void cancel(int id_min_)
 	{
-		if (!is_open(id_) || !sync.cancel_order(id_)) return;
+		if (!is_open(id_min_) || !sync.cancel_order(id_min_)) return;
 
-		remove_global(id_);
+		remove_global(id_min_);
 	}
 
 	public static int get_id_sec(int id_main_) { return (id_main_ + 1); }

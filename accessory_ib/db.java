@@ -1,5 +1,6 @@
 package accessory_ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -26,7 +27,8 @@ public class db
 	public static final String FIELD_BID_SIZE = types.CONFIG_DB_FIELD_BID_SIZE;
 	public static final String FIELD_HALTED = types.CONFIG_DB_FIELD_HALTED;
 	public static final String FIELD_HALTED_TOT = types.CONFIG_DB_FIELD_HALTED_TOT;
-
+	public static final String FIELD_ENABLED = types.CONFIG_DB_FIELD_ENABLED;
+	
 	public static final String SOURCE_MARKET = types.CONFIG_DB_IB_MARKET_SOURCE;
 
 	public static final String DEFAULT_SOURCE = SOURCE_MARKET;
@@ -35,9 +37,30 @@ public class db
 	
 	public static HashMap<String, String> get_vals(String source_, String symbol_) { return accessory.db.select_one(source_, null, get_where_symbol(symbol_), null); }
 
-	public static boolean symbol_exists(String symbol_) { return symbol_exists(DEFAULT_SOURCE, symbol_); }
+	public static boolean exists(String symbol_) { return exists(DEFAULT_SOURCE, symbol_); }
 	
-	public static boolean symbol_exists(String source_, String symbol_) { return strings.is_ok(accessory.db.select_one_string(source_, FIELD_SYMBOL, get_where_symbol(symbol_), null)); }
+	public static boolean exists(String source_, String symbol_) { return strings.is_ok(accessory.db.select_one_string(source_, FIELD_SYMBOL, get_where_symbol(symbol_), null)); }
+
+	public static boolean is_enabled(String symbol_) { return is_enabled(DEFAULT_SOURCE, symbol_); }
+	
+	public static boolean is_enabled(String source_, String symbol_) { return accessory.db.select_one_boolean(source_, FIELD_ENABLED, get_where_symbol(symbol_), null); }
+	
+	public static boolean insert_all(ArrayList<String> symbols_) { return insert_all(DEFAULT_SOURCE, symbols_); }
+
+	public static boolean insert_all(String source_, ArrayList<String> symbols_) 
+	{ 
+		if (!arrays.is_ok(symbols_)) return false;
+		
+		for (String symbol: symbols_)
+		{
+			if (exists(symbol)) continue;
+			if (!insert(source_, get_default_vals(source_, symbol))) return false;
+			
+			logs.update_screen(symbol, true);
+		}
+		
+		return true; 
+	}
 
 	public static boolean insert(String symbol_) { return insert(DEFAULT_SOURCE, symbol_); }
 
@@ -79,6 +102,10 @@ public class db
 		return accessory.db.is_ok(source_);
 	}
 
+	public static ArrayList<String> get_all_symbols() { return get_all_symbols(DEFAULT_SOURCE); }
+
+	public static ArrayList<String> get_all_symbols(String source_) { return accessory.db.select_some_strings(source_, FIELD_SYMBOL, (new db_where(source_, FIELD_ENABLED, true)).toString(), 0, null); }
+
 	public static String get_where_symbol(String symbol_) { return get_where_symbol(DEFAULT_SOURCE, symbol_); }
 
 	public static String get_where_symbol(String source_, String symbol_) { return (new db_where(source_, FIELD_SYMBOL, symbol_)).toString(); }
@@ -104,6 +131,7 @@ public class db
 				if (strings.is_ok(symbol_)) val = symbol_;
 				else continue;
 			}
+			else if (key.equals(FIELD_ENABLED)) val = accessory.db.adapt_input(source_, key, true);
 			else val = get_default_val(source_, key, item.getValue().get_type());
 			
 			output.put(key, val);

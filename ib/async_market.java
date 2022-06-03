@@ -1,15 +1,11 @@
 package ib;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import com.ib.client.Contract;
 
 import accessory.arrays;
-import accessory.dates;
-import accessory.generic;
-import accessory.misc;
 import accessory.parent_static;
 import accessory.strings;
 import accessory_ib._alls;
@@ -17,6 +13,7 @@ import accessory_ib._defaults;
 import accessory_ib.config;
 import accessory_ib.db;
 import accessory_ib.types;
+import accessory_ib.logs;
 import external_ib.market;
 
 public class async_market extends parent_static 
@@ -39,10 +36,11 @@ public class async_market extends parent_static
 
 	public static final int DEFAULT_DATA_TYPE = _defaults.ASYNC_DATA_TYPE;
 	
+	public static volatile boolean _print_all = true;
+	
 	private static volatile boolean _stop_all = false;
 	private static volatile HashMap<Integer, String> _symbols = new HashMap<Integer, String>();
 	private static volatile HashMap<Integer, Integer> _data_types = new HashMap<Integer, Integer>();
-	private static volatile ArrayList<String> _in_db = new ArrayList<String>();
 		
 	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC_MARKET); }
 
@@ -88,8 +86,6 @@ public class async_market extends parent_static
 			if (is_snapshot(id)) stop_snapshot(id);
 			else stop_stream(id);	
 		}
-		
-		_in_db = new ArrayList<String>();
 	}
 	
 	public static boolean is_snapshot(int id_) { return async.is_ok(id_, TYPE_SNAPSHOT); }
@@ -113,7 +109,7 @@ public class async_market extends parent_static
 		String symbol = null;
 		int data_type = 0;
 		
-		boolean restart = snapshot_is_nonstop();
+		boolean restart = (snapshot_is_nonstop() && !_stop_all);
 		
 		if (restart)
 		{
@@ -121,8 +117,9 @@ public class async_market extends parent_static
 			data_type = get_data_type(id_);
 		}
 		
-		stop_common(id_);		
-		if (snapshot_is_nonstop() && !_stop_all) start_snapshot(symbol, data_type);
+		stop_common(id_);
+		
+		if (restart) start_snapshot(symbol, data_type);
 	}
 	
 	public static void stop_stream(String symbol_) { stop_stream(get_id(symbol_)); }
@@ -188,21 +185,18 @@ public class async_market extends parent_static
 	{
 		String symbol = common.normalise_symbol(symbol_);
 		if (!strings.is_ok(symbol) || arrays.value_exists(_symbols, symbol)) return false;
-		
+
 		_stop_all = false;
 		
 		int data_type = (market.data_is_ok(data_type_) ? data_type_ : DEFAULT_DATA_TYPE);
 		int id = add(symbol, data_type, is_snapshot_);
 
-		if (!_in_db.contains(symbol)) 
-		{
-			_in_db.add(symbol);
-			db.insert(symbol);
-		}
+		if (!db.exists(symbol_)) db.insert(symbol); 
+		else if (!db.is_enabled(symbol_)) return false;
 		
 		Contract contract = common.get_contract(symbol);
 		if (contract == null) return false;
-		
+
 		conn._client.reqMarketDataType(data_type);
 		conn._client.reqMktData(id, contract, "", is_snapshot_, false, null);
 
@@ -213,7 +207,7 @@ public class async_market extends parent_static
 	{
 		int id = async.add((is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM));
 
-		to_screen(id, symbol_, "added");
+		if (_print_all) logs.update_screen(id, symbol_, "added");
 		
 		_symbols.put(id, symbol_);
 		_data_types.put(id, data_type_);
@@ -231,7 +225,7 @@ public class async_market extends parent_static
 		_symbols = (HashMap<Integer, String>)arrays.remove_key(_symbols, id_);
 		_data_types = (HashMap<Integer, Integer>)arrays.remove_key(_data_types, id_);
 		
-		to_screen(id_, symbol, "removed");
+		if (_print_all) logs.update_screen(id_, symbol, "removed");
 	}
 	
 	private static boolean update_db(int id_, String field_, double val_)
@@ -239,16 +233,8 @@ public class async_market extends parent_static
 		String symbol = (String)arrays.get_value(_symbols, id_);
 		if (!strings.is_ok(symbol) || !strings.is_ok(field_) || val_ <= 0.0) return false;
 
-		to_screen(id_, symbol, "updated");
+		if (_print_all) logs.update_screen(id_, symbol, "updated");
 
 		return db.update_number(symbol, field_, val_);
-	}
-	
-	private static void to_screen(int id_, String symbol_, String message_) 
-	{ 
-		String message = dates.get_now_string(dates.FORMAT_TIME_FULL);
-		message += misc.SEPARATOR_CONTENT + symbol_ + " (" + id_ + ") " + message_;
-		
-		generic.to_screen(message); 
 	}
 }

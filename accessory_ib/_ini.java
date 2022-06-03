@@ -1,5 +1,7 @@
 package accessory_ib;
 
+import java.util.HashMap;
+
 import accessory.parent_ini;
 
 public class _ini extends parent_ini
@@ -19,6 +21,15 @@ public class _ini extends parent_ini
 		if (!accessory._ini.is_populated()) accessory._ini.start(name_, includes_legacy_);
 	
 		_instance.populate_all(name_);
+	}
+
+	public static void start(String name_, boolean includes_legacy_, HashMap<String, Object> dbs_setup_) 
+	{ 
+		if (_instance._populated) return;
+		
+		if (!accessory._ini.is_populated()) accessory._ini.start(name_, includes_legacy_, dbs_setup_);
+		
+		_instance.populate_all(name_, dbs_setup_); 
 	}
 	
 	public static void start(String name_, String dbs_user_, String dbs_host_, boolean dbs_encrypted_, boolean includes_legacy_) 

@@ -18,6 +18,8 @@ public class config
 
 	public static boolean update_async(String key_, String val_) { return accessory.config.update(types.CONFIG_ASYNC, key_, val_); }
 
+	public static boolean update_async(String key_, boolean val_) { return accessory.config.update(types.CONFIG_ASYNC, key_, val_); }
+
 	public static boolean matches_async(String key_, String val_) { return accessory.config.matches(types.CONFIG_ASYNC, key_, val_); }
 
 	public static Object get_contract(String key_) { return accessory.config.get(types.CONFIG_CONTRACT, key_); }

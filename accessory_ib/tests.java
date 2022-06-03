@@ -14,10 +14,16 @@ import ib.sync_orders;
 public class tests extends parent_tests 
 {
 	private static tests _instance = new tests();
+	private static boolean _use_tws_paper = false;
 	
 	public tests() { }
 	
-	public static HashMap<String, HashMap<String, Boolean>> run_all() { return _instance.run_all_internal(); }
+	public static HashMap<String, HashMap<String, Boolean>> run_all(boolean use_tws_paper_) 
+	{ 
+		_use_tws_paper = use_tws_paper_;
+		
+		return _instance.run_all_internal(); 
+	}
 	
 	public HashMap<String, HashMap<String, Boolean>> run_all_internal()
 	{
@@ -28,13 +34,18 @@ public class tests extends parent_tests
 		
 		update_screen(name0, true, level);		
 
+		String cur_conn = (String)accessory_ib.config.get_conn(accessory_ib.types.CONFIG_CONN_TYPE);
+		if (_use_tws_paper) accessory_ib.config.update_conn(accessory_ib.types.CONFIG_CONN_TYPE, conn.TYPE_TWS_PAPER);
+		
 		conn.start();
 		
 		outputs = run_sync(outputs);
 		outputs = run_async(outputs);
 		
 		conn.end();
-		
+
+		if (_use_tws_paper) accessory_ib.config.update_conn(accessory_ib.types.CONFIG_CONN_TYPE, cur_conn);
+
 		update_screen(name0, false, level);
 		
 		return outputs;
