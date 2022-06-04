@@ -73,7 +73,7 @@ public class tests extends parent_tests
 		
 		String name = "place";
 		
-		String type = sync_orders.TYPE_PLACE_LIMIT;
+		String type = sync_orders.PLACE_LIMIT;
 		String symbol = symbols[0]; 
 		double quantity = 1;
 		double stop = 2100;

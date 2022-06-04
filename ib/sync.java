@@ -1,6 +1,5 @@
 package ib;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.ib.client.Contract;
@@ -20,16 +19,12 @@ import accessory_ib.types;
 public class sync extends parent_static 
 {
 	public static final String GET_ID = types.SYNC_GET_ID;
-	public static final String GET_IDS = types.SYNC_GET_IDS;
+	public static final String GET_ORDERS = types.SYNC_GET_ORDERS;
 	public static final String GET_FUNDS = types.SYNC_GET_FUNDS;
-
-	public static final String ORDER_CANCEL = types.SYNC_ORDER_CANCEL;
-	public static final String ORDER_PLACE_UPDATE = types.SYNC_ORDER_PLACE_UPDATE;
 	
 	public static final String OUT_DECIMAL = types.SYNC_OUT_DECIMAL;
 	public static final String OUT_INT = types.SYNC_OUT_INT;
-	public static final String OUT_INTS = types.SYNC_OUT_INTS;
-	public static final String OUT_MISC = types.SYNC_OUT_MISC;
+	public static final String OUT_ORDERS = types.SYNC_OUT_ORDERS;
 
 	public static final int WRONG_ID = common.MIN_REQ_ID_SYNC - 1;
 	
@@ -44,8 +39,7 @@ public class sync extends parent_static
 
 	private static volatile double _out_decimal = numbers.DEFAULT_DECIMAL;
 	private static volatile int _out_int = numbers.DEFAULT_INT;
-	private static volatile ArrayList<Integer> _out_ints = new ArrayList<Integer>();
-	private static volatile HashMap<String, String> _out_misc = new HashMap<String, String>();
+	private static volatile HashMap<Integer, String> _out_orders = new HashMap<Integer, String>();
 
 	private static String _get = strings.DEFAULT;
 	private static String _out = strings.DEFAULT;
@@ -57,7 +51,20 @@ public class sync extends parent_static
 	public static double get_funds() { return (double)get(GET_FUNDS); }
 	
 	@SuppressWarnings("unchecked")
-	public static ArrayList<Integer> get_open_ids() { return (ArrayList<Integer>)get(GET_IDS); }
+	public static HashMap<Integer, String> get_orders() 
+	{ 
+		HashMap<Integer, String> orders = (HashMap<Integer, String>)get(GET_ORDERS); 
+		
+		sync_orders.sync_global(orders);
+		
+		return orders; 
+	}
+	
+	public static boolean order_is_submitted(int id_) { return order_is_common(id_, sync_orders.STATUS_SUBMITTED); }
+	
+	public static boolean order_is_filled(int id_) { return order_is_common(id_, sync_orders.STATUS_FILLED); }
+
+	public static boolean order_is_inactive(int id_) { return order_is_common(id_, sync_orders.STATUS_INACTIVE); }
 	
 	public static boolean update(String val_) { return update(strings.to_number_decimal(val_)); }
 
@@ -72,20 +79,18 @@ public class sync extends parent_static
 
 	public static boolean update(int val_)
 	{
-		boolean is_ok = true;
+		if (!strings.are_equal(_out, OUT_INT)) return false;
 
-		if (strings.are_equal(_out, OUT_INTS)) _out_ints.add(val_);
-		else if (strings.are_equal(_out, OUT_INT)) _out_int = val_;
-		else is_ok = false;
+		_out_int = val_;
 
-		return is_ok;
+		return true;
 	}
 
-	public static boolean update(String key_, String val_)
+	public static boolean update(int id_, String status_)
 	{
-		if (!strings.are_equal(_out, OUT_MISC) || !strings.is_ok(key_)) return false;
+		if (!strings.are_equal(_out, OUT_ORDERS) || !common.req_id_is_ok_sync(id_) || !strings.is_ok(status_)) return false;
 
-		_out_misc.put(key_, val_);
+		_out_orders.put(id_, status_);
 
 		return true;
 	}
@@ -93,8 +98,6 @@ public class sync extends parent_static
 	public static String check_get(String type_) { return accessory.types.check_type(type_, types.SYNC_GET); }
 
 	public static String check_out(String type_) { return accessory.types.check_type(type_, types.SYNC_OUT); }
-
-	public static String check_order(String type_) { return accessory.types.check_type(type_, types.SYNC_ORDER); }
 	
 	public static String check_error(String type_) { return accessory.types.check_type(type_, types.ERROR_IB_SYNC); }
 
@@ -117,29 +120,35 @@ public class sync extends parent_static
 		
 		all.put(GET_ID, OUT_INT);
 		all.put(GET_FUNDS, OUT_DECIMAL);
-		all.put(GET_IDS, OUT_INTS);
+		all.put(GET_ORDERS, OUT_ORDERS);
 
 		return all;
 	}
 		
 	public static boolean is_ok(int id_) { return (_retrieving && (_id == id_)); }
 	
-	static boolean cancel_order(int id_) { return execute_order(ORDER_CANCEL, id_, null, null); }
+	static boolean cancel_order(int id_) { return execute_order(sync_orders.CANCEL, id_, null, null); }
 
-	static boolean place_update_order(int id_, Contract contract_, Order order_) { return execute_order(ORDER_PLACE_UPDATE, id_, contract_, order_); }
+	static boolean place_order(int id_, Contract contract_, Order order_) { return execute_order(sync_orders.PLACE, id_, contract_, order_); }
 
+	static boolean update_order(int id_, Contract contract_, Order order_) { return execute_order(sync_orders.UPDATE, id_, contract_, order_); }
+	
+	private static boolean order_is_common(int id_, String target_)
+	{
+		String status = (String)arrays.get_value(get_orders(), id_);
+
+		return (strings.is_ok(status) ? sync_orders.is_status(status, target_) : false);
+	}
+	
 	private static HashMap<String, String> get_all_get_outs() { return _alls.SYNC_GET_OUTS; }
 
 	private static boolean execute_order(String type_, int id_, Contract contract_, Order order_)
 	{
 		if (!common.req_id_is_ok_sync(id_)) return false;
-
-		if (type_.equals(ORDER_CANCEL)) 
-		{
-			conn._client.cancelOrder(id_);
-			
-			misc.pause_secs(1);
-		}
+		
+		boolean is_cancel = sync_orders.is_cancel(type_);
+	
+		if (is_cancel) conn._client.cancelOrder(id_);
 		else 
 		{
 			if (contract_ == null || order_ == null) return false;
@@ -147,7 +156,9 @@ public class sync extends parent_static
 			conn._client.placeOrder(id_, contract_, order_);
 		}
 		
-		return true;
+		_id = id_;
+		
+		return (is_cancel || sync_orders.is_place(type_) ? wait_orders(type_) : true); 
 	}
 	
 	private static Object get(String type_)
@@ -179,15 +190,10 @@ public class sync extends parent_static
 			if (is_ini_) _out_decimal = numbers.DEFAULT_DECIMAL;
 			else output = _out_decimal;
 		}
-		else if (_out.equals(OUT_INTS)) 
+		else if (_out.equals(OUT_ORDERS)) 
 		{
-			if (is_ini_) _out_ints = new ArrayList<Integer>();
-			else output = arrays.get_new(_out_ints);
-		}
-		else if (_out.equals(OUT_MISC)) 
-		{
-			if (is_ini_) _out_misc = new HashMap<String, String>();
-			else output = arrays.get_new(_out_misc);
+			if (is_ini_) _out_orders = new HashMap<Integer, String>();
+			else output = arrays.get_new(_out_orders);
 		}
 
 		return (is_ini_ ? true : output);
@@ -226,11 +232,11 @@ public class sync extends parent_static
 			//accountSummary, accountSummaryEnd
 			conn._client.reqAccountSummary(_id, "All", "AvailableFunds"); 
 		}
-		else if (_get.equals(GET_IDS))
+		else if (_get.equals(GET_ORDERS))
 		{	
 			timeout = 3;
 			cannot_fail = false;
-			
+
 			//openOrder, openOrderEnd, orderStatus
 			conn._client.reqAllOpenOrders(); 
 		}
@@ -241,17 +247,43 @@ public class sync extends parent_static
 		}
 		else return false;
 
-		return wait(timeout, cannot_fail);
+		return wait_get(timeout, cannot_fail);
 	}
 
-	private static boolean wait(long timeout_, boolean cannot_fail_)
+	private static boolean wait_get(long timeout_, boolean cannot_fail_) { return wait(timeout_, cannot_fail_, null); }	
+
+	private static boolean wait_orders(String type_) { return wait(DEFAULT_TIMEOUT, true, type_); }
+	
+	private static boolean wait(long timeout_, boolean cannot_fail_, String type_)
 	{
 		boolean is_ok = true;
+		
+		boolean is_get = false;
+		boolean is_place = false;
+		boolean is_cancel = false;
+		
+		if (sync_orders.is_place(type_)) is_place = true;
+		else if (sync_orders.is_cancel(type_)) is_cancel = true;
+		else if (!strings.is_ok(type_)) is_get = true;
+		else return false;
 
 		long start = dates.get_elapsed(0);
-
-		while (_retrieving)
+		
+		while (true)
 		{
+			if (is_get)
+			{
+				if (!_retrieving) break;
+			}
+			else if (is_place || is_cancel)
+			{
+				//boolean is_inactive = order_is_inactive(_id);
+				
+				//if ((is_inactive && is_cancel) || (!is_inactive && is_place)) break;			
+			
+				break;
+			}
+			
 			if (dates.get_elapsed(start) >= timeout_) 
 			{
 				if (cannot_fail_) errors.manage(ERROR_TIME);
@@ -263,7 +295,7 @@ public class sync extends parent_static
 			misc.pause_loop();
 		}
 
-		_retrieving = false;
+		if (is_get) _retrieving = false;
 		
 		return is_ok;
 	}

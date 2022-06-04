@@ -60,16 +60,9 @@ public class types
 	public static final String SYNC_GET = "sync_get";
 	public static final String SYNC_GET_FUNDS = "sync_get_funds";
 	public static final String SYNC_GET_ID = "sync_get_id";
-	public static final String SYNC_GET_IDS = "sync_get_ids";
-	public static final String SYNC_ORDER = "sync_order";
-	public static final String SYNC_ORDER_CANCEL = "sync_order_cancel";
-	public static final String SYNC_ORDER_PLACE_UPDATE = "sync_order_place_update";
-	public static final String SYNC_OUT = "sync_out";
-	public static final String SYNC_OUT_INT = "sync_out_int";
-	public static final String SYNC_OUT_DECIMAL = "sync_out_decimal";
-	public static final String SYNC_OUT_INTS = "sync_out_ints";
-	public static final String SYNC_OUT_MISC = "sync_out_misc";
+	public static final String SYNC_GET_ORDERS = "sync_get_orders";
 	public static final String SYNC_ORDERS = "sync_orders";
+	public static final String SYNC_ORDERS_CANCEL = "sync_orders_cancel";
 	public static final String SYNC_ORDERS_PLACE = "sync_orders_place";
 	public static final String SYNC_ORDERS_PLACE_MARKET = "sync_orders_place_market";
 	public static final String SYNC_ORDERS_PLACE_STOP = "sync_orders_place_stop";
@@ -79,7 +72,17 @@ public class types
 	public static final String SYNC_ORDERS_UPDATE_START_MARKET = "sync_orders_update_start_market";
 	public static final String SYNC_ORDERS_UPDATE_STOP_VALUE = "sync_orders_update_stop_value";
 	public static final String SYNC_ORDERS_UPDATE_STOP_MARKET = "sync_orders_update_stop_market";
-
+	public static final String SYNC_ORDERS_STATUS = "sync_orders_status";
+	public static final String SYNC_ORDERS_STATUS_SUBMITTED = "sync_orders_status_submitted";
+	public static final String SYNC_ORDERS_STATUS_FILLED = "sync_orders_status_filled";
+	public static final String SYNC_ORDERS_STATUS_ACTIVE = "sync_orders_status_active";
+	public static final String SYNC_ORDERS_STATUS_INACTIVE = "sync_orders_status_inactive";
+	public static final String SYNC_OUT = "sync_out";
+	public static final String SYNC_OUT_INT = "sync_out_int";
+	public static final String SYNC_OUT_DECIMAL = "sync_out_decimal";
+	public static final String SYNC_OUT_INTS = "sync_out_ints";
+	public static final String SYNC_OUT_ORDERS = "sync_out_orders";
+	
 	public static final String ASYNC = "async";
 	public static final String ASYNC_MARKET = "async_market";
 	public static final String ASYNC_MARKET_SNAPSHOT = "async_market_snapshot";
@@ -145,18 +148,19 @@ public class types
 
 			SYNC,
 			SYNC_GET,
-			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_IDS,
-			SYNC_ORDER,
-			SYNC_ORDER_CANCEL, SYNC_ORDER_PLACE_UPDATE,
+			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_ORDERS,
 			SYNC_OUT,
-			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_MISC,
+			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_ORDERS,
 			SYNC_ORDERS,
+			SYNC_ORDERS_CANCEL,
 			SYNC_ORDERS_PLACE,
 			SYNC_ORDERS_PLACE_MARKET, SYNC_ORDERS_PLACE_STOP, SYNC_ORDERS_PLACE_LIMIT,
 			SYNC_ORDERS_UPDATE,
 			SYNC_ORDERS_UPDATE_START_VALUE, SYNC_ORDERS_UPDATE_START_MARKET, SYNC_ORDERS_UPDATE_STOP_VALUE, 
 			SYNC_ORDERS_UPDATE_STOP_MARKET,
-
+			SYNC_ORDERS_STATUS,
+			SYNC_ORDERS_STATUS_SUBMITTED, SYNC_ORDERS_STATUS_FILLED, SYNC_ORDERS_STATUS_ACTIVE, SYNC_ORDERS_STATUS_INACTIVE,
+			
 			ASYNC,
 			ASYNC_MARKET,
 			ASYNC_MARKET_SNAPSHOT, ASYNC_MARKET_STREAM,

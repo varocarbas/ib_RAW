@@ -191,8 +191,8 @@ public class async_market extends parent_static
 		int data_type = (market.data_is_ok(data_type_) ? data_type_ : DEFAULT_DATA_TYPE);
 		int id = add(symbol, data_type, is_snapshot_);
 
-		if (!db.exists(symbol_)) db.insert(symbol); 
-		else if (!db.is_enabled(symbol_)) return false;
+		if (!db.exists(symbol)) db.insert(symbol); 
+		else if (!db.is_enabled(symbol)) return false;
 		
 		Contract contract = common.get_contract(symbol);
 		if (contract == null) return false;
