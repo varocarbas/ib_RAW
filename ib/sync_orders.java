@@ -65,8 +65,7 @@ public class sync_orders extends parent_static
 	
 	public static void cancel(int id_)
 	{
-		//if (!arrays.value_exists(get_ids(STATUS_SUBMITTED), id_) || !sync.cancel_order(id_)) return;
-		if (!sync.cancel_order(id_)) return;
+		if (!arrays.value_exists(get_ids(STATUS_SUBMITTED), id_) || !sync.cancel_order(id_)) return;
 		
 		remove_global(id_);
 	}
@@ -87,7 +86,7 @@ public class sync_orders extends parent_static
 		HashMap<Integer, String> orders = orders_;
 		if (!arrays.is_ok(orders) && retrieve_) orders = sync.get_orders();
 		if (!arrays.is_ok(orders)) return ids;
-		
+	
 		for (Entry<Integer, String> order: orders.entrySet())
 		{
 			int id = order.getKey();
@@ -95,15 +94,9 @@ public class sync_orders extends parent_static
 
 			if (is_status(status_ib, status_)) ids.add(id);
 		}
-
+		
 		return ids;
 	}	
-	
-	public static boolean is_submitted(String status_ib_) { return is_status(status_ib_, STATUS_SUBMITTED); }
-
-	public static boolean is_filled(String status_ib_) { return is_status(status_ib_, STATUS_FILLED); }
-
-	public static boolean is_inactive(String status_ib_) { return is_status(status_ib_, STATUS_INACTIVE); }
 
 	public static boolean is_status(String status_ib_, String status_)
 	{
@@ -117,20 +110,19 @@ public class sync_orders extends parent_static
 
 		if (status.equals(STATUS_SUBMITTED)) targets = new String[] { orders.STATUS_SUBMITTED, orders.STATUS_PRESUBMITTED };
 		else if (status.equals(STATUS_FILLED)) targets = new String[] { orders.STATUS_FILLED };
-		else if (status.equals(STATUS_INACTIVE)) 
+		else if (status.equals(STATUS_ACTIVE) || status.equals(STATUS_INACTIVE)) 
 		{
-			equals = false;
+			equals = status.equals(STATUS_ACTIVE);
 			targets = new String[] { orders.STATUS_SUBMITTED, orders.STATUS_PRESUBMITTED, orders.STATUS_FILLED };
 		}
-		
+		else return false;
+
 		for (String target: targets)
 		{
-			boolean are_equal = strings.are_equal(status_ib_, target);
-			
-			if ((equals && !are_equal) || (!equals && are_equal)) return false;
+			if (strings.are_equal(status_ib_, target)) return equals;
 		}
 		
-		return true;
+		return false;
 	}
 	
 	static void sync_global(HashMap<Integer, String> orders_) { sync_global(get_ids(STATUS_ACTIVE, orders_, false)); }
@@ -151,6 +143,7 @@ public class sync_orders extends parent_static
 		for (Entry<Integer, order> item: _orders.entrySet())
 		{
 			int id = item.getKey();
+			
 			if (!arrays.value_exists(active_, id)) delete.add(id);
 		}
 

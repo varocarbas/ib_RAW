@@ -54,7 +54,7 @@ public class wrapper implements EWrapper
 	{
 		if (!sync.is_ok(id_)) return;
 
-		sync._retrieving = false;
+		sync.end();
 	}
 	
 	@Override
@@ -62,11 +62,11 @@ public class wrapper implements EWrapper
 	{
 		currentOrderId = id_;
 
-		if (sync._retrieving) 
+		if (sync.is_ok()) 
 		{
 			sync.update(id_);
 
-			sync._retrieving = false;
+			sync.end();
 		}
 		else conn._started = true;
 	}
@@ -105,24 +105,18 @@ public class wrapper implements EWrapper
 	@Override
 	public void error(int id_, int code_, String message_) { errors.wrapper_error(id_, code_, message_); }
 	
-	public EClientSocket getClient() { return clientSocket; }
-	
-	public EReaderSignal getSignal() { return readerSignal; }
-	
 	@Override
 	public void orderStatus(int id, String status, double filled, double remaining, double avg_fill_price, int perm_id, int parent_id, double last_fill_price, int client_id, String why_held, double mkt_cap_price) 
 	{	
-		if (sync._retrieving) return;
+		if (!sync.is_ok()) return;
 
-		sync.update(id, status);
+		sync.update(id);
+		sync.update(status);
 	}
 	
 	@Override
-	public void openOrderEnd() 
-	{
-		sync._retrieving = false;
-	}
-	
+	public void openOrderEnd() { sync.end(); }
+
 	//! [updateaccountvalue]
 	@Override
 	public void updateAccountValue(String key, String value, String currency, String accountName) 
@@ -180,7 +174,11 @@ public class wrapper implements EWrapper
 		//System.out.println("CommissionReport. ["+commissionReport.execId()+"] - ["+commissionReport.commission()+"] ["+commissionReport.currency()+"] RPNL ["+commissionReport.realizedPNL()+"]");
 	}
 	//! [commissionreport]
+
+	public EClientSocket getClient() { return clientSocket; }
 	
+	public EReaderSignal getSignal() { return readerSignal; }
+
 	//-----------------------------------------------------
 	//-----------------------------------------------------
 	
