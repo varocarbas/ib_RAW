@@ -1,6 +1,7 @@
 package external_ib;
 
 import accessory.arrays;
+import accessory_ib._alls;
 
 public class market 
 {
@@ -35,13 +36,13 @@ public class market
 	
 	//------
 
-	public static boolean tick_is_ok(int tick_) { return arrays.value_exists(get_all_tick(), tick_); }
+	public static boolean tick_is_ok(int tick_) { return arrays.value_exists(get_all_ticks(), tick_); }
 
 	public static boolean halt_is_ok(int halt_) { return arrays.value_exists(get_all_halted(), halt_); }
 
 	public static boolean data_is_ok(int data_) { return arrays.value_exists(get_all_data(), data_); }
 
-	private static int[] get_all_tick()
+	public static int[] populate_all_ticks()
 	{
 		return new int[]
 		{
@@ -50,7 +51,13 @@ public class market
 		};
 	}
 
-	private static int[] get_all_halted() { return new int[] { HALTED_NA, HALTED_NOT, HALTED_GENERAL, HALTED_VOLATILITY }; }
+	public static int[] populate_all_halted() { return new int[] { HALTED_NA, HALTED_NOT, HALTED_GENERAL, HALTED_VOLATILITY }; }
 
-	private static int[] get_all_data() { return new int[] { DATA_LIVE, DATA_FROZEN, DATA_DELAYED, DATA_DELAYED_FROZEN }; }	
+	public static int[] populate_all_data() { return new int[] { DATA_LIVE, DATA_FROZEN, DATA_DELAYED, DATA_DELAYED_FROZEN }; }	
+
+	private static int[] get_all_ticks() { return _alls.EXTERNAL_MARKET_TICKS; }
+
+	private static int[] get_all_halted() { return _alls.EXTERNAL_MARKET_HALTED; }
+
+	private static int[] get_all_data() { return _alls.EXTERNAL_MARKET_DATA; }	
 }

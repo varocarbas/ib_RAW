@@ -21,7 +21,11 @@ public class async extends parent_static
 	{ 
 		int id = common.get_req_id(false);
 
+		lock();
+		
 		_ids.put(id, type_);
+		
+		unlock();
 		
 		return id;
 	}
@@ -34,7 +38,11 @@ public class async extends parent_static
 		
 	@SuppressWarnings("unchecked")
 	public static void remove(int id_) 
-	{ 
+	{
+		lock();
+		
 		_ids = (HashMap<Integer, String>)arrays.remove_key(_ids, id_);
+		
+		unlock();
 	}
 }

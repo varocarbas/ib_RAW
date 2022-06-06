@@ -25,6 +25,8 @@ public class sync extends parent_static
 	
 	public static final String OUT_DECIMAL = types.SYNC_OUT_DECIMAL;
 	public static final String OUT_INT = types.SYNC_OUT_INT;
+	public static final String OUT_INTS = types.SYNC_OUT_INTS;
+	public static final String OUT_STRINGS = types.SYNC_OUT_STRINGS;
 	public static final String OUT_ORDERS = types.SYNC_OUT_ORDERS;
 
 	public static final int WRONG_ID = common.MIN_REQ_ID_SYNC - 1;
@@ -71,9 +73,10 @@ public class sync extends parent_static
 	{ 
 		boolean is_ok = true;
 
-		if (strings.are_equal(_out, OUT_ORDERS)) _out_strings.add(val_);
-		else is_ok = update(strings.to_number_decimal(val_));
-
+		if (strings.are_equal(_out, OUT_ORDERS) || strings.are_equal(_out, OUT_STRINGS)) _out_strings.add(val_);
+		else if (strings.is_number(val_)) is_ok = update(strings.to_number_decimal(val_));
+		else is_ok = false;
+		
 		return is_ok;
 	}
 	
@@ -90,7 +93,7 @@ public class sync extends parent_static
 	{
 		boolean is_ok = true;
 
-		if (strings.are_equal(_out, OUT_ORDERS)) _out_ints.add(val_);
+		if (strings.are_equal(_out, OUT_ORDERS) || strings.are_equal(_out, OUT_INTS)) _out_ints.add(val_);
 		else if (strings.are_equal(_out, OUT_INT)) _out_int = val_;
 		else is_ok = false;
 
@@ -152,9 +155,11 @@ public class sync extends parent_static
 	private static boolean execute_order(String type_, int id_, Contract contract_, Order order_)
 	{
 		if (!common.req_id_is_ok_sync(id_)) return false;
+	
+		_id = id_;
 		
 		boolean is_cancel = sync_orders.is_cancel(type_);
-	
+		
 		if (is_cancel) conn._client.cancelOrder(id_);
 		else 
 		{
@@ -162,8 +167,6 @@ public class sync extends parent_static
 			
 			conn._client.placeOrder(id_, contract_, order_);
 		}
-		
-		_id = id_;
 		
 		return ((is_cancel || sync_orders.is_place(type_)) ? wait_orders(type_) : true); 
 	}
@@ -294,13 +297,16 @@ public class sync extends parent_static
 		else if (!strings.is_ok(type_)) is_get = true;
 		else return false;
 
-		long start = dates.get_elapsed(0);
+		long start = dates.start_elapsed();
 		
 		while (true)
 		{
 			if (is_get)
 			{
-				if (!_getting) break;
+				if (!_getting) 
+				{
+					if (!(_get.equals(GET_ORDERS) && (_out_ints.size() != _out_strings.size()))) break;
+				}
 			}
 			else if (is_place || is_cancel)
 			{

@@ -209,9 +209,13 @@ public class async_market extends parent_static
 
 		if (_print_all) logs.update_screen(id, symbol_, "added");
 		
+		lock();
+
 		_symbols.put(id, symbol_);
 		_data_types.put(id, data_type_);
 
+		unlock();
+		
 		return id;
 	}
 	
@@ -222,8 +226,12 @@ public class async_market extends parent_static
 		
 		async.remove(id_);
 		
+		lock();
+		
 		_symbols = (HashMap<Integer, String>)arrays.remove_key(_symbols, id_);
 		_data_types = (HashMap<Integer, Integer>)arrays.remove_key(_data_types, id_);
+		
+		unlock();
 		
 		if (_print_all) logs.update_screen(id_, symbol, "removed");
 	}

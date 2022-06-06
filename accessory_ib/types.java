@@ -81,6 +81,7 @@ public class types
 	public static final String SYNC_OUT_INT = "sync_out_int";
 	public static final String SYNC_OUT_DECIMAL = "sync_out_decimal";
 	public static final String SYNC_OUT_INTS = "sync_out_ints";
+	public static final String SYNC_OUT_STRINGS = "sync_out_strings";
 	public static final String SYNC_OUT_ORDERS = "sync_out_orders";
 	
 	public static final String ASYNC = "async";
@@ -150,7 +151,7 @@ public class types
 			SYNC_GET,
 			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_ORDERS,
 			SYNC_OUT,
-			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_ORDERS,
+			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_STRINGS, SYNC_OUT_ORDERS,
 			SYNC_ORDERS,
 			SYNC_ORDERS_CANCEL,
 			SYNC_ORDERS_PLACE,

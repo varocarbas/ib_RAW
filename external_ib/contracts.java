@@ -1,6 +1,7 @@
 package external_ib;
 
 import accessory.arrays;
+import accessory_ib._alls;
 
 public class contracts 
 {
@@ -21,7 +22,7 @@ public class contracts
 
 	public static boolean security_is_ok(String security_) { return arrays.value_exists(get_all_securities(), security_); }
 
-	private static String[] get_all_securities() 
+	public static String[] populate_all_securities() 
 	{ 
 		return new String[] 
 		{
@@ -29,4 +30,6 @@ public class contracts
 			SECURITY_COMBO, SECURITY_WARRANT, SECURITY_BOND, SECURITY_COMMODITY, SECURITY_NEWS, SECURITY_MUTUAL_FUND
 		}; 
 	}
+	
+	public static String[] get_all_securities() { return _alls.EXTERNAL_CONTRACTS_SECURITIES; }
 }

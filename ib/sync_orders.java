@@ -44,6 +44,7 @@ public class sync_orders extends parent_static
 
 	public static final double WRONG_VALUE = 0.0;
 
+	public static HashMap<Integer, Long> _cancellations = new HashMap<Integer, Long>();
 	public static int _last_id_main = 0;
 	public static int _last_id_sec = 0;
 	
@@ -65,9 +66,23 @@ public class sync_orders extends parent_static
 	
 	public static void cancel(int id_)
 	{
-		if (!arrays.value_exists(get_ids(STATUS_SUBMITTED), id_) || !sync.cancel_order(id_)) return;
+		HashMap<Integer, Long> temp = common.start_wait(id_, _cancellations);
+		HashMap<Integer, Long> temp2 = common.start_wait(get_id_sec(id_), temp);
 		
-		remove_global(id_);
+		if (!arrays.value_exists(get_ids(STATUS_SUBMITTED), id_) || !sync.cancel_order(id_)) return;
+
+		remove_global(id_);	
+		if (temp2 != null) _cancellations = new HashMap<Integer, Long>(temp2);
+	}
+	
+	public static boolean is_cancelling(int id_)
+	{
+		HashMap<Integer, Long> temp = common.wait_is_over_sync(id_, _cancellations);
+		
+		boolean output = (temp == null);
+		if (!output) _cancellations = new HashMap<Integer, Long>(temp);
+		
+		return output;
 	}
 
 	public static int get_id_sec(int id_main_) { return (id_main_ + 1); }
@@ -128,8 +143,15 @@ public class sync_orders extends parent_static
 	static void sync_global(HashMap<Integer, String> orders_) { sync_global(get_ids(STATUS_ACTIVE, orders_, false)); }
 	
 	private static void sync_global() { sync_global(get_ids(STATUS_ACTIVE)); }
-	
+
 	private static void sync_global(ArrayList<Integer> active_)
+	{
+		sync_global_orders(active_);
+		
+		sync_waits();
+	}
+	
+	private static void sync_global_orders(ArrayList<Integer> active_)
 	{
 		if (!arrays.is_ok(active_))
 		{
@@ -150,6 +172,19 @@ public class sync_orders extends parent_static
 		for (int id: delete) { _orders.remove(id); }
 	}
 
+	private static void sync_waits()
+	{
+		HashMap<Integer, Long> output = new HashMap<Integer, Long>(_cancellations);
+		
+		for (Entry<Integer, Long> item: _cancellations.entrySet())
+		{
+			HashMap<Integer, Long> temp = common.wait_is_over_sync(item.getKey(), output);
+			if (temp != null) output = new HashMap<Integer, Long>(temp);
+		}
+		
+		_cancellations = output;
+	}
+	
 	private static void remove_global(int id_) { arrays.remove_key(_orders, id_); }
 
 	private static order get_order(String symbol_)
@@ -194,30 +229,45 @@ public class sync_orders extends parent_static
 		
 		Contract contract = common.get_contract(order_.get_symbol());
 		if (contract == null) return false;
-				
-		int id = order_.get_id_main();
-		int parent = id;
 
 		_last_id_main = order_.get_id_main();
 		_last_id_sec = order_.get_id_sec();
 		
+		int id = _last_id_main;
+		int parent = id;
+		
 		for (int i = 0; i < 2; i++)
 		{
 			boolean is_sec = (i == 1);			
-			if (is_sec) id = order_.get_id_sec();
+			if (is_sec) id = _last_id_sec;
 
 			Order order = get_order_ib(order_, id, parent, update_type, update_val_, is_update, is_sec);
 			if (order == null) return false;
 
-			if (is_update) sync.update_order(id, contract, order);
-			else sync.place_order(id, contract, order);
+			boolean is_ok = true;
+			
+			if (is_update) is_ok = sync.update_order(id, contract, order);
+			else 
+			{
+				is_ok = sync.place_order(id, contract, order);
+				
+				if (!is_ok) remove_global(_last_id_main);
+			}
+
+			if (!is_ok)
+			{
+				_last_id_main = sync.WRONG_ID;
+				_last_id_sec = sync.WRONG_ID;
+				
+				return false;				
+			}
 		}
 
-		if (!strings.is_ok(update_type)) add_order(id, order_);
+		if (!strings.is_ok(update_type)) add_order(_last_id_main, order_);
 		else if (update_val_ != WRONG_VALUE)
 		{
-			if (update_type.equals(UPDATE_START_VALUE)) update_order(id, update_val_, true); 
-			else if (update_type.equals(UPDATE_STOP_VALUE)) update_order(id, update_val_, false); 			
+			if (update_type.equals(UPDATE_START_VALUE)) update_order(_last_id_main, update_val_, true); 
+			else if (update_type.equals(UPDATE_STOP_VALUE)) update_order(_last_id_main, update_val_, false); 			
 		}
 		
 		return true;
