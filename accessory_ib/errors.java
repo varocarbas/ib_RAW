@@ -47,7 +47,7 @@ public class errors
 	
 	public static boolean is_warning(int code_) { return external_ib.errors.is_warning(code_); }
 	
-	public static void manage(String type_, String message_) { manage_internal(type_, message_, null); }
+	public static void manage(String type_, String message_) { manage_internal(type_, get_message_common(message_), null); }
 	
 	public static void manage(HashMap<String, Object> info_) { manage_internal(null, null, info_); }
 

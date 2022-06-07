@@ -66,13 +66,11 @@ public class sync_orders extends parent_static
 	
 	public static void cancel(int id_)
 	{
-		HashMap<Integer, Long> temp = common.start_wait(id_, _cancellations);
-		HashMap<Integer, Long> temp2 = common.start_wait(get_id_sec(id_), temp);
-		
-		if (!arrays.value_exists(get_ids(STATUS_SUBMITTED), id_) || !sync.cancel_order(id_)) return;
+		if (!arrays.value_exists(get_ids(STATUS_SUBMITTED), id_)) return;
 
-		remove_global(id_);	
-		if (temp2 != null) _cancellations = new HashMap<Integer, Long>(temp2);
+		_cancellations = new HashMap<Integer, Long>(common.start_wait(get_id_sec(id_), common.start_wait(id_, _cancellations)));
+		
+		if (sync.cancel_order(id_)) remove_global(id_);			
 	}
 	
 	public static boolean is_cancelling(int id_)
@@ -182,7 +180,7 @@ public class sync_orders extends parent_static
 			if (temp != null) output = new HashMap<Integer, Long>(temp);
 		}
 		
-		_cancellations = output;
+		_cancellations = new HashMap<Integer, Long>(output);
 	}
 	
 	private static void remove_global(int id_) { arrays.remove_key(_orders, id_); }

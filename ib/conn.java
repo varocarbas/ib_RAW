@@ -89,7 +89,9 @@ public class conn extends parent_static
 		return _connected;
 	}
 
-	public static void end() { if (_client != null) _client.eDisconnect(); }
+	public static void end() { disconnect(); }
+
+	public static void disconnect() { if (_client != null) _client.eDisconnect(); }
 
 	public static boolean connection_is_ok()
 	{
@@ -158,7 +160,9 @@ public class conn extends parent_static
 						catch (Exception e) 
 						{
 							String message = e.getMessage();
-							if (!strings.are_equal(message, "empty String")) accessory_ib.errors.manage(ERROR_GENERIC, message);
+							if (!strings.is_ok(message)) message = "connection problems.";
+							
+							accessory_ib.errors.manage(ERROR_GENERIC, message);
 						}
 					}
 
@@ -168,14 +172,18 @@ public class conn extends parent_static
 		)
 		.start();
 
-		int count = 0;
-		int max = 3;
-		while (!_started)
+		if (_started && !_connected) connect();
+		else
 		{
-			misc.pause_loop();
+			int count = 0;
+			int max = 3;
+			while (!_started)
+			{
+				misc.pause_loop();
 
-			count++;
-			if (count >= max) break;
+				count++;
+				if (count >= max) break;
+			}			
 		}	
 	}
 

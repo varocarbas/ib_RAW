@@ -38,15 +38,15 @@ public class errors
 	public static boolean is_warning(int code_) { return arrays.value_exists(get_all_warnings(), code_); }
 
 	public static int[] populate_all_errors() { return new int[] { ERROR_200, ERROR_202 }; }
-	
+
 	public static int[] populate_all_warnings()
 	{
 		return new int[]
-		{
-			WARNING_2100, WARNING_2101, WARNING_2102, WARNING_2103, WARNING_2104, WARNING_2105, WARNING_2106, WARNING_2107,
-			WARNING_2108, WARNING_2109, WARNING_2110, WARNING_2137, WARNING_2158, WARNING_2168, WARNING_2169
-		};
+				{
+						WARNING_2100, WARNING_2101, WARNING_2102, WARNING_2103, WARNING_2104, WARNING_2105, WARNING_2106, WARNING_2107,
+						WARNING_2108, WARNING_2109, WARNING_2110, WARNING_2137, WARNING_2158, WARNING_2168, WARNING_2169
+				};
 	}
-	
+
 	private static int[] get_all_warnings() { return _alls.EXTERNAL_ERRORS_WARNINGS; }
 }

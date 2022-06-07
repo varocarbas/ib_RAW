@@ -79,7 +79,7 @@ public class db
 
 	public static boolean update(String source_, String symbol_) { return update(source_, symbol_, get_default_vals(source_, symbol_)); }
 
-	public static boolean update_number(String symbol_, String field_, double val_) { return update(DEFAULT_SOURCE, symbol_, field_, val_); }
+	public static boolean update_market_val(String symbol_, String field_, double val_) { return update(SOURCE_MARKET, symbol_, field_, val_); }
 	
 	public static boolean update(String source_, String symbol_, String field_, Object val_)
 	{
@@ -93,7 +93,7 @@ public class db
 
 	public static boolean update(String source_, HashMap<String, Object> vals_) { return update(source_, null, vals_); }
 	
-	public static boolean update(String source_, String symbol_, HashMap<String, Object> vals_)
+	public static <x> boolean update(String source_, String symbol_, HashMap<String, x> vals_)
 	{
 		String where = get_where_symbol(source_, (strings.is_ok(symbol_) ? symbol_ : get_symbol(vals_)));
 		
@@ -101,6 +101,8 @@ public class db
 		
 		return accessory.db.is_ok(source_);
 	}
+	
+	public static boolean update_market_vals(String symbol_, HashMap<String, Double> vals_) { return update(SOURCE_MARKET, symbol_, vals_); }
 
 	public static ArrayList<String> get_all_symbols() { return get_all_symbols(DEFAULT_SOURCE); }
 
@@ -155,7 +157,7 @@ public class db
 		return (output == null ? strings.DEFAULT : output);
 	}
 
-	private static String get_symbol(HashMap<String, Object> vals_) 
+	private static <x> String get_symbol(HashMap<String, x> vals_) 
 	{ 
 		Object output = arrays.get_value(vals_, FIELD_SYMBOL); 
 		

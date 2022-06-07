@@ -72,19 +72,19 @@ public class wrapper implements EWrapper
 	}
 	
 	@Override
-	public void tickPrice(int id_, int field_, double price_, TickAttrib attribs_) 
+	public void tickPrice(int id_, int field_ib_, double price_, TickAttrib attribs_) 
 	{
 		if (!async.is_ok(id_)) return;
 		
-		async_market.wrapper_tickPrice(id_, field_, price_); 
+		async_market.wrapper_tickPrice(id_, field_ib_, price_); 
 	}
 	
 	@Override
-	public void tickSize(int id_, int field_, int size_) 
+	public void tickSize(int id_, int field_ib_, int size_) 
 	{ 
 		if (!async.is_ok(id_)) return;
 		
-		async_market.wrapper_tickSize(id_, field_, size_); 
+		async_market.wrapper_tickSize(id_, field_ib_, size_); 
 	}
 
 	@Override

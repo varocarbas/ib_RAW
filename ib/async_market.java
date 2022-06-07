@@ -41,28 +41,28 @@ public class async_market extends parent_static
 	private static volatile boolean _stop_all = false;
 	private static volatile HashMap<Integer, String> _symbols = new HashMap<Integer, String>();
 	private static volatile HashMap<Integer, Integer> _data_types = new HashMap<Integer, Integer>();
-		
+	private static volatile HashMap<Integer, HashMap<String, Double>> _vals = new HashMap<Integer, HashMap<String, Double>>();
+
 	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC_MARKET); }
 
-	public static void wrapper_tickPrice(int id_, int field_, double price_)
+	public static void wrapper_tickPrice(int id_, int field_ib_, double price_)
 	{
-		String field = (String)arrays.get_value(get_all_prices(), field_);
+		String field = (String)arrays.get_value(get_all_prices(), field_ib_);
 		if (!strings.is_ok(field)) return;
 
-		update_db(id_, field, price_);
+		update(id_, field, price_);
 	}
 
-	public static void wrapper_tickSize(int id_, int field_, int size_)
+	public static void wrapper_tickSize(int id_, int field_ib_, int size_)
 	{
-		String field = (String)arrays.get_value(get_all_sizes(), field_);
+		String field = (String)arrays.get_value(get_all_sizes(), field_ib_);
 		if (!strings.is_ok(field)) return;
 		
-		if (field_ == VOLUME)
-		{
-			if (is_snapshot(id_) && snapshot_is_quick()) stop_snapshot(id_);
-		}
-
-		update_db(id_, field, size_);
+		boolean is_snapshot = is_snapshot(id_);
+		
+		update(id_, field, size_, is_snapshot);
+		
+		if (is_snapshot && field_ib_ == VOLUME && snapshot_is_quick()) stop_snapshot(id_); 
 	}
 	
 	public static void wrapper_tickGeneric(int id_, int tick_, double value_)
@@ -70,7 +70,7 @@ public class async_market extends parent_static
 		String field = (String)arrays.get_value(get_all_generics(), tick_);
 		if (!strings.is_ok(field)) return;
 
-		update_db(id_, field, value_);
+		update(id_, field, value_);
 	}
 
 	public static void stop_all()
@@ -106,6 +106,8 @@ public class async_market extends parent_static
 	{ 	
 		if (!is_snapshot(id_)) return;
 		
+		update_db(id_);
+		
 		String symbol = null;
 		int data_type = 0;
 		
@@ -133,11 +135,26 @@ public class async_market extends parent_static
 		conn._client.cancelMktData(id_); 
 	}
 	
-	public static String get_symbol(int id_) { return (String)arrays.get_value(_symbols, id_); }
+	public static String get_symbol(int id_) 
+	{ 
+		Object temp = async.get_value(_symbols, id_); 
+		
+		return (temp == null ? strings.DEFAULT : (String)temp); 
+	}
+
+	public static int get_data_type(int id_) 
+	{ 
+		Object temp = async.get_value(_data_types, id_); 
+		
+		return (temp == null ? market.WRONG_DATA : (int)temp);
+	}
 	
-	public static int get_data_type(int id_) { return (int)arrays.get_value(_data_types, id_); }
-	
-	public static int get_id(String symbol_) { return (int)arrays.get_key(_symbols, symbol_); }
+	public static int get_id(String symbol_) 
+	{ 
+		Object temp = async.get_key(_symbols, symbol_); 
+		
+		return (temp == null ? async.WRONG_ID : (int)temp);
+	}
 
 	public static HashMap<Integer, String> populate_all_prices()
 	{		
@@ -184,8 +201,9 @@ public class async_market extends parent_static
 	private static boolean start(String symbol_, int data_type_, boolean is_snapshot_)
 	{
 		String symbol = common.normalise_symbol(symbol_);
-		if (!strings.is_ok(symbol) || arrays.value_exists(_symbols, symbol)) return false;
+		if (!strings.is_ok(symbol) || async.value_exists(symbol_, _symbols)) return false;
 
+		async._messages_tot++;
 		_stop_all = false;
 		
 		int data_type = (market.data_is_ok(data_type_) ? data_type_ : DEFAULT_DATA_TYPE);
@@ -205,14 +223,15 @@ public class async_market extends parent_static
 
 	private static int add(String symbol_, int data_type_, boolean is_snapshot_)
 	{
-		int id = async.add((is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM));
+		int id = async.add_id((is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM));
 
-		if (_print_all) logs.update_screen(id, symbol_, "added");
+		to_screen(id, symbol_, "added");
 		
 		lock();
 
 		_symbols.put(id, symbol_);
 		_data_types.put(id, data_type_);
+		_vals.put(id, new HashMap<String, Double>());
 
 		unlock();
 		
@@ -224,25 +243,65 @@ public class async_market extends parent_static
 	{ 
 		String symbol = get_symbol(id_);
 		
-		async.remove(id_);
+		async.remove_id(id_);
+		
+		_symbols = (HashMap<Integer, String>)async.remove_key(_symbols, id_);
+		_data_types = (HashMap<Integer, Integer>)async.remove_key(_data_types, id_);
+		_vals = (HashMap<Integer, HashMap<String, Double>>)async.remove_key(_vals, id_);
+		
+		to_screen(id_, symbol, "removed");
+	}
+
+	private static void update(int id_, String field_, double val_) { update(id_, field_, val_, is_snapshot(id_)); }
+
+	private static void update(int id_, String field_, double val_, boolean is_snapshot_)
+	{
+		if (is_snapshot_) update_vals(id_, field_, val_);
+		else update_db(id_, field_, val_);
+		
+		async._messages_tot++;
+	}
+	
+	private static void update_vals(int id_, String field_, double val_)
+	{
+		if (!async.key_exists(_vals, id_) || !strings.is_ok(field_) || val_ <= 0.0) return;
 		
 		lock();
 		
-		_symbols = (HashMap<Integer, String>)arrays.remove_key(_symbols, id_);
-		_data_types = (HashMap<Integer, Integer>)arrays.remove_key(_data_types, id_);
+		_vals.get(id_).put(field_, val_);
 		
 		unlock();
 		
-		if (_print_all) logs.update_screen(id_, symbol, "removed");
+		to_screen_update(id_, false);
 	}
 	
-	private static boolean update_db(int id_, String field_, double val_)
+	private static void update_db(int id_, String field_, double val_)
 	{
-		String symbol = (String)arrays.get_value(_symbols, id_);
-		if (!strings.is_ok(symbol) || !strings.is_ok(field_) || val_ <= 0.0) return false;
+		String symbol = (String)async.get_value(_symbols, id_);
+		if (!strings.is_ok(symbol) || !strings.is_ok(field_) || val_ <= 0.0) return;
 
-		if (_print_all) logs.update_screen(id_, symbol, "updated");
+		to_screen_update(id_, symbol, true);
 
-		return db.update_number(symbol, field_, val_);
+		db.update_market_val(symbol, field_, val_);
 	}
+	
+	@SuppressWarnings("unchecked")
+	private static void update_db(int id_)
+	{
+		HashMap<String, Double> vals = (HashMap<String, Double>)async.get_value(_vals, id_);
+		if (!arrays.is_ok(vals)) return;
+		
+		String symbol = (String)arrays.get_value(_symbols, id_);
+		if (!strings.is_ok(symbol)) return;
+
+		to_screen_update(id_, symbol, true);
+		
+		db.update_market_vals(symbol, vals);
+	}
+	
+	private static void to_screen_update(int id_, boolean is_db_) { to_screen_update(id_, get_symbol(id_), is_db_); }
+
+	private static void to_screen_update(int id_, String symbol_, boolean is_db_) { to_screen(id_, symbol_, (is_db_ ? "stored" : "updated")); }
+	
+	private static void to_screen(int id_, String symbol_, String message_) { if (_print_all) logs.update_screen(id_, symbol_, message_); }
 }

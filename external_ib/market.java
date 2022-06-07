@@ -36,6 +36,8 @@ public class market
 	
 	//------
 
+	public static final int WRONG_DATA = 0;
+	
 	public static boolean tick_is_ok(int tick_) { return arrays.value_exists(get_all_ticks(), tick_); }
 
 	public static boolean halt_is_ok(int halt_) { return arrays.value_exists(get_all_halted(), halt_); }
