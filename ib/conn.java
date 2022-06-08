@@ -159,10 +159,8 @@ public class conn extends parent_static
 						try { reader.processMsgs(); } 
 						catch (Exception e) 
 						{
-							String message = e.getMessage();
-							if (!strings.is_ok(message)) message = "connection problems.";
-							
-							accessory_ib.errors.manage(ERROR_GENERIC, message);
+							String message = e.getMessage();							
+							if (strings.is_ok(message)) accessory_ib.errors.manage(ERROR_GENERIC, message);
 						}
 					}
 
@@ -172,18 +170,14 @@ public class conn extends parent_static
 		)
 		.start();
 
-		if (_started && !_connected) connect();
-		else
+		int count = 0;
+		int max = 3;
+		while (!_started)
 		{
-			int count = 0;
-			int max = 3;
-			while (!_started)
-			{
-				misc.pause_loop();
+			misc.pause_loop();
 
-				count++;
-				if (count >= max) break;
-			}			
+			count++;
+			if (count >= max) break;
 		}	
 	}
 

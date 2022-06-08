@@ -3,25 +3,16 @@ package ib;
 import java.util.HashMap;
 
 import accessory.arrays;
-import accessory.dates;
-import accessory.misc;
 import accessory.parent_static;
 import accessory.strings;
 import accessory_ib.types;
-import external_ib.thresholds;
 
 public class async extends parent_static 
 {	
-	public static final int MAX_MESSAGES_SECOND = (int)Math.ceil(0.75 * thresholds.MAX_MESSAGES_SECOND); 
-	public static final int PAUSE_MILLI_MESSAGES = 150; 
-
 	public static final int WRONG_ID = common.MIN_REQ_ID_ASYNC - 1;
 	
 	static volatile int _last_id = common.MIN_REQ_ID_SYNC;
-	static volatile int _messages_tot = 0;
 	static volatile HashMap<Integer, String> _ids = new HashMap<Integer, String>();
-
-	private volatile static long _messages_start = 0;
 	
 	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC); }
 
@@ -59,35 +50,5 @@ public class async extends parent_static
 	
 	static Object remove_value(Object array_, Object value_) { return arrays.remove_value_async(array_, value_); }
 	
-	private static int get_req_id()
-	{
-		check_messages();
-		
-		int id = common.get_req_id(false);
-		
-		return id;
-	}
-
-	private static void check_messages()
-	{
-		if (_messages_start == 0) _messages_start = dates.start_elapsed();
-		else 
-		{
-			long elapsed = dates.get_elapsed(_messages_start);
-			
-			if (_messages_tot > MAX_MESSAGES_SECOND) 
-			{
-				misc.pause_milli(PAUSE_MILLI_MESSAGES);				
-				accessory_ib.errors.manage_warning("Too many messages."); 
-
-				elapsed = dates.get_elapsed(_messages_start);
-			}
-
-			if (elapsed >= 1)
-			{
-				_messages_tot = 0;
-				_messages_start = dates.start_elapsed();				
-			}
-		}
-	}
+	private static int get_req_id() { return common.get_req_id(false); }
 }
