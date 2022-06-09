@@ -1,7 +1,12 @@
 package external_ib;
 
+import com.ib.client.Order;
+
 import accessory.arrays;
+import accessory.strings;
 import accessory_ib._alls;
+import ib.order;
+import ib.sync_orders;
 
 public class orders 
 {
@@ -31,6 +36,82 @@ public class orders
 	public static final String STATUS_FILLED = "Filled"; //Indicates that the order has been completely filled. Market orders executions will not always trigger a Filled status.
 	public static final String STATUS_INACTIVE = "Inactive"; //Indicates that the order was received by the system but is no longer active because it was rejected or canceled.
 	//---
+	
+	public static Order get_order_new(order order_, boolean is_main_) { return get_order(order_, is_main_, null, sync_orders.WRONG_VALUE, false); }
+	
+	public static Order get_order_update(order order_, String update_type_, double update_val_, boolean is_main_) { return get_order(order_, is_main_, update_type_, update_val_, true); }
+	
+	private static Order get_order(order order_, boolean is_main_, String update_type_, double update_val_, boolean is_update_)
+	{
+		Order output = null;
+		if (!order.is_ok(order_)) return output;
+		
+		int id = order_.get_id(is_main_);
+		boolean is_market = order_.is_market();
+		
+		String tif = order.get_tif();
+		if (!strings.is_ok(tif)) return output;
+
+		double quantity = order_.get_quantity();
+		if (quantity <= 0) return output;
+		
+		output = new Order();
+		
+		output.orderId(id);
+		output.tif(tif);	
+		output.totalQuantity(quantity);
+		if (!is_main_) output.parentId(order_.get_id_main());
+		
+		double val = order_.get_val(is_main_);
+
+		if (is_update_)
+		{
+			if (update_val_ == sync_orders.WRONG_VALUE) return null;
+			
+			boolean start_market = strings.are_equal(update_type_, sync_orders.UPDATE_START_MARKET);
+			boolean stop_market = strings.are_equal(update_type_, sync_orders.UPDATE_STOP_MARKET);
+			boolean start_value = strings.are_equal(update_type_, sync_orders.UPDATE_START_VALUE);
+			boolean stop_value = strings.are_equal(update_type_, sync_orders.UPDATE_STOP_VALUE);
+			
+			if (start_market || start_value)
+			{
+				if (is_main_) 
+				{
+					val = update_val_;
+					is_market = start_market;
+				}
+			}
+			else if (stop_market || stop_value)
+			{
+				if (!is_main_)
+				{
+					val = update_val_;
+					is_market = stop_market;
+				}
+			}
+		}
+
+		String action = ACTION_BUY;
+		if (!is_main_ || (is_update_ && is_market)) action = ACTION_SELL;
+		output.action(action);
+		
+		if (is_market && (is_main_ || is_update_)) output.orderType(TYPE_MARKET);
+		else
+		{
+			if (val == sync_orders.WRONG_VALUE) return null;
+			
+			String type = TYPE_STOP;
+			if (is_main_ && order_.is_limit()) type = TYPE_LIMIT;
+			output.orderType(type);	
+			
+			if (type.equals(TYPE_STOP)) output.auxPrice(val);	
+			else if (type.equals(TYPE_LIMIT)) output.lmtPrice(val);	
+		}
+
+		output.transmit(!is_main_);
+
+		return output;
+	}
 	
 	public static boolean exec_side_is_ok(String side_) { return arrays.value_exists(get_all_exec_sides(), side_); }
 

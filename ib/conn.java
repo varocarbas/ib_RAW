@@ -25,11 +25,11 @@ public class conn extends parent_static
 	public static final String ERROR_ID = types.ERROR_IB_CONN_ID;
 	public static final String ERROR_TYPE = types.ERROR_IB_CONN_TYPE;
 	public static final String ERROR_GENERIC = types.ERROR_IB_CONN_GENERIC;
-	
+
 	public static volatile boolean _started = false; 
-
-	static EClientSocket _client;
-
+	
+	public static EClientSocket _client = null;
+	
 	private static final int MIN_ID = 0;
 	private static final int MAX_ID = 31;
 
@@ -38,13 +38,12 @@ public class conn extends parent_static
 	private static final int PORT_GATEWAY_REAL = _defaults.CONN_PORT_GATEWAY_REAL;
 	private static final int PORT_GATEWAY_PAPER = _defaults.CONN_PORT_GATEWAY_PAPER;
 
+	private static wrapper _wrapper = null;
+	private static int _id = MIN_ID - 1; 
+	private static int _port = PORT_TWS_REAL - 1;
 	private static volatile boolean _connected = false;
 	private static volatile boolean _first_conn = false;
 	
-	private static wrapper _wrapper;
-	private static int _id; 
-	private static int _port;
-
 	public static String get_class_id() { return accessory.types.get_id(types.ID_CONN); }
 	
 	public static boolean is_ok()
@@ -160,7 +159,13 @@ public class conn extends parent_static
 						catch (Exception e) 
 						{
 							String message = e.getMessage();							
-							if (strings.is_ok(message)) accessory_ib.errors.manage(ERROR_GENERIC, message);
+							if (strings.is_ok(message)) 
+							{
+								accessory_ib.errors.manage(ERROR_GENERIC, message);
+								
+								disconnect();
+								break;
+							}
 						}
 					}
 

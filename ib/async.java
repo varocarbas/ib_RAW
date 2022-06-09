@@ -11,7 +11,7 @@ public class async extends parent_static
 {	
 	public static final int WRONG_ID = common.MIN_REQ_ID_ASYNC - 1;
 	
-	static volatile int _last_id = common.MIN_REQ_ID_SYNC;
+	static volatile int _last_id = common.MIN_REQ_ID_ASYNC;
 	static volatile HashMap<Integer, String> _ids = new HashMap<Integer, String>();
 	
 	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC); }

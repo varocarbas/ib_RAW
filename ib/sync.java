@@ -16,6 +16,7 @@ import accessory_ib._alls;
 import accessory_ib._defaults;
 import accessory_ib.errors;
 import accessory_ib.types;
+import external_ib.calls;
 
 public class sync extends parent_static 
 {
@@ -160,12 +161,12 @@ public class sync extends parent_static
 		
 		boolean is_cancel = sync_orders.is_cancel(type_);
 		
-		if (is_cancel) conn._client.cancelOrder(id_);
+		if (is_cancel) calls.cancelOrder(id_);
 		else 
 		{
 			if (contract_ == null || order_ == null) return false;
 			
-			conn._client.placeOrder(id_, contract_, order_);
+			calls.placeOrder(id_, contract_, order_);
 		}
 		
 		return ((is_cancel || sync_orders.is_place(type_)) ? wait_orders(type_) : true); 
@@ -260,7 +261,7 @@ public class sync extends parent_static
 		if (_get.equals(GET_FUNDS))
 		{	
 			//accountSummary, accountSummaryEnd
-			conn._client.reqAccountSummary(_id, "All", "AvailableFunds"); 
+			calls.reqAccountSummary(_id); 
 		}
 		else if (_get.equals(GET_ORDERS))
 		{	
@@ -268,12 +269,12 @@ public class sync extends parent_static
 			cannot_fail = false;
 
 			//openOrder, openOrderEnd, orderStatus
-			conn._client.reqAllOpenOrders(); 
+			calls.reqAllOpenOrders(); 
 		}
 		else if (_get.equals(GET_ID))
 		{	
 			//nextValidId
-			conn._client.reqIds(-1); 
+			calls.reqIds(); 
 		}
 		else return false;
 

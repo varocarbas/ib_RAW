@@ -10,10 +10,9 @@ public class types
 	public static final String CONFIG_CONN_TYPE_GATEWAY_PAPER = "config_conn_type_gateway_paper";
 	public static final String CONFIG_CONN_ID = "config_conn_id";
 	
-	public static final String CONFIG_SYNC = "config_sync";
-	public static final String CONFIG_SYNC_ORDERS = "config_sync_orders";
-	public static final String CONFIG_SYNC_ORDERS_TIF = "config_sync_orders_tif";
-	public static final String CONFIG_SYNC_ORDERS_QUANTITY_INT = "config_sync_orders_quantity_int";
+	public static final String CONFIG_ORDER = "config_order";
+	public static final String CONFIG_ORDER_TIF = "config_order_tif";
+	public static final String CONFIG_ORDER_QUANTITIES_INT = "config_order_quantities_int";
 	
 	public static final String CONFIG_ASYNC = "config_async";
 	public static final String CONFIG_ASYNC_MARKET = "config_async_market";
@@ -55,7 +54,8 @@ public class types
 	public static final String ID_ASYNC_MARKET = "id_async_market";
 	public static final String ID_SYNC = "id_sync";
 	public static final String ID_SYNC_ORDERS = "id_sync_orders";	
-
+	public static final String ID_CALLS = "id_calls";
+	
 	public static final String SYNC = "sync";
 	public static final String SYNC_GET = "sync_get";
 	public static final String SYNC_GET_FUNDS = "sync_get_funds";
@@ -102,8 +102,8 @@ public class types
 	public static final String ERROR_IB_SYNC = "error_ib_sync";
 	public static final String ERROR_IB_SYNC_GET = "error_ib_sync_get";
 	public static final String ERROR_IB_SYNC_TIME = "error_ib_sync_time";
-	public static final String ERROR_IB_CONTRACT = "error_ib_contract";
-	public static final String ERROR_IB_CONTRACT_INFO = "error_ib_contract_info";
+	public static final String ERROR_IB_CONTRACTS = "error_ib_contracts";
+	public static final String ERROR_IB_CONTRACTS_INFO = "error_ib_contracts_info";
 	
 	static String[] populate_all_types()
 	{		
@@ -116,9 +116,8 @@ public class types
 			
 			CONFIG_CONN_ID,
 			
-			CONFIG_SYNC,
-			CONFIG_SYNC_ORDERS,
-			CONFIG_SYNC_ORDERS_TIF, CONFIG_SYNC_ORDERS_QUANTITY_INT,
+			CONFIG_ORDER,
+			CONFIG_ORDER_TIF, CONFIG_ORDER_QUANTITIES_INT,
 	
 			CONFIG_ASYNC,
 			CONFIG_ASYNC_MARKET,
@@ -145,7 +144,7 @@ public class types
 			ID_ASYNC_MARKET,
 			ID_SYNC,
 			ID_SYNC_ORDERS,
-			ID_COMMON, ID_CONN,
+			ID_COMMON, ID_CONN, ID_CALLS,
 
 			SYNC,
 			SYNC_GET,
@@ -175,7 +174,7 @@ public class types
 			ERROR_IB_CONN_NONE, ERROR_IB_CONN_ID, ERROR_IB_CONN_TYPE, ERROR_IB_CONN_GENERIC,
 			ERROR_IB_SYNC,
 			ERROR_IB_SYNC_GET, ERROR_IB_SYNC_TIME,
-			ERROR_IB_CONTRACT_INFO
+			ERROR_IB_CONTRACTS_INFO
 		};		
 	}
 }

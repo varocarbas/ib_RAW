@@ -13,6 +13,7 @@ public class errors
                                              //For some stocks that has the same Symbol, Currency and Exchange, you need to specify the IBApi.Contract.PrimaryExch attribute to avoid ambiguity. Please refer to a sample stock contract here.
                                              //For futures that has multiple multipliers for the same expiration, You need to specify the IBApi.Contract.Multiplier attribute to avoid ambiguity. Please refer to a sample futures contract here.
 	public static final int ERROR_202 = 202; //An active order on the IB server was cancelled. See Order Placement Considerations for additional information/considerations for these errors.
+	public static final int ERROR_300 = 300; //An attempt was made to cancel market data for a ticker ID that was not associated with a current subscription. With the DDE API this occurs by clearing the spreadsheet cell.
 	//---
 
 	//--- To be synced with the info from https://interactivebrokers.github.io/tws-api/message_codes.html.
@@ -37,7 +38,7 @@ public class errors
 
 	public static boolean is_warning(int code_) { return arrays.value_exists(get_all_warnings(), code_); }
 
-	public static int[] populate_all_errors() { return new int[] { ERROR_200, ERROR_202 }; }
+	public static int[] populate_all_errors() { return new int[] { ERROR_200, ERROR_202, ERROR_300 }; }
 
 	public static int[] populate_all_warnings()
 	{

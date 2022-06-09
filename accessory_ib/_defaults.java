@@ -21,9 +21,10 @@ public class _defaults
 	public static final String MARKET_TYPE = types.ASYNC_MARKET_SNAPSHOT;
 	public static final int MARKET_DATA = market.DATA_LIVE;
 	
+	public static final String ORDER_TIF = orders.TIF_GTC; 
+	public static final boolean ORDER_QUANTITIES_INT = true;
+	
 	public static final long SYNC_TIMEOUT = 10l; 
-	public static final String SYNC_ORDERS_TIF = orders.TIF_GTC; 
-	public static final boolean SYNC_ORDERS_QUANTITY_INT = true;
 	
 	public static final boolean ASYNC_SNAPSHOT_QUICK = true;
 	public static final boolean ASYNC_SNAPSHOT_NONSTOP = true;

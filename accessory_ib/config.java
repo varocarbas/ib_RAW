@@ -8,11 +8,11 @@ public class config
 
 	public static boolean matches_conn(String key_, String val_) { return accessory.config.matches(types.CONFIG_CONN, key_, val_); }
 
-	public static Object get_sync(String key_) { return accessory.config.get(types.CONFIG_SYNC, key_); }
+	public static Object get_order(String key_) { return accessory.config.get(types.CONFIG_ORDER, key_); }
 
-	public static boolean update_sync(String key_, String val_) { return accessory.config.update(types.CONFIG_SYNC, key_, val_); }
+	public static boolean update_order(String key_, String val_) { return accessory.config.update(types.CONFIG_ORDER, key_, val_); }
 
-	public static boolean matches_sync(String key_, String val_) { return accessory.config.matches(types.CONFIG_SYNC, key_, val_); }
+	public static boolean matches_order(String key_, String val_) { return accessory.config.matches(types.CONFIG_ORDER, key_, val_); }
 
 	public static Object get_async(String key_) { return accessory.config.get(types.CONFIG_ASYNC, key_); }
 

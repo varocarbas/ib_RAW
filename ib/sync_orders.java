@@ -8,12 +8,10 @@ import com.ib.client.Contract;
 import com.ib.client.Order;
 
 import accessory.arrays;
-import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
-import accessory_ib.config;
 import accessory_ib.types;
-
+import external_ib.contracts;
 import external_ib.orders;
 
 public class sync_orders extends parent_static  
@@ -34,13 +32,6 @@ public class sync_orders extends parent_static
 	public static final String STATUS_FILLED = types.SYNC_ORDERS_STATUS_FILLED;
 	public static final String STATUS_ACTIVE = types.SYNC_ORDERS_STATUS_ACTIVE;
 	public static final String STATUS_INACTIVE = types.SYNC_ORDERS_STATUS_INACTIVE;
-	
-	public static final String ACTION_BUY = orders.ACTION_BUY;
-	public static final String ACTION_SELL = orders.ACTION_SELL;
-	
-	public static final String TYPE2_MARKET = orders.TYPE_MARKET;
-	public static final String TYPE2_STOP = orders.TYPE_STOP;
-	public static final String TYPE2_LIMIT = orders.TYPE_LIMIT;
 
 	public static final double WRONG_VALUE = 0.0;
 
@@ -68,7 +59,7 @@ public class sync_orders extends parent_static
 	{
 		if (!arrays.value_exists(get_ids(STATUS_SUBMITTED), id_)) return;
 
-		_cancellations = new HashMap<Integer, Long>(common.start_wait(get_id_sec(id_), common.start_wait(id_, _cancellations)));
+		_cancellations = new HashMap<Integer, Long>(common.start_wait(order.get_id_sec(id_), common.start_wait(id_, _cancellations)));
 		
 		if (sync.cancel_order(id_)) remove_global(id_);			
 	}
@@ -82,8 +73,6 @@ public class sync_orders extends parent_static
 		
 		return output;
 	}
-
-	public static int get_id_sec(int id_main_) { return (id_main_ + 1); }
 
 	public static ArrayList<Integer> get_ids(String status_) { return get_ids(status_, null, true); }
 
@@ -225,21 +214,18 @@ public class sync_orders extends parent_static
 		String update_type = check_update(update_type_);
 		boolean is_update = strings.is_ok(update_type);
 		
-		Contract contract = common.get_contract(order_.get_symbol());
+		Contract contract = contracts.get_contract(order_.get_symbol());
 		if (contract == null) return false;
 
 		_last_id_main = order_.get_id_main();
 		_last_id_sec = order_.get_id_sec();
-		
-		int id = _last_id_main;
-		int parent = id;
-		
+				
 		for (int i = 0; i < 2; i++)
 		{
-			boolean is_sec = (i == 1);			
-			if (is_sec) id = _last_id_sec;
-
-			Order order = get_order_ib(order_, id, parent, update_type, update_val_, is_update, is_sec);
+			boolean is_main = (i == 0);			
+			int id = order_.get_id(is_main);
+			
+			Order order = (is_update ? orders.get_order_update(order_, update_type_, update_val_, is_main) : orders.get_order_new(order_, is_main));
 			if (order == null) return false;
 
 			boolean is_ok = true;
@@ -277,77 +263,6 @@ public class sync_orders extends parent_static
 		
 		sync_global();
 	}
-	
-	private static Order get_order_ib(order order_, int id_, int parent_, String update_type_, double update_val_, boolean is_update_, boolean is_last_)
-	{
-		boolean is_main = (id_ == parent_);
-		boolean is_market = order_.get_type().equals(PLACE_MARKET);
-		
-		String tif = (String)config.get_sync(types.CONFIG_SYNC_ORDERS_TIF);
-		if (!orders.tif_is_ok(tif)) return null;
-		
-		Order order = new Order();
-		
-		order.orderId(id_);
-		order.tif(tif);		
-		if (!is_main) order.parentId(parent_);
-
-		String action = ACTION_BUY;
-		if (!is_main || (is_update_ && is_market)) action = ACTION_SELL;
-		order.action(action);
-		
-		double quantity = order_.get_quantity();
-		if (is_quantity_int()) quantity = (double)numbers.to_int(quantity);		
-		order.totalQuantity(quantity);
-		
-		double val = (is_main ? order_.get_start() : order_.get_stop());
-
-		if (is_update_)
-		{
-			if (update_val_ == WRONG_VALUE) return null;
-			
-			boolean start_market = strings.are_equal(update_type_, UPDATE_START_MARKET);
-			boolean stop_market = strings.are_equal(update_type_, UPDATE_STOP_MARKET);
-			boolean start_value = strings.are_equal(update_type_, UPDATE_START_VALUE);
-			boolean stop_value = strings.are_equal(update_type_, UPDATE_STOP_VALUE);
-			
-			if (start_market || start_value)
-			{
-				if (is_main) 
-				{
-					val = update_val_;
-					is_market = start_market;
-				}
-			}
-			else if (stop_market || stop_value)
-			{
-				if (!is_main)
-				{
-					val = update_val_;
-					is_market = stop_market;
-				}
-			}
-		}
-
-		if (is_market && (is_main || is_update_)) order.orderType(TYPE2_MARKET);
-		else
-		{
-			if (val == WRONG_VALUE) return null;
-			
-			String type = TYPE2_STOP;
-			if (is_main && order_.get_type().equals(PLACE_LIMIT)) type = TYPE2_LIMIT;
-			order.orderType(type);	
-			
-			if (type.equals(TYPE2_STOP)) order.auxPrice(val);	
-			else if (type.equals(TYPE2_LIMIT)) order.lmtPrice(val);	
-		}
-
-		order.transmit(is_last_);
-
-		return order;
-	}
-
-	private static boolean is_quantity_int() { return (boolean)config.get_sync(types.CONFIG_SYNC_ORDERS_QUANTITY_INT); }
 	
 	private static boolean update_order(int id_, double val_, boolean is_start_)
 	{

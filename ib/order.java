@@ -2,11 +2,22 @@ package ib;
 
 import java.util.HashMap;
 
+import accessory.numbers;
 import accessory.parent;
 import accessory.strings;
+import accessory_ib.config;
+import accessory_ib.types;
+import external_ib.orders;
 
 public class order extends parent
 {
+	public static final String QUANTITIES_INT = types.CONFIG_ORDER_QUANTITIES_INT;
+	public static final String TIF = types.CONFIG_ORDER_TIF;
+	
+	public static final String MARKET = sync_orders.PLACE_MARKET;
+	public static final String STOP = sync_orders.PLACE_STOP;
+	public static final String LIMIT = sync_orders.PLACE_LIMIT;
+	
 	private int _id_main = sync.WRONG_ID;
 	private int _id_sec = sync.WRONG_ID;	
 	private String _type = strings.DEFAULT;
@@ -20,6 +31,17 @@ public class order extends parent
 		
 	public static boolean are_equal(order order1_, order order2_) { return are_equal_common(order1_, order2_); }
 
+	public static int get_id_sec(int id_main_) { return (id_main_ + 1); }
+
+	public static String get_tif() 
+	{ 
+		String tif = (String)config.get_order(TIF);
+		
+		return (orders.tif_is_ok(tif) ? tif : strings.DEFAULT);
+	}
+
+	public static boolean quantities_int() { return (boolean)config.get_order(QUANTITIES_INT); }
+
 	public static String check_type(String type_) { return sync_orders.check_place(type_); }
 
 	public static String check_symbol(String symbol_) { return (strings.is_ok(symbol_) ? symbol_.trim().toUpperCase() : strings.DEFAULT); }
@@ -31,12 +53,28 @@ public class order extends parent
 	public String get_type() { return _type; }
 
 	public String get_symbol() { return _symbol; }
-	
+
+	public boolean is_market() { return _type.equals(MARKET); }
+
+	public boolean is_stop() { return _type.equals(STOP); }
+
+	public boolean is_limit() { return _type.equals(LIMIT); }
+
+	public double get_val(boolean is_main_) { return (is_main_ ? _start : _stop); }
+
+	public int get_id(boolean is_main_) { return (is_main_ ? _id_main : _id_sec); }
+
 	public int get_id_main() { return _id_main; }
 	
 	public int get_id_sec() { return _id_sec; }
 	
-	public double get_quantity() { return _quantity; }
+	public double get_quantity() 
+	{ 
+		double quantity = _quantity;
+		if (quantities_int()) quantity = (double)numbers.to_int(quantity);		
+
+		return quantity;
+	}
 
 	public double get_stop() { return _stop; }
 
@@ -108,6 +146,6 @@ public class order extends parent
 		_stop = stop_;
 		_start = start_;
 		_id_main = id_main_;
-		_id_sec = sync_orders.get_id_sec(id_main_);
+		_id_sec = get_id_sec(id_main_);
 	}
 }

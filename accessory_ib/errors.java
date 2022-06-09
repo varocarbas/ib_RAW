@@ -24,6 +24,9 @@ public class errors
 	{
 		String message = (strings.is_ok(message_) ? message_ : strings.DEFAULT);
 		
+		String id = Integer.toString(id_);
+		if (!message.contains(id)) message += misc.SEPARATOR_CONTENT + "id: " + id;
+		
 		if (is_warning(code_) || treat_as_warning(id_, code_)) manage_warning(message);
 		else manage_internal(ERROR_GENERIC, wrapper_error_info(id_, code_, message_));
 	}	
@@ -67,14 +70,11 @@ public class errors
 	
 	private static boolean treat_as_warning(int id_, int code_)
 	{
-		boolean is_warning = false;
-		
-		if (code_ == external_ib.errors.ERROR_202 && sync_orders.is_cancelling(id_))
-		{
-			is_warning = true;
-		}
-		
-		return is_warning;
+		return 
+		(
+			(code_ == external_ib.errors.ERROR_202 && sync_orders.is_cancelling(id_)) ||
+			code_ == external_ib.errors.ERROR_300
+		);
 	}
 	
 	private static void manage_internal(String type_, HashMap<String, Object> info_) { manage_internal(type_, get_message_common((String)arrays.get_value(info_, MESSAGE)), info_); }

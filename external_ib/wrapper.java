@@ -93,9 +93,7 @@ public class wrapper implements EWrapper
 		//In some cases, reaching this point might take too long and relying on tickSize could
 		//appreciably speed everything up. That is, all the relevant information is assumed to 
 		//have already been received right after getting certain size value.
-		
-		if (async.is_ok(id_, async_market.TYPE_SNAPSHOT)) return;
-		
+
 		async_market.stop_snapshot(id_);
 	}
 	
