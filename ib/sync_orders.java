@@ -85,7 +85,7 @@ public class sync_orders extends parent_static
 		String status = check_status(status_);
 		if (!strings.is_ok(status)) return ids;
 
-		HashMap<Integer, String> orders = orders_;
+		HashMap<Integer, String> orders = arrays.get_new_hashmap_xy(orders_);
 		if (!arrays.is_ok(orders) && retrieve_) orders = sync.get_orders();
 		if (!arrays.is_ok(orders)) return ids;
 	
@@ -146,7 +146,7 @@ public class sync_orders extends parent_static
 			
 			return;
 		}
-			
+		
 		ArrayList<Integer> delete = new ArrayList<Integer>();
 
 		for (Entry<Integer, order> item: _orders.entrySet())
@@ -180,7 +180,7 @@ public class sync_orders extends parent_static
 		
 		String symbol = common.normalise_symbol(symbol_);
 		if (!strings.is_ok(symbol)) return null;
-
+		
 		for (Entry<Integer, order> item: _orders.entrySet())
 		{
 			if (symbol.equals(item.getValue().get_symbol())) return (new order(item.getValue()));
@@ -213,13 +213,17 @@ public class sync_orders extends parent_static
 
 		String update_type = check_update(update_type_);
 		boolean is_update = strings.is_ok(update_type);
-		
+		if (is_update && update_val_ != WRONG_VALUE) return false;
+			
 		Contract contract = contracts.get_contract(order_.get_symbol());
 		if (contract == null) return false;
 
-		_last_id_main = order_.get_id_main();
-		_last_id_sec = order_.get_id_sec();
-				
+		int main = order_.get_id_main();
+		int sec = order_.get_id_sec();
+
+		_last_id_main = main;
+		_last_id_sec = sec;
+		
 		for (int i = 0; i < 2; i++)
 		{
 			boolean is_main = (i == 0);			
@@ -235,7 +239,12 @@ public class sync_orders extends parent_static
 			{
 				is_ok = sync.place_order(id, contract, order);
 				
-				if (!is_ok) remove_global(_last_id_main);
+				if (!is_ok) 
+				{
+					remove_global(main);
+					
+					return false;
+				}
 			}
 
 			if (!is_ok)
@@ -247,11 +256,16 @@ public class sync_orders extends parent_static
 			}
 		}
 
-		if (!strings.is_ok(update_type)) add_order(_last_id_main, order_);
-		else if (update_val_ != WRONG_VALUE)
+		if (!is_update) 
 		{
-			if (update_type.equals(UPDATE_START_VALUE)) update_order(_last_id_main, update_val_, true); 
-			else if (update_type.equals(UPDATE_STOP_VALUE)) update_order(_last_id_main, update_val_, false); 			
+			if (!sync.wait(main, PLACE)) return false;
+			
+			add_order(main, order_);
+		}
+		else
+		{
+			if (update_type.equals(UPDATE_START_VALUE)) update_order(main, update_val_, true); 
+			else if (update_type.equals(UPDATE_STOP_VALUE)) update_order(main, update_val_, false); 			
 		}
 		
 		return true;
@@ -260,7 +274,7 @@ public class sync_orders extends parent_static
 	private static void add_order(int id_, order order_)
 	{
 		_orders.put(id_, new order(order_));
-		
+
 		sync_global();
 	}
 	

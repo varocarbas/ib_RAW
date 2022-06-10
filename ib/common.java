@@ -16,7 +16,9 @@ public class common extends parent_static
 	static final int MIN_REQ_ID_ASYNC = 500;
 	static final int MAX_REQ_ID_ASYNC = 10000;
 
-	private static final long DEFAULT_WAIT_SECS_SYNC = 10;
+	public static final int WRONG_ID = MIN_REQ_ID_SYNC - 1;
+	
+	private static final long DEFAULT_WAIT_SECS_SYNC = 60;
 	private static final long DEFAULT_WAIT_SECS_ASYNC = 60;
 	
 	public static String get_class_id() { return accessory.types.get_id(types.ID_COMMON); }
@@ -32,6 +34,8 @@ public class common extends parent_static
 
 		return symbol;
 	}
+
+	public static boolean req_id_is_ok(int id_) { return id_is_ok(id_, MIN_REQ_ID_SYNC, MAX_REQ_ID_ASYNC); }
 	
 	public static boolean req_id_is_ok_sync(int id_) { return id_is_ok(id_, MIN_REQ_ID_SYNC, MAX_REQ_ID_SYNC); }
 	
@@ -65,12 +69,14 @@ public class common extends parent_static
 		return output;
 	}
 		
-	static int get_req_id(boolean is_sync_) 
+	static int get_req_id(boolean is_sync_) { return get_req_id(is_sync_, true); }
+	
+	static int get_req_id(boolean is_sync_, boolean lock_) 
 	{ 
+		if (lock_) lock();
+		
 		int id = 0;
-		
-		lock();
-		
+				
 		if (is_sync_)
 		{
 			id = get_req_id_internal(sync._id, MIN_REQ_ID_SYNC, MAX_REQ_ID_SYNC);
@@ -82,7 +88,7 @@ public class common extends parent_static
 			async._last_id = id;		
 		}
 		
-		unlock();
+		if (lock_) unlock();
 		
 		return id;
 	}

@@ -30,15 +30,16 @@ public class sync extends parent_static
 	public static final String OUT_STRINGS = types.SYNC_OUT_STRINGS;
 	public static final String OUT_ORDERS = types.SYNC_OUT_ORDERS;
 
-	public static final int WRONG_ID = common.MIN_REQ_ID_SYNC - 1;
+	public static final int WRONG_ID = common.WRONG_ID;
 
 	public static final long DEFAULT_TIMEOUT = _defaults.SYNC_TIMEOUT;
 
 	public static final String ERROR_GET = types.ERROR_IB_SYNC_GET;
 	public static final String ERROR_TIME = types.ERROR_IB_SYNC_TIME;
 
-	static int _id = common.MIN_REQ_ID_SYNC;
-
+	static int _id = WRONG_ID;
+	static int _id2 = WRONG_ID;
+	
 	private static volatile boolean _getting = false;
 	private static volatile double _out_decimal = numbers.DEFAULT_DECIMAL;
 	private static volatile int _out_int = numbers.DEFAULT_INT;
@@ -137,6 +138,18 @@ public class sync extends parent_static
 	
 	public static void end() { if (_getting) _getting = false; }
 	
+	public static boolean wait(int id_, String type_)
+	{
+		if (!strings.is_ok(type_)) return false;
+		
+		long timeout = DEFAULT_TIMEOUT; 
+		boolean cannot_fail = true; 
+		
+		if (sync_orders.is_place(type_)) _id = id_;
+
+		return wait(timeout, cannot_fail, type_);
+	}
+	
 	static boolean cancel_order(int id_) { return execute_order(sync_orders.CANCEL, id_, null, null); }
 
 	static boolean place_order(int id_, Contract contract_, Order order_) { return execute_order(sync_orders.PLACE, id_, contract_, order_); }
@@ -145,9 +158,11 @@ public class sync extends parent_static
 	
 	private static boolean order_is_common(int id_, String target_)
 	{
-		String status = (String)arrays.get_value(get_orders(), id_);
+		HashMap<Integer, String> orders = new HashMap<Integer, String>(get_orders());
+
+		String status = (String)arrays.get_value(orders, id_);
 		if (!strings.is_ok(status)) return strings.are_equal(target_, sync_orders.STATUS_INACTIVE);
-		
+
 		return sync_orders.is_status(status, target_);
 	}
 	
@@ -158,18 +173,22 @@ public class sync extends parent_static
 		if (!common.req_id_is_ok_sync(id_)) return false;
 	
 		_id = id_;
-		
-		boolean is_cancel = sync_orders.is_cancel(type_);
+
+		String type = type_;
+		boolean is_cancel = sync_orders.is_cancel(type);
 		
 		if (is_cancel) calls.cancelOrder(id_);
 		else 
 		{
 			if (contract_ == null || order_ == null) return false;
 			
+			type = null;
 			calls.placeOrder(id_, contract_, order_);
 		}
+
+		boolean wait = (is_cancel || strings.is_ok(type));
 		
-		return ((is_cancel || sync_orders.is_place(type_)) ? wait_orders(type_) : true); 
+		return (wait ? wait_orders(type) : true); 
 	}
 	
 	private static Object get(String type_)
@@ -294,10 +313,12 @@ public class sync extends parent_static
 		boolean is_cancel = false;
 		
 		if (sync_orders.is_place(type_)) is_place = true;
-		else if (sync_orders.is_cancel(type_)) is_cancel = true;
+		else if (sync_orders.is_cancel(type_)) is_place = true;
 		else if (!strings.is_ok(type_)) is_get = true;
 		else return false;
-
+		
+		if (is_place || is_cancel) _id2 = _id;
+		
 		long start = dates.start_elapsed();
 		
 		while (true)
@@ -309,11 +330,11 @@ public class sync extends parent_static
 					if (!(_get.equals(GET_ORDERS) && (_out_ints.size() != _out_strings.size()))) break;
 				}
 			}
+			//else if (_id2 != WRONG_ID && (is_place || is_cancel))
 			else if (is_place || is_cancel)
 			{
-				boolean is_inactive = order_is_inactive(_id);
-				
-				if ((is_inactive && is_cancel) || (!is_inactive && is_place)) break;			
+				break;
+				//if ((is_place && order_is_submitted(_id2)) || (is_cancel && order_is_inactive(_id2))) break;
 			}
 			
 			if (dates.get_elapsed(start) >= timeout_) 
@@ -328,6 +349,7 @@ public class sync extends parent_static
 		}
 
 		if (is_get) _getting = false;
+		else if (is_place || is_cancel) _id2 = WRONG_ID;
 		
 		return is_ok;
 	}

@@ -8,6 +8,7 @@ import accessory.logs;
 import accessory.misc;
 import accessory.strings;
 import ib.async_market;
+import ib.common;
 import ib.conn;
 import ib.sync;
 import ib.sync_orders;
@@ -24,30 +25,16 @@ public class errors
 	{
 		String message = (strings.is_ok(message_) ? message_ : strings.DEFAULT);
 		
-		String id = Integer.toString(id_);
-		if (!message.contains(id)) message += misc.SEPARATOR_CONTENT + "id: " + id;
+		if (common.req_id_is_ok(id_))
+		{
+			String id = Integer.toString(id_);
+			if (!message.contains(id)) message += misc.SEPARATOR_CONTENT + "id: " + id;			
+		}
 		
 		if (is_warning(code_) || treat_as_warning(id_, code_)) manage_warning(message);
 		else manage_internal(ERROR_GENERIC, wrapper_error_info(id_, code_, message_));
 	}	
 
-	private static HashMap<String, Object> wrapper_error_info(int id_, int code_, String message_)
-	{
-		HashMap<String, Object> info = new HashMap<String, Object>();
-
-		info.put(_keys.ID, id_);
-		info.put("code", code_);
-		info.put(MESSAGE, message_);
-		
-		if (code_ == external_ib.errors.ERROR_200)
-		{
-			String symbol = async_market.get_symbol(id_);
-			if (strings.is_ok(symbol)) info.put("symbol", symbol);
-		}
-
-		return info;
-	}
-	
 	public static boolean is_warning(int code_) { return external_ib.errors.is_warning(code_); }
 	
 	public static void manage(String type_, String message_) { manage_internal(type_, get_message_common(message_), null); }
@@ -67,7 +54,24 @@ public class errors
 	}
 
 	public static String check(String type_) { return accessory.types.check_type(type_, types.ERROR_IB); }
-	
+
+	private static HashMap<String, Object> wrapper_error_info(int id_, int code_, String message_)
+	{
+		HashMap<String, Object> info = new HashMap<String, Object>();
+
+		info.put(_keys.ID, id_);
+		info.put("code", code_);
+		info.put(MESSAGE, message_);
+		
+		if (code_ == external_ib.errors.ERROR_200)
+		{
+			String symbol = async_market.get_symbol(id_);
+			if (strings.is_ok(symbol)) info.put("symbol", symbol);
+		}
+
+		return info;
+	}
+		
 	private static boolean treat_as_warning(int id_, int code_)
 	{
 		return 

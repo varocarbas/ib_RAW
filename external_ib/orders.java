@@ -41,6 +41,36 @@ public class orders
 	
 	public static Order get_order_update(order order_, String update_type_, double update_val_, boolean is_main_) { return get_order(order_, is_main_, update_type_, update_val_, true); }
 	
+	public static boolean exec_side_is_ok(String side_) { return arrays.value_exists(get_all_exec_sides(), side_); }
+
+	public static boolean action_is_ok(String action_) { return arrays.value_exists(get_all_actions(), action_); }
+
+	public static boolean type_is_ok(String type_) { return arrays.value_exists(get_all_types(), type_); }
+
+	public static boolean tif_is_ok(String tif_) { return arrays.value_exists(get_all_tifs(), tif_); }
+
+	public static boolean status_is_ok(String status_) { return arrays.value_exists(get_all_statuses(), status_); }
+	
+	public static String[] populate_all_exec_sides() { return new String[] { EXEC_SIDE_BOUGHT, EXEC_SIDE_SOLD }; }
+	
+	public static String[] populate_all_actions() { return new String[] { ACTION_BUY, ACTION_SELL }; }
+	
+	public static String[] populate_all_types() { return new String[] { TYPE_MARKET, TYPE_STOP, TYPE_LIMIT }; }
+	
+	public static String[] populate_all_tifs() { return new String[] { TIF_GTC }; }
+	
+	public static String[] populate_all_statuses() { return new String[] { STATUS_PENDING_SUBMIT, STATUS_PENDING_CANCEL, STATUS_PRESUBMITTED, STATUS_SUBMITTED, STATUS_API_CANCELLED, STATUS_CANCELLED, STATUS_FILLED, STATUS_INACTIVE }; }
+
+	private static String[] get_all_exec_sides() { return _alls.EXTERNAL_ORDERS_EXEC_SIDES; }
+	
+	private static String[] get_all_actions() { return _alls.EXTERNAL_ORDERS_ACTIONS; }
+	
+	private static String[] get_all_types() { return _alls.EXTERNAL_ORDERS_TYPES; }
+	
+	private static String[] get_all_tifs() { return _alls.EXTERNAL_ORDERS_TIFS; }
+	
+	private static String[] get_all_statuses() { return _alls.EXTERNAL_ORDERS_STATUSES; }
+	
 	private static Order get_order(order order_, boolean is_main_, String update_type_, double update_val_, boolean is_update_)
 	{
 		Order output = null;
@@ -112,34 +142,4 @@ public class orders
 
 		return output;
 	}
-	
-	public static boolean exec_side_is_ok(String side_) { return arrays.value_exists(get_all_exec_sides(), side_); }
-
-	public static boolean action_is_ok(String action_) { return arrays.value_exists(get_all_actions(), action_); }
-
-	public static boolean type_is_ok(String type_) { return arrays.value_exists(get_all_types(), type_); }
-
-	public static boolean tif_is_ok(String tif_) { return arrays.value_exists(get_all_tifs(), tif_); }
-
-	public static boolean status_is_ok(String status_) { return arrays.value_exists(get_all_statuses(), status_); }
-	
-	public static String[] populate_all_exec_sides() { return new String[] { EXEC_SIDE_BOUGHT, EXEC_SIDE_SOLD }; }
-	
-	public static String[] populate_all_actions() { return new String[] { ACTION_BUY, ACTION_SELL }; }
-	
-	public static String[] populate_all_types() { return new String[] { TYPE_MARKET, TYPE_STOP, TYPE_LIMIT }; }
-	
-	public static String[] populate_all_tifs() { return new String[] { TIF_GTC }; }
-	
-	public static String[] populate_all_statuses() { return new String[] { STATUS_PENDING_SUBMIT, STATUS_PENDING_CANCEL, STATUS_PRESUBMITTED, STATUS_SUBMITTED, STATUS_API_CANCELLED, STATUS_CANCELLED, STATUS_FILLED, STATUS_INACTIVE }; }
-
-	private static String[] get_all_exec_sides() { return _alls.EXTERNAL_ORDERS_EXEC_SIDES; }
-	
-	private static String[] get_all_actions() { return _alls.EXTERNAL_ORDERS_ACTIONS; }
-	
-	private static String[] get_all_types() { return _alls.EXTERNAL_ORDERS_TYPES; }
-	
-	private static String[] get_all_tifs() { return _alls.EXTERNAL_ORDERS_TIFS; }
-	
-	private static String[] get_all_statuses() { return _alls.EXTERNAL_ORDERS_STATUSES; }
 }
