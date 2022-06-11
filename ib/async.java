@@ -21,15 +21,15 @@ public class async extends parent_static
 
 	public static boolean is_ok(int id_, String type_) { return strings.are_equal(get_type(id_), type_); }
 	
-	static int add_id(String type_) 
+	static int add_id(String type_, boolean lock_) 
 	{ 
-		lock();
+		if (lock_) lock();
 		
 		int id = get_req_id(false);
 		
 		_ids.put(id, type_);
 		
-		unlock();
+		if (lock_) unlock();
 		
 		return id;
 	}

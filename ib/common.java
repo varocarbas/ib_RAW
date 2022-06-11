@@ -12,8 +12,8 @@ import accessory_ib.types;
 public class common extends parent_static 
 {	
 	static final int MIN_REQ_ID_SYNC = 1;
-	static final int MAX_REQ_ID_SYNC = 495; //There has to be a gap to account for scenarios of acceptable invalid sync IDs like the ones which sync_orders.get_id_sec() might return.
-	static final int MIN_REQ_ID_ASYNC = 500;
+	static final int MAX_REQ_ID_SYNC = 10; 
+	static final int MIN_REQ_ID_ASYNC = 11;
 	static final int MAX_REQ_ID_ASYNC = 10000;
 
 	public static final int WRONG_ID = MIN_REQ_ID_SYNC - 1;
@@ -25,7 +25,7 @@ public class common extends parent_static
 
 	public static String get_market_time() { return dates.get_now_string(dates.FORMAT_TIME_SHORT); }
 
-	public static String normalise_symbol(String symbol_)
+	public static String check_symbol(String symbol_)
 	{
 		String symbol = symbol_;
 		if (!strings.is_ok(symbol)) return strings.DEFAULT;
@@ -79,8 +79,8 @@ public class common extends parent_static
 				
 		if (is_sync_)
 		{
-			id = get_req_id_internal(sync._id, MIN_REQ_ID_SYNC, MAX_REQ_ID_SYNC);
-			sync._id = id;
+			id = get_req_id_internal(sync._req_id, MIN_REQ_ID_SYNC, MAX_REQ_ID_SYNC);
+			sync._req_id = id;
 		}
 		else
 		{

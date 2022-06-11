@@ -67,6 +67,7 @@ public class types
 	public static final String SYNC_ORDERS_PLACE_MARKET = "sync_orders_place_market";
 	public static final String SYNC_ORDERS_PLACE_STOP = "sync_orders_place_stop";
 	public static final String SYNC_ORDERS_PLACE_LIMIT = "sync_orders_place_limit";
+	public static final String SYNC_ORDERS_PLACE_STOP_LIMIT = "sync_orders_place_stop_limit";
 	public static final String SYNC_ORDERS_UPDATE = "sync_orders_update";
 	public static final String SYNC_ORDERS_UPDATE_START_VALUE = "sync_orders_update_start_value";
 	public static final String SYNC_ORDERS_UPDATE_START_MARKET = "sync_orders_update_start_market";
@@ -154,7 +155,7 @@ public class types
 			SYNC_ORDERS,
 			SYNC_ORDERS_CANCEL,
 			SYNC_ORDERS_PLACE,
-			SYNC_ORDERS_PLACE_MARKET, SYNC_ORDERS_PLACE_STOP, SYNC_ORDERS_PLACE_LIMIT,
+			SYNC_ORDERS_PLACE_MARKET, SYNC_ORDERS_PLACE_STOP, SYNC_ORDERS_PLACE_LIMIT, SYNC_ORDERS_PLACE_STOP_LIMIT,
 			SYNC_ORDERS_UPDATE,
 			SYNC_ORDERS_UPDATE_START_VALUE, SYNC_ORDERS_UPDATE_START_MARKET, SYNC_ORDERS_UPDATE_STOP_VALUE, 
 			SYNC_ORDERS_UPDATE_STOP_MARKET,

@@ -195,7 +195,7 @@ public class async_market extends parent_static
 	
 	private static boolean start(String symbol_, int data_type_, boolean is_snapshot_)
 	{
-		String symbol = common.normalise_symbol(symbol_);
+		String symbol = common.check_symbol(symbol_);
 		if (_stop_all || !strings.is_ok(symbol) || async.value_exists(_symbols, symbol_)) return false;
 		
 		int data_type = (market.data_is_ok(data_type_) ? data_type_ : DEFAULT_DATA_TYPE);
@@ -227,9 +227,9 @@ public class async_market extends parent_static
 
 	private static int add(String symbol_, int data_type_, boolean is_snapshot_)
 	{
-		int id = async.add_id((is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM));
-		
 		lock();
+		
+		int id = async.add_id((is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM), false);
 
 		_symbols.put(id, symbol_);
 		_data_types.put(id, data_type_);

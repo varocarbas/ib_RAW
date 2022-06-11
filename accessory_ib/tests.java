@@ -60,7 +60,7 @@ public class tests extends parent_tests
 		String name0 = class0.getName();
 		update_screen(name0, true, 1);
 		
-		String[] methods = new String[] { "get_next_id", "get_funds", "get_orders" };
+		String[] methods = new String[] { "get_order_id", "get_funds", "get_orders" };
 		
 		outputs.put(name0, run_methods(class0, methods));
 		
@@ -71,41 +71,60 @@ public class tests extends parent_tests
 		
 		class0 = sync_orders.class;
 		
-		String name = "place";
-		
-		String type = sync_orders.PLACE_LIMIT;
 		String symbol = symbols[0]; 
 		double quantity = 1;
 		double stop = 2100;
 		double start = 2500;
+		double start2 = 2400;
 		
-		ArrayList<Object> args = new ArrayList<Object>();
-		args.add(type);
-		args.add(symbol);
-		args.add(quantity);
-		args.add(stop);
-		args.add(start);
+		ArrayList<Object> args0 = new ArrayList<Object>();
+		args0.add(symbol);
+		args0.add(quantity);
+		args0.add(stop);
+		args0.add(start);
+
+		ArrayList<Object> args02 = new ArrayList<Object>();
+		args02.add(symbol);
 		
-		boolean is_ok = run_method(class0, name, new Class<?>[] { String.class, String.class, double.class, double.class, double.class }, args, null);
-		output.put(name, is_ok);	
+		String[] types = new String[] { sync_orders.PLACE_MARKET, sync_orders.PLACE_STOP, sync_orders.PLACE_LIMIT, sync_orders.PLACE_STOP_LIMIT };
 		
-		if (!is_ok) return outputs;
-		
-		misc.pause_secs(pause);
-		
-		name = "cancel";
-		
-		int id = sync_orders._last_id_main;
-		
-		args = new ArrayList<Object>();
-		args.add(id);
-		
-		is_ok = run_method(class0, name, new Class<?>[] { int.class }, args, null);
-		output.put(name, is_ok);		
+		for (String type: types)
+		{
+			String name = "place";
+			String name2 = name + "_" + type;
+			
+			ArrayList<Object> args = new ArrayList<Object>(args0);
+			args.add(0, type);
+			
+			boolean is_ok = false;
+			
+			if (type.equals(sync_orders.PLACE_STOP_LIMIT)) 
+			{
+				args.add(start2);
+				is_ok = run_method(class0, name, new Class<?>[] { String.class, String.class, double.class, double.class, double.class, double.class }, args, null);
+			}
+			else is_ok = run_method(class0, name, new Class<?>[] { String.class, String.class, double.class, double.class, double.class }, args, null);
+			
+			output.put(name2, is_ok);			
+			if (!is_ok) continue;
+			
+			misc.pause_secs(pause);
+			
+			name = "cancel";
+			name2 = name + "_" + type;
+			
+			int id = sync_orders._last_id_main;
+			
+			args = new ArrayList<Object>();
+			args.add(id);
+			
+			is_ok = run_method(class0, name, new Class<?>[] { int.class }, args, null);
+			output.put(name2, is_ok);			
+		}		
 		
 		return outputs;	
 	}
-
+	
 	public static HashMap<String, HashMap<String, Boolean>> run_async(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = new HashMap<String, HashMap<String, Boolean>>();

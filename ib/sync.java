@@ -37,8 +37,8 @@ public class sync extends parent_static
 	public static final String ERROR_GET = types.ERROR_IB_SYNC_GET;
 	public static final String ERROR_TIME = types.ERROR_IB_SYNC_TIME;
 
-	static int _id = WRONG_ID;
-	static int _id2 = WRONG_ID;
+	static int _req_id = WRONG_ID;
+	static int _order_id = WRONG_ID;
 	
 	private static volatile boolean _getting = false;
 	private static volatile double _out_decimal = numbers.DEFAULT_DECIMAL;
@@ -51,7 +51,7 @@ public class sync extends parent_static
 
 	public static String get_class_id() { return accessory.types.get_id(types.ID_SYNC); }
 
-	public static int get_next_id() { return (int)get(GET_ID); }
+	public static int get_order_id() { return (int)get(GET_ID); }
 	
 	public static double get_funds() { return (double)get(GET_FUNDS); }
 	
@@ -134,7 +134,7 @@ public class sync extends parent_static
 	
 	public static boolean is_ok() { return (_getting); }
 
-	public static boolean is_ok(int id_) { return (_getting && (_id == id_)); }
+	public static boolean is_ok(int id_) { return (_getting && (_req_id == id_)); }
 	
 	public static void end() { if (_getting) _getting = false; }
 	
@@ -145,7 +145,7 @@ public class sync extends parent_static
 		long timeout = DEFAULT_TIMEOUT; 
 		boolean cannot_fail = true; 
 		
-		if (sync_orders.is_place(type_)) _id = id_;
+		if (sync_orders.is_place(type_)) _req_id = id_;
 
 		return wait(timeout, cannot_fail, type_);
 	}
@@ -169,10 +169,8 @@ public class sync extends parent_static
 	private static HashMap<String, String> get_all_get_outs() { return _alls.SYNC_GET_OUTS; }
 
 	private static boolean execute_order(String type_, int id_, Contract contract_, Order order_)
-	{
-		if (!common.req_id_is_ok_sync(id_)) return false;
-	
-		_id = id_;
+	{	
+		_order_id = id_;
 
 		String type = type_;
 		boolean is_cancel = sync_orders.is_cancel(type);
@@ -265,7 +263,7 @@ public class sync extends parent_static
 
 		_get = get;
 		_out = get_all_get_outs().get(_get);		
-		_id = common.get_req_id(true);
+		_req_id = common.get_req_id(true);
 
 		return true;
 	}
@@ -280,7 +278,7 @@ public class sync extends parent_static
 		if (_get.equals(GET_FUNDS))
 		{	
 			//accountSummary, accountSummaryEnd
-			calls.reqAccountSummary(_id); 
+			calls.reqAccountSummary(_req_id); 
 		}
 		else if (_get.equals(GET_ORDERS))
 		{	
@@ -313,11 +311,9 @@ public class sync extends parent_static
 		boolean is_cancel = false;
 		
 		if (sync_orders.is_place(type_)) is_place = true;
-		else if (sync_orders.is_cancel(type_)) is_place = true;
+		else if (sync_orders.is_cancel(type_)) is_cancel = true;
 		else if (!strings.is_ok(type_)) is_get = true;
 		else return false;
-		
-		if (is_place || is_cancel) _id2 = _id;
 		
 		long start = dates.start_elapsed();
 		
@@ -330,11 +326,9 @@ public class sync extends parent_static
 					if (!(_get.equals(GET_ORDERS) && (_out_ints.size() != _out_strings.size()))) break;
 				}
 			}
-			//else if (_id2 != WRONG_ID && (is_place || is_cancel))
 			else if (is_place || is_cancel)
 			{
-				break;
-				//if ((is_place && order_is_submitted(_id2)) || (is_cancel && order_is_inactive(_id2))) break;
+				if ((is_place && order_is_submitted(_order_id)) || (is_cancel && order_is_inactive(_order_id))) break;
 			}
 			
 			if (dates.get_elapsed(start) >= timeout_) 
@@ -349,7 +343,6 @@ public class sync extends parent_static
 		}
 
 		if (is_get) _getting = false;
-		else if (is_place || is_cancel) _id2 = WRONG_ID;
 		
 		return is_ok;
 	}

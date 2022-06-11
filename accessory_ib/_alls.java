@@ -20,9 +20,6 @@ public class _alls extends parent_ini_first
 
 	public static String[] EXTERNAL_CONTRACTS_SECURITIES = null;
 	
-	public static int[] EXTERNAL_ERRORS_ERRORS = null;
-	public static int[] EXTERNAL_ERRORS_WARNINGS = null;
-	
 	public static int[] EXTERNAL_MARKET_TICKS = null;
 	public static int[] EXTERNAL_MARKET_HALTED = null;
 	public static int[] EXTERNAL_MARKET_DATA = null;
@@ -45,9 +42,6 @@ public class _alls extends parent_ini_first
 		ASYNC_MARKET_GENERICS = async_market.populate_all_generics();
 
 		EXTERNAL_CONTRACTS_SECURITIES = external_ib.contracts.populate_all_securities();
-		
-		EXTERNAL_ERRORS_ERRORS = external_ib.errors.populate_all_errors();
-		EXTERNAL_ERRORS_WARNINGS = external_ib.errors.populate_all_warnings();
 		
 		EXTERNAL_MARKET_TICKS = external_ib.market.populate_all_ticks();
 		EXTERNAL_MARKET_HALTED = external_ib.market.populate_all_halted();

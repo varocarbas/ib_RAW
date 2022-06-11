@@ -21,6 +21,7 @@ public class sync_orders extends parent_static
 	public static final String PLACE_MARKET = types.SYNC_ORDERS_PLACE_MARKET;
 	public static final String PLACE_STOP = types.SYNC_ORDERS_PLACE_STOP;
 	public static final String PLACE_LIMIT = types.SYNC_ORDERS_PLACE_LIMIT;
+	public static final String PLACE_STOP_LIMIT = types.SYNC_ORDERS_PLACE_STOP_LIMIT;
 	public static final String UPDATE = types.SYNC_ORDERS_UPDATE;
 	public static final String UPDATE_START_VALUE = types.SYNC_ORDERS_UPDATE_START_VALUE;
 	public static final String UPDATE_START_MARKET = types.SYNC_ORDERS_UPDATE_START_MARKET;
@@ -33,8 +34,8 @@ public class sync_orders extends parent_static
 	public static final String STATUS_ACTIVE = types.SYNC_ORDERS_STATUS_ACTIVE;
 	public static final String STATUS_INACTIVE = types.SYNC_ORDERS_STATUS_INACTIVE;
 
-	public static final double WRONG_VALUE = 0.0;
-
+	public static final double WRONG_VALUE = order.WRONG_VALUE;
+	
 	public static HashMap<Integer, Long> _cancellations = new HashMap<Integer, Long>();
 	public static int _last_id_main = 0;
 	public static int _last_id_sec = 0;
@@ -43,6 +44,8 @@ public class sync_orders extends parent_static
 	
 	public static String get_class_id() { return accessory.types.get_id(types.ID_SYNC_ORDERS); }
 	
+	public static boolean place(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_) { return place_update(new order(type_place_, symbol_, quantity_, stop_, start_, start2_)); }
+
 	public static boolean place(String type_place_, String symbol_, double quantity_, double stop_, double start_) { return place_update(new order(type_place_, symbol_, quantity_, stop_, start_)); }
 
 	public static boolean update(String type_update_, String symbol_) { return update(type_update_, symbol_, WRONG_VALUE); }
@@ -55,13 +58,17 @@ public class sync_orders extends parent_static
 		return ((order == null || !strings.is_ok(type)) ? place_update(order, type, val_) : false);
 	}
 	
-	public static void cancel(int id_)
+	public static boolean cancel(int id_)
 	{
-		if (!arrays.value_exists(get_ids(STATUS_SUBMITTED), id_)) return;
+		boolean is_ok = true; 
+		if (!arrays.value_exists(get_ids(STATUS_SUBMITTED), id_)) return is_ok;
 
 		_cancellations = new HashMap<Integer, Long>(common.start_wait(order.get_id_sec(id_), common.start_wait(id_, _cancellations)));
 		
-		if (sync.cancel_order(id_)) remove_global(id_);			
+		is_ok = sync.cancel_order(id_);
+		if (is_ok) remove_global(id_);	
+		
+		return is_ok;
 	}
 	
 	public static boolean is_cancelling(int id_)
@@ -177,10 +184,10 @@ public class sync_orders extends parent_static
 	private static order get_order(String symbol_)
 	{
 		sync_global();
-		
-		String symbol = common.normalise_symbol(symbol_);
+
+		String symbol = common.check_symbol(symbol_);
 		if (!strings.is_ok(symbol)) return null;
-		
+
 		for (Entry<Integer, order> item: _orders.entrySet())
 		{
 			if (symbol.equals(item.getValue().get_symbol())) return (new order(item.getValue()));
@@ -213,8 +220,8 @@ public class sync_orders extends parent_static
 
 		String update_type = check_update(update_type_);
 		boolean is_update = strings.is_ok(update_type);
-		if (is_update && update_val_ != WRONG_VALUE) return false;
-			
+		if (is_update && update_val_ <= WRONG_VALUE) return false;
+		
 		Contract contract = contracts.get_contract(order_.get_symbol());
 		if (contract == null) return false;
 
