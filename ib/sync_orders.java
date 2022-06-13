@@ -43,10 +43,14 @@ public class sync_orders extends parent_static
 	private static HashMap<Integer, order> _orders = new HashMap<Integer, order>();
 	
 	public static String get_class_id() { return accessory.types.get_id(types.ID_SYNC_ORDERS); }
-	
-	public static boolean place(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_) { return place_update(new order(type_place_, symbol_, quantity_, stop_, start_, start2_)); }
 
-	public static boolean place(String type_place_, String symbol_, double quantity_, double stop_, double start_) { return place_update(new order(type_place_, symbol_, quantity_, stop_, start_)); }
+	public static boolean place_market(String symbol_, double quantity_, double stop_) { return place(PLACE_MARKET, symbol_, quantity_, stop_, WRONG_VALUE); }
+
+	public static boolean place_stop(String symbol_, double quantity_, double stop_, double start_) { return place(PLACE_STOP, symbol_, quantity_, stop_, start_); }
+
+	public static boolean place_limit(String symbol_, double quantity_, double stop_, double start_) { return place(PLACE_LIMIT, symbol_, quantity_, stop_, start_); }
+	
+	public static boolean place_stop_limit(String symbol_, double quantity_, double stop_, double start_limit_, double start_stop_) { return place_update(new order(PLACE_STOP_LIMIT, symbol_, quantity_, stop_, start_limit_, start_stop_)); }
 
 	public static boolean update(String type_update_, String symbol_) { return update(type_update_, symbol_, WRONG_VALUE); }
 	
@@ -135,6 +139,8 @@ public class sync_orders extends parent_static
 	}
 	
 	static void sync_global(HashMap<Integer, String> orders_) { sync_global(get_ids(STATUS_ACTIVE, orders_, false)); }
+
+	private static boolean place(String type_place_, String symbol_, double quantity_, double stop_, double start_) { return place_update(new order(type_place_, symbol_, quantity_, stop_, start_)); }
 	
 	private static void sync_global() { sync_global(get_ids(STATUS_ACTIVE)); }
 
@@ -265,7 +271,7 @@ public class sync_orders extends parent_static
 
 		if (!is_update) 
 		{
-			if (!sync.wait(main, PLACE)) return false;
+			if (!sync.wait_orders(PLACE)) return false;
 			
 			add_order(main, order_);
 		}

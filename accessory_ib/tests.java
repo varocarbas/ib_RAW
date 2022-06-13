@@ -2,9 +2,11 @@ package accessory_ib;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import accessory.arrays;
 import accessory.misc;
+import accessory.numbers;
 import accessory.parent_tests;
 import ib.async_market;
 import ib.conn;
@@ -66,16 +68,19 @@ public class tests extends parent_tests
 		
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
 
-		String[] symbols = get_symbols();
+		Entry<String, Double> symbol_info = get_symbol(0);
 		int pause = 5;
 		
 		class0 = sync_orders.class;
 		
-		String symbol = symbols[0]; 
+		numbers._round_decimals = 2;
+		String symbol = symbol_info.getKey(); 
+		
 		double quantity = 1;
-		double stop = 2100;
-		double start = 2500;
-		double start2 = 2400;
+		double price = symbol_info.getValue();
+		double stop = numbers.apply_perc(price, -20, true);
+		double start = numbers.apply_perc(price, 10, true);
+		double start2 = numbers.apply_perc(price, 5, true);
 		
 		ArrayList<Object> args0 = new ArrayList<Object>();
 		args0.add(symbol);
@@ -85,33 +90,40 @@ public class tests extends parent_tests
 
 		ArrayList<Object> args02 = new ArrayList<Object>();
 		args02.add(symbol);
+
+		Object target = true;
 		
-		String[] types = new String[] { sync_orders.PLACE_MARKET, sync_orders.PLACE_STOP, sync_orders.PLACE_LIMIT, sync_orders.PLACE_STOP_LIMIT };
+		HashMap<String, String> items = new HashMap<String, String>();
+		items.put(sync_orders.PLACE_MARKET, "place_market");
+		items.put(sync_orders.PLACE_STOP, "place_stop");
+		items.put(sync_orders.PLACE_LIMIT, "place_limit");
+		items.put(sync_orders.PLACE_STOP_LIMIT, "place_stop_limit");
 		
-		for (String type: types)
+		for (Entry<String, String> item: items.entrySet())
 		{
-			String name = "place";
-			String name2 = name + "_" + type;
+			String type = item.getKey();
+			String name = item.getValue();
 			
 			ArrayList<Object> args = new ArrayList<Object>(args0);
-			args.add(0, type);
-			
+				
 			boolean is_ok = false;
 			
-			if (type.equals(sync_orders.PLACE_STOP_LIMIT)) 
-			{
+			if (name.equals("place_stop_limit")) 
+			{				
 				args.add(start2);
-				is_ok = run_method(class0, name, new Class<?>[] { String.class, String.class, double.class, double.class, double.class, double.class }, args, null);
+				
+				is_ok = run_method(class0, name, new Class<?>[] { String.class, double.class, double.class, double.class, double.class }, args, target);
 			}
-			else is_ok = run_method(class0, name, new Class<?>[] { String.class, String.class, double.class, double.class, double.class }, args, null);
+			else if (name.equals("place_market")) is_ok = run_method(class0, name, new Class<?>[] { String.class, double.class, double.class }, args, target);
+			else is_ok = run_method(class0, name, new Class<?>[] { String.class, double.class, double.class, double.class }, args, target);
 			
-			output.put(name2, is_ok);			
+			output.put(name, is_ok);			
 			if (!is_ok) continue;
 			
 			misc.pause_secs(pause);
 			
 			name = "cancel";
-			name2 = name + "_" + type;
+			String name2 = name + "_" + type;
 			
 			int id = sync_orders._last_id_main;
 			
@@ -135,15 +147,15 @@ public class tests extends parent_tests
 		String name0 = class0.getName();
 		update_screen(name0, true, 1);
 
-		String[] symbols = get_symbols();
 		int pause1 = 5;
 		int pause2 = 5;
 		
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
 		String name = "start_snapshot";
 		
+		int symbol_i = 0;
 		ArrayList<Object> args = new ArrayList<Object>();
-		args.add(symbols[0]);
+		args.add(get_symbol(symbol_i).getKey());
 
 		boolean is_ok = run_method(class0, name, new Class<?>[] { String.class }, args, null);
 		
@@ -152,8 +164,10 @@ public class tests extends parent_tests
 
 		name = "start_stream";
 		
+		symbol_i++;
+		
 		args = new ArrayList<Object>();
-		args.add(symbols[1]);
+		args.add(get_symbol(symbol_i).getKey());
 
 		is_ok = run_method(class0, name, new Class<?>[] { String.class }, args, null);
 		
@@ -168,5 +182,32 @@ public class tests extends parent_tests
 		return outputs;
 	}
 	
-	private static String[] get_symbols() { return new String[] { "GOOG", "AAPL" }; }
+	private static Entry<String, Double> get_symbol(int i_) 
+	{ 
+		HashMap<String, Double> all = get_symbols();
+		
+		int i = i_;
+		int max_i = all.size() - 1;
+		if (i > max_i) i = max_i;
+		
+		int i2 = -1;
+		
+		for (Entry<String, Double> item: all.entrySet())
+		{
+			i2++;
+			if (i == i2) return item;
+		}
+		
+		return null;
+	}
+	
+	private static HashMap<String, Double> get_symbols() 
+	{ 
+		HashMap<String, Double> output = new HashMap<String, Double>();
+		
+		output.put("GOOG", 2200.0);
+		output.put("AAPL", 120.0);
+
+		return output;
+	}
 }

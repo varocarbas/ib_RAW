@@ -1,5 +1,7 @@
 package external_ib;
 
+import accessory.numbers;
+
 public class errors 
 {
 	//------ To be synced with the corresponding get_all_[...]() methods.
@@ -18,5 +20,5 @@ public class errors
 
 	//------
 
-	public static boolean is_warning(int code_) { return (code_ >= MIN_WARNING && code_ <= MAX_WARNING); }
+	public static boolean is_warning(int code_) { return numbers.is_ok(code_, MIN_WARNING, MAX_WARNING); }
 }

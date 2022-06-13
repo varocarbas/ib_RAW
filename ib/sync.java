@@ -34,8 +34,7 @@ public class sync extends parent_static
 
 	public static final long DEFAULT_TIMEOUT = _defaults.SYNC_TIMEOUT;
 
-	public static final String ERROR_GET = types.ERROR_IB_SYNC_GET;
-	public static final String ERROR_TIME = types.ERROR_IB_SYNC_TIME;
+	public static final String ERROR_TIMEOUT = types.ERROR_IB_SYNC_TIMEOUT;
 
 	static int _req_id = WRONG_ID;
 	static int _order_id = WRONG_ID;
@@ -115,8 +114,7 @@ public class sync extends parent_static
 		String type = check_error(type_);
 		if (!strings.is_ok(type)) return message;
 		
-		if (type.equals(ERROR_GET)) message = "Wrong sync_get type";
-		else if (type.equals(ERROR_TIME)) message = "Retrieval timed out";
+		if (type.equals(ERROR_TIMEOUT)) message = (strings.is_ok(_get) ? _get : "get method") + " timed out";
 
 		return message;	
 	}
@@ -137,18 +135,8 @@ public class sync extends parent_static
 	public static boolean is_ok(int id_) { return (_getting && (_req_id == id_)); }
 	
 	public static void end() { if (_getting) _getting = false; }
-	
-	public static boolean wait(int id_, String type_)
-	{
-		if (!strings.is_ok(type_)) return false;
-		
-		long timeout = DEFAULT_TIMEOUT; 
-		boolean cannot_fail = true; 
-		
-		if (sync_orders.is_place(type_)) _req_id = id_;
 
-		return wait(timeout, cannot_fail, type_);
-	}
+	public static boolean wait_orders(String type_) { return wait(DEFAULT_TIMEOUT, true, type_); }
 	
 	static boolean cancel_order(int id_) { return execute_order(sync_orders.CANCEL, id_, null, null); }
 
@@ -161,9 +149,8 @@ public class sync extends parent_static
 		HashMap<Integer, String> orders = new HashMap<Integer, String>(get_orders());
 
 		String status = (String)arrays.get_value(orders, id_);
-		if (!strings.is_ok(status)) return strings.are_equal(target_, sync_orders.STATUS_INACTIVE);
 
-		return sync_orders.is_status(status, target_);
+		return (strings.is_ok(status) ? sync_orders.is_status(status, target_) : strings.are_equal(target_, sync_orders.STATUS_INACTIVE));
 	}
 	
 	private static HashMap<String, String> get_all_get_outs() { return _alls.SYNC_GET_OUTS; }
@@ -175,13 +162,13 @@ public class sync extends parent_static
 		String type = type_;
 		boolean is_cancel = sync_orders.is_cancel(type);
 		
-		if (is_cancel) calls.cancelOrder(id_);
+		if (is_cancel) calls.cancelOrder(_order_id);
 		else 
 		{
 			if (contract_ == null || order_ == null) return false;
 			
 			type = null;
-			calls.placeOrder(id_, contract_, order_);
+			calls.placeOrder(_order_id, contract_, order_);
 		}
 
 		boolean wait = (is_cancel || strings.is_ok(type));
@@ -249,19 +236,7 @@ public class sync extends parent_static
 
 	private static boolean ini_is_ok(String get_)
 	{
-		String get = check_get(get_);
-		
-		String error = null;
-		if (!strings.is_ok(get)) error = ERROR_GET;
-
-		if (error != null)
-		{
-			accessory_ib.errors.manage(error);
-
-			return false;
-		}
-
-		_get = get;
+		_get = get_;
 		_out = get_all_get_outs().get(_get);		
 		_req_id = common.get_req_id(true);
 
@@ -299,8 +274,6 @@ public class sync extends parent_static
 	}
 
 	private static boolean wait_get(long timeout_, boolean cannot_fail_) { return wait(timeout_, cannot_fail_, null); }	
-
-	private static boolean wait_orders(String type_) { return wait(DEFAULT_TIMEOUT, true, type_); }
 	
 	private static boolean wait(long timeout_, boolean cannot_fail_, String type_)
 	{
@@ -333,7 +306,7 @@ public class sync extends parent_static
 			
 			if (dates.get_elapsed(start) >= timeout_) 
 			{
-				if (cannot_fail_) errors.manage(ERROR_TIME);
+				if (cannot_fail_) errors.manage(ERROR_TIMEOUT);
 				is_ok = false;
 
 				break;

@@ -101,8 +101,7 @@ public class types
 	public static final String ERROR_IB_CONN_TYPE = "error_ib_conn_type";
 	public static final String ERROR_IB_CONN_GENERIC = "error_ib_conn_generic";
 	public static final String ERROR_IB_SYNC = "error_ib_sync";
-	public static final String ERROR_IB_SYNC_GET = "error_ib_sync_get";
-	public static final String ERROR_IB_SYNC_TIME = "error_ib_sync_time";
+	public static final String ERROR_IB_SYNC_TIMEOUT = "error_ib_sync_timeout";
 	public static final String ERROR_IB_CONTRACTS = "error_ib_contracts";
 	public static final String ERROR_IB_CONTRACTS_INFO = "error_ib_contracts_info";
 	
@@ -174,7 +173,7 @@ public class types
 			ERROR_IB_CONN,
 			ERROR_IB_CONN_NONE, ERROR_IB_CONN_ID, ERROR_IB_CONN_TYPE, ERROR_IB_CONN_GENERIC,
 			ERROR_IB_SYNC,
-			ERROR_IB_SYNC_GET, ERROR_IB_SYNC_TIME,
+			ERROR_IB_SYNC_TIMEOUT,
 			ERROR_IB_CONTRACTS_INFO
 		};		
 	}
