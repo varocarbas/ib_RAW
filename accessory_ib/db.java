@@ -32,7 +32,9 @@ public class db
 	public static final String FIELD_ENABLED = types.CONFIG_DB_FIELD_ENABLED;
 
 	public static final String DEFAULT_SOURCE = SOURCE_MARKET;
-
+	public static final String DEFAULT_DB = types.CONFIG_DB_IB;
+	public static final String DEFAULT_DB_NAME = accessory.db.DEFAULT_DB_NAME;
+	
 	public static HashMap<String, String> get_vals(String symbol_) { return get_vals(DEFAULT_SOURCE, symbol_); }
 	
 	public static HashMap<String, String> get_vals(String source_, String symbol_) { return accessory.db.select_one(source_, null, get_where_symbol(symbol_), null); }

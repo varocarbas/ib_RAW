@@ -19,7 +19,7 @@ public class errors
 	
 	public static final String ERROR_GENERIC = types.ERROR_IB_GENERIC;
 	
-	public static final String DEFAULT_WARNING = _defaults.ERRORS_WARNING;
+	public static final String DEFAULT_WARNING = "WARNING";
 
 	public static void wrapper_error(int id_, int code_, String message_)
 	{

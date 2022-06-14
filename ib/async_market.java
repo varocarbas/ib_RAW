@@ -9,7 +9,6 @@ import accessory.arrays;
 import accessory.parent_static;
 import accessory.strings;
 import accessory_ib._alls;
-import accessory_ib._defaults;
 import accessory_ib.config;
 import accessory_ib.db;
 import accessory_ib.types;
@@ -36,7 +35,9 @@ public class async_market extends parent_static
 	public static final int ASK_SIZE = market.TICK_ASK_SIZE;
 	public static final int BID_SIZE = market.TICK_BID_SIZE;
 
-	public static final int DEFAULT_DATA_TYPE = _defaults.ASYNC_DATA_TYPE;
+	public static final int DEFAULT_DATA_TYPE = market.DATA_LIVE;
+	public static final boolean DEFAULT_SNAPSHOT_QUICK = true;
+	public static final boolean DEFAULT_SNAPSHOT_NONSTOP = true;
 	
 	public static boolean _print_all = true;
 	public static boolean _enable_db_quick = true; //Use carefully! It relies on col-based/no-data-checks db methods (i.e., "_quick" ones). 

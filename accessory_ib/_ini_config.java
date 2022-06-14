@@ -3,6 +3,10 @@ package accessory_ib;
 import java.util.HashMap;
 
 import accessory.parent_ini_config;
+import external_ib.contracts;
+import external_ib.orders;
+import ib.async_market;
+import ib.conn;
 
 public class _ini_config extends parent_ini_config 
 {
@@ -25,8 +29,8 @@ public class _ini_config extends parent_ini_config
 		String type = types.CONFIG_CONN;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(types.CONFIG_CONN_TYPE, _defaults.CONN_TYPE);
-		vals.put(types.CONFIG_CONN_ID, _defaults.CONN_ID);
+		vals.put(types.CONFIG_CONN_TYPE, conn.DEFAULT_TYPE);
+		vals.put(types.CONFIG_CONN_ID, conn.DEFAULT_ID);
 
 		return populate(type, null, vals);
 	}
@@ -37,8 +41,8 @@ public class _ini_config extends parent_ini_config
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
-		vals.put(types.CONFIG_ORDER_TIF, _defaults.ORDER_TIF);
-		vals.put(types.CONFIG_ORDER_QUANTITIES_INT, _defaults.ORDER_QUANTITIES_INT);
+		vals.put(types.CONFIG_ORDER_TIF, orders.DEFAULT_TIF);
+		vals.put(types.CONFIG_ORDER_QUANTITIES_INT, orders.DEFAULT_QUANTITIES_INT);
 
 		return populate(type, null, vals);
 	}
@@ -48,8 +52,8 @@ public class _ini_config extends parent_ini_config
 		String type = types.CONFIG_ASYNC;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK, _defaults.ASYNC_SNAPSHOT_QUICK);
-		vals.put(types.CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP, _defaults.ASYNC_SNAPSHOT_NONSTOP);
+		vals.put(types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK, async_market.DEFAULT_SNAPSHOT_QUICK);
+		vals.put(types.CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP, async_market.DEFAULT_SNAPSHOT_NONSTOP);
 		
 		return populate(type, null, vals);
 	}
@@ -60,11 +64,12 @@ public class _ini_config extends parent_ini_config
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
-		vals.put(types.CONFIG_CONTRACT_CURRENCY, _defaults.CONTRACT_CURRENCY);
-		vals.put(types.CONFIG_CONTRACT_SECURITY_TYPE, _defaults.CONTRACT_SECURITY_TYPE);
-		vals.put(types.CONFIG_CONTRACT_EXCHANGE, _defaults.CONTRACT_EXCHANGE);
-		vals.put(types.CONFIG_CONTRACT_PRIMARY_EXCHANGE, _defaults.CONTRACT_PRIMARY_EXCHANGE);
-		
+		vals.put(types.CONFIG_CONTRACT_CURRENCY, contracts.DEFAULT_CURRENCY);
+		vals.put(types.CONFIG_CONTRACT_SECURITY_TYPE, contracts.DEFAULT_SECURITY_TYPE);
+		vals.put(types.CONFIG_CONTRACT_EXCHANGE, contracts.DEFAULT_EXCHANGE);
+		vals.put(types.CONFIG_CONTRACT_EXCHANGE_PRIMARY, contracts.DEFAULT_EXCHANGE_PRIMARY);
+		vals.put(types.CONFIG_CONTRACT_EXCHANGE_COUNTRY, contracts.DEFAULT_EXCHANGE_COUNTRY);
+
 		return populate(type, null, vals);
 	}
 }

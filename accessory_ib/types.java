@@ -24,8 +24,10 @@ public class types
 	public static final String CONFIG_CONTRACT_SECURITY_TYPE = "config_contract_security_type";
 	public static final String CONFIG_CONTRACT_CURRENCY = "config_contract_currency";
 	public static final String CONFIG_CONTRACT_EXCHANGE = "config_contract_exchange";
-	public static final String CONFIG_CONTRACT_PRIMARY_EXCHANGE = "config_contract_primary_exchange";
-
+	public static final String CONFIG_CONTRACT_EXCHANGE_PRIMARY = "config_contract_exchange_primary";
+	public static final String CONFIG_CONTRACT_EXCHANGE_COUNTRY = "config_contract_exchange_country";
+	public static final String CONFIG_CONTRACT_EXCHANGE_COUNTRY_US = "config_contract_exchange_country_us";
+	
 	public static final String CONFIG_DB_FIELD = "config_db_field";
 	public static final String CONFIG_DB_FIELD_SIZE = "config_db_field_size";
 	public static final String CONFIG_DB_FIELD_TIME = "config_db_field_time";
@@ -69,8 +71,10 @@ public class types
 	public static final String SYNC_ORDERS_PLACE_LIMIT = "sync_orders_place_limit";
 	public static final String SYNC_ORDERS_PLACE_STOP_LIMIT = "sync_orders_place_stop_limit";
 	public static final String SYNC_ORDERS_UPDATE = "sync_orders_update";
+	public static final String SYNC_ORDERS_UPDATE_START = "sync_orders_update_start";
 	public static final String SYNC_ORDERS_UPDATE_START_VALUE = "sync_orders_update_start_value";
 	public static final String SYNC_ORDERS_UPDATE_START_MARKET = "sync_orders_update_start_market";
+	public static final String SYNC_ORDERS_UPDATE_STOP = "sync_orders_update_stop";
 	public static final String SYNC_ORDERS_UPDATE_STOP_VALUE = "sync_orders_update_stop_value";
 	public static final String SYNC_ORDERS_UPDATE_STOP_MARKET = "sync_orders_update_stop_market";
 	public static final String SYNC_ORDERS_STATUS = "sync_orders_status";
@@ -103,7 +107,7 @@ public class types
 	public static final String ERROR_IB_SYNC = "error_ib_sync";
 	public static final String ERROR_IB_SYNC_TIMEOUT = "error_ib_sync_timeout";
 	public static final String ERROR_IB_CONTRACTS = "error_ib_contracts";
-	public static final String ERROR_IB_CONTRACTS_INFO = "error_ib_contracts_info";
+	public static final String ERROR_IB_CONTRACTS_INFO_STOCK_ETF = "error_ib_contracts_info_stock_etf";
 	
 	static String[] populate_all_types()
 	{		
@@ -126,7 +130,10 @@ public class types
 			
 			CONFIG_CONTRACT,
 			CONFIG_CONTRACT_SECURITY_TYPE, CONFIG_CONTRACT_CURRENCY, 
-			CONFIG_CONTRACT_EXCHANGE, CONFIG_CONTRACT_PRIMARY_EXCHANGE,
+			CONFIG_CONTRACT_EXCHANGE,
+			CONFIG_CONTRACT_EXCHANGE_PRIMARY, 
+			CONFIG_CONTRACT_EXCHANGE_COUNTRY,
+			CONFIG_CONTRACT_EXCHANGE_COUNTRY_US,
 			
 			CONFIG_DB_FIELD, 
 			CONFIG_DB_FIELD_SIZE, CONFIG_DB_FIELD_TIME, CONFIG_DB_FIELD_SYMBOL, 
@@ -145,7 +152,7 @@ public class types
 			ID_SYNC,
 			ID_SYNC_ORDERS,
 			ID_COMMON, ID_CONN, ID_CALLS,
-
+				
 			SYNC,
 			SYNC_GET,
 			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_ORDERS,
@@ -156,8 +163,10 @@ public class types
 			SYNC_ORDERS_PLACE,
 			SYNC_ORDERS_PLACE_MARKET, SYNC_ORDERS_PLACE_STOP, SYNC_ORDERS_PLACE_LIMIT, SYNC_ORDERS_PLACE_STOP_LIMIT,
 			SYNC_ORDERS_UPDATE,
-			SYNC_ORDERS_UPDATE_START_VALUE, SYNC_ORDERS_UPDATE_START_MARKET, SYNC_ORDERS_UPDATE_STOP_VALUE, 
-			SYNC_ORDERS_UPDATE_STOP_MARKET,
+			SYNC_ORDERS_UPDATE_START,
+			SYNC_ORDERS_UPDATE_START_VALUE, SYNC_ORDERS_UPDATE_START_MARKET, 
+			SYNC_ORDERS_UPDATE_STOP,
+			SYNC_ORDERS_UPDATE_STOP_VALUE, SYNC_ORDERS_UPDATE_STOP_MARKET,
 			SYNC_ORDERS_STATUS,
 			SYNC_ORDERS_STATUS_SUBMITTED, SYNC_ORDERS_STATUS_FILLED, SYNC_ORDERS_STATUS_ACTIVE, SYNC_ORDERS_STATUS_INACTIVE,
 			
@@ -174,7 +183,7 @@ public class types
 			ERROR_IB_CONN_NONE, ERROR_IB_CONN_ID, ERROR_IB_CONN_TYPE, ERROR_IB_CONN_GENERIC,
 			ERROR_IB_SYNC,
 			ERROR_IB_SYNC_TIMEOUT,
-			ERROR_IB_CONTRACTS_INFO
+			ERROR_IB_CONTRACTS_INFO_STOCK_ETF
 		};		
 	}
 }

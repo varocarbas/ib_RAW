@@ -15,7 +15,9 @@ public class contracts
 	public static final String SECURITY_TYPE = types.CONFIG_CONTRACT_SECURITY_TYPE;
 	public static final String CURRENCY = types.CONFIG_CONTRACT_CURRENCY;
 	public static final String EXCHANGE = types.CONFIG_CONTRACT_EXCHANGE;
-	public static final String PRIMARY_EXCHANGE = types.CONFIG_CONTRACT_PRIMARY_EXCHANGE;
+	public static final String EXCHANGE_PRIMARY = types.CONFIG_CONTRACT_EXCHANGE_PRIMARY;
+	public static final String EXCHANGE_COUNTRY = types.CONFIG_CONTRACT_EXCHANGE_COUNTRY;
+	public static final String EXCHANGE_COUNTRY_US = types.CONFIG_CONTRACT_EXCHANGE_COUNTRY_US;
 
 	//--- To be synced with the contract.SecType values (https://interactivebrokers.github.io/tws-api/classIBApi_1_1Contract.html).
 	public static final String SECURITY_STOCK_ETF = "STK";
@@ -31,17 +33,50 @@ public class contracts
 	public static final String SECURITY_NEWS = "NEWS";
 	public static final String SECURITY_MUTUAL_FUND = "FUND";
 	//---
+
+	public static final int MAX_LENGTH_SYMBOL_US_STOCKS = 4;
+	public static final int MAX_LENGTH_SYMBOL_US_ANY = 5;
+
+	public static final String DEFAULT_EXCHANGE_COUNTRY = EXCHANGE_COUNTRY_US;
+	public static final String DEFAULT_SECURITY_TYPE = contracts.SECURITY_STOCK_ETF;
+	public static final String DEFAULT_CURRENCY = "USD";
+	public static final String DEFAULT_EXCHANGE = "SMART";
+	public static final String DEFAULT_EXCHANGE_PRIMARY = "ISLAND";
 	
-	public static final String ERROR_INFO = types.ERROR_IB_CONTRACTS_INFO;
+	public static final String ERROR_INFO_STOCK_ETF = types.ERROR_IB_CONTRACTS_INFO_STOCK_ETF;
 	
 	public static Contract get_contract(String symbol_)
-	{
+	{	
+		Contract contract = null;
+		
 		String security = (String)config.get_contract(SECURITY_TYPE);
+		if (!security_is_ok(security)) return contract;
+		
+		String country = (String)config.get_contract(EXCHANGE_COUNTRY);
+		boolean is_us = strings.are_equal(country, EXCHANGE_COUNTRY_US);
+		
+		int length = strings.get_length(symbol_);
+		if (length < 1 || (is_us && (length > MAX_LENGTH_SYMBOL_US_ANY))) return null;
+		
+		if (security.equals(SECURITY_STOCK_ETF)) 
+		{
+			if (is_us && (length > MAX_LENGTH_SYMBOL_US_STOCKS)) return null;
+			
+			contract = get_contract_stock_etf(symbol_);
+		}
+		
+		return contract;
+	}
+
+	private static Contract get_contract_stock_etf(String symbol_)
+	{		
+		String security = SECURITY_STOCK_ETF;
+		
 		String currency = (String)config.get_contract(CURRENCY);
 		String exchange = (String)config.get_contract(EXCHANGE);
-		String primary_exchange = (String)config.get_contract(PRIMARY_EXCHANGE);
+		String exchange_primary = (String)config.get_contract(EXCHANGE_PRIMARY);
 		
-		if (!strings.is_ok(symbol_) || !external_ib.contracts.security_is_ok(security) || !strings.are_ok(new String[] { currency, exchange, primary_exchange })) 
+		if (!strings.are_ok(new String[] { currency, exchange, exchange_primary })) 
 		{
 			HashMap<String, Object> info = new HashMap<String, Object>();
 			
@@ -49,9 +84,9 @@ public class contracts
 			info.put("security", security);
 			info.put("currency", currency);
 			info.put("exchange", exchange);
-			info.put("primary_exchange", primary_exchange);
+			info.put("exchange_primary", exchange_primary);
 			
-			accessory_ib.errors.manage(ERROR_INFO, info);
+			accessory_ib.errors.manage(ERROR_INFO_STOCK_ETF, info);
 			
 			return null;
 		}
@@ -62,11 +97,11 @@ public class contracts
 		contract.secType(security);
 		contract.currency(currency);
 		contract.exchange(exchange);	
-		contract.primaryExch(primary_exchange);
+		contract.primaryExch(exchange_primary);
 
 		return contract;
 	}
-
+	
 	public static boolean security_is_ok(String security_) { return arrays.value_exists(get_all_securities(), security_); }
 
 	public static String[] populate_all_securities() 

@@ -47,7 +47,10 @@ public class orders
 	public static final String STATUS_FILLED = "Filled"; //Indicates that the order has been completely filled. Market orders executions will not always trigger a Filled status.
 	public static final String STATUS_INACTIVE = "Inactive"; //Indicates that the order was received by the system but is no longer active because it was rejected or canceled.
 	//---
-	
+
+	public static final String DEFAULT_TIF = orders.TIF_GTC; 
+	public static final boolean DEFAULT_QUANTITIES_INT = true;
+
 	public static Order get_order_new(order order_, boolean is_main_) { return get_order(order_, is_main_, null, sync_orders.WRONG_VALUE, false); }
 	
 	public static Order get_order_update(order order_, String update_type_, double update_val_, boolean is_main_) { return get_order(order_, is_main_, update_type_, update_val_, true); }
@@ -84,20 +87,24 @@ public class orders
 	
 	private static Order get_order(order order_, boolean is_main_, String update_type_, double update_val_, boolean is_update_)
 	{
-		Order output = null;
-		if (!order.is_ok(order_)) return output;
+		if (!order.is_ok(order_)) return null;
+
+		String type = get_type(order_, is_main_, update_type_, is_update_);
+
+		if (!strings.is_ok(type)) return null;
 		
+		boolean is_market = type.equals(TYPE_MARKET);
 		int id = order_.get_id(is_main_);
-		boolean is_market = order_.is_market();
 		
 		String tif = order.get_tif();
-		if (!strings.is_ok(tif)) return output;
+		if (!strings.is_ok(tif)) return null;
 
 		double quantity = order_.get_quantity();
-		if (quantity <= 0) return output;
+		if (quantity <= 0) return null;
 		
-		output = new Order();
+		Order output = new Order();
 
+		output.orderType(type);
 		output.orderId(id);
 		output.tif(tif);	
 		output.totalQuantity(quantity);
@@ -108,55 +115,43 @@ public class orders
 		
 		if (is_update_)
 		{
-			if (update_val_ == sync_orders.WRONG_VALUE) return null;
+			if (update_val_ == sync_orders.WRONG_VALUE && !is_market) return null;
 			
-			boolean start_market = strings.are_equal(update_type_, sync_orders.UPDATE_START_MARKET);
-			boolean stop_market = strings.are_equal(update_type_, sync_orders.UPDATE_STOP_MARKET);
-			boolean start_value = strings.are_equal(update_type_, sync_orders.UPDATE_START_VALUE);
-			boolean stop_value = strings.are_equal(update_type_, sync_orders.UPDATE_STOP_VALUE);
-			
-			if (start_market || start_value)
-			{
-				if (is_main_) 
-				{
-					val = update_val_;
-					is_market = start_market;
-				}
-			}
-			else if (stop_market || stop_value)
-			{
-				if (!is_main_)
-				{
-					val = update_val_;
-					is_market = stop_market;
-				}
-			}
+			val = update_val_;
 		}
+		if ((val <= sync_orders.WRONG_VALUE && !type.equals(TYPE_MARKET)) || (val2 <= sync_orders.WRONG_VALUE && type.equals(TYPE_STOP_LIMIT))) return null;
 
 		String action = ACTION_BUY;
 		if (!is_main_ || (is_update_ && is_market)) action = ACTION_SELL;
-		output.action(action);
-		
-		if (is_market && (is_main_ || is_update_)) output.orderType(TYPE_MARKET);
-		else
+		output.action(action);		
+
+		if (type.equals(TYPE_STOP)) output.auxPrice(val);	
+		else if (type.equals(TYPE_LIMIT) || type.equals(TYPE_STOP_LIMIT)) 
 		{
-			String type = TYPE_STOP;
-			if (is_main_ && order_.is_limit()) type = TYPE_LIMIT;
-			if (is_main_ && order_.is_stop_limit()) type = TYPE_STOP_LIMIT;
-			if (val <= sync_orders.WRONG_VALUE || (val2 <= sync_orders.WRONG_VALUE && type.equals(TYPE_STOP_LIMIT))) return null;
-			
-			output.orderType(type);	
-			
-			if (type.equals(TYPE_STOP)) output.auxPrice(val);	
-			else if (type.equals(TYPE_LIMIT) || type.equals(TYPE_STOP_LIMIT)) 
-			{
-				output.lmtPrice(val);	
-				if (type.equals(TYPE_STOP_LIMIT)) output.auxPrice(val2);
-			}
+			output.lmtPrice(val);	
+			if (type.equals(TYPE_STOP_LIMIT)) output.auxPrice(val2);
 		}
 
-		output.transmit(!is_main_);
+		boolean transmit = (!is_main_ || (is_main_ && sync_orders.is_update_start(update_type_)));
+
+		output.transmit(transmit);
 
 		return output;
+	}
+	
+	private static String get_type(order order_, boolean is_main_, String update_type_, boolean is_update_) 
+	{ 
+		String type = null;
+		
+		if (is_update_)
+		{
+			type = order_.get_type(is_main_);
+			
+			if (type.equals(TYPE_MARKET)) type = null;
+			else if (sync_orders.is_update_market(update_type_)) type = TYPE_MARKET;
+		}
+		else type = order_.get_type(is_main_);  
+		
+		return type;
 	}
 }

@@ -23,8 +23,10 @@ public class sync_orders extends parent_static
 	public static final String PLACE_LIMIT = types.SYNC_ORDERS_PLACE_LIMIT;
 	public static final String PLACE_STOP_LIMIT = types.SYNC_ORDERS_PLACE_STOP_LIMIT;
 	public static final String UPDATE = types.SYNC_ORDERS_UPDATE;
+	public static final String UPDATE_START = types.SYNC_ORDERS_UPDATE_START;
 	public static final String UPDATE_START_VALUE = types.SYNC_ORDERS_UPDATE_START_VALUE;
 	public static final String UPDATE_START_MARKET = types.SYNC_ORDERS_UPDATE_START_MARKET;
+	public static final String UPDATE_STOP = types.SYNC_ORDERS_UPDATE_STOP;
 	public static final String UPDATE_STOP_VALUE = types.SYNC_ORDERS_UPDATE_STOP_VALUE;
 	public static final String UPDATE_STOP_MARKET = types.SYNC_ORDERS_UPDATE_STOP_MARKET;
 
@@ -59,7 +61,7 @@ public class sync_orders extends parent_static
 		String type = check_update(type_update_);
 		order order = get_order(symbol_);
 
-		return ((order == null || !strings.is_ok(type)) ? place_update(order, type, val_) : false);
+		return ((order != null && strings.is_ok(type)) ? place_update(order, type, val_) : false);
 	}
 	
 	public static boolean cancel(int id_)
@@ -208,6 +210,18 @@ public class sync_orders extends parent_static
 	
 	public static boolean is_update(String type_) { return strings.is_ok(check_update(type_)); }
 	
+	public static boolean is_update_start(String type_) { return strings.is_ok(accessory.types.check_type(type_, UPDATE_START)); }
+	
+	public static boolean is_update_stop(String type_) { return strings.is_ok(accessory.types.check_type(type_, UPDATE_STOP)); }
+	
+	public static boolean is_update_market(String type_) 
+	{ 
+		String type = check_update(type_);
+		if (!strings.is_ok(type)) return false;
+		
+		return (type.equals(UPDATE_START_MARKET) || type.equals(UPDATE_STOP_MARKET)); 
+	}
+	
 	public static boolean is_cancel(String type_) { return strings.is_ok(check_cancel(type_)); }
 
 	public static String check_status(String type_) { return accessory.types.check_type(type_, STATUS); }
@@ -224,8 +238,7 @@ public class sync_orders extends parent_static
 	{
 		if (!order.is_ok(order_)) return false;
 
-		String update_type = check_update(update_type_);
-		boolean is_update = strings.is_ok(update_type);
+		boolean is_update = is_update(update_type_);
 		if (is_update && update_val_ <= WRONG_VALUE) return false;
 		
 		Contract contract = contracts.get_contract(order_.get_symbol());
@@ -239,7 +252,9 @@ public class sync_orders extends parent_static
 		
 		for (int i = 0; i < 2; i++)
 		{
-			boolean is_main = (i == 0);			
+			boolean is_main = (i == 0);	
+			if ((is_update_start(update_type_) && !is_main) || (is_update_stop(update_type_) && is_main)) continue;
+			
 			int id = order_.get_id(is_main);
 			
 			Order order = (is_update ? orders.get_order_update(order_, update_type_, update_val_, is_main) : orders.get_order_new(order_, is_main));
@@ -269,18 +284,14 @@ public class sync_orders extends parent_static
 			}
 		}
 
-		if (!is_update) 
+		if (is_update) update_order(main, update_val_, is_update_market(update_type_), is_update_start(update_type_));
+		else
 		{
 			if (!sync.wait_orders(PLACE)) return false;
 			
 			add_order(main, order_);
 		}
-		else
-		{
-			if (update_type.equals(UPDATE_START_VALUE)) update_order(main, update_val_, true); 
-			else if (update_type.equals(UPDATE_STOP_VALUE)) update_order(main, update_val_, false); 			
-		}
-		
+
 		return true;
 	}
 
@@ -291,14 +302,14 @@ public class sync_orders extends parent_static
 		sync_global();
 	}
 	
-	private static boolean update_order(int id_, double val_, boolean is_start_)
+	private static boolean update_order(int id_, double val_, boolean is_market_, boolean is_main_)
 	{
 		if (!_orders.containsKey(id_)) return false;
 
 		order order = new order(_orders.get(id_));
 
-		if (is_start_) order.update_start(val_);
-		else order.update_stop(val_);
+		if (is_market_) order.update_type(ib.order.MARKET, is_main_);
+		else order.update_val(val_, is_main_);
 
 		_orders.put(id_, order);
 

@@ -13,7 +13,6 @@ import accessory.parent_static;
 import accessory.strings;
 import accessory.dates;
 import accessory_ib._alls;
-import accessory_ib._defaults;
 import accessory_ib.errors;
 import accessory_ib.types;
 import external_ib.calls;
@@ -32,7 +31,7 @@ public class sync extends parent_static
 
 	public static final int WRONG_ID = common.WRONG_ID;
 
-	public static final long DEFAULT_TIMEOUT = _defaults.SYNC_TIMEOUT;
+	public static final long DEFAULT_TIMEOUT = 10l;
 
 	public static final String ERROR_TIMEOUT = types.ERROR_IB_SYNC_TIMEOUT;
 

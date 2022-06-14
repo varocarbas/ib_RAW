@@ -8,7 +8,6 @@ import accessory.misc;
 import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
-import accessory_ib._defaults;
 import accessory_ib.config;
 import accessory_ib.errors;
 import accessory_ib.types;
@@ -20,6 +19,13 @@ public class conn extends parent_static
 	public static final String TYPE_TWS_PAPER = types.CONFIG_CONN_TYPE_TWS_PAPER;
 	public static final String TYPE_GATEWAY_REAL = types.CONFIG_CONN_TYPE_GATEWAY_REAL;
 	public static final String TYPE_GATEWAY_PAPER = types.CONFIG_CONN_TYPE_GATEWAY_PAPER;
+	
+	public static final String DEFAULT_TYPE = TYPE_GATEWAY_REAL;
+	public static final int DEFAULT_ID = 18; 
+	public static final int DEFAULT_PORT_TWS_REAL = 7496;
+	public static final int DEFAULT_PORT_TWS_PAPER = 7497;
+	public static final int DEFAULT_PORT_GATEWAY_REAL = 4001;
+	public static final int DEFAULT_PORT_GATEWAY_PAPER = 4002;	
 	
 	public static final String ERROR_NONE = types.ERROR_IB_CONN_NONE;
 	public static final String ERROR_ID = types.ERROR_IB_CONN_ID;
@@ -33,10 +39,10 @@ public class conn extends parent_static
 	private static final int MIN_ID = 0;
 	private static final int MAX_ID = 31;
 
-	private static final int PORT_TWS_REAL = _defaults.CONN_PORT_TWS_REAL;
-	private static final int PORT_TWS_PAPER = _defaults.CONN_PORT_TWS_PAPER;
-	private static final int PORT_GATEWAY_REAL = _defaults.CONN_PORT_GATEWAY_REAL;
-	private static final int PORT_GATEWAY_PAPER = _defaults.CONN_PORT_GATEWAY_PAPER;
+	private static final int PORT_TWS_REAL = DEFAULT_PORT_TWS_REAL;
+	private static final int PORT_TWS_PAPER = DEFAULT_PORT_TWS_PAPER;
+	private static final int PORT_GATEWAY_REAL = DEFAULT_PORT_GATEWAY_REAL;
+	private static final int PORT_GATEWAY_PAPER = DEFAULT_PORT_GATEWAY_PAPER;
 
 	private static wrapper _wrapper = null;
 	private static int _id = MIN_ID - 1; 

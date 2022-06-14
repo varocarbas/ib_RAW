@@ -114,7 +114,12 @@ public class tests extends parent_tests
 				
 				is_ok = run_method(class0, name, new Class<?>[] { String.class, double.class, double.class, double.class, double.class }, args, target);
 			}
-			else if (name.equals("place_market")) is_ok = run_method(class0, name, new Class<?>[] { String.class, double.class, double.class }, args, target);
+			else if (name.equals("place_market")) 
+			{
+				args.remove(3);
+
+				is_ok = run_method(class0, name, new Class<?>[] { String.class, double.class, double.class }, args, target);
+			}
 			else is_ok = run_method(class0, name, new Class<?>[] { String.class, double.class, double.class, double.class }, args, target);
 			
 			output.put(name, is_ok);			
