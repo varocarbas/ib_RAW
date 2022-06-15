@@ -113,13 +113,8 @@ public class orders
 		double val = order_.get_val(is_main_);
 		double val2 = order_.get_start2();
 		
-		if (is_update_)
-		{
-			if (update_val_ == sync_orders.WRONG_VALUE && !is_market) return null;
-			
-			val = update_val_;
-		}
-		if ((val <= sync_orders.WRONG_VALUE && !type.equals(TYPE_MARKET)) || (val2 <= sync_orders.WRONG_VALUE && type.equals(TYPE_STOP_LIMIT))) return null;
+		if (is_update_) val = update_val_;
+		if ((val <= sync_orders.WRONG_VALUE && !is_market) || (val2 <= sync_orders.WRONG_VALUE && type.equals(TYPE_STOP_LIMIT))) return null;
 
 		String action = ACTION_BUY;
 		if (!is_main_ || (is_update_ && is_market)) action = ACTION_SELL;

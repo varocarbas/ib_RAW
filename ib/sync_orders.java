@@ -308,7 +308,7 @@ public class sync_orders extends parent_static
 
 		order order = new order(_orders.get(id_));
 
-		if (is_market_) order.update_type(ib.order.MARKET, is_main_);
+		if (is_market_) order.update_type(ib.order.TYPE_MARKET, is_main_);
 		else order.update_val(val_, is_main_);
 
 		_orders.put(id_, order);

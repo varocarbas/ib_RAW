@@ -73,7 +73,7 @@ public class tests extends parent_tests
 		
 		class0 = sync_orders.class;
 		
-		numbers._round_decimals = 2;
+		numbers.update_round_decimals(2);
 		String symbol = symbol_info.getKey(); 
 		
 		double quantity = 1;

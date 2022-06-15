@@ -79,10 +79,10 @@ public class async_market extends parent_static
 	}
 
 	public static void stop_all()
-	{
-		_stop_all = true;
-		
+	{	
 		lock();	
+	
+		_stop_all = true;
 		
 		HashMap<Integer, String> ids = new HashMap<Integer, String>(async._ids);
 		
@@ -101,9 +101,9 @@ public class async_market extends parent_static
 	
 	public static boolean is_snapshot(int id_) { return async.is_ok(id_, TYPE_SNAPSHOT); }
 
-	public static boolean snapshot_is_quick() { return (boolean)config.get_async(types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK); }
+	public static boolean snapshot_is_quick() { return config.get_async_boolean(types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK); }
 
-	public static boolean snapshot_is_nonstop() { return (boolean)config.get_async(types.CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP); }
+	public static boolean snapshot_is_nonstop() { return config.get_async_boolean(types.CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP); }
 
 	public static boolean start_snapshot(String symbol_) { return start_snapshot(symbol_, DEFAULT_DATA_TYPE); }
 
@@ -115,14 +115,24 @@ public class async_market extends parent_static
 
 	public static void stop_snapshot(int id_) 
 	{	
-		String symbol = get_symbol(id_);
-		if (!strings.is_ok(symbol)) return;
+		lock();
+		
+		String symbol = get_symbol(id_, false);
+		
+		if (!strings.is_ok(symbol)) 
+		{
+			unlock();
+			
+			return;
+		}
 		
 		boolean restart = (snapshot_is_nonstop() && !_stop_all);
-		int data_type = (restart ? get_data_type(id_) : 0);
+		int data_type = (restart ? get_data_type(id_, false) : 0);
 		
 		update_db(id_, symbol);
 		stop_common(id_, symbol);
+	
+		unlock();
 		
 		if (restart) start_snapshot(symbol, data_type);
 	}
@@ -131,16 +141,18 @@ public class async_market extends parent_static
 
 	public static void stop_stream(int id_) 
 	{
-		if (!stop_common(id_, get_symbol(id_))) return;
+		lock();
 		
-		calls.cancelMktData(id_); 
+		if (stop_common(id_, get_symbol(id_, false))) calls.cancelMktData(id_);
+		
+		unlock();
 	}
 	
-	public static String get_symbol(int id_) { return async.get_value(_symbols, id_, strings.DEFAULT); }
+	public static String get_symbol(int id_) { return get_symbol(id_, true); }
 
-	public static int get_data_type(int id_) { return async.get_value(_data_types, id_, market.WRONG_DATA); }
+	public static int get_data_type(int id_) { return get_data_type(id_, true); }
 	
-	public static int get_id(String symbol_) { return async.get_id(_symbols, symbol_); }
+	public static int get_id(String symbol_) { return get_id(symbol_, true); }
 
 	public static HashMap<Integer, String> populate_all_prices()
 	{		
@@ -178,6 +190,12 @@ public class async_market extends parent_static
 		return all;
 	}
 
+	private static String get_symbol(int id_, boolean lock_) { return (String)(lock_ ? arrays.get_value_async(_symbols, id_) : arrays.get_value(_symbols, id_)); }
+
+	private static int get_id(String symbol_, boolean lock_) { return (int)(lock_ ? arrays.get_key_async(_symbols, symbol_) : arrays.get_key(_symbols, symbol_)); }
+
+	private static int get_data_type(int id_, boolean lock_) { return (int)(lock_ ? arrays.get_value_async(_data_types, id_) : arrays.get_value(_data_types, id_)); }
+	
 	private static HashMap<Integer, String> get_all_prices() { return _alls.ASYNC_MARKET_PRICES; }
 	
 	private static HashMap<Integer, String> get_all_sizes() { return _alls.ASYNC_MARKET_SIZES; }
@@ -196,8 +214,16 @@ public class async_market extends parent_static
 	
 	private static boolean start(String symbol_, int data_type_, boolean is_snapshot_)
 	{
+		lock();
+		
 		String symbol = common.check_symbol(symbol_);
-		if (_stop_all || !strings.is_ok(symbol) || async.value_exists(_symbols, symbol_)) return false;
+		
+		if (_stop_all || !strings.is_ok(symbol) || arrays.value_exists(_symbols, symbol_)) 
+		{
+			unlock();
+			
+			return false;
+		}
 		
 		int data_type = (market.data_is_ok(data_type_) ? data_type_ : DEFAULT_DATA_TYPE);
 		int id = add(symbol, data_type, is_snapshot_);
@@ -207,10 +233,22 @@ public class async_market extends parent_static
 			if (_enable_db_quick) db.insert_market_quick(symbol);
 			else db.insert_market(symbol);
 		}
-		else if (!db.is_enabled(symbol)) return false;
+		else if (!db.is_enabled(symbol)) 
+		{
+			remove(id);
+			
+			unlock();
+			
+			return false;
+		}
 		
 		Contract contract = contracts.get_contract(symbol);
-		if (contract == null) return false;
+		if (contract == null) 
+		{
+			unlock();
+			
+			return false;
+		}
 
 		calls.reqMarketDataType(data_type_);
 		
@@ -218,19 +256,21 @@ public class async_market extends parent_static
 		{
 			remove(id);
 			
+			unlock();
+			
 			return false;
 		}
 		
 		to_screen(id, symbol, "started");
+
+		unlock();
 		
 		return true;		
 	}
 
 	private static int add(String symbol_, int data_type_, boolean is_snapshot_)
 	{
-		lock();
-		
-		int id = async.add_id((is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM), false);
+		int id = async.add_id((is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM));
 
 		_symbols.put(id, symbol_);
 		_data_types.put(id, data_type_);
@@ -238,26 +278,21 @@ public class async_market extends parent_static
 		if (_enable_db_quick) _vals_quick.put(id, new HashMap<String, String>());
 		else _vals.put(id, new HashMap<String, Object>());
 		
-		unlock();
-		
 		return id;
 	}
 
+	@SuppressWarnings("unchecked")
 	private static boolean remove(int id_) 
 	{ 
 		if (!async.is_ok(id_)) return false;
 		
-		lock();
+		async.remove_id(id_);
 		
-		async.remove_id(id_, false);
-		
-		_symbols = async.remove_id(_symbols, id_, false);
-		_data_types = async.remove_id(_data_types, id_, false);
+		_symbols = (HashMap<Integer, String>)arrays.remove_key(_symbols, id_);
+		_data_types = (HashMap<Integer, Integer>)arrays.remove_key(_data_types, id_);
 	
-		if (_enable_db_quick) _vals_quick = async.remove_id(_vals_quick, id_, false);
-		else _vals = async.remove_id(_vals, id_, false);
-		
-		unlock();
+		if (_enable_db_quick) _vals_quick = (HashMap<Integer, HashMap<String, String>>)arrays.remove_key(_vals_quick, id_);
+		else _vals = (HashMap<Integer, HashMap<String, Object>>)arrays.remove_key(_vals, id_);
 		
 		return true;
 	}
@@ -275,22 +310,16 @@ public class async_market extends parent_static
 
 	private static void update(int id_, String field_, double val_, boolean is_snapshot_)
 	{
-		if (!strings.is_ok(field_) || val_ <= 0.0) return;
-
+		if (!strings.is_ok(field_) || val_ <= 0.0) return;  
+		
 		if (is_snapshot_) update_vals(id_, field_, val_);
 		else update_db(id_, get_symbol(id_), field_, val_);
 	}
 	
 	private static void update_vals(int id_, String field_, double val_)
 	{
-		if ((_enable_db_quick && !async.id_exists(_vals_quick, id_)) || (!_enable_db_quick && !async.id_exists(_vals, id_))) return;
-
-		lock();
-		
-		if (_enable_db_quick) _vals_quick.get(id_).put(db.get_col_market(field_), Double.toString(val_));
-		else _vals.get(id_).put(field_, val_);
-		
-		unlock();
+		if (_enable_db_quick && arrays.key_exists_async(_vals_quick, id_)) _vals_quick.get(id_).put(db.get_col_market(field_), Double.toString(val_));
+		else if (!_enable_db_quick && arrays.key_exists_async(_vals, id_)) _vals.get(id_).put(field_, val_);
 		
 		to_screen_update(id_, false);
 	}
@@ -299,19 +328,24 @@ public class async_market extends parent_static
 	{
 		if (_enable_db_quick) db.update_val_market_quick(symbol_, db.get_col_market(field_), Double.toString(val_));
 		else db.update_val_market(symbol_, field_, val_);
-
+		
 		to_screen_update(id_, symbol_, true);
 	}
 	
 	@SuppressWarnings("unchecked")
 	private static void update_db(int id_, String symbol_)
 	{
-		Object vals = (_enable_db_quick ? async.get_value(_vals_quick, id_, false) : async.get_value(_vals, id_, true));
-		if (!arrays.is_ok(vals)) return;
+		if (_enable_db_quick)
+		{
+			HashMap<String, String> vals = (HashMap<String, String>)arrays.get_value(_vals_quick, id_);
+			if (arrays.is_ok(vals)) db.update_vals_market_quick(symbol_, vals);
+		}
+		else
+		{
+			HashMap<String, Object> vals = (HashMap<String, Object>)arrays.get_value(_vals, id_);
+			if (arrays.is_ok(vals)) db.update_vals_market(symbol_, vals);
+		}
 		
-		if (_enable_db_quick) db.update_vals_market_quick(symbol_, (HashMap<String, String>)vals);
-		else db.update_vals_market(symbol_, (HashMap<String, Object>)vals);
-	
 		to_screen_update(id_, symbol_, true);
 	}
 	

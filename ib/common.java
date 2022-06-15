@@ -16,7 +16,7 @@ public class common extends parent_static
 	static final int MIN_REQ_ID_SYNC = WRONG_ID + 1;
 	static final int MAX_REQ_ID_SYNC = MIN_REQ_ID_SYNC + 10; 
 	static final int MIN_REQ_ID_ASYNC = MAX_REQ_ID_SYNC + 1;
-	static final int MAX_REQ_ID_ASYNC = MIN_REQ_ID_ASYNC + 10000;
+	static final int MAX_REQ_ID_ASYNC = MIN_REQ_ID_ASYNC + 5000;
 	
 	private static final long DEFAULT_WAIT_SECS_SYNC = 60;
 	private static final long DEFAULT_WAIT_SECS_ASYNC = 60;
@@ -68,13 +68,9 @@ public class common extends parent_static
 	
 		return output;
 	}
-		
-	static int get_req_id(boolean is_sync_) { return get_req_id(is_sync_, true); }
-	
-	static int get_req_id(boolean is_sync_, boolean lock_) 
+
+	static int get_req_id(boolean is_sync_) 
 	{ 
-		if (lock_) lock();
-		
 		int id = 0;
 				
 		if (is_sync_)
@@ -87,8 +83,6 @@ public class common extends parent_static
 			id = get_req_id_internal(async._last_id, MIN_REQ_ID_ASYNC, MAX_REQ_ID_ASYNC);
 			async._last_id = id;		
 		}
-		
-		if (lock_) unlock();
 		
 		return id;
 	}

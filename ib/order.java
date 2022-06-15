@@ -14,14 +14,14 @@ public class order extends parent
 	public static final String QUANTITIES_INT = types.CONFIG_ORDER_QUANTITIES_INT;
 	public static final String TIF = types.CONFIG_ORDER_TIF;
 
-	public static final String MARKET = orders.TYPE_MARKET;
-	public static final String STOP = orders.TYPE_STOP;
-	public static final String LIMIT = orders.TYPE_LIMIT;
-	public static final String STOP_LIMIT = orders.TYPE_STOP_LIMIT;
-	public static final String PLACE_MARKET = sync_orders.PLACE_MARKET;
-	public static final String PLACE_STOP = sync_orders.PLACE_STOP;
-	public static final String PLACE_LIMIT = sync_orders.PLACE_LIMIT;
-	public static final String PLACE_STOP_LIMIT = sync_orders.PLACE_STOP_LIMIT;
+	public static final String TYPE_MARKET = orders.TYPE_MARKET;
+	public static final String TYPE_STOP = orders.TYPE_STOP;
+	public static final String TYPE_LIMIT = orders.TYPE_LIMIT;
+	public static final String TYPE_STOP_LIMIT = orders.TYPE_STOP_LIMIT;
+	public static final String TYPE_PLACE_MARKET = sync_orders.PLACE_MARKET;
+	public static final String TYPE_PLACE_STOP = sync_orders.PLACE_STOP;
+	public static final String TYPE_PLACE_LIMIT = sync_orders.PLACE_LIMIT;
+	public static final String TYPE_PLACE_STOP_LIMIT = sync_orders.PLACE_STOP_LIMIT;
 	
 	public static final double WRONG_VALUE = 0.0;
 	
@@ -50,7 +50,7 @@ public class order extends parent
 		return (orders.tif_is_ok(tif) ? tif : strings.DEFAULT);
 	}
 
-	public static boolean quantities_int() { return (boolean)config.get_order(QUANTITIES_INT); }
+	public static boolean quantities_int() { return config.get_order_boolean(QUANTITIES_INT); }
 
 	public static String check_type_place(String type_) { return sync_orders.check_place(type_); }
 
@@ -65,10 +65,10 @@ public class order extends parent
 		String type_place = check_type_place(type_place_);
 		if (!strings.is_ok(type_place)) return output;
 		
-		if (type_place.equals(PLACE_MARKET)) output = MARKET;
-		else if (type_place.equals(PLACE_STOP)) output = STOP;
-		else if (type_place.equals(PLACE_LIMIT)) output = LIMIT;
-		else if (type_place.equals(PLACE_STOP_LIMIT)) output = STOP_LIMIT;
+		if (type_place.equals(TYPE_PLACE_MARKET)) output = TYPE_MARKET;
+		else if (type_place.equals(TYPE_PLACE_STOP)) output = TYPE_STOP;
+		else if (type_place.equals(TYPE_PLACE_LIMIT)) output = TYPE_LIMIT;
+		else if (type_place.equals(TYPE_PLACE_STOP_LIMIT)) output = TYPE_STOP_LIMIT;
 		
 		return output;
 	}
@@ -89,13 +89,13 @@ public class order extends parent
 	
 	public String get_symbol() { return _symbol; }
 
-	public boolean is_market(boolean is_main_) { return get_type(is_main_).equals(MARKET); }
+	public boolean is_market(boolean is_main_) { return get_type(is_main_).equals(TYPE_MARKET); }
 
-	public boolean is_stop(boolean is_main_) { return get_type(is_main_).equals(STOP); }
+	public boolean is_stop(boolean is_main_) { return get_type(is_main_).equals(TYPE_STOP); }
 
-	public boolean is_limit(boolean is_main_) { return get_type(is_main_).equals(LIMIT); }
+	public boolean is_limit(boolean is_main_) { return get_type(is_main_).equals(TYPE_LIMIT); }
 
-	public boolean is_stop_limit(boolean is_main_) { return get_type(is_main_).equals(STOP_LIMIT); }
+	public boolean is_stop_limit(boolean is_main_) { return get_type(is_main_).equals(TYPE_STOP_LIMIT); }
 	
 	public double get_val(boolean is_main_) { return (is_main_ ? _start : _stop); }
 
@@ -156,6 +156,8 @@ public class order extends parent
 		vals.put("id_main", _id_main);
 		vals.put("id_sec", _id_sec);
 		vals.put("type_place", _type_place);
+		vals.put("type_main", _type_main);
+		vals.put("type_sec", _type_sec);
 		vals.put("symbol", _symbol);
 		vals.put("quantity", _quantity);
 		vals.put("stop", _stop);
@@ -171,8 +173,9 @@ public class order extends parent
 
 		return 
 		(
-			_temp_type.equals(order2_._type_place) && _temp_symbol.equals(order2_._symbol) && (_quantity == order2_._quantity) &&  (_id_main == order2_._id_main) && 
-			(_id_sec == order2_._id_sec) && (_stop == order2_._stop) && (_start == order2_._start) && (_start2 == order2_._start2)
+			_temp_type.equals(order2_._type_place) && _temp_symbol.equals(order2_._symbol) && (_quantity == order2_._quantity) &&  
+			(_id_main == order2_._id_main) && (_id_sec == order2_._id_sec) && (_stop == order2_._stop) && (_start == order2_._start) && 
+			(_start2 == order2_._start2) && _type_main.equals(order2_._type_main) && _type_sec.equals(order2_._type_sec)
 		);		
 	}
 
@@ -199,7 +202,7 @@ public class order extends parent
 		_temp_type = check_type_place(type_place_);
 		_temp_symbol = check_symbol(symbol_);
 
-		return (strings.are_ok(new String[] { _temp_type, _temp_symbol }) && quantity_ > 0 && (stop_ > WRONG_VALUE) && (start_ > WRONG_VALUE || _temp_type.equals(PLACE_MARKET)) && (start2_ > WRONG_VALUE || !_temp_type.equals(PLACE_STOP_LIMIT)));
+		return (strings.are_ok(new String[] { _temp_type, _temp_symbol }) && quantity_ > 0 && (stop_ > WRONG_VALUE) && (start_ > WRONG_VALUE || _temp_type.equals(TYPE_PLACE_MARKET)) && (start2_ > WRONG_VALUE || !_temp_type.equals(TYPE_PLACE_STOP_LIMIT)));
 	}
 
 	private void populate(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_, int id_main_)
@@ -216,5 +219,5 @@ public class order extends parent
 		_id_sec = get_id_sec(id_main_);
 	}
 	
-	private String get_type_from_place(boolean is_main_) { return (is_main_ ? type_from_place(_type_place) : STOP); }
+	private String get_type_from_place(boolean is_main_) { return (is_main_ ? type_from_place(_type_place) : TYPE_STOP); }
 }
