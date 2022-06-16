@@ -63,6 +63,7 @@ public class types
 	public static final String SYNC_GET_FUNDS = "sync_get_funds";
 	public static final String SYNC_GET_ID = "sync_get_id";
 	public static final String SYNC_GET_ORDERS = "sync_get_orders";
+	public static final String SYNC_GET_ERROR = "sync_get_error";
 	public static final String SYNC_ORDERS = "sync_orders";
 	public static final String SYNC_ORDERS_CANCEL = "sync_orders_cancel";
 	public static final String SYNC_ORDERS_PLACE = "sync_orders_place";
@@ -73,6 +74,8 @@ public class types
 	public static final String SYNC_ORDERS_UPDATE = "sync_orders_update";
 	public static final String SYNC_ORDERS_UPDATE_START = "sync_orders_update_start";
 	public static final String SYNC_ORDERS_UPDATE_START_VALUE = "sync_orders_update_start_value";
+	public static final String SYNC_ORDERS_UPDATE_START2 = "sync_orders_update_start2";
+	public static final String SYNC_ORDERS_UPDATE_START2_VALUE = "sync_orders_update_start2_value";
 	public static final String SYNC_ORDERS_UPDATE_START_MARKET = "sync_orders_update_start_market";
 	public static final String SYNC_ORDERS_UPDATE_STOP = "sync_orders_update_stop";
 	public static final String SYNC_ORDERS_UPDATE_STOP_VALUE = "sync_orders_update_stop_value";
@@ -155,7 +158,7 @@ public class types
 				
 			SYNC,
 			SYNC_GET,
-			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_ORDERS,
+			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_ORDERS, SYNC_GET_ERROR,
 			SYNC_OUT,
 			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_STRINGS, SYNC_OUT_ORDERS,
 			SYNC_ORDERS,
@@ -165,6 +168,8 @@ public class types
 			SYNC_ORDERS_UPDATE,
 			SYNC_ORDERS_UPDATE_START,
 			SYNC_ORDERS_UPDATE_START_VALUE, SYNC_ORDERS_UPDATE_START_MARKET, 
+			SYNC_ORDERS_UPDATE_START2,
+			SYNC_ORDERS_UPDATE_START2_VALUE, 
 			SYNC_ORDERS_UPDATE_STOP,
 			SYNC_ORDERS_UPDATE_STOP_VALUE, SYNC_ORDERS_UPDATE_STOP_MARKET,
 			SYNC_ORDERS_STATUS,

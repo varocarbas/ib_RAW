@@ -94,14 +94,19 @@ public class wrapper implements EWrapper
 		//appreciably speed everything up. That is, all the relevant information is assumed to 
 		//have already been received right after getting certain size value.
 
-		async_market.stop_snapshot(id_);
+		async_market.__stop_snapshot(id_);
 	}
 	
 	@Override
 	public void tickGeneric(int id_, int tick_, double value_) { async_market.wrapper_tickGeneric(id_, tick_, value_); }
 	
 	@Override
-	public void error(int id_, int code_, String message_) { errors.wrapper_error(id_, code_, message_); }
+	public void error(int id_, int code_, String message_) 
+	{
+		if (sync.is_ok()) sync._error_triggered = true;
+		
+		errors.__wrapper_error(id_, code_, message_); 
+	}
 	
 	@Override
 	public void orderStatus(int id, String status, double filled, double remaining, double avg_fill_price, int perm_id, int parent_id, double last_fill_price, int client_id, String why_held, double mkt_cap_price) 

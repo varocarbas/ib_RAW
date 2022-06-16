@@ -113,11 +113,16 @@ public class orders
 		double val = order_.get_val(is_main_);
 		double val2 = order_.get_start2();
 		
-		if (is_update_) val = update_val_;
+		if (is_update_) 
+		{
+			if (type.equals(TYPE_STOP_LIMIT) && update_type_.equals(sync_orders.UPDATE_START2_VALUE)) val2 = update_val_;
+			else val = update_val_;
+		}
 		if ((val <= sync_orders.WRONG_VALUE && !is_market) || (val2 <= sync_orders.WRONG_VALUE && type.equals(TYPE_STOP_LIMIT))) return null;
 
 		String action = ACTION_BUY;
-		if (!is_main_ || (is_update_ && is_market)) action = ACTION_SELL;
+		if (!is_main_) action = ACTION_SELL;
+		
 		output.action(action);		
 
 		if (type.equals(TYPE_STOP)) output.auxPrice(val);	
@@ -127,7 +132,7 @@ public class orders
 			if (type.equals(TYPE_STOP_LIMIT)) output.auxPrice(val2);
 		}
 
-		boolean transmit = (!is_main_ || (is_main_ && sync_orders.is_update_start(update_type_)));
+		boolean transmit = (!is_main_ || (is_main_ && sync_orders.is_update_start_start2(update_type_)));
 
 		output.transmit(transmit);
 
@@ -142,7 +147,7 @@ public class orders
 		{
 			type = order_.get_type(is_main_);
 			
-			if (type.equals(TYPE_MARKET)) type = null;
+			if (type.equals(TYPE_MARKET) || (update_type_.equals(sync_orders.UPDATE_START2_VALUE) && !type.equals(TYPE_STOP_LIMIT))) type = null;
 			else if (sync_orders.is_update_market(update_type_)) type = TYPE_MARKET;
 		}
 		else type = order_.get_type(is_main_);  

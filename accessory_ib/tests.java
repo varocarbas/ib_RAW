@@ -88,9 +88,6 @@ public class tests extends parent_tests
 		args0.add(stop);
 		args0.add(start);
 
-		ArrayList<Object> args02 = new ArrayList<Object>();
-		args02.add(symbol);
-
 		Object target = true;
 		
 		HashMap<String, String> items = new HashMap<String, String>();
@@ -98,7 +95,17 @@ public class tests extends parent_tests
 		items.put(sync_orders.PLACE_STOP, "place_stop");
 		items.put(sync_orders.PLACE_LIMIT, "place_limit");
 		items.put(sync_orders.PLACE_STOP_LIMIT, "place_stop_limit");
+
+		double stop_new = numbers.apply_perc(stop, -2, true);
+		double start_new = numbers.apply_perc(start, 3, true);
+		double start2_new = numbers.apply_perc(start2, 1, true);
 		
+		HashMap<String, String[]> items2 = new HashMap<String, String[]>();
+		items2.put(sync_orders.PLACE_MARKET, new String[] { "update_stop", "update_stop_market" });
+		items2.put(sync_orders.PLACE_STOP, new String[] { "update_start", "update_start_market" });
+		items2.put(sync_orders.PLACE_LIMIT, new String[] { "update_start", "update_stop_market" });
+		items2.put(sync_orders.PLACE_STOP_LIMIT, new String[] { "update_start", "update_start2" });
+
 		for (Entry<String, String> item: items.entrySet())
 		{
 			String type = item.getKey();
@@ -126,6 +133,36 @@ public class tests extends parent_tests
 			if (!is_ok) continue;
 			
 			misc.pause_secs(pause);
+			
+			for (String name2: items2.get(type))
+			{
+				is_ok = false;
+				
+				if (name2.equals("update_start_market") || name2.equals("update_stop_market")) 
+				{	
+					args = new ArrayList<Object>();
+					args.add(symbol);
+					
+					is_ok = run_method(class0, name2, new Class<?>[] { String.class }, args, target);
+				}
+				else 
+				{	
+					double val = 0.0;
+					if (name2.equals("update_start2")) val = start2_new;
+					else val = (name2.equals("update_start") ? start_new : stop_new);
+					
+					args = new ArrayList<Object>();
+					args.add(symbol);
+					args.add(val);
+							 
+					is_ok = run_method(class0, name2, new Class<?>[] { String.class, double.class }, args, target);
+				}
+				
+				String name22 = name2 + "_" + type;
+				output.put(name22, is_ok);
+				
+				misc.pause_secs(pause);
+			}
 			
 			name = "cancel";
 			String name2 = name + "_" + type;
@@ -156,7 +193,7 @@ public class tests extends parent_tests
 		int pause2 = 5;
 		
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
-		String name = "start_snapshot";
+		String name = "__start_snapshot";
 		
 		int symbol_i = 0;
 		ArrayList<Object> args = new ArrayList<Object>();
@@ -167,7 +204,7 @@ public class tests extends parent_tests
 		misc.pause_secs(pause1);
 		output.put(name, is_ok);
 
-		name = "start_stream";
+		name = "__start_stream";
 		
 		symbol_i++;
 		
@@ -181,7 +218,7 @@ public class tests extends parent_tests
 		
 		outputs.put(name0, output);
 		
-		async_market.stop_all();
+		async_market.__stop_all();
 		misc.pause_secs(pause2);
 		
 		return outputs;

@@ -21,7 +21,7 @@ public class errors
 	
 	public static final String DEFAULT_WARNING = "WARNING";
 
-	public static void wrapper_error(int id_, int code_, String message_)
+	public static void __wrapper_error(int id_, int code_, String message_)
 	{
 		String message = (strings.is_ok(message_) ? message_ : strings.DEFAULT);
 		
@@ -32,7 +32,7 @@ public class errors
 		}
 		
 		if (is_warning(code_) || treat_as_warning(id_, code_)) manage_warning(message);
-		else manage_internal(ERROR_GENERIC, wrapper_error_info(id_, code_, message_));
+		else manage_internal(ERROR_GENERIC, __wrapper_error_info(id_, code_, message_));
 	}	
 
 	public static boolean is_warning(int code_) { return external_ib.errors.is_warning(code_); }
@@ -55,7 +55,7 @@ public class errors
 
 	public static String check(String type_) { return accessory.types.check_type(type_, types.ERROR_IB); }
 
-	private static HashMap<String, Object> wrapper_error_info(int id_, int code_, String message_)
+	private static HashMap<String, Object> __wrapper_error_info(int id_, int code_, String message_)
 	{
 		HashMap<String, Object> info = new HashMap<String, Object>();
 
@@ -65,7 +65,7 @@ public class errors
 		
 		if (code_ == external_ib.errors.ERROR_200)
 		{
-			String symbol = async_market.get_symbol(id_);
+			String symbol = async_market.__get_symbol(id_);
 			if (strings.is_ok(symbol)) info.put("symbol", symbol);
 		}
 

@@ -22,6 +22,11 @@ public class sync extends parent_static
 	public static final String GET_ID = types.SYNC_GET_ID;
 	public static final String GET_ORDERS = types.SYNC_GET_ORDERS;
 	public static final String GET_FUNDS = types.SYNC_GET_FUNDS;
+	public static final String GET_ERROR = types.SYNC_GET_ERROR;
+	
+	public static final String ORDER_PLACE = sync_orders.PLACE;
+	public static final String ORDER_UPDATE = sync_orders.UPDATE;
+	public static final String ORDER_CANCEL = sync_orders.CANCEL;
 	
 	public static final String OUT_DECIMAL = types.SYNC_OUT_DECIMAL;
 	public static final String OUT_INT = types.SYNC_OUT_INT;
@@ -31,10 +36,14 @@ public class sync extends parent_static
 
 	public static final int WRONG_ID = common.WRONG_ID;
 
+	public static final long TIMEOUT_ORDERS = 3l;
+	public static final long TIMEOUT_ERROR = 3l;
 	public static final long DEFAULT_TIMEOUT = 10l;
 
 	public static final String ERROR_TIMEOUT = types.ERROR_IB_SYNC_TIMEOUT;
 
+	public static volatile boolean _error_triggered = false;
+	
 	static int _req_id = WRONG_ID;
 	static int _order_id = WRONG_ID;
 	
@@ -114,7 +123,7 @@ public class sync extends parent_static
 		if (!strings.is_ok(type)) return message;
 		
 		if (type.equals(ERROR_TIMEOUT)) message = (strings.is_ok(_get) ? _get : "get method") + " timed out";
-
+		
 		return message;	
 	}
 
@@ -129,19 +138,19 @@ public class sync extends parent_static
 		return all;
 	}
 	
-	public static boolean is_ok() { return (_getting); }
+	public static boolean is_ok() { return (_getting || _order_id > WRONG_ID); }
 
 	public static boolean is_ok(int id_) { return (_getting && (_req_id == id_)); }
 	
 	public static void end() { if (_getting) _getting = false; }
 
 	public static boolean wait_orders(String type_) { return wait(DEFAULT_TIMEOUT, true, type_); }
-	
-	static boolean cancel_order(int id_) { return execute_order(sync_orders.CANCEL, id_, null, null); }
 
-	static boolean place_order(int id_, Contract contract_, Order order_) { return execute_order(sync_orders.PLACE, id_, contract_, order_); }
+	static boolean cancel_order(int id_) { return execute_order(ORDER_CANCEL, id_, null, null); }
 
-	static boolean update_order(int id_, Contract contract_, Order order_) { return execute_order(sync_orders.UPDATE, id_, contract_, order_); }
+	static boolean place_order(int id_, Contract contract_, Order order_) { return execute_order(ORDER_PLACE, id_, contract_, order_); }
+
+	static boolean update_order(int id_, Contract contract_, Order order_) { return execute_order(ORDER_UPDATE, id_, contract_, order_); }
 	
 	private static boolean order_is_common(int id_, String target_)
 	{
@@ -160,19 +169,33 @@ public class sync extends parent_static
 
 		String type = type_;
 		boolean is_cancel = sync_orders.is_cancel(type);
+
+		boolean wait_default = false;
+		boolean wait_error = false;
 		
-		if (is_cancel) calls.cancelOrder(_order_id);
+		if (is_cancel) 
+		{
+			wait_default = true;
+			
+			calls.cancelOrder(_order_id);
+		}
 		else 
 		{
 			if (contract_ == null || order_ == null) return false;
-			
-			type = null;
+					
+			//For ORDER_PLACE, the waiting occurs in sync_orders.place_update(), after all the orders have been placed. 
+			if (type.equals(ORDER_UPDATE)) wait_error = true;
+			type = null; 
+	
 			calls.placeOrder(_order_id, contract_, order_);
 		}
 
-		boolean wait = (is_cancel || strings.is_ok(type));
+		boolean is_ok = true;
 		
-		return (wait ? wait_orders(type) : true); 
+		if (wait_default) is_ok = wait_orders(type);
+		else if (wait_error) is_ok = wait_error();
+		
+		return is_ok; 
 	}
 	
 	private static Object get(String type_)
@@ -241,7 +264,7 @@ public class sync extends parent_static
 
 		return true;
 	}
-
+	
 	private static boolean get()
 	{
 		long timeout = DEFAULT_TIMEOUT;
@@ -256,7 +279,7 @@ public class sync extends parent_static
 		}
 		else if (_get.equals(GET_ORDERS))
 		{	
-			timeout = 3;
+			timeout = TIMEOUT_ORDERS;
 			cannot_fail = false;
 
 			//openOrder, openOrderEnd, orderStatus
@@ -272,10 +295,20 @@ public class sync extends parent_static
 		return wait_get(timeout, cannot_fail);
 	}
 
+	private static boolean wait_error()
+	{
+		_getting = true;
+		_get = GET_ERROR;
+		
+		return wait_get(TIMEOUT_ERROR, false);		
+	}
+
 	private static boolean wait_get(long timeout_, boolean cannot_fail_) { return wait(timeout_, cannot_fail_, null); }	
 	
 	private static boolean wait(long timeout_, boolean cannot_fail_, String type_)
 	{
+		_error_triggered = false;
+		
 		boolean is_ok = true;
 		
 		boolean is_get = false;
@@ -284,13 +317,25 @@ public class sync extends parent_static
 		
 		if (sync_orders.is_place(type_)) is_place = true;
 		else if (sync_orders.is_cancel(type_)) is_cancel = true;
-		else if (!strings.is_ok(type_)) is_get = true;
-		else return false;
+		else 
+		{
+			if (!_getting) return false;
+			
+			is_get = true;
+		}
 		
 		long start = dates.start_elapsed();
 		
 		while (true)
 		{
+			if (_error_triggered) 
+			{
+				_error_triggered = false;
+				is_ok = false;
+				
+				break;
+			}
+			
 			if (is_get)
 			{
 				if (!_getting) 
@@ -305,8 +350,11 @@ public class sync extends parent_static
 			
 			if (dates.get_elapsed(start) >= timeout_) 
 			{
-				if (cannot_fail_) errors.manage(ERROR_TIMEOUT);
-				is_ok = false;
+				if (!_get.equals(GET_ERROR))
+				{
+					if (cannot_fail_) errors.manage(ERROR_TIMEOUT);
+					is_ok = false;					
+				}
 
 				break;
 			}
@@ -314,7 +362,14 @@ public class sync extends parent_static
 			misc.pause_loop();
 		}
 
-		if (is_get) _getting = false;
+		_error_triggered = false;
+		
+		if (is_get) 
+		{
+			_getting = false;
+			_get = strings.DEFAULT;
+		}
+		else _order_id = WRONG_ID;
 		
 		return is_ok;
 	}
