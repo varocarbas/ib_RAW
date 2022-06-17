@@ -11,11 +11,17 @@ public class async extends parent_static
 {	
 	public static final int WRONG_ID = common.WRONG_ID;
 	
-	static volatile int _last_id = WRONG_ID;
-	static volatile HashMap<Integer, String> _ids = new HashMap<Integer, String>();
-	
+	private static volatile HashMap<Integer, String> _ids = new HashMap<Integer, String>();
+	private static volatile int _last_id = WRONG_ID;
+
 	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC); }
 
+	public static HashMap<Integer, String> get_ids() { return (new HashMap<Integer, String>(_ids)); }
+
+	public static int get_last_id() { return _last_id; }
+
+	public static void update_last_id(int id_) { _last_id = id_; }
+	
 	public static boolean is_ok(int id_) { return arrays.key_exists(_ids, id_); }
 
 	public static boolean is_ok(int id_, String type_) { return strings.are_equal(get_type(id_), type_); }

@@ -27,7 +27,17 @@ public class types
 	public static final String CONFIG_CONTRACT_EXCHANGE_PRIMARY = "config_contract_exchange_primary";
 	public static final String CONFIG_CONTRACT_EXCHANGE_COUNTRY = "config_contract_exchange_country";
 	public static final String CONFIG_CONTRACT_EXCHANGE_COUNTRY_US = "config_contract_exchange_country_us";
-	
+
+	public static final String CONFIG_DB_IB = "config_db_ib";
+	public static final String CONFIG_DB_IB_MARKET = "config_db_ib_market";
+	public static final String CONFIG_DB_IB_MARKET_SOURCE = "config_db_ib_market_source";
+	public static final String CONFIG_DB_IB_EXECS = "config_db_ib_execs";
+	public static final String CONFIG_DB_IB_EXECS_SOURCE = "config_db_ib_execs_source";
+	public static final String CONFIG_DB_IB_BASIC = "config_db_ib_basic";
+	public static final String CONFIG_DB_IB_BASIC_SOURCE = "config_db_ib_basic_source";
+	public static final String CONFIG_DB_IB_REMOTE = "config_db_ib_remote";
+	public static final String CONFIG_DB_IB_REMOTE_SOURCE = "config_db_ib_remote_source";
+
 	public static final String CONFIG_DB_FIELD = "config_db_field";
 	public static final String CONFIG_DB_FIELD_SIZE = "config_db_field_size";
 	public static final String CONFIG_DB_FIELD_TIME = "config_db_field_time";
@@ -44,12 +54,25 @@ public class types
 	public static final String CONFIG_DB_FIELD_BID_SIZE = "config_db_field_bid_size";
 	public static final String CONFIG_DB_FIELD_HALTED = "config_db_field_halted";
 	public static final String CONFIG_DB_FIELD_HALTED_TOT = "config_db_field_halted_tot";
-	public static final String CONFIG_DB_FIELD_ENABLED = "config_db_field_enabled";
+	public static final String CONFIG_DB_FIELD_ENABLED = "config_db_field_enabled";	
 
-	public static final String CONFIG_DB_IB = "config_db_ib";
-	public static final String CONFIG_DB_IB_MARKET = "config_db_ib_market";
-	public static final String CONFIG_DB_IB_MARKET_SOURCE = "config_db_ib_market_source";
+	public static final String CONFIG_DB_FIELD_ORDER_ID = "config_db_field_order_id";
+	public static final String CONFIG_DB_FIELD_QUANTITY = "config_db_field_quantity";
+	public static final String CONFIG_DB_FIELD_SIDE = "config_db_field_side";
+	public static final String CONFIG_DB_FIELD_FEES = "config_db_field_fees";
+	public static final String CONFIG_DB_FIELD_EXEC_ID = "config_db_field_exec_id";
 
+	public static final String CONFIG_DB_FIELD_MONEY = "config_db_field_money";
+	public static final String CONFIG_DB_FIELD_MONEY_INI = "config_db_field_money_ini";
+	public static final String CONFIG_DB_FIELD_CONN_TYPE = "config_db_field_conn_type";
+
+	public static final String CONFIG_DB_FIELD_START = "config_db_field_start";
+	public static final String CONFIG_DB_FIELD_STOP = "config_db_field_stop";
+	public static final String CONFIG_DB_FIELD_ORDER_ID_MAIN = "config_db_field_order_id_main";
+	public static final String CONFIG_DB_FIELD_ORDER_ID_SEC = "config_db_field_order_id_sec";
+	public static final String CONFIG_DB_FIELD_STATUS = "config_db_field_status";
+	public static final String CONFIG_DB_FIELD_STATUS2 = "config_db_field_status2";
+	
 	public static final String ID_COMMON = "id_common";
 	public static final String ID_CONN = "id_conn";
 	public static final String ID_ASYNC = "id_async";
@@ -138,17 +161,27 @@ public class types
 			CONFIG_CONTRACT_EXCHANGE_COUNTRY,
 			CONFIG_CONTRACT_EXCHANGE_COUNTRY_US,
 			
+			CONFIG_DB_IB,		
+			CONFIG_DB_IB_MARKET,
+			CONFIG_DB_IB_MARKET_SOURCE,
+			CONFIG_DB_IB_EXECS,
+			CONFIG_DB_IB_EXECS_SOURCE,
+			CONFIG_DB_IB_BASIC,
+			CONFIG_DB_IB_BASIC_SOURCE,
+			CONFIG_DB_IB_REMOTE,
+			CONFIG_DB_IB_REMOTE_SOURCE,
+			
 			CONFIG_DB_FIELD, 
 			CONFIG_DB_FIELD_SIZE, CONFIG_DB_FIELD_TIME, CONFIG_DB_FIELD_SYMBOL, 
 			CONFIG_DB_FIELD_PRICE, CONFIG_DB_FIELD_OPEN, CONFIG_DB_FIELD_CLOSE, 
 			CONFIG_DB_FIELD_LOW, CONFIG_DB_FIELD_HIGH, CONFIG_DB_FIELD_VOLUME, 
 			CONFIG_DB_FIELD_ASK, CONFIG_DB_FIELD_ASK_SIZE, CONFIG_DB_FIELD_BID, 
 			CONFIG_DB_FIELD_BID_SIZE, CONFIG_DB_FIELD_HALTED, CONFIG_DB_FIELD_HALTED_TOT,
-			CONFIG_DB_FIELD_ENABLED, 
-		
-			CONFIG_DB_IB,		
-			CONFIG_DB_IB_MARKET,
-			CONFIG_DB_IB_MARKET_SOURCE,
+			CONFIG_DB_FIELD_ENABLED, CONFIG_DB_FIELD_ORDER_ID, CONFIG_DB_FIELD_QUANTITY,
+			CONFIG_DB_FIELD_SIDE, CONFIG_DB_FIELD_FEES, CONFIG_DB_FIELD_EXEC_ID,
+			CONFIG_DB_FIELD_MONEY, CONFIG_DB_FIELD_MONEY_INI, CONFIG_DB_FIELD_CONN_TYPE,
+			CONFIG_DB_FIELD_START, CONFIG_DB_FIELD_STOP, CONFIG_DB_FIELD_ORDER_ID_MAIN,
+			CONFIG_DB_FIELD_ORDER_ID_SEC, CONFIG_DB_FIELD_STATUS, CONFIG_DB_FIELD_STATUS2,
 			
 			ID_ASYNC,
 			ID_ASYNC_MARKET,

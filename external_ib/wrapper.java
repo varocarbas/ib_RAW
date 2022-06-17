@@ -76,7 +76,7 @@ public class wrapper implements EWrapper
 	{
 		if (!async.is_ok(id_)) return;
 		
-		async_market.wrapper_tickPrice(id_, field_ib_, price_); 
+		async_market.__wrapper_tickPrice(id_, field_ib_, price_); 
 	}
 	
 	@Override
@@ -84,7 +84,7 @@ public class wrapper implements EWrapper
 	{ 
 		if (!async.is_ok(id_)) return;
 		
-		async_market.wrapper_tickSize(id_, field_ib_, size_); 
+		async_market.__wrapper_tickSize(id_, field_ib_, size_); 
 	}
 
 	@Override
@@ -98,12 +98,12 @@ public class wrapper implements EWrapper
 	}
 	
 	@Override
-	public void tickGeneric(int id_, int tick_, double value_) { async_market.wrapper_tickGeneric(id_, tick_, value_); }
+	public void tickGeneric(int id_, int tick_, double value_) { async_market.__wrapper_tickGeneric(id_, tick_, value_); }
 	
 	@Override
 	public void error(int id_, int code_, String message_) 
 	{
-		if (sync.is_ok()) sync._error_triggered = true;
+		if (sync.is_ok()) sync.update_error_triggered(true);
 		
 		errors.__wrapper_error(id_, code_, message_); 
 	}

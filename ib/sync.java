@@ -41,18 +41,16 @@ public class sync extends parent_static
 	public static final long DEFAULT_TIMEOUT = 10l;
 
 	public static final String ERROR_TIMEOUT = types.ERROR_IB_SYNC_TIMEOUT;
-
-	public static volatile boolean _error_triggered = false;
-	
-	static int _req_id = WRONG_ID;
-	static int _order_id = WRONG_ID;
 	
 	private static volatile boolean _getting = false;
 	private static volatile double _out_decimal = numbers.DEFAULT_DECIMAL;
 	private static volatile int _out_int = numbers.DEFAULT_INT;
+	private static volatile boolean _error_triggered = false;
 	private static volatile ArrayList<Integer> _out_ints = new ArrayList<Integer>();
 	private static volatile ArrayList<String> _out_strings = new ArrayList<String>();
 
+	private static int _req_id = WRONG_ID;
+	private static int _order_id = WRONG_ID;
 	private static String _get = strings.DEFAULT;
 	private static String _out = strings.DEFAULT;
 
@@ -109,6 +107,17 @@ public class sync extends parent_static
 		return is_ok;
 	}
 
+	public static boolean update_error_triggered(boolean triggered_)
+	{ 
+		_error_triggered = triggered_;
+
+		return true;
+	}
+
+	public static int get_req_id() { return _req_id; }
+
+	public static void update_req_id(int id_) { _req_id = id_; }
+	
 	public static String check_get(String type_) { return accessory.types.check_type(type_, types.SYNC_GET); }
 
 	public static String check_out(String type_) { return accessory.types.check_type(type_, types.SYNC_OUT); }
@@ -167,8 +176,7 @@ public class sync extends parent_static
 	{	
 		_order_id = id_;
 
-		String type = type_;
-		boolean is_cancel = sync_orders.is_cancel(type);
+		boolean is_cancel = sync_orders.is_cancel(type_);
 
 		boolean wait_default = false;
 		boolean wait_error = false;
@@ -183,16 +191,15 @@ public class sync extends parent_static
 		{
 			if (contract_ == null || order_ == null) return false;
 					
-			//For ORDER_PLACE, the waiting occurs in sync_orders.place_update(), after all the orders have been placed. 
-			if (type.equals(ORDER_UPDATE)) wait_error = true;
-			type = null; 
-	
+			//For ORDER_PLACE, the waiting occurs in sync_orders.place_update() after all the orders have been placed. 
+			if (type_.equals(ORDER_UPDATE)) wait_error = true;
+
 			calls.placeOrder(_order_id, contract_, order_);
 		}
 
 		boolean is_ok = true;
 		
-		if (wait_default) is_ok = wait_orders(type);
+		if (wait_default) is_ok = wait_orders(type_);
 		else if (wait_error) is_ok = wait_error();
 		
 		return is_ok; 

@@ -40,10 +40,10 @@ public class sync_orders extends parent_static
 
 	public static final double WRONG_VALUE = order.WRONG_VALUE;
 	
-	public static HashMap<Integer, Long> _cancellations = new HashMap<Integer, Long>();
-	public static int _last_id_main = 0;
-	public static int _last_id_sec = 0;
+	private static int _last_id_main = 0;
+	private static int _last_id_sec = 0;
 	
+	private static HashMap<Integer, Long> _cancellations = new HashMap<Integer, Long>();
 	private static HashMap<Integer, order> _orders = new HashMap<Integer, order>();
 	
 	public static String get_class_id() { return accessory.types.get_id(types.ID_SYNC_ORDERS); }
@@ -89,6 +89,10 @@ public class sync_orders extends parent_static
 		return output;
 	}
 
+	public static int get_last_id_main() { return _last_id_main; }
+	
+	public static int get_last_id_sec() { return _last_id_sec; }
+	
 	public static ArrayList<Integer> get_ids(String status_) { return get_ids(status_, null, true); }
 
 	public static ArrayList<Integer> get_ids(String status_, HashMap<Integer, String> orders_) { return get_ids(status_, orders_, false); }

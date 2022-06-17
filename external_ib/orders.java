@@ -90,7 +90,6 @@ public class orders
 		if (!order.is_ok(order_)) return null;
 
 		String type = get_type(order_, is_main_, update_type_, is_update_);
-
 		if (!strings.is_ok(type)) return null;
 		
 		boolean is_market = type.equals(TYPE_MARKET);
@@ -119,11 +118,8 @@ public class orders
 			else val = update_val_;
 		}
 		if ((val <= sync_orders.WRONG_VALUE && !is_market) || (val2 <= sync_orders.WRONG_VALUE && type.equals(TYPE_STOP_LIMIT))) return null;
-
-		String action = ACTION_BUY;
-		if (!is_main_) action = ACTION_SELL;
 		
-		output.action(action);		
+		output.action((is_main_ ? ACTION_BUY : ACTION_SELL));		
 
 		if (type.equals(TYPE_STOP)) output.auxPrice(val);	
 		else if (type.equals(TYPE_LIMIT) || type.equals(TYPE_STOP_LIMIT)) 

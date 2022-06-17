@@ -75,13 +75,13 @@ public class common extends parent_static
 				
 		if (is_sync_)
 		{
-			id = get_req_id_internal(sync._req_id, MIN_REQ_ID_SYNC, MAX_REQ_ID_SYNC);
-			sync._req_id = id;
+			id = get_req_id_internal(sync.get_req_id(), MIN_REQ_ID_SYNC, MAX_REQ_ID_SYNC);
+			sync.update_req_id(id);
 		}
 		else
 		{
-			id = get_req_id_internal(async._last_id, MIN_REQ_ID_ASYNC, MAX_REQ_ID_ASYNC);
-			async._last_id = id;		
+			id = get_req_id_internal(async.get_last_id(), MIN_REQ_ID_ASYNC, MAX_REQ_ID_ASYNC);
+			async.update_last_id(id);		
 		}
 		
 		return id;

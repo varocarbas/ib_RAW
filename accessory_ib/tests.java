@@ -16,13 +16,17 @@ import ib.sync_orders;
 public class tests extends parent_tests 
 {
 	private static tests _instance = new tests();
-	private static boolean _use_tws_paper = false;
+	private static boolean _use_tws_paper = true;
+	private static boolean _orders_too = true;
 	
 	public tests() { }
+
+	public static HashMap<String, HashMap<String, Boolean>> run_all(boolean use_tws_paper_) { return run_all(use_tws_paper_, true); }
 	
-	public static HashMap<String, HashMap<String, Boolean>> run_all(boolean use_tws_paper_) 
+	public static HashMap<String, HashMap<String, Boolean>> run_all(boolean use_tws_paper_, boolean orders_too_) 
 	{ 
 		_use_tws_paper = use_tws_paper_;
+		_orders_too = orders_too_;
 		
 		return _instance.run_all_internal(); 
 	}
@@ -31,13 +35,23 @@ public class tests extends parent_tests
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = new HashMap<String, HashMap<String, Boolean>>();
 
-		String name0 = "main";
+		String name0 = "tables";
 		int level = 0;
 		
 		update_screen(name0, true, level);		
 
-		String cur_conn = (String)accessory_ib.config.get_conn(accessory_ib.types.CONFIG_CONN_TYPE);
-		if (_use_tws_paper) accessory_ib.config.update_conn(accessory_ib.types.CONFIG_CONN_TYPE, conn.TYPE_TWS_PAPER);
+		String[] tables = new String[] { db.SOURCE_MARKET, db.SOURCE_EXECS, db.SOURCE_BASIC, db.SOURCE_REMOTE };
+		
+		for (String table: tables) { accessory.tests.create_table(table); }
+		
+		update_screen(name0, false, level);
+		
+		name0 = "main";
+		
+		update_screen(name0, true, level);		
+
+		String cur_conn = (String)accessory_ib.config.get_conn(ib.conn.TYPE);
+		if (_use_tws_paper) accessory_ib.config.update_conn(ib.conn.TYPE, conn.TYPE_TWS_PAPER);
 		
 		conn.start();
 		
@@ -46,7 +60,7 @@ public class tests extends parent_tests
 		
 		conn.end();
 
-		if (_use_tws_paper) accessory_ib.config.update_conn(accessory_ib.types.CONFIG_CONN_TYPE, cur_conn);
+		if (_use_tws_paper) accessory_ib.config.update_conn(conn.TYPE, cur_conn);
 
 		update_screen(name0, false, level);
 		
@@ -65,6 +79,8 @@ public class tests extends parent_tests
 		String[] methods = new String[] { "get_order_id", "get_funds", "get_orders" };
 		
 		outputs.put(name0, run_methods(class0, methods));
+
+		if (!_orders_too) return outputs;
 		
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
 
@@ -112,22 +128,23 @@ public class tests extends parent_tests
 			String name = item.getValue();
 			
 			ArrayList<Object> args = new ArrayList<Object>(args0);
+			Class<?>[] params = null;
 				
 			boolean is_ok = false;
-			
+						
 			if (name.equals("place_stop_limit")) 
 			{				
-				args.add(start2);
-				
-				is_ok = run_method(class0, name, new Class<?>[] { String.class, double.class, double.class, double.class, double.class }, args, target);
+				args.add(start2);	
+				params = new Class<?>[] { String.class, double.class, double.class, double.class, double.class };
 			}
 			else if (name.equals("place_market")) 
 			{
 				args.remove(3);
-
-				is_ok = run_method(class0, name, new Class<?>[] { String.class, double.class, double.class }, args, target);
+				params = new Class<?>[] { String.class, double.class, double.class };
 			}
-			else is_ok = run_method(class0, name, new Class<?>[] { String.class, double.class, double.class, double.class }, args, target);
+			else params = new Class<?>[] { String.class, double.class, double.class, double.class };
+
+			is_ok = run_method(class0, name, params, args, target);
 			
 			output.put(name, is_ok);			
 			if (!is_ok) continue;
@@ -143,7 +160,7 @@ public class tests extends parent_tests
 					args = new ArrayList<Object>();
 					args.add(symbol);
 					
-					is_ok = run_method(class0, name2, new Class<?>[] { String.class }, args, target);
+					params = new Class<?>[] { String.class };
 				}
 				else 
 				{	
@@ -155,8 +172,10 @@ public class tests extends parent_tests
 					args.add(symbol);
 					args.add(val);
 							 
-					is_ok = run_method(class0, name2, new Class<?>[] { String.class, double.class }, args, target);
+					params = new Class<?>[] { String.class, double.class };
 				}
+
+				is_ok = run_method(class0, name2, params, args, target);
 				
 				String name22 = name2 + "_" + type;
 				output.put(name22, is_ok);
@@ -167,7 +186,7 @@ public class tests extends parent_tests
 			name = "cancel";
 			String name2 = name + "_" + type;
 			
-			int id = sync_orders._last_id_main;
+			int id = sync_orders.get_last_id_main();
 			
 			args = new ArrayList<Object>();
 			args.add(id);
@@ -182,8 +201,6 @@ public class tests extends parent_tests
 	public static HashMap<String, HashMap<String, Boolean>> run_async(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = new HashMap<String, HashMap<String, Boolean>>();
-
-		accessory.tests.create_table(db.SOURCE_MARKET);
 		
 		Class<?> class0 = async_market.class;
 		String name0 = class0.getName();

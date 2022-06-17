@@ -4,10 +4,12 @@ import com.ib.client.EClientSocket;
 import com.ib.client.EReader;
 import com.ib.client.EReaderSignal;
 
+import accessory.arrays;
 import accessory.misc;
 import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
+import accessory_ib._keys;
 import accessory_ib.config;
 import accessory_ib.errors;
 import accessory_ib.types;
@@ -15,10 +17,12 @@ import external_ib.wrapper;
 
 public class conn extends parent_static 
 {
-	public static final String TYPE_TWS_REAL = types.CONFIG_CONN_TYPE_TWS_REAL;
-	public static final String TYPE_TWS_PAPER = types.CONFIG_CONN_TYPE_TWS_PAPER;
-	public static final String TYPE_GATEWAY_REAL = types.CONFIG_CONN_TYPE_GATEWAY_REAL;
-	public static final String TYPE_GATEWAY_PAPER = types.CONFIG_CONN_TYPE_GATEWAY_PAPER;
+	public static final String TYPE = types.CONFIG_CONN_TYPE;
+
+	public static final String TYPE_TWS_REAL = _keys.TWS_REAL;
+	public static final String TYPE_TWS_PAPER = _keys.TWS_PAPER;
+	public static final String TYPE_GATEWAY_REAL = _keys.GATEWAY_REAL;
+	public static final String TYPE_GATEWAY_PAPER = _keys.GATEWAY_PAPER;
 	
 	public static final String DEFAULT_TYPE = TYPE_GATEWAY_REAL;
 	public static final int DEFAULT_ID = 18; 
@@ -61,7 +65,7 @@ public class conn extends parent_static
 		return _connected;
 	}
 
-	public static boolean start() { return start((int)config.get_conn(types.CONFIG_CONN_ID), (String)config.get_conn(types.CONFIG_CONN_TYPE)); }
+	public static boolean start() { return start((int)config.get_conn(types.CONFIG_CONN_ID), (String)config.get_conn(TYPE)); }
 	
 	public static boolean start(int id_, String type_)
 	{
@@ -70,12 +74,11 @@ public class conn extends parent_static
 		if (!numbers.is_ok(id_, MIN_ID, MAX_ID)) error = ERROR_ID;
 		else 
 		{
-			String type = accessory.types.check_type(type_, types.CONFIG_CONN);	
-			if (!strings.is_ok(type)) error = ERROR_TYPE;
+			if (!type_is_ok(type_)) error = ERROR_TYPE;
 			else
 			{
 				_id = id_;
-				_port = get_port(type);
+				_port = get_port(type_);
 			}
 		}
 
@@ -104,6 +107,8 @@ public class conn extends parent_static
 
 		return _connected;
 	}
+
+	public static boolean type_is_ok(String type_) { return (strings.is_ok(type_) ? arrays.value_exists(new String[] { TYPE_TWS_REAL, TYPE_TWS_PAPER, TYPE_GATEWAY_REAL, TYPE_GATEWAY_PAPER }, type_) : false); }
 	
 	public static String check_error(String type_) { return accessory.types.check_type(type_, types.ERROR_IB_CONN); }
 

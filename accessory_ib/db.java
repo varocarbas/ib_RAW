@@ -13,6 +13,9 @@ import accessory.strings;
 public class db 
 {
 	public static final String SOURCE_MARKET = types.CONFIG_DB_IB_MARKET_SOURCE;
+	public static final String SOURCE_EXECS = types.CONFIG_DB_IB_EXECS_SOURCE;
+	public static final String SOURCE_BASIC = types.CONFIG_DB_IB_BASIC_SOURCE;
+	public static final String SOURCE_REMOTE = types.CONFIG_DB_IB_REMOTE_SOURCE;
 	
 	public static final String FIELD_SYMBOL = types.CONFIG_DB_FIELD_SYMBOL;
 	public static final String FIELD_PRICE = types.CONFIG_DB_FIELD_PRICE;
@@ -31,6 +34,23 @@ public class db
 	public static final String FIELD_HALTED_TOT = types.CONFIG_DB_FIELD_HALTED_TOT;
 	public static final String FIELD_ENABLED = types.CONFIG_DB_FIELD_ENABLED;
 
+	public static final String FIELD_ORDER_ID = types.CONFIG_DB_FIELD_ORDER_ID;
+	public static final String FIELD_QUANTITY = types.CONFIG_DB_FIELD_QUANTITY;
+	public static final String FIELD_SIDE = types.CONFIG_DB_FIELD_SIDE;
+	public static final String FIELD_FEES = types.CONFIG_DB_FIELD_FEES;
+	public static final String FIELD_EXEC_ID = types.CONFIG_DB_FIELD_EXEC_ID;
+	
+	public static final String FIELD_MONEY = types.CONFIG_DB_FIELD_MONEY;
+	public static final String FIELD_MONEY_INI = types.CONFIG_DB_FIELD_MONEY_INI;
+	public static final String FIELD_CONN_TYPE = types.CONFIG_DB_FIELD_CONN_TYPE;
+
+	public static final String FIELD_START = types.CONFIG_DB_FIELD_START;
+	public static final String FIELD_STOP = types.CONFIG_DB_FIELD_STOP;
+	public static final String FIELD_ORDER_ID_MAIN = types.CONFIG_DB_FIELD_ORDER_ID_MAIN;
+	public static final String FIELD_ORDER_ID_SEC = types.CONFIG_DB_FIELD_ORDER_ID_SEC;
+	public static final String FIELD_STATUS = types.CONFIG_DB_FIELD_STATUS;
+	public static final String FIELD_STATUS2 = types.CONFIG_DB_FIELD_STATUS2;
+	
 	public static final String DEFAULT_SOURCE = SOURCE_MARKET;
 	public static final String DEFAULT_DB = types.CONFIG_DB_IB;
 	public static final String DEFAULT_DB_NAME = accessory.db.DEFAULT_DB_NAME;

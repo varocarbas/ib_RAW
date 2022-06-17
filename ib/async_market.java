@@ -55,32 +55,32 @@ public class async_market extends parent_static
 	
 	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC_MARKET); }
 
-	public static void wrapper_tickPrice(int id_, int field_ib_, double price_)
+	public static void __wrapper_tickPrice(int id_, int field_ib_, double price_)
 	{
 		String field = get_field(get_all_prices(), field_ib_);
 		if (!strings.is_ok(field)) return;
 
-		update(id_, field, price_);
+		__update(id_, field, price_);
 	}
 	
-	public static void wrapper_tickSize(int id_, int field_ib_, int size_)
+	public static void __wrapper_tickSize(int id_, int field_ib_, int size_)
 	{
 		String field = get_field(get_all_sizes(), field_ib_);
 		if (!strings.is_ok(field)) return;
 		
 		boolean is_snapshot = is_snapshot(id_);
 		
-		update(id_, field, size_, is_snapshot);
+		__update(id_, field, size_, is_snapshot);
 
 		if (is_snapshot && field_ib_ == VOLUME && snapshot_is_quick()) __stop_snapshot(id_); 
 	}
 	
-	public static void wrapper_tickGeneric(int id_, int tick_, double value_)
+	public static void __wrapper_tickGeneric(int id_, int tick_, double value_)
 	{
 		String field = get_field(get_all_generics(), tick_);
 		if (!strings.is_ok(field)) return;
 
-		update(id_, field, value_);
+		__update(id_, field, value_);
 	}
 
 	public static boolean get_screen_logs() { return _screen_logs; }
@@ -109,7 +109,7 @@ public class async_market extends parent_static
 	
 		_stop_all = true;
 		
-		HashMap<Integer, String> ids = new HashMap<Integer, String>(async._ids);
+		HashMap<Integer, String> ids = async.get_ids();
 		
 		__unlock();
 		
@@ -265,8 +265,8 @@ public class async_market extends parent_static
 		}
 		else if (!db.is_enabled(symbol)) 
 		{
-			remove(id);
-			
+			remove(id);	
+
 			__unlock();
 			
 			return false;
@@ -275,6 +275,8 @@ public class async_market extends parent_static
 		Contract contract = contracts.get_contract(symbol);
 		if (contract == null) 
 		{
+			remove(id);
+
 			__unlock();
 			
 			return false;
@@ -284,8 +286,8 @@ public class async_market extends parent_static
 		
 		if (!calls.reqMktData(id, symbol_, is_snapshot_)) 
 		{
-			remove(id);
-			
+			remove(id);			
+
 			__unlock();
 			
 			return false;
@@ -336,9 +338,9 @@ public class async_market extends parent_static
 		return true;
 	}
 
-	private static void update(int id_, String field_, double val_) { update(id_, field_, val_, is_snapshot(id_)); }
+	private static void __update(int id_, String field_, double val_) { __update(id_, field_, val_, is_snapshot(id_)); }
 
-	private static void update(int id_, String field_, double val_, boolean is_snapshot_)
+	private static void __update(int id_, String field_, double val_, boolean is_snapshot_)
 	{
 		if (!strings.is_ok(field_) || val_ <= 0.0) return;  
 		
