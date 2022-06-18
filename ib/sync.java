@@ -330,7 +330,7 @@ public class sync extends parent_static
 			
 			is_get = true;
 		}
-		
+
 		long start = dates.start_elapsed();
 		
 		while (true)
@@ -342,7 +342,7 @@ public class sync extends parent_static
 				
 				break;
 			}
-			
+
 			if (is_get)
 			{
 				if (!_getting) 
@@ -370,7 +370,7 @@ public class sync extends parent_static
 		}
 
 		_error_triggered = false;
-		
+
 		if (is_get) 
 		{
 			_getting = false;

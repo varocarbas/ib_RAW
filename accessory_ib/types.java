@@ -37,8 +37,11 @@ public class types
 	public static final String CONFIG_DB_IB_BASIC_SOURCE = "config_db_ib_basic_source";
 	public static final String CONFIG_DB_IB_REMOTE = "config_db_ib_remote";
 	public static final String CONFIG_DB_IB_REMOTE_SOURCE = "config_db_ib_remote_source";
+	public static final String CONFIG_DB_IB_ORDERS = "config_db_ib_orders";
+	public static final String CONFIG_DB_IB_ORDERS_SOURCE = "config_db_ib_orders_source";
 
 	public static final String CONFIG_DB_FIELD = "config_db_field";
+	public static final String CONFIG_DB_FIELD_USER = "config_db_field_user";
 	public static final String CONFIG_DB_FIELD_SIZE = "config_db_field_size";
 	public static final String CONFIG_DB_FIELD_TIME = "config_db_field_time";
 	public static final String CONFIG_DB_FIELD_SYMBOL = "config_db_field_symbol";
@@ -67,11 +70,17 @@ public class types
 	public static final String CONFIG_DB_FIELD_CONN_TYPE = "config_db_field_conn_type";
 
 	public static final String CONFIG_DB_FIELD_START = "config_db_field_start";
+	public static final String CONFIG_DB_FIELD_START2 = "config_db_field_start2";
 	public static final String CONFIG_DB_FIELD_STOP = "config_db_field_stop";
 	public static final String CONFIG_DB_FIELD_ORDER_ID_MAIN = "config_db_field_order_id_main";
 	public static final String CONFIG_DB_FIELD_ORDER_ID_SEC = "config_db_field_order_id_sec";
 	public static final String CONFIG_DB_FIELD_STATUS = "config_db_field_status";
 	public static final String CONFIG_DB_FIELD_STATUS2 = "config_db_field_status2";
+	public static final String CONFIG_DB_FIELD_IS_MARKET = "config_db_field_is_market";
+
+	public static final String CONFIG_DB_FIELD_TYPE_PLACE = "config_db_field_type_place";
+	public static final String CONFIG_DB_FIELD_TYPE_MAIN = "config_db_field_type_main";
+	public static final String CONFIG_DB_FIELD_TYPE_SEC = "config_db_field_type_sec";
 	
 	public static final String ID_COMMON = "id_common";
 	public static final String ID_CONN = "id_conn";
@@ -170,18 +179,19 @@ public class types
 			CONFIG_DB_IB_BASIC_SOURCE,
 			CONFIG_DB_IB_REMOTE,
 			CONFIG_DB_IB_REMOTE_SOURCE,
+			CONFIG_DB_IB_ORDERS,
+			CONFIG_DB_IB_ORDERS_SOURCE,
 			
 			CONFIG_DB_FIELD, 
-			CONFIG_DB_FIELD_SIZE, CONFIG_DB_FIELD_TIME, CONFIG_DB_FIELD_SYMBOL, 
-			CONFIG_DB_FIELD_PRICE, CONFIG_DB_FIELD_OPEN, CONFIG_DB_FIELD_CLOSE, 
-			CONFIG_DB_FIELD_LOW, CONFIG_DB_FIELD_HIGH, CONFIG_DB_FIELD_VOLUME, 
-			CONFIG_DB_FIELD_ASK, CONFIG_DB_FIELD_ASK_SIZE, CONFIG_DB_FIELD_BID, 
-			CONFIG_DB_FIELD_BID_SIZE, CONFIG_DB_FIELD_HALTED, CONFIG_DB_FIELD_HALTED_TOT,
-			CONFIG_DB_FIELD_ENABLED, CONFIG_DB_FIELD_ORDER_ID, CONFIG_DB_FIELD_QUANTITY,
-			CONFIG_DB_FIELD_SIDE, CONFIG_DB_FIELD_FEES, CONFIG_DB_FIELD_EXEC_ID,
-			CONFIG_DB_FIELD_MONEY, CONFIG_DB_FIELD_MONEY_INI, CONFIG_DB_FIELD_CONN_TYPE,
-			CONFIG_DB_FIELD_START, CONFIG_DB_FIELD_STOP, CONFIG_DB_FIELD_ORDER_ID_MAIN,
-			CONFIG_DB_FIELD_ORDER_ID_SEC, CONFIG_DB_FIELD_STATUS, CONFIG_DB_FIELD_STATUS2,
+			CONFIG_DB_FIELD_USER, CONFIG_DB_FIELD_SIZE, CONFIG_DB_FIELD_TIME, CONFIG_DB_FIELD_SYMBOL, 
+			CONFIG_DB_FIELD_PRICE, CONFIG_DB_FIELD_OPEN, CONFIG_DB_FIELD_CLOSE, CONFIG_DB_FIELD_LOW, 
+			CONFIG_DB_FIELD_HIGH, CONFIG_DB_FIELD_VOLUME, CONFIG_DB_FIELD_ASK, CONFIG_DB_FIELD_ASK_SIZE, 
+			CONFIG_DB_FIELD_BID, CONFIG_DB_FIELD_BID_SIZE, CONFIG_DB_FIELD_HALTED, CONFIG_DB_FIELD_HALTED_TOT,
+			CONFIG_DB_FIELD_ENABLED, CONFIG_DB_FIELD_ORDER_ID, CONFIG_DB_FIELD_QUANTITY, CONFIG_DB_FIELD_SIDE, 
+			CONFIG_DB_FIELD_FEES, CONFIG_DB_FIELD_EXEC_ID, CONFIG_DB_FIELD_MONEY, CONFIG_DB_FIELD_MONEY_INI, 
+			CONFIG_DB_FIELD_CONN_TYPE, CONFIG_DB_FIELD_START, CONFIG_DB_FIELD_START2, CONFIG_DB_FIELD_STOP, 
+			CONFIG_DB_FIELD_ORDER_ID_MAIN, CONFIG_DB_FIELD_ORDER_ID_SEC, CONFIG_DB_FIELD_STATUS, CONFIG_DB_FIELD_STATUS2, 
+			CONFIG_DB_FIELD_IS_MARKET, CONFIG_DB_FIELD_TYPE_PLACE, CONFIG_DB_FIELD_TYPE_MAIN, CONFIG_DB_FIELD_TYPE_SEC,
 			
 			ID_ASYNC,
 			ID_ASYNC_MARKET,

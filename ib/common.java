@@ -3,14 +3,19 @@ package ib;
 import java.util.HashMap;
 
 import accessory.strings;
+import accessory._defaults;
 import accessory.arrays;
 import accessory.dates;
 import accessory.numbers;
 import accessory.parent_static;
+import accessory_ib._ini;
 import accessory_ib.types;
 
 public class common extends parent_static 
 {	
+	public static final String USER = get_user();
+	public static final int MAX_LENGTH_USER = 15;
+
 	public static final int WRONG_ID = 0;
 	
 	static final int MIN_REQ_ID_SYNC = WRONG_ID + 1;
@@ -95,4 +100,12 @@ public class common extends parent_static
 	}
 	
 	private static boolean id_is_ok(int id_, int min_, int max_) { return numbers.is_ok(id_, min_, max_); }
+	
+	private static String get_user()
+	{
+		String user = _ini.get_user();
+		if (!strings.is_ok(user)) user = _defaults.USER;
+		
+		return strings.truncate(user, MAX_LENGTH_USER);
+	}
 }

@@ -11,11 +11,12 @@ import accessory.db_where;
 import accessory.strings;
 
 public class db 
-{
+{	
 	public static final String SOURCE_MARKET = types.CONFIG_DB_IB_MARKET_SOURCE;
 	public static final String SOURCE_EXECS = types.CONFIG_DB_IB_EXECS_SOURCE;
 	public static final String SOURCE_BASIC = types.CONFIG_DB_IB_BASIC_SOURCE;
 	public static final String SOURCE_REMOTE = types.CONFIG_DB_IB_REMOTE_SOURCE;
+	public static final String SOURCE_ORDERS = types.CONFIG_DB_IB_ORDERS_SOURCE;
 	
 	public static final String FIELD_SYMBOL = types.CONFIG_DB_FIELD_SYMBOL;
 	public static final String FIELD_PRICE = types.CONFIG_DB_FIELD_PRICE;
@@ -50,6 +51,10 @@ public class db
 	public static final String FIELD_ORDER_ID_SEC = types.CONFIG_DB_FIELD_ORDER_ID_SEC;
 	public static final String FIELD_STATUS = types.CONFIG_DB_FIELD_STATUS;
 	public static final String FIELD_STATUS2 = types.CONFIG_DB_FIELD_STATUS2;
+	public static final String FIELD_IS_MARKET = types.CONFIG_DB_FIELD_IS_MARKET;
+	public static final String FIELD_TYPE_PLACE = types.CONFIG_DB_FIELD_TYPE_PLACE;
+	public static final String FIELD_TYPE_MAIN = types.CONFIG_DB_FIELD_TYPE_MAIN;
+	public static final String FIELD_TYPE_SEC = types.CONFIG_DB_FIELD_TYPE_SEC;
 	
 	public static final String DEFAULT_SOURCE = SOURCE_MARKET;
 	public static final String DEFAULT_DB = types.CONFIG_DB_IB;

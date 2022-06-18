@@ -40,7 +40,7 @@ public class tests extends parent_tests
 		
 		update_screen(name0, true, level);		
 
-		String[] tables = new String[] { db.SOURCE_MARKET, db.SOURCE_EXECS, db.SOURCE_BASIC, db.SOURCE_REMOTE };
+		String[] tables = new String[] { db.SOURCE_MARKET, db.SOURCE_EXECS, db.SOURCE_BASIC, db.SOURCE_REMOTE, db.SOURCE_ORDERS };
 		
 		for (String table: tables) { accessory.tests.create_table(table); }
 		
