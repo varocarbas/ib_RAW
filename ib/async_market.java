@@ -11,32 +11,31 @@ import accessory.parent_static;
 import accessory.strings;
 import accessory_ib._alls;
 import accessory_ib.config;
-import accessory_ib.db;
 import accessory_ib.types;
 import accessory_ib.logs;
 import external_ib.calls;
 import external_ib.contracts;
-import external_ib.market;
+import db_ib.market;
 
 public class async_market extends parent_static 
 {
 	public static final String TYPE_SNAPSHOT = types.ASYNC_MARKET_SNAPSHOT;
 	public static final String TYPE_STREAM = types.ASYNC_MARKET_STREAM;
 	
-	public static final int PRICE = market.TICK_LAST;
-	public static final int OPEN = market.TICK_OPEN;
-	public static final int CLOSE = market.TICK_CLOSE;
-	public static final int LOW = market.TICK_LOW;
-	public static final int HIGH = market.TICK_HIGH;
-	public static final int ASK = market.TICK_ASK;
-	public static final int BID = market.TICK_BID;
-	public static final int HALTED = market.TICK_HALTED;
-	public static final int VOLUME = market.TICK_VOLUME;
-	public static final int SIZE = market.TICK_LAST_SIZE;
-	public static final int ASK_SIZE = market.TICK_ASK_SIZE;
-	public static final int BID_SIZE = market.TICK_BID_SIZE;
+	public static final int PRICE = external_ib.market.TICK_LAST;
+	public static final int OPEN = external_ib.market.TICK_OPEN;
+	public static final int CLOSE = external_ib.market.TICK_CLOSE;
+	public static final int LOW = external_ib.market.TICK_LOW;
+	public static final int HIGH = external_ib.market.TICK_HIGH;
+	public static final int ASK = external_ib.market.TICK_ASK;
+	public static final int BID = external_ib.market.TICK_BID;
+	public static final int HALTED = external_ib.market.TICK_HALTED;
+	public static final int VOLUME = external_ib.market.TICK_VOLUME;
+	public static final int SIZE = external_ib.market.TICK_LAST_SIZE;
+	public static final int ASK_SIZE = external_ib.market.TICK_ASK_SIZE;
+	public static final int BID_SIZE = external_ib.market.TICK_BID_SIZE;
 
-	public static final int DEFAULT_DATA_TYPE = market.DATA_LIVE;
+	public static final int DEFAULT_DATA_TYPE = external_ib.market.DATA_LIVE;
 	public static final boolean DEFAULT_SNAPSHOT_QUICK = true;
 	public static final boolean DEFAULT_SNAPSHOT_NONSTOP = true;
 	public static final boolean DEFAULT_SCREEN_LOGS = true;
@@ -188,13 +187,13 @@ public class async_market extends parent_static
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();
 			
-		all.put(PRICE, db.FIELD_PRICE);
-		all.put(OPEN, db.FIELD_OPEN);
-		all.put(CLOSE, db.FIELD_CLOSE);
-		all.put(LOW, db.FIELD_LOW);
-		all.put(HIGH, db.FIELD_HIGH);
-		all.put(ASK, db.FIELD_ASK);
-		all.put(BID, db.FIELD_BID);
+		all.put(PRICE, market.PRICE);
+		all.put(OPEN, market.OPEN);
+		all.put(CLOSE, market.CLOSE);
+		all.put(LOW, market.LOW);
+		all.put(HIGH, market.HIGH);
+		all.put(ASK, market.ASK);
+		all.put(BID, market.BID);
 		
 		return all;
 	}
@@ -203,10 +202,10 @@ public class async_market extends parent_static
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();
 		
-		all.put(VOLUME, db.FIELD_VOLUME);
-		all.put(SIZE, db.FIELD_SIZE);
-		all.put(ASK_SIZE, db.FIELD_ASK_SIZE);
-		all.put(BID_SIZE, db.FIELD_BID_SIZE);
+		all.put(VOLUME, market.VOLUME);
+		all.put(SIZE, market.SIZE);
+		all.put(ASK_SIZE, market.ASK_SIZE);
+		all.put(BID_SIZE, market.BID_SIZE);
 		
 		return all;
 	}
@@ -215,7 +214,7 @@ public class async_market extends parent_static
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();			
 
-		all.put(HALTED, db.FIELD_HALTED);
+		all.put(HALTED, market.HALTED);
 		
 		return all;
 	}
@@ -255,15 +254,15 @@ public class async_market extends parent_static
 			return false;
 		}
 		
-		int data_type = (market.data_is_ok(data_type_) ? data_type_ : DEFAULT_DATA_TYPE);
+		int data_type = (external_ib.market.data_is_ok(data_type_) ? data_type_ : DEFAULT_DATA_TYPE);
 		int id = add(symbol, data_type, is_snapshot_);
 
-		if (!db.exists(symbol)) 
+		if (!market.exists(symbol)) 
 		{
-			if (_db_quick) db.insert_market_quick(symbol);
-			else db.insert_market(symbol);
+			if (_db_quick) market.insert_quick(symbol);
+			else market.insert(symbol);
 		}
-		else if (!db.is_enabled(symbol)) 
+		else if (!market.is_enabled(symbol)) 
 		{
 			remove(id);	
 
@@ -350,7 +349,7 @@ public class async_market extends parent_static
 	
 	private static void __update_vals(int id_, String field_, double val_)
 	{
-		if (_db_quick && arrays.__key_exists_async(_vals_quick, id_)) _vals_quick.get(id_).put(db.get_col_market(field_), Double.toString(val_));
+		if (_db_quick && arrays.__key_exists_async(_vals_quick, id_)) _vals_quick.get(id_).put(market.get_col(field_), Double.toString(val_));
 		else if (!_db_quick && arrays.__key_exists_async(_vals, id_)) _vals.get(id_).put(field_, val_);
 		
 		__to_screen_update(id_, false);
@@ -358,8 +357,8 @@ public class async_market extends parent_static
 	
 	private static void update_db(int id_, String symbol_, String field_, double val_)
 	{
-		if (_db_quick) db.update_val_market_quick(symbol_, db.get_col_market(field_), Double.toString(val_));
-		else db.update_val_market(symbol_, field_, val_);
+		if (_db_quick) market.update_quick(symbol_, market.get_col(field_), Double.toString(val_));
+		else market.update(symbol_, field_, val_);
 		
 		to_screen_update(id_, symbol_, true);
 	}
@@ -370,12 +369,12 @@ public class async_market extends parent_static
 		if (_db_quick)
 		{
 			HashMap<String, String> vals = (HashMap<String, String>)arrays.get_value(_vals_quick, id_);
-			if (arrays.is_ok(vals)) db.update_vals_market_quick(symbol_, vals);
+			if (arrays.is_ok(vals)) market.update_quick(symbol_, vals);
 		}
 		else
 		{
 			HashMap<String, Object> vals = (HashMap<String, Object>)arrays.get_value(_vals, id_);
-			if (arrays.is_ok(vals)) db.update_vals_market(symbol_, vals);
+			if (arrays.is_ok(vals)) market.update(symbol_, vals);
 		}
 		
 		to_screen_update(id_, symbol_, true);

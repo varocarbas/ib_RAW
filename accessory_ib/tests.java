@@ -8,6 +8,7 @@ import accessory.arrays;
 import accessory.misc;
 import accessory.numbers;
 import accessory.parent_tests;
+import db_ib.common;
 import ib.async_market;
 import ib.conn;
 import ib.sync;
@@ -40,7 +41,7 @@ public class tests extends parent_tests
 		
 		update_screen(name0, true, level);		
 
-		String[] tables = new String[] { db.SOURCE_MARKET, db.SOURCE_EXECS, db.SOURCE_BASIC, db.SOURCE_REMOTE, db.SOURCE_ORDERS };
+		String[] tables = new String[] { common.SOURCE_MARKET, common.SOURCE_EXECS, common.SOURCE_BASIC, common.SOURCE_REMOTE, common.SOURCE_ORDERS };
 		
 		for (String table: tables) { accessory.tests.create_table(table); }
 		
