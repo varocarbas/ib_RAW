@@ -10,6 +10,7 @@ import accessory.numbers;
 import accessory.parent_ini_db;
 import accessory.strings;
 import external_ib.contracts;
+import ib.order;
 import db_ib.basic;
 import db_ib.common;
 import db_ib.execs;
@@ -68,10 +69,12 @@ public class _ini_db extends parent_ini_db
 		info.put(market.HIGH, get_price());
 		info.put(market.ASK, get_price());
 		info.put(market.BID, get_price());
-		
-		String[] decimal_fields = { market.SIZE, market.BID_SIZE, market.ASK_SIZE, market.VOLUME };		
+		info.put(market.SIZE, get_decimal());
+		info.put(market.BID_SIZE, get_decimal());
+		info.put(market.ASK_SIZE, get_decimal());
+		info.put(market.VOLUME, get_decimal());
 
-		return add_source_common(db_, source, table, info, decimal_fields, sources_);		
+		return add_source_common(db_, source, table, info, sources_);		
 	}
 	
 	private HashMap<String, Object[]> add_source_execs(String db_, HashMap<String, Object[]> sources_)
@@ -87,10 +90,10 @@ public class _ini_db extends parent_ini_db
 		info.put(execs.SIDE, new db_field(data.STRING, 3)); //Synced with execution.side's max. length as defined in external_ib.orders.
 		info.put(execs.USER, get_user());
 		info.put(execs.PRICE, get_price());
+		info.put(execs.QUANTITY, get_quantity());
+		info.put(execs.FEES, get_decimal());
 
-		String[] decimal_fields = new String[] { execs.QUANTITY, execs.FEES };
-
-		return add_source_common(db_, source, table, info, decimal_fields, sources_);
+		return add_source_common(db_, source, table, info, sources_);
 	}
 	
 	private HashMap<String, Object[]> add_source_basic(String db_, HashMap<String, Object[]> sources_)
@@ -102,10 +105,10 @@ public class _ini_db extends parent_ini_db
 		
 		info.put(basic.CONN_TYPE, new db_field(data.STRING, ib.conn.TYPE_GATEWAY_PAPER.length()));
 		info.put(basic.USER, get_user());
+		info.put(basic.MONEY, get_decimal());
+		info.put(basic.MONEY_INI, get_decimal());
 		
-		String[] decimal_fields = new String[] { basic.MONEY, basic.MONEY_INI };
-		
-		return add_source_common(db_, source, table, info, decimal_fields, sources_);
+		return add_source_common(db_, source, table, info, sources_);
 	}
 	
 	private HashMap<String, Object[]> add_source_remote(String db_, HashMap<String, Object[]> sources_)
@@ -126,10 +129,9 @@ public class _ini_db extends parent_ini_db
 		info.put(remote.START2, get_price());
 		info.put(remote.STOP, get_price());
 		info.put(remote.IS_MARKET, get_boolean(false));	
+		info.put(remote.QUANTITY, get_quantity());	
 		
-		String[] decimal_fields = new String[] { remote.QUANTITY };
-		
-		return add_source_common(db_, source, table, info, decimal_fields, sources_);
+		return add_source_common(db_, source, table, info, sources_);
 	}
 	
 	private HashMap<String, Object[]> add_source_orders(String db_, HashMap<String, Object[]> sources_)
@@ -151,41 +153,26 @@ public class _ini_db extends parent_ini_db
 		info.put(orders.TYPE_PLACE, get_status_type());
 		info.put(orders.TYPE_MAIN, get_status_type());
 		info.put(orders.TYPE_SEC, get_status_type());
-		
-		String[] decimal_fields = new String[] { orders.QUANTITY };
-		
-		return add_source_common(db_, source, table, info, decimal_fields, sources_);
+		info.put(orders.QUANTITY, get_quantity());
+
+		return add_source_common(db_, source, table, info, sources_);
 	}
 
-	private HashMap<String, Object[]> add_source_common(String db_, String source_, String table_, HashMap<String, db_field> info_, String[] decimal_fields_, HashMap<String, Object[]> sources_)
-	{
-		HashMap<String, db_field> info = new HashMap<String, db_field>(info_);
-		
-		info = add_fields_decimal(decimal_fields_, info);
-
-		return add_source(source_, table_, db_, info, true, sources_);
-	}
-	
-	private static HashMap<String, db_field> add_fields_decimal(String[] ids_, HashMap<String, db_field> info_)
-	{
-		HashMap<String, db_field> info = new HashMap<String, db_field>(info_);
-		
-		for (String id: ids_) { info.put(id, get_decimal()); }
-		
-		return info;
-	}
+	private HashMap<String, Object[]> add_source_common(String db_, String source_, String table_, HashMap<String, db_field> info_, HashMap<String, Object[]> sources_) { return add_source(source_, table_, db_, info_, true, sources_); }
 
 	private static db_field get_symbol(boolean is_unique_) { return (is_unique_ ? new db_field(data.STRING, contracts.MAX_LENGTH_SYMBOL_US_ANY, 0, null, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.STRING, contracts.MAX_LENGTH_SYMBOL_US_ANY)); }
 
-	private static db_field get_order_id(boolean is_unique_) { return (is_unique_ ? new db_field(data.INT, 0, 0, null, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.INT)); }
+	private static db_field get_order_id(boolean is_unique_) { return (is_unique_ ? new db_field(data.INT, 0, order.WRONG_ORDER_ID, null, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.INT)); }
 
 	private static db_field get_decimal() { return new db_field(data.DECIMAL, 7, numbers.DEFAULT_DECIMALS); }
 
 	private static db_field get_boolean(boolean default_) { return new db_field(data.BOOLEAN, 0, 0, default_, null); }
 	
 	private static db_field get_price() { return new db_field(data.DECIMAL, 4, 2); }
+	
+	private static db_field get_quantity() { return get_decimal(); }
 
-	private static db_field get_time() { return new db_field(data.STRING, dates.get_length(dates.FORMAT_TIME_SHORT)); }
+	private static db_field get_time() { return new db_field(data.STRING, dates.get_length(dates.FORMAT_TIME_SHORT), 0, "00:00", null); }
 
 	private static db_field get_user() { return new db_field(data.STRING, common.MAX_LENGTH_USER); }
 

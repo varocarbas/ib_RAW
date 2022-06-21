@@ -34,8 +34,9 @@ public class sync extends parent_static
 	public static final String OUT_STRINGS = types.SYNC_OUT_STRINGS;
 	public static final String OUT_ORDERS = types.SYNC_OUT_ORDERS;
 
-	public static final int WRONG_ID = common.WRONG_ID;
-
+	public static final int WRONG_REQ_ID = common.WRONG_ID;
+	public static final int WRONG_ORDER_ID = sync_orders.WRONG_ORDER_ID;
+	
 	public static final long TIMEOUT_ORDERS = 3l;
 	public static final long TIMEOUT_ERROR = 3l;
 	public static final long DEFAULT_TIMEOUT = 10l;
@@ -49,8 +50,8 @@ public class sync extends parent_static
 	private static volatile ArrayList<Integer> _out_ints = new ArrayList<Integer>();
 	private static volatile ArrayList<String> _out_strings = new ArrayList<String>();
 
-	private static int _req_id = WRONG_ID;
-	private static int _order_id = WRONG_ID;
+	private static int _req_id = WRONG_REQ_ID;
+	private static int _order_id = WRONG_ORDER_ID;
 	private static String _get = strings.DEFAULT;
 	private static String _out = strings.DEFAULT;
 
@@ -65,7 +66,7 @@ public class sync extends parent_static
 	{ 	
 		HashMap<Integer, String> orders = (HashMap<Integer, String>)get(GET_ORDERS); 
 			
-		sync_orders.sync_global(orders);
+		sync_orders.sync_all(orders);
 		
 		return orders; 
 	}
@@ -147,7 +148,7 @@ public class sync extends parent_static
 		return all;
 	}
 	
-	public static boolean is_ok() { return (_getting || _order_id > WRONG_ID); }
+	public static boolean is_ok() { return (_getting || _order_id > WRONG_ORDER_ID); }
 
 	public static boolean is_ok(int id_) { return (_getting && (_req_id == id_)); }
 	
@@ -376,7 +377,7 @@ public class sync extends parent_static
 			_getting = false;
 			_get = strings.DEFAULT;
 		}
-		else _order_id = WRONG_ID;
+		else _order_id = WRONG_ORDER_ID;
 		
 		return is_ok;
 	}

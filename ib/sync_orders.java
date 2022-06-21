@@ -39,6 +39,7 @@ public class sync_orders extends parent_static
 	public static final String STATUS_INACTIVE = types.SYNC_ORDERS_STATUS_INACTIVE;
 
 	public static final double WRONG_VALUE = order.WRONG_VALUE;
+	public static final int WRONG_ORDER_ID = order.WRONG_ORDER_ID;
 	
 	private static int _last_id_main = 0;
 	private static int _last_id_sec = 0;
@@ -56,15 +57,15 @@ public class sync_orders extends parent_static
 	
 	public static boolean place_stop_limit(String symbol_, double quantity_, double stop_, double start_limit_, double start_stop_) { return place_update(new order(PLACE_STOP_LIMIT, symbol_, quantity_, stop_, start_limit_, start_stop_)); }
 
-	public static boolean update_start(String symbol_, double start_) { return update(UPDATE_START_VALUE, symbol_, start_); }
+	public static boolean update_start(String symbol_, double start_) { return update(symbol_, UPDATE_START_VALUE, start_); }
 
-	public static boolean update_start_market(String symbol_) { return update(UPDATE_START_MARKET, symbol_, WRONG_VALUE); }
+	public static boolean update_start_market(String symbol_) { return update(symbol_, UPDATE_START_MARKET, WRONG_VALUE); }
 
-	public static boolean update_stop(String symbol_, double stop_) { return update(UPDATE_STOP_VALUE, symbol_, stop_); }
+	public static boolean update_stop(String symbol_, double stop_) { return update(symbol_, UPDATE_STOP_VALUE, stop_); }
 
-	public static boolean update_stop_market(String symbol_) { return update(UPDATE_STOP_MARKET, symbol_, WRONG_VALUE); }
+	public static boolean update_stop_market(String symbol_) { return update(symbol_, UPDATE_STOP_MARKET, WRONG_VALUE); }
 
-	public static boolean update_start2(String symbol_, double start2_) { return update(UPDATE_START2_VALUE, symbol_, start2_); }
+	public static boolean update_start2(String symbol_, double start2_) { return update(symbol_, UPDATE_START2_VALUE, start2_); }
 
 	public static boolean cancel(int id_)
 	{
@@ -74,7 +75,7 @@ public class sync_orders extends parent_static
 		_cancellations = new HashMap<Integer, Long>(common.start_wait(order.get_id_sec(id_), common.start_wait(id_, _cancellations)));
 		
 		is_ok = sync.cancel_order(id_);
-		if (is_ok) remove_global(id_);	
+		if (is_ok) db_ib.orders.delete(id_);	
 		
 		return is_ok;
 	}
@@ -146,29 +147,27 @@ public class sync_orders extends parent_static
 		return false;
 	}
 	
-	static void sync_global(HashMap<Integer, String> orders_) { sync_global(get_ids(STATUS_ACTIVE, orders_, false)); }
+	static void sync_all(HashMap<Integer, String> orders_) { sync_all(get_ids(STATUS_ACTIVE, orders_, false)); }
 	
-	private static boolean update(String type_update_, String symbol_, double val_) 
-	{
-		String type = check_update(type_update_);
-		order order = get_order(symbol_);
-
-		return ((order != null && strings.is_ok(type)) ? place_update(order, type, val_) : false);
-	}
-
+	//private static boolean update(int id_, String type_, double val_) { return update(get_order(id_), check_update(type_), val_); }
+	
+	private static boolean update(String symbol_, String type_, double val_) { return update(get_order(symbol_), check_update(type_), val_); }
+	
+	private static boolean update(order order_, String type_, double val_) { return ((order_ != null && strings.is_ok(type_)) ? place_update(order_, type_, val_) : false); }
+	
 	private static boolean place(String type_place_, String symbol_, double quantity_, double stop_, double start_) { return place_update(new order(type_place_, symbol_, quantity_, stop_, start_)); }
 	
-	private static void sync_global() { sync_global(get_ids(STATUS_ACTIVE)); }
+	private static void sync_all() { sync_all(get_ids(STATUS_ACTIVE)); }
 
-	private static void sync_global(ArrayList<Integer> active_)
+	private static void sync_all(ArrayList<Integer> active_)
 	{
-		sync_global_orders(active_);
+		sync_all_orders(active_);
 		
-		sync_waits();
+		sync_all_waits();
 	}
 	
-	private static void sync_global_orders(ArrayList<Integer> active_)
-	{
+	private static void sync_all_orders(ArrayList<Integer> active_) 
+	{ 
 		if (!arrays.is_ok(active_))
 		{
 			_orders = new HashMap<Integer, order>();
@@ -188,7 +187,7 @@ public class sync_orders extends parent_static
 		for (int id: delete) { _orders.remove(id); }
 	}
 
-	private static void sync_waits()
+	private static void sync_all_waits()
 	{
 		HashMap<Integer, Long> output = new HashMap<Integer, Long>(_cancellations);
 		
@@ -202,10 +201,10 @@ public class sync_orders extends parent_static
 	}
 	
 	private static void remove_global(int id_) { arrays.remove_key(_orders, id_); }
-
+	
 	private static order get_order(String symbol_)
 	{
-		sync_global();
+		sync_all();
 
 		String symbol = common.check_symbol(symbol_);
 		if (!strings.is_ok(symbol)) return null;
@@ -294,8 +293,8 @@ public class sync_orders extends parent_static
 
 			if (!is_ok)
 			{
-				_last_id_main = sync.WRONG_ID;
-				_last_id_sec = sync.WRONG_ID;
+				_last_id_main = WRONG_ORDER_ID;
+				_last_id_sec = WRONG_ORDER_ID;
 				
 				return false;				
 			}
@@ -316,7 +315,7 @@ public class sync_orders extends parent_static
 	{
 		_orders.put(id_, new order(order_));
 
-		sync_global();
+		sync_all();
 	}
 	
 	private static boolean update_order(int id_, double val_, boolean is_market_, boolean is_main_)

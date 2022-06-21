@@ -91,21 +91,11 @@ public class market
 		return vals;
 	}
 	
-	public static HashMap<String, String> get_vals(String symbol_) { return accessory.db.select_one(SOURCE, null, get_where_symbol(symbol_), null); }
+	public static HashMap<String, String> get_val(String symbol_) { return common.get_vals(SOURCE, null, get_where_symbol(symbol_)); }
 	
 	public static String get_col(String field_) { return common.get_col(SOURCE, field_); }
 
-	private static String get_where_symbol(String symbol_) { return get_where_symbol_internal(symbol_, false); }
+	private static String get_where_symbol(String symbol_) { return common.get_where_symbol(SOURCE, symbol_); }
 
-	private static String get_where_symbol_quick(String symbol_) { return get_where_symbol_internal(symbol_, true); }
-
-	private static String get_where_symbol_internal(String symbol_, boolean is_quick_) 
-	{ 
-		String where = null;
-		
-		if (is_quick_) where = accessory.db.get_variable(get_col(SYMBOL)) + "=" + accessory.db.get_value(symbol_);
-		else where = (new db_where(SOURCE, SYMBOL, symbol_)).toString();
-		
-		return where; 
-	}
+	private static String get_where_symbol_quick(String symbol_) { return common.get_where_symbol_quick(SOURCE, symbol_); }
 }

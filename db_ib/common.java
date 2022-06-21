@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import accessory.arrays;
 import accessory.data;
 import accessory.db_field;
+import accessory.db_where;
 import accessory.strings;
 import accessory_ib.types;
 
@@ -66,6 +67,10 @@ public class common
 	
 	public static boolean is_enabled(String source_, String where_) { return accessory.db.select_one_boolean(source_, FIELD_ENABLED, where_, null); }
 
+	public static HashMap<String, String> get_vals(String source_, String where_) { return get_vals(source_, null, where_); }
+
+	public static HashMap<String, String> get_vals(String source_, String[] fields_, String where_) { return accessory.db.select_one(source_, fields_, where_, null); }
+	
 	@SuppressWarnings("unchecked")
 	public static boolean insert(String source_) { return insert(source_, (HashMap<String, Object>)get_default_vals(source_, false)); }
 
@@ -127,6 +132,29 @@ public class common
 	
 	public static String get_col(String source_, String field_) { return accessory.db.get_col(source_, field_); }
 
+	public static boolean delete(String source_, String where_)
+	{
+		accessory.db.delete(source_, where_);
+		
+		return accessory.db.is_ok(source_);
+	}
+
+	public static String get_where_user(String source_) { return get_where(source_, FIELD_USER, ib.common.USER, false); }
+
+	public static String get_where_symbol(String source_, String symbol_) { return get_where(source_, FIELD_SYMBOL, symbol_, false); }
+
+	public static String get_where_symbol_quick(String source_, String symbol_) { return get_where(source_, FIELD_SYMBOL, symbol_, true); }
+
+	public static String get_where(String source_, String field_, String val_, boolean is_quick_) 
+	{ 
+		String where = null;
+		
+		if (is_quick_) where = accessory.db.get_variable(get_col(source_, field_)) + "=" + accessory.db.get_value(val_);
+		else where = (new db_where(source_, field_, val_)).toString();
+		
+		return where; 
+	}
+	
 	private static Object get_default_val(String source_, String field_, String type_)
 	{
 		Object output = null;

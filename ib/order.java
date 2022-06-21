@@ -24,9 +24,10 @@ public class order extends parent
 	public static final String TYPE_PLACE_STOP_LIMIT = sync_orders.PLACE_STOP_LIMIT;
 	
 	public static final double WRONG_VALUE = 0.0;
+	public static final int WRONG_ORDER_ID = -1;
 	
-	private int _id_main = sync.WRONG_ID;
-	private int _id_sec = sync.WRONG_ID;	
+	private int _id_main = WRONG_ORDER_ID;
+	private int _id_sec = WRONG_ORDER_ID;	
 	private String _type_place = strings.DEFAULT;
 	private String _type_main = strings.DEFAULT;
 	private String _type_sec = strings.DEFAULT;
