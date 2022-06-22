@@ -51,8 +51,8 @@ public class tests extends parent_tests
 		
 		update_screen(name0, true, level);		
 
-		String cur_conn = (String)accessory_ib.config.get_conn(ib.conn.TYPE);
-		if (_use_tws_paper) accessory_ib.config.update_conn(ib.conn.TYPE, conn.TYPE_TWS_PAPER);
+		String cur_conn = (String)accessory_ib.config.get_conn(ib.conn.CONFIG_TYPE);
+		if (_use_tws_paper) accessory_ib.config.update_conn(ib.conn.CONFIG_TYPE, conn.TYPE_TWS_PAPER);
 		
 		conn.start();
 		
@@ -61,7 +61,7 @@ public class tests extends parent_tests
 		
 		conn.end();
 
-		if (_use_tws_paper) accessory_ib.config.update_conn(conn.TYPE, cur_conn);
+		if (_use_tws_paper) accessory_ib.config.update_conn(conn.CONFIG_TYPE, cur_conn);
 
 		update_screen(name0, false, level);
 		

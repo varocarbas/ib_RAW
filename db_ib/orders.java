@@ -7,6 +7,7 @@ import accessory.arrays;
 import accessory.db_where;
 import accessory.strings;
 import ib.order;
+import ib.sync_orders;
 
 public class orders 
 {
@@ -25,18 +26,22 @@ public class orders
 	public static final String TYPE_MAIN = common.FIELD_TYPE_MAIN;
 	public static final String TYPE_SEC = common.FIELD_TYPE_SEC;
 	public static final String QUANTITY = common.FIELD_QUANTITY;
+	
+	public static order get_to_order(int id_) { return to_order(get(id_)); }
+	
+	public static order get_to_order(String symbol_) { return to_order(get(symbol_)); }
 
-	public static HashMap<String, String> get_order(int id_) { return common.get_vals(SOURCE, get_where_order_id(id_)); }
+	public static HashMap<String, String> get(int id_) { return common.get_vals(SOURCE, get_where_order_id(id_)); }
 
-	public static HashMap<String, String> get_order(String symbol_) { return common.get_vals(SOURCE, get_where_symbol(symbol_)); }
+	public static HashMap<String, String> get(String symbol_) { return common.get_vals(SOURCE, get_where_symbol(symbol_)); }
 
-	public static boolean add_order(order order_) { return (order_ == null ? false : common.insert(SOURCE, orders.order_to_db(order_))); }
+	public static boolean add(order order_) { return (order_ == null ? false : common.insert(SOURCE, to_hashmap(order_))); }
 
-	public static boolean update_order(order order_) 
+	public static boolean update(order order_) 
 	{ 
 		if (order_ == null) return false;
 		
-		HashMap<String, Object> vals = orders.order_to_db(order_);
+		HashMap<String, Object> vals = to_hashmap(order_);
 		
 		return common.update(SOURCE, vals, orders.get_where_order_id((int)vals.get(ORDER_ID_MAIN)));
 	}
@@ -47,37 +52,45 @@ public class orders
 	
 	public static boolean delete_except(Integer[] ids_) { return (arrays.is_ok(ids_) ? common.delete(SOURCE, get_where_order_id(ids_, false)) : delete()); }
 
-	public static order db_to_order(HashMap<String, String> db_)
+	public static order to_order(HashMap<String, String> db_)
 	{
-		String type_place = (String)arrays.get_value(db_, db_ib.orders.TYPE_PLACE);
-		String symbol = (String)arrays.get_value(db_, db_ib.orders.SYMBOL);
-		double quantity = strings.to_number_decimal((String)arrays.get_value(db_, db_ib.orders.QUANTITY));
-		double stop = strings.to_number_decimal((String)arrays.get_value(db_, db_ib.orders.STOP)); 
-		double start = strings.to_number_decimal((String)arrays.get_value(db_, db_ib.orders.START));
-		double start2 = strings.to_number_decimal((String)arrays.get_value(db_, db_ib.orders.START2));
-		
-		return new order(type_place, symbol, quantity, stop, start, start2);
+		String type_place = db_to_order((String)arrays.get_value(db_, TYPE_PLACE), false);
+		String symbol = (String)arrays.get_value(db_, SYMBOL);
+		double quantity = strings.to_number_decimal((String)arrays.get_value(db_, QUANTITY));
+		double stop = strings.to_number_decimal((String)arrays.get_value(db_, STOP)); 
+		double start = strings.to_number_decimal((String)arrays.get_value(db_, START));
+		double start2 = strings.to_number_decimal((String)arrays.get_value(db_, START2));
+		int id_main = strings.to_number_int((String)arrays.get_value(db_, ORDER_ID_MAIN));
+
+		return new order(type_place, symbol, quantity, stop, start, start2, id_main);
 	}
 	
-	public static HashMap<String, Object> order_to_db(order order_)
+	public static HashMap<String, Object> to_hashmap(order order_)
 	{
 		HashMap<String, Object> db = new HashMap<String, Object>();
 		if (order_ == null) return db;
 
-		db.put(db_ib.orders.ORDER_ID_MAIN, order_.get_id_main());
-		db.put(db_ib.orders.ORDER_ID_SEC, order_.get_id_sec());
-		db.put(db_ib.orders.TYPE_PLACE, order_.get_type_place());
-		db.put(db_ib.orders.TYPE_MAIN, order_.get_type_main());
-		db.put(db_ib.orders.TYPE_SEC, order_.get_type_sec());
-		db.put(db_ib.orders.SYMBOL, order_.get_symbol());
-		db.put(db_ib.orders.QUANTITY, order_.get_quantity());
-		db.put(db_ib.orders.STOP, order_.get_stop());
-		db.put(db_ib.orders.START, order_.get_start());
-		db.put(db_ib.orders.START2, order_.get_start2());
+		db.put(USER, ib.common.USER);
+		db.put(STATUS, order_to_db(sync_orders.DEFAULT_STATUS, true));
+		db.put(ORDER_ID_MAIN, order_.get_id_main());
+		db.put(ORDER_ID_SEC, order_.get_id_sec());
+		db.put(TYPE_PLACE, order_to_db(order_.get_type_place(), false));
+		db.put(TYPE_MAIN, order_.get_type_main());
+		db.put(TYPE_SEC, order_.get_type_sec());
+		db.put(SYMBOL, order_.get_symbol());
+		db.put(QUANTITY, order_.get_quantity());
+		db.put(STOP, order_.get_stop());
+		db.put(START, order_.get_start());
+		db.put(START2, order_.get_start2());
+		db.put(IS_MARKET, (order_.is_market(true) || order_.is_market(false)));
 		
 		return db;
 	}
 
+	public static String db_to_order(String input_, boolean is_status_) { return (strings.is_ok(input_) ? ((is_status_ ? sync_orders.STATUS : sync_orders.PLACE) + accessory.types.SEPARATOR + input_) : strings.DEFAULT); }
+
+	public static String order_to_db(String input_, boolean is_status_) { return (strings.is_ok(input_) ? accessory._keys.get_key(input_, (is_status_ ? sync_orders.STATUS : sync_orders.PLACE)) : strings.DEFAULT); }
+	
 	private static String get_where_user() { return common.get_where_user(SOURCE); }
 
 	private static String get_where_symbol(String symbol_) 

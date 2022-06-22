@@ -11,8 +11,8 @@ import external_ib.orders;
 
 public class order extends parent
 {
-	public static final String QUANTITIES_INT = types.CONFIG_ORDER_QUANTITIES_INT;
-	public static final String TIF = types.CONFIG_ORDER_TIF;
+	public static final String CONFIG_TIF = types.CONFIG_ORDER_TIF;
+	public static final String CONFIG_QUANTITIES_INT = types.CONFIG_ORDER_QUANTITIES_INT;
 
 	public static final String TYPE_MARKET = orders.TYPE_MARKET;
 	public static final String TYPE_STOP = orders.TYPE_STOP;
@@ -46,12 +46,12 @@ public class order extends parent
 
 	public static String get_tif() 
 	{ 
-		String tif = (String)config.get_order(TIF);
+		String tif = (String)config.get_order(CONFIG_TIF);
 		
 		return (orders.tif_is_ok(tif) ? tif : strings.DEFAULT);
 	}
 
-	public static boolean quantities_int() { return config.get_order_boolean(QUANTITIES_INT); }
+	public static boolean quantities_int() { return config.get_order_boolean(CONFIG_QUANTITIES_INT); }
 
 	public static String check_type_place(String type_) { return sync_orders.check_place(type_); }
 
@@ -79,6 +79,8 @@ public class order extends parent
 	public order(String type_place_, String symbol_, double quantity_, double stop_, double start_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, WRONG_VALUE, sync.get_order_id()); }
 	
 	public order(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, start2_, sync.get_order_id()); }
+	
+	public order(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_, int id_main_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, start2_, id_main_); }
 
 	public String get_type_place() { return _type_place; }
 

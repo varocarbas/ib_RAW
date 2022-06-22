@@ -154,7 +154,8 @@ public class _ini_db extends parent_ini_db
 		info.put(orders.TYPE_MAIN, get_status_type());
 		info.put(orders.TYPE_SEC, get_status_type());
 		info.put(orders.QUANTITY, get_quantity());
-
+		info.put(orders.STATUS, get_status_type());
+		
 		return add_source_common(db_, source, table, info, sources_);
 	}
 

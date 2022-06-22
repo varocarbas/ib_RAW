@@ -12,12 +12,12 @@ import accessory_ib.types;
 
 public class contracts 
 {
-	public static final String SECURITY_TYPE = types.CONFIG_CONTRACT_SECURITY_TYPE;
-	public static final String CURRENCY = types.CONFIG_CONTRACT_CURRENCY;
-	public static final String EXCHANGE = types.CONFIG_CONTRACT_EXCHANGE;
-	public static final String EXCHANGE_PRIMARY = types.CONFIG_CONTRACT_EXCHANGE_PRIMARY;
-	public static final String EXCHANGE_COUNTRY = types.CONFIG_CONTRACT_EXCHANGE_COUNTRY;
-	public static final String EXCHANGE_COUNTRY_US = types.CONFIG_CONTRACT_EXCHANGE_COUNTRY_US;
+	public static final String CONFIG_SECURITY_TYPE = types.CONFIG_CONTRACT_SECURITY_TYPE;
+	public static final String CONFIG_CURRENCY = types.CONFIG_CONTRACT_CURRENCY;
+	public static final String CONFIG_EXCHANGE = types.CONFIG_CONTRACT_EXCHANGE;
+	public static final String CONFIG_EXCHANGE_PRIMARY = types.CONFIG_CONTRACT_EXCHANGE_PRIMARY;
+	public static final String CONFIG_EXCHANGE_COUNTRY = types.CONFIG_CONTRACT_EXCHANGE_COUNTRY;
+	public static final String CONFIG_EXCHANGE_COUNTRY_US = types.CONFIG_CONTRACT_EXCHANGE_COUNTRY_US;
 
 	//--- To be synced with the contract.SecType values (https://interactivebrokers.github.io/tws-api/classIBApi_1_1Contract.html).
 	public static final String SECURITY_STOCK_ETF = "STK";
@@ -37,7 +37,7 @@ public class contracts
 	public static final int MAX_LENGTH_SYMBOL_US_STOCKS = 4;
 	public static final int MAX_LENGTH_SYMBOL_US_ANY = 5;
 
-	public static final String DEFAULT_EXCHANGE_COUNTRY = EXCHANGE_COUNTRY_US;
+	public static final String DEFAULT_EXCHANGE_COUNTRY = CONFIG_EXCHANGE_COUNTRY_US;
 	public static final String DEFAULT_SECURITY_TYPE = contracts.SECURITY_STOCK_ETF;
 	public static final String DEFAULT_CURRENCY = "USD";
 	public static final String DEFAULT_EXCHANGE = "SMART";
@@ -49,11 +49,11 @@ public class contracts
 	{	
 		Contract contract = null;
 		
-		String security = (String)config.get_contract(SECURITY_TYPE);
+		String security = (String)config.get_contract(CONFIG_SECURITY_TYPE);
 		if (!security_is_ok(security)) return contract;
 		
-		String country = (String)config.get_contract(EXCHANGE_COUNTRY);
-		boolean is_us = strings.are_equal(country, EXCHANGE_COUNTRY_US);
+		String country = (String)config.get_contract(CONFIG_EXCHANGE_COUNTRY);
+		boolean is_us = strings.are_equal(country, CONFIG_EXCHANGE_COUNTRY_US);
 		
 		int length = strings.get_length(symbol_);
 		if (length < 1 || (is_us && (length > MAX_LENGTH_SYMBOL_US_ANY))) return null;
@@ -72,9 +72,9 @@ public class contracts
 	{		
 		String security = SECURITY_STOCK_ETF;
 		
-		String currency = (String)config.get_contract(CURRENCY);
-		String exchange = (String)config.get_contract(EXCHANGE);
-		String exchange_primary = (String)config.get_contract(EXCHANGE_PRIMARY);
+		String currency = (String)config.get_contract(CONFIG_CURRENCY);
+		String exchange = (String)config.get_contract(CONFIG_EXCHANGE);
+		String exchange_primary = (String)config.get_contract(CONFIG_EXCHANGE_PRIMARY);
 		
 		if (!strings.are_ok(new String[] { currency, exchange, exchange_primary })) 
 		{

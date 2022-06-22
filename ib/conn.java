@@ -17,7 +17,8 @@ import external_ib.wrapper;
 
 public class conn extends parent_static 
 {
-	public static final String TYPE = types.CONFIG_CONN_TYPE;
+	public static final String CONFIG_TYPE = types.CONFIG_CONN_TYPE;
+	public static final String CONFIG_CONN_ID = types.CONFIG_CONN_ID;
 
 	public static final String TYPE_TWS_REAL = _keys.TWS_REAL;
 	public static final String TYPE_TWS_PAPER = _keys.TWS_PAPER;
@@ -65,7 +66,7 @@ public class conn extends parent_static
 		return _connected;
 	}
 
-	public static boolean start() { return start((int)config.get_conn(types.CONFIG_CONN_ID), (String)config.get_conn(TYPE)); }
+	public static boolean start() { return start((int)config.get_conn(types.CONFIG_CONN_ID), (String)config.get_conn(CONFIG_TYPE)); }
 	
 	public static boolean start(int id_, String type_)
 	{

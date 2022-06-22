@@ -19,6 +19,9 @@ import db_ib.market;
 
 public class async_market extends parent_static 
 {
+	public static final String CONFIG_SNAPSHOT_QUICK = types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK;
+	public static final String CONFIG_SNAPSHOT_NONSTOP = types.CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP;
+
 	public static final String TYPE_SNAPSHOT = types.ASYNC_MARKET_SNAPSHOT;
 	public static final String TYPE_STREAM = types.ASYNC_MARKET_STREAM;
 	

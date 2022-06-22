@@ -29,8 +29,8 @@ public class _ini_config extends parent_ini_config
 		String type = types.CONFIG_CONN;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(types.CONFIG_CONN_TYPE, conn.DEFAULT_TYPE);
-		vals.put(types.CONFIG_CONN_ID, conn.DEFAULT_ID);
+		vals.put(conn.CONFIG_TYPE, conn.DEFAULT_TYPE);
+		vals.put(conn.CONFIG_CONN_ID, conn.DEFAULT_ID);
 
 		return populate(type, null, vals);
 	}
@@ -52,8 +52,8 @@ public class _ini_config extends parent_ini_config
 		String type = types.CONFIG_ASYNC;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK, async_market.DEFAULT_SNAPSHOT_QUICK);
-		vals.put(types.CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP, async_market.DEFAULT_SNAPSHOT_NONSTOP);
+		vals.put(async_market.CONFIG_SNAPSHOT_QUICK, async_market.DEFAULT_SNAPSHOT_QUICK);
+		vals.put(async_market.CONFIG_SNAPSHOT_NONSTOP, async_market.DEFAULT_SNAPSHOT_NONSTOP);
 		
 		return populate(type, null, vals);
 	}
@@ -64,11 +64,11 @@ public class _ini_config extends parent_ini_config
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
-		vals.put(types.CONFIG_CONTRACT_CURRENCY, contracts.DEFAULT_CURRENCY);
-		vals.put(types.CONFIG_CONTRACT_SECURITY_TYPE, contracts.DEFAULT_SECURITY_TYPE);
-		vals.put(types.CONFIG_CONTRACT_EXCHANGE, contracts.DEFAULT_EXCHANGE);
-		vals.put(types.CONFIG_CONTRACT_EXCHANGE_PRIMARY, contracts.DEFAULT_EXCHANGE_PRIMARY);
-		vals.put(types.CONFIG_CONTRACT_EXCHANGE_COUNTRY, contracts.DEFAULT_EXCHANGE_COUNTRY);
+		vals.put(contracts.CONFIG_CURRENCY, contracts.DEFAULT_CURRENCY);
+		vals.put(contracts.CONFIG_SECURITY_TYPE, contracts.DEFAULT_SECURITY_TYPE);
+		vals.put(contracts.CONFIG_EXCHANGE, contracts.DEFAULT_EXCHANGE);
+		vals.put(contracts.CONFIG_EXCHANGE_PRIMARY, contracts.DEFAULT_EXCHANGE_PRIMARY);
+		vals.put(contracts.CONFIG_EXCHANGE_COUNTRY, contracts.DEFAULT_EXCHANGE_COUNTRY);
 
 		return populate(type, null, vals);
 	}
