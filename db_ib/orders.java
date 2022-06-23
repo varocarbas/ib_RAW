@@ -35,7 +35,7 @@ public class orders
 
 	public static HashMap<String, String> get(String symbol_) { return common.get_vals(SOURCE, get_where_symbol(symbol_)); }
 
-	public static boolean add(order order_) { return (order_ == null ? false : common.insert(SOURCE, to_hashmap(order_))); }
+	public static boolean insert(order order_) { return (order_ == null ? false : common.insert(SOURCE, to_hashmap(order_))); }
 
 	public static boolean update(order order_) 
 	{ 
@@ -54,12 +54,15 @@ public class orders
 
 	public static order to_order(HashMap<String, String> db_)
 	{
-		String type_place = db_to_order((String)arrays.get_value(db_, TYPE_PLACE), false);
+		String type_place = status_type_db_to_order((String)arrays.get_value(db_, TYPE_PLACE), false);
 		String symbol = (String)arrays.get_value(db_, SYMBOL);
+		
 		double quantity = strings.to_number_decimal((String)arrays.get_value(db_, QUANTITY));
 		double stop = strings.to_number_decimal((String)arrays.get_value(db_, STOP)); 
+
 		double start = strings.to_number_decimal((String)arrays.get_value(db_, START));
 		double start2 = strings.to_number_decimal((String)arrays.get_value(db_, START2));
+		
 		int id_main = strings.to_number_int((String)arrays.get_value(db_, ORDER_ID_MAIN));
 
 		return new order(type_place, symbol, quantity, stop, start, start2, id_main);
@@ -71,10 +74,10 @@ public class orders
 		if (order_ == null) return db;
 
 		db.put(USER, ib.common.USER);
-		db.put(STATUS, order_to_db(sync_orders.DEFAULT_STATUS, true));
+		db.put(STATUS, status_type_order_to_db(sync_orders.DEFAULT_STATUS, true));
 		db.put(ORDER_ID_MAIN, order_.get_id_main());
 		db.put(ORDER_ID_SEC, order_.get_id_sec());
-		db.put(TYPE_PLACE, order_to_db(order_.get_type_place(), false));
+		db.put(TYPE_PLACE, status_type_order_to_db(order_.get_type_place(), false));
 		db.put(TYPE_MAIN, order_.get_type_main());
 		db.put(TYPE_SEC, order_.get_type_sec());
 		db.put(SYMBOL, order_.get_symbol());
@@ -87,21 +90,13 @@ public class orders
 		return db;
 	}
 
-	public static String db_to_order(String input_, boolean is_status_) { return (strings.is_ok(input_) ? ((is_status_ ? sync_orders.STATUS : sync_orders.PLACE) + accessory.types.SEPARATOR + input_) : strings.DEFAULT); }
+	public static String status_type_db_to_order(String input_, boolean is_status_) { return (strings.is_ok(input_) ? ((is_status_ ? sync_orders.STATUS : sync_orders.PLACE) + accessory.types.SEPARATOR + input_) : strings.DEFAULT); }
 
-	public static String order_to_db(String input_, boolean is_status_) { return (strings.is_ok(input_) ? accessory._keys.get_key(input_, (is_status_ ? sync_orders.STATUS : sync_orders.PLACE)) : strings.DEFAULT); }
+	public static String status_type_order_to_db(String input_, boolean is_status_) { return (strings.is_ok(input_) ? accessory._keys.get_key(input_, (is_status_ ? sync_orders.STATUS : sync_orders.PLACE)) : strings.DEFAULT); }
 	
 	private static String get_where_user() { return common.get_where_user(SOURCE); }
 
-	private static String get_where_symbol(String symbol_) 
-	{ 
-		ArrayList<db_where> wheres = new ArrayList<db_where>();
-		
-		wheres.add(new db_where(SOURCE, USER, db_where.OPERAND_EQUAL, ib.common.USER, db_where.LINK_AND));
-		wheres.add(new db_where(SOURCE, SYMBOL, db_where.OPERAND_EQUAL, symbol_, db_where.LINK_AND));
-
-		return db_where.to_string(wheres); 
-	}
+	private static String get_where_symbol(String symbol_) { return common.get_where_symbol(SOURCE, symbol_); }
 
 	private static String get_where_order_id(int id_) { return get_where_order_id(new Integer[] { id_ }, true); }
 

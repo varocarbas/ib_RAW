@@ -29,6 +29,8 @@ public class _alls extends parent_ini_first
 	public static String[] EXTERNAL_ORDERS_TYPES = null;
 	public static String[] EXTERNAL_ORDERS_TIFS = null;
 	public static String[] EXTERNAL_ORDERS_STATUSES = null;
+
+	public static String[] DB_SOURCES_USER = null;
 	
 	public void populate_internal() 
 	{ 
@@ -52,6 +54,8 @@ public class _alls extends parent_ini_first
 		EXTERNAL_ORDERS_TYPES = external_ib.orders.populate_all_types();
 		EXTERNAL_ORDERS_TIFS = external_ib.orders.populate_all_tifs();
 		EXTERNAL_ORDERS_STATUSES = external_ib.orders.populate_all_statuses();
+		
+		DB_SOURCES_USER = db_ib.common.populate_all_sources_user();
 		
 		_populated = true;
 	}

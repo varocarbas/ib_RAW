@@ -8,7 +8,6 @@ import com.ib.client.Contract;
 import com.ib.client.Order;
 
 import accessory.arrays;
-import accessory.generic;
 import accessory.parent_static;
 import accessory.strings;
 import accessory_ib.types;
@@ -151,9 +150,9 @@ public class sync_orders extends parent_static
 		return false;
 	}
 
-	public static String get_type(String input_, boolean is_status_) { return db_ib.orders.db_to_order(input_, is_status_); }
+	public static String get_type(String input_, boolean is_status_) { return db_ib.orders.status_type_db_to_order(input_, is_status_); }
 
-	public static String get_key(String input_, boolean is_status_) { return db_ib.orders.order_to_db(input_, is_status_); }
+	public static String get_key(String input_, boolean is_status_) { return db_ib.orders.status_type_order_to_db(input_, is_status_); }
 	
 	static void sync_all(HashMap<Integer, String> orders_) { sync_all(get_ids(STATUS_ACTIVE, orders_, false)); }
 	
@@ -297,7 +296,7 @@ public class sync_orders extends parent_static
 
 	private static void add_order(order order_)
 	{
-		db_ib.orders.add(order_);
+		db_ib.orders.insert(order_);
 		
 		sync_all();
 	}
@@ -309,7 +308,7 @@ public class sync_orders extends parent_static
 		
 		if (is_market_) order.update_type(ib.order.TYPE_MARKET, is_main_);
 		else order.update_val(val_, is_main_);
-generic.to_screen(order);
+
 		return db_ib.orders.update(order);
 	}
 }
