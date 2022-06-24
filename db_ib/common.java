@@ -8,6 +8,7 @@ import accessory.data;
 import accessory.db_field;
 import accessory.db_where;
 import accessory.strings;
+import accessory_ib._alls;
 import accessory_ib.types;
 
 public class common 
@@ -144,15 +145,25 @@ public class common
 	public static String get_where_symbol(String source_, String symbol_) { return get_where(source_, FIELD_SYMBOL, symbol_, false); }
 
 	public static String get_where_symbol_quick(String source_, String symbol_) { return get_where(source_, FIELD_SYMBOL, symbol_, true); }
+	
+	public static String get_where(String source_, String field_, String val_, boolean is_quick_) { return get_where_internal(source_, field_, val_, is_quick_, true); }
+	
+	public static boolean source_includes_user(String source_) { return arrays.value_exists(get_all_sources_user(), source_); }
 
-	public static String get_where(String source_, String field_, String val_, boolean is_quick_) 
-	{ 
+	public static String[] populate_all_sources_user() { return new String[] { SOURCE_BASIC, SOURCE_EXECS, SOURCE_ORDERS, SOURCE_REMOTE }; }
+	
+	private static String[] get_all_sources_user() { return _alls.DB_SOURCES_USER; }
+
+	private static String get_where_internal(String source_, String field_, String val_, boolean is_quick_, boolean check_user_) 
+	{
 		String where = null;
 		
 		if (is_quick_) where = accessory.db.get_variable(get_col(source_, field_)) + "=" + accessory.db.get_value(val_);
 		else where = (new db_where(source_, field_, val_)).toString();
 		
-		return where; 
+		if (!strings.are_equal(field_, FIELD_USER) && check_user_ && source_includes_user(source_)) where = db_where.join(where, get_where_internal(source_, FIELD_USER, ib.common.USER, is_quick_, false), db_where.LINK_AND);
+		
+		return where;		
 	}
 	
 	private static Object get_default_val(String source_, String field_, String type_)

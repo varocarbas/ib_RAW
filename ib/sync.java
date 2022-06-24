@@ -81,7 +81,14 @@ public class sync extends parent_static
 	{ 
 		boolean is_ok = true;
 
-		if (strings.are_equal(_out, OUT_ORDERS) || strings.are_equal(_out, OUT_STRINGS)) _out_strings.add(val_);
+		boolean is_order = strings.are_equal(_out, OUT_ORDERS);
+		
+		if (is_order || strings.are_equal(_out, OUT_STRINGS)) 
+		{
+			_out_strings.add(val_);
+			
+			if (is_order && (_order_id > WRONG_ORDER_ID)) sync_orders.update_status(_order_id, val_);
+		}
 		else if (strings.is_number(val_)) is_ok = update(strings.to_number_decimal(val_));
 		else is_ok = false;
 		
@@ -107,7 +114,7 @@ public class sync extends parent_static
 
 		return is_ok;
 	}
-
+	
 	public static boolean update_error_triggered(boolean triggered_)
 	{ 
 		_error_triggered = triggered_;

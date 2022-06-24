@@ -86,8 +86,10 @@ public class types
 	public static final String ID_CONN = "id_conn";
 	public static final String ID_ASYNC = "id_async";
 	public static final String ID_ASYNC_MARKET = "id_async_market";
+	public static final String ID_ASYNC_EXECS = "id_async_execs";
 	public static final String ID_SYNC = "id_sync";
 	public static final String ID_SYNC_ORDERS = "id_sync_orders";	
+	public static final String ID_SYNC_BASIC = "id_sync_basic";	
 	public static final String ID_CALLS = "id_calls";
 	
 	public static final String SYNC = "sync";
@@ -194,7 +196,7 @@ public class types
 			CONFIG_DB_FIELD_IS_MARKET, CONFIG_DB_FIELD_TYPE_PLACE, CONFIG_DB_FIELD_TYPE_MAIN, CONFIG_DB_FIELD_TYPE_SEC,
 			
 			ID_ASYNC,
-			ID_ASYNC_MARKET,
+			ID_ASYNC_MARKET, ID_ASYNC_EXECS,
 			ID_SYNC,
 			ID_SYNC_ORDERS,
 			ID_COMMON, ID_CONN, ID_CALLS,

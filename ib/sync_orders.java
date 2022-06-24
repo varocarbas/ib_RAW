@@ -8,7 +8,6 @@ import com.ib.client.Contract;
 import com.ib.client.Order;
 
 import accessory.arrays;
-import accessory.generic;
 import accessory.parent_static;
 import accessory.strings;
 import accessory_ib.types;
@@ -130,32 +129,43 @@ public class sync_orders extends parent_static
 	
 		String status = check_status(status_);
 		if (!strings.is_ok(status)) return false;
-		
-		boolean equals = true;
-		String[] targets = null; 
 
-		if (status.equals(STATUS_SUBMITTED)) targets = new String[] { orders.STATUS_SUBMITTED, orders.STATUS_PRESUBMITTED };
-		else if (status.equals(STATUS_FILLED)) targets = new String[] { orders.STATUS_FILLED };
-		else if (status.equals(STATUS_ACTIVE) || status.equals(STATUS_INACTIVE)) 
-		{
-			equals = status.equals(STATUS_ACTIVE);
-			targets = new String[] { orders.STATUS_SUBMITTED, orders.STATUS_PRESUBMITTED, orders.STATUS_FILLED };
-		}
-		else return false;
-
-		for (String target: targets)
-		{
-			if (strings.are_equal(status_ib_, target)) return equals;
-		}
-		
-		return false;
+		return strings.are_equal(status, get_status(status_ib_, !status_is_generic(status)));
 	}
+	
+	public static void update_status(int id_, String status_ib_) 
+	{ 
+		String status = get_status(status_ib_, true);
+		if (!strings.is_ok(status) || status.equals(STATUS_INACTIVE)) return;
+		
+		db_ib.orders.update_status(id_, status);	
+	}
+	
+	static String get_status(String status_ib_, boolean be_specific_)
+	{
+		String status = strings.DEFAULT;
+		if (!strings.is_ok(status_ib_)) return status;
 
-	public static String get_type(String input_, boolean is_status_) { return db_ib.orders.db_to_order(input_, is_status_); }
+		if (status_ib_.equals(orders.STATUS_SUBMITTED) || status_ib_.equals(orders.STATUS_PRESUBMITTED)) status = (be_specific_ ? STATUS_SUBMITTED : STATUS_ACTIVE);
+		else if (status_ib_.equals(orders.STATUS_FILLED)) status = (be_specific_ ? STATUS_FILLED : STATUS_ACTIVE);
+		else if (!status_ib_.equals(orders.STATUS_PENDING_SUBMIT) && !status_ib_.equals(orders.STATUS_PENDING_CANCEL) && !status_ib_.equals(orders.STATUS_API_CANCELLED)) status = STATUS_INACTIVE;
+		
+		return status;
+	}	
+	
+	public static String get_type(String input_, boolean is_status_) { return db_ib.orders.status_type_db_to_order(input_, is_status_); }
 
-	public static String get_key(String input_, boolean is_status_) { return db_ib.orders.order_to_db(input_, is_status_); }
+	public static String get_key(String input_, boolean is_status_) { return db_ib.orders.status_type_order_to_db(input_, is_status_); }
 	
 	static void sync_all(HashMap<Integer, String> orders_) { sync_all(get_ids(STATUS_ACTIVE, orders_, false)); }
+	
+	private static boolean status_is_generic(String status_) 
+	{ 
+		String status = check_status(status_);
+		if (!strings.is_ok(status)) return false;
+		
+		return (status.equals(STATUS_ACTIVE) || status.equals(STATUS_INACTIVE)); 
+	}
 	
 	private static boolean update(String symbol_, String type_, double val_) { return update(get_order(symbol_), check_update(type_), val_); }
 	
@@ -297,7 +307,7 @@ public class sync_orders extends parent_static
 
 	private static void add_order(order order_)
 	{
-		db_ib.orders.add(order_);
+		db_ib.orders.insert(order_);
 		
 		sync_all();
 	}
@@ -309,7 +319,7 @@ public class sync_orders extends parent_static
 		
 		if (is_market_) order.update_type(ib.order.TYPE_MARKET, is_main_);
 		else order.update_val(val_, is_main_);
-generic.to_screen(order);
+
 		return db_ib.orders.update(order);
 	}
 }

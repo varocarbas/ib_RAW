@@ -35,6 +35,7 @@ import com.ib.client.TickAttribLast;
 
 import accessory_ib.errors;
 import ib.async;
+import ib.async_execs;
 import ib.async_market;
 import ib.conn;
 import ib.sync;
@@ -120,6 +121,12 @@ public class wrapper implements EWrapper
 	@Override
 	public void openOrderEnd() { sync.end(); }
 
+	@Override
+	public void execDetails(int id_, Contract contract_, Execution execution_) { async_execs.__wrapper_execDetails(id_, contract_, execution_); }
+	
+	@Override
+	public void commissionReport(CommissionReport report_) { async_execs.__wrapper_commissionReport(report_); }
+
 	//! [updateaccountvalue]
 	@Override
 	public void updateAccountValue(String key, String value, String currency, String accountName) 
@@ -156,27 +163,6 @@ public class wrapper implements EWrapper
 		//System.out.println("Account download finished: "+accountName+"\n");
 	}
 	//! [accountdownloadend]
-	
-	//! [execdetails]
-	@Override
-	public void execDetails(int reqId, Contract contract, Execution execution) 
-	{
-		//TODO
-		
-		//System.out.println("ExecDetails. "+reqId+" - ["+contract.symbol()+"], ["+contract.secType()+"], ["+contract.currency()+"], ["+execution.execId()+
-		//        "], ["+execution.orderId()+"], ["+execution.shares()+"]"  + ", [" + execution.lastLiquidity() + "]");
-	}
-	//! [execdetails]
-	
-	//! [commissionreport]
-	@Override
-	public void commissionReport(CommissionReport commissionReport) 
-	{
-		//TODO
-		
-		//System.out.println("CommissionReport. ["+commissionReport.execId()+"] - ["+commissionReport.commission()+"] ["+commissionReport.currency()+"] RPNL ["+commissionReport.realizedPNL()+"]");
-	}
-	//! [commissionreport]
 
 	public EClientSocket getClient() { return clientSocket; }
 	

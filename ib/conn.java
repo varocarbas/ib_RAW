@@ -66,7 +66,9 @@ public class conn extends parent_static
 		return _connected;
 	}
 
-	public static boolean start() { return start((int)config.get_conn(types.CONFIG_CONN_ID), (String)config.get_conn(CONFIG_TYPE)); }
+	public static String get_conn_type() { return (String)config.get_conn(CONFIG_TYPE); }
+	
+	public static boolean start() { return start((int)config.get_conn(types.CONFIG_CONN_ID), get_conn_type()); }
 	
 	public static boolean start(int id_, String type_)
 	{
@@ -78,6 +80,8 @@ public class conn extends parent_static
 			if (!type_is_ok(type_)) error = ERROR_TYPE;
 			else
 			{
+				sync_basic.update_conn_type(type_);
+				
 				_id = id_;
 				_port = get_port(type_);
 			}
