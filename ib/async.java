@@ -22,9 +22,9 @@ public class async extends parent_static
 
 	public static void update_last_id(int id_) { _last_id = id_; }
 	
-	public static boolean is_ok(int id_) { return arrays.key_exists(_ids, id_); }
+	static boolean is_ok(int id_) { return arrays.key_exists(_ids, id_); }
 
-	public static boolean is_ok(int id_, String type_) { return strings.are_equal(get_type(id_), type_); }
+	static boolean is_ok(int id_, String type_) { return strings.are_equal(get_type(id_), type_); }
 	
 	static int add_id(String type_) 
 	{ 

@@ -19,7 +19,8 @@ public class conn extends parent_static
 {
 	public static final String CONFIG_TYPE = types.CONFIG_CONN_TYPE;
 	public static final String CONFIG_CONN_ID = types.CONFIG_CONN_ID;
-
+	public static final String CONFIG_ACCOUNT_ID = types.CONFIG_CONN_ACCOUNT_ID;
+	
 	public static final String TYPE_TWS_REAL = _keys.TWS_REAL;
 	public static final String TYPE_TWS_PAPER = _keys.TWS_PAPER;
 	public static final String TYPE_GATEWAY_REAL = _keys.GATEWAY_REAL;
@@ -67,7 +68,9 @@ public class conn extends parent_static
 	}
 
 	public static String get_conn_type() { return (String)config.get_conn(CONFIG_TYPE); }
-	
+
+	public static String get_account_id() { return (String)config.get_conn(CONFIG_ACCOUNT_ID); }
+
 	public static boolean start() { return start((int)config.get_conn(types.CONFIG_CONN_ID), get_conn_type()); }
 	
 	public static boolean start(int id_, String type_)

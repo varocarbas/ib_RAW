@@ -14,14 +14,23 @@ import db_ib.execs;
 
 public class async_execs extends parent_static 
 {
-	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC_EXECS); }
-
 	private static final int COLS_TOT = 7;
 	
+	private static boolean _enabled = false; 
 	private volatile static Hashtable<String, Hashtable<String, Object>> _all_vals = new Hashtable<String, Hashtable<String, Object>>();
 
+	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC_EXECS); }
+
+	public static boolean get_enabled() { return _enabled; }
+	
+	public static void update_enabled(boolean enabled_) { _enabled = enabled_; }
+
+	public static boolean is_ok() { return _enabled; }
+	
 	public static void __wrapper_execDetails(int id_, Contract contract_, Execution execution_)
 	{
+		if (!_enabled) return;
+		
 		__lock();
 		
 		Hashtable<String, Object> vals = new Hashtable<String, Object>();		
@@ -38,6 +47,8 @@ public class async_execs extends parent_static
 
 	public static void __wrapper_commissionReport(CommissionReport report_)
 	{
+		if (!_enabled) return;
+		
 		__lock();
 		
 		Hashtable<String, Object> vals = new Hashtable<String, Object>();

@@ -12,6 +12,7 @@ import db_ib.common;
 import ib.async_market;
 import ib.conn;
 import ib.sync;
+import ib.sync_basic;
 import ib.sync_orders;
 
 public class tests extends parent_tests 
@@ -75,20 +76,40 @@ public class tests extends parent_tests
 
 		Class<?> class0 = sync.class;
 		String name0 = class0.getName();
-		update_screen(name0, true, 1);
-		
-		String[] methods = new String[] { "get_order_id", "get_funds", "get_orders" };
+
+		String[] methods = new String[] { "get_order_id", "get_orders" };
 		
 		outputs.put(name0, run_methods(class0, methods));
-
-		if (!_orders_too) return outputs;
 		
+		if (_orders_too) outputs = run_sync_orders(outputs);
+		outputs = run_sync_basic(outputs);
+		
+		return outputs;	
+	}
+	
+	public static HashMap<String, HashMap<String, Boolean>> run_async(HashMap<String, HashMap<String, Boolean>> outputs_)
+	{
+		HashMap<String, HashMap<String, Boolean>> outputs = new HashMap<String, HashMap<String, Boolean>>();
+
+		outputs = run_async_market(outputs);
+		
+		return outputs;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static HashMap<String, HashMap<String, Boolean>> run_sync_orders(HashMap<String, HashMap<String, Boolean>> outputs_)
+	{
+		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
+
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
 
 		Entry<String, Double> symbol_info = get_symbol(0);
 		int pause = 5;
 		
-		class0 = sync_orders.class;
+		Class<?> class0 = sync_orders.class;
+		String name0 = class0.getName();
+
+		update_screen(name0, true, 1);
 		
 		numbers.update_round_decimals(2);
 		String symbol = symbol_info.getKey(); 
@@ -195,16 +216,45 @@ public class tests extends parent_tests
 			is_ok = run_method(class0, name, new Class<?>[] { int.class }, args, null);
 			output.put(name2, is_ok);			
 		}		
+
+		update_screen(name0, false, 1);
 		
-		return outputs;	
+		return outputs;
 	}
 	
-	public static HashMap<String, HashMap<String, Boolean>> run_async(HashMap<String, HashMap<String, Boolean>> outputs_)
+	@SuppressWarnings("unchecked")
+	public static HashMap<String, HashMap<String, Boolean>> run_sync_basic(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
-		HashMap<String, HashMap<String, Boolean>> outputs = new HashMap<String, HashMap<String, Boolean>>();
+		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
+
+		Class<?> class0 = sync_basic.class;
+		String name0 = class0.getName();
+
+		update_screen(name0, true, 1);
+		
+		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
+		String name = "start";
+		
+		ArrayList<Object> args = null;
+
+		boolean is_ok = run_method(class0, name, null, args, null);
+		output.put(name, is_ok);
+		
+		update_screen(name0, false, 1);
+		
+		return outputs;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static HashMap<String, HashMap<String, Boolean>> run_async_market(HashMap<String, HashMap<String, Boolean>> outputs_)
+	{
+		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
+		
+		async_market.update_enabled(true);
 		
 		Class<?> class0 = async_market.class;
 		String name0 = class0.getName();
+		
 		update_screen(name0, true, 1);
 
 		int pause1 = 5;
@@ -234,10 +284,12 @@ public class tests extends parent_tests
 		misc.pause_secs(pause1);
 		output.put(name, is_ok);
 		
-		outputs.put(name0, output);
-		
 		async_market.__stop_all();
 		misc.pause_secs(pause2);
+		
+		outputs.put(name0, output);
+		
+		update_screen(name0, false, 1);		
 		
 		return outputs;
 	}

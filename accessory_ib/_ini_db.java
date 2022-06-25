@@ -104,6 +104,7 @@ public class _ini_db extends parent_ini_db
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
 		info.put(basic.CONN_TYPE, new db_field(data.STRING, ib.conn.TYPE_GATEWAY_PAPER.length()));
+		info.put(basic.ACCOUNT_ID, get_status_type());
 		info.put(basic.USER, get_user());
 		info.put(basic.MONEY, get_decimal());
 		info.put(basic.MONEY_INI, get_decimal());

@@ -11,6 +11,7 @@ public class sync_basic extends parent_static
 	public static void start()
 	{
 		basic.update_conn_type(conn.get_conn_type());
+		basic.update_account_id(conn.get_account_id());
 		
 		double money = get_funds();
 		

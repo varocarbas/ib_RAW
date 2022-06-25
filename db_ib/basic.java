@@ -11,10 +11,13 @@ public class basic
 	
 	public static final String USER = common.FIELD_USER;
 	public static final String CONN_TYPE = common.FIELD_CONN_TYPE;
+	public static final String ACCOUNT_ID = common.FIELD_ACCOUNT_ID;
 	public static final String MONEY = common.FIELD_MONEY;
 	public static final String MONEY_INI = common.FIELD_MONEY_INI;
-
+	
 	public static final boolean update_conn_type(String val_) { return update(CONN_TYPE, val_); }
+
+	public static final boolean update_account_id(String val_) { return update(ACCOUNT_ID, val_); }
 
 	public static final boolean update_money_ini(double val_) { return update(MONEY_INI, val_); }
 	

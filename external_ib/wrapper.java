@@ -34,7 +34,6 @@ import com.ib.client.TickAttribBidAsk;
 import com.ib.client.TickAttribLast;
 
 import accessory_ib.errors;
-import ib.async;
 import ib.async_execs;
 import ib.async_market;
 import ib.conn;
@@ -75,7 +74,7 @@ public class wrapper implements EWrapper
 	@Override
 	public void tickPrice(int id_, int field_ib_, double price_, TickAttrib attribs_) 
 	{
-		if (!async.is_ok(id_)) return;
+		if (!async_market.is_ok(id_)) return;
 		
 		async_market.__wrapper_tickPrice(id_, field_ib_, price_); 
 	}
@@ -83,7 +82,7 @@ public class wrapper implements EWrapper
 	@Override
 	public void tickSize(int id_, int field_ib_, int size_) 
 	{ 
-		if (!async.is_ok(id_)) return;
+		if (!async_market.is_ok(id_)) return;
 		
 		async_market.__wrapper_tickSize(id_, field_ib_, size_); 
 	}
@@ -91,6 +90,8 @@ public class wrapper implements EWrapper
 	@Override
 	public void tickSnapshotEnd(int id_) 
 	{
+		if (!async_market.is_ok(id_)) return;
+		
 		//In some cases, reaching this point might take too long and relying on tickSize could
 		//appreciably speed everything up. That is, all the relevant information is assumed to 
 		//have already been received right after getting certain size value.
@@ -99,7 +100,12 @@ public class wrapper implements EWrapper
 	}
 	
 	@Override
-	public void tickGeneric(int id_, int tick_, double value_) { async_market.__wrapper_tickGeneric(id_, tick_, value_); }
+	public void tickGeneric(int id_, int tick_, double value_) 
+	{ 
+		if (!async_market.is_ok(id_)) return;
+		
+		async_market.__wrapper_tickGeneric(id_, tick_, value_); 
+	}
 	
 	@Override
 	public void error(int id_, int code_, String message_) 
@@ -122,10 +128,20 @@ public class wrapper implements EWrapper
 	public void openOrderEnd() { sync.end(); }
 
 	@Override
-	public void execDetails(int id_, Contract contract_, Execution execution_) { async_execs.__wrapper_execDetails(id_, contract_, execution_); }
+	public void execDetails(int id_, Contract contract_, Execution execution_) 
+	{
+		if (!async_execs.is_ok()) return;
+		
+		async_execs.__wrapper_execDetails(id_, contract_, execution_); 
+	}
 	
 	@Override
-	public void commissionReport(CommissionReport report_) { async_execs.__wrapper_commissionReport(report_); }
+	public void commissionReport(CommissionReport report_) 
+	{
+		if (!async_execs.is_ok()) return;
+		
+		async_execs.__wrapper_commissionReport(report_); 
+	}
 
 	//! [updateaccountvalue]
 	@Override
