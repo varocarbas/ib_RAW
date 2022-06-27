@@ -38,13 +38,16 @@ import ib.async_execs;
 import ib.async_market;
 import ib.conn;
 import ib.sync;
+import ib.sync_basic;
 
 public class wrapper implements EWrapper 
 {
+	public static final String KEY_FUNDS = "AvailableFunds";
+	
 	@Override
 	public void accountSummary(int id_, String account_, String tag_, String value_, String currency_) 
 	{
-		if (!sync.is_ok(id_)) return;
+		if (!sync_basic.is_ok(id_, account_, tag_, currency_)) return;
 
 		sync.update(value_);
 	}
@@ -52,7 +55,7 @@ public class wrapper implements EWrapper
 	@Override
 	public void accountSummaryEnd(int id_) 
 	{
-		if (!sync.is_ok(id_)) return;
+		if (!sync_basic.is_ok(id_)) return;
 
 		sync.end();
 	}
@@ -143,43 +146,6 @@ public class wrapper implements EWrapper
 		async_execs.__wrapper_commissionReport(report_); 
 	}
 
-	//! [updateaccountvalue]
-	@Override
-	public void updateAccountValue(String key, String value, String currency, String accountName) 
-	{
-		//TODO
-		
-		//System.out.println("UpdateAccountValue. Key: " + key + ", Value: " + value + ", Currency: " + currency + ", AccountName: " + accountName);
-	}
-	//! [updateaccountvalue]
-	
-	//! [updateportfolio]
-	@Override
-	public void updatePortfolio
-	(
-		Contract contract, double position, double marketPrice, 
-		double marketValue, double averageCost, double unrealizedPNL, 
-		double realizedPNL, String accountName
-	) 
-	{
-		//TODO
-
-		//System.out.println("UpdatePortfolio. "+contract.symbol()+", "+contract.secType()+" @ "+contract.exchange()
-		//        +": Position: "+position+", MarketPrice: "+marketPrice+", MarketValue: "+marketValue+", AverageCost: "+averageCost
-		//        +", UnrealizedPNL: "+unrealizedPNL+", RealizedPNL: "+realizedPNL+", AccountName: "+accountName);
-	}
-	//! [updateportfolio]
-	
-	//! [accountdownloadend]
-	@Override
-	public void accountDownloadEnd(String accountName) 
-	{
-		//TODO
-		
-		//System.out.println("Account download finished: "+accountName+"\n");
-	}
-	//! [accountdownloadend]
-
 	public EClientSocket getClient() { return clientSocket; }
 	
 	public EReaderSignal getSignal() { return readerSignal; }
@@ -192,7 +158,40 @@ public class wrapper implements EWrapper
 	private EClientSocket clientSocket;
 	protected int currentOrderId = -1;
 	//! [socket_declare]
+
+
+	//! [updateaccountvalue]
+	@Override
+	public void updateAccountValue(String key, String value, String currency, String accountName) 
+	{
+		System.out.println("UpdateAccountValue. Key: " + key + ", Value: " + value + ", Currency: " + currency + ", AccountName: " + accountName);
+	}
+	//! [updateaccountvalue]
+
+	//! [updateportfolio]
+	@Override
+	public void updatePortfolio
+	(
+		Contract contract, double position, double marketPrice, 
+		double marketValue, double averageCost, double unrealizedPNL, 
+		double realizedPNL, String accountName
+	) 
+	{
+		System.out.println("UpdatePortfolio. "+contract.symbol()+", "+contract.secType()+" @ "+contract.exchange()
+		        +": Position: "+position+", MarketPrice: "+marketPrice+", MarketValue: "+marketValue+", AverageCost: "+averageCost
+		        +", UnrealizedPNL: "+unrealizedPNL+", RealizedPNL: "+realizedPNL+", AccountName: "+accountName);
+	}
+	//! [updateportfolio]
 	
+	//! [accountdownloadend]
+	@Override
+	public void accountDownloadEnd(String accountName) 
+	{
+		System.out.println("Account download finished: "+accountName+"\n");
+	}
+	//! [accountdownloadend]
+
+
 	//! [socket_init]
 	public wrapper() {
 		readerSignal = new EJavaSignal();

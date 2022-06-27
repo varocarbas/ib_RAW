@@ -14,6 +14,7 @@ public class basic
 	public static final String ACCOUNT_ID = common.FIELD_ACCOUNT_ID;
 	public static final String MONEY = common.FIELD_MONEY;
 	public static final String MONEY_INI = common.FIELD_MONEY_INI;
+	public static final String CURRENCY = common.FIELD_CURRENCY;
 	
 	public static final boolean update_conn_type(String val_) { return update(CONN_TYPE, val_); }
 
@@ -22,6 +23,8 @@ public class basic
 	public static final boolean update_money_ini(double val_) { return update(MONEY_INI, val_); }
 	
 	public static final boolean update_money(double val_) { return update(MONEY, val_); }
+	
+	public static final boolean update_currency(String val_) { return update(CURRENCY, val_); }
 	
 	public static final boolean update(HashMap<String, Object> vals_)
 	{

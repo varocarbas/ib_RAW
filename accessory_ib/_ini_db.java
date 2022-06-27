@@ -10,6 +10,7 @@ import accessory.numbers;
 import accessory.parent_ini_db;
 import accessory.strings;
 import external_ib.contracts;
+import ib.conn;
 import ib.order;
 import db_ib.basic;
 import db_ib.common;
@@ -103,11 +104,12 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
-		info.put(basic.CONN_TYPE, new db_field(data.STRING, ib.conn.TYPE_GATEWAY_PAPER.length()));
+		info.put(basic.CONN_TYPE, new db_field(data.STRING, conn.get_max_length_type()));
 		info.put(basic.ACCOUNT_ID, get_status_type());
 		info.put(basic.USER, get_user());
 		info.put(basic.MONEY, get_decimal());
 		info.put(basic.MONEY_INI, get_decimal());
+		info.put(basic.CURRENCY, new db_field(data.STRING, contracts.get_max_length_currency()));
 		
 		return add_source_common(db_, source, table, info, sources_);
 	}

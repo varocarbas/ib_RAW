@@ -44,6 +44,12 @@ public class contracts
 	public static final String DEFAULT_EXCHANGE_PRIMARY = "ISLAND";
 	
 	public static final String ERROR_INFO_STOCK_ETF = types.ERROR_IB_CONTRACTS_INFO_STOCK_ETF;
+
+	public static int get_max_length_currency() { return DEFAULT_CURRENCY.length(); }
+
+	public static String get_currency() { return (String)config.get_contract(CONFIG_CURRENCY); }
+	
+	public static boolean currency_is_ok(String currency_) { return strings.are_equivalent(currency_, get_currency()); }
 	
 	public static Contract get_contract(String symbol_)
 	{	

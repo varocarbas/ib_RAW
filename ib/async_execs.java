@@ -20,11 +20,11 @@ public class async_execs extends parent_static
 	private volatile static Hashtable<String, Hashtable<String, Object>> _all_vals = new Hashtable<String, Hashtable<String, Object>>();
 
 	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC_EXECS); }
-
-	public static boolean get_enabled() { return _enabled; }
 	
-	public static void update_enabled(boolean enabled_) { _enabled = enabled_; }
+	public static void enable() { _enabled = true; }
 
+	public static void disable() { _enabled = false; }
+	
 	public static boolean is_ok() { return _enabled; }
 	
 	public static void __wrapper_execDetails(int id_, Contract contract_, Execution execution_)

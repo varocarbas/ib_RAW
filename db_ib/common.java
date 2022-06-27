@@ -47,7 +47,8 @@ public class common
 	public static final String FIELD_MONEY_INI = types.CONFIG_DB_FIELD_MONEY_INI;
 	public static final String FIELD_CONN_TYPE = types.CONFIG_DB_FIELD_CONN_TYPE;
 	public static final String FIELD_ACCOUNT_ID = types.CONFIG_DB_FIELD_ACCOUNT_ID;
-
+	public static final String FIELD_CURRENCY = types.CONFIG_DB_FIELD_CURRENCY;
+	
 	public static final String FIELD_START = types.CONFIG_DB_FIELD_START;
 	public static final String FIELD_START2 = types.CONFIG_DB_FIELD_START2;
 	public static final String FIELD_STOP = types.CONFIG_DB_FIELD_STOP;

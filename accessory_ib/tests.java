@@ -250,7 +250,7 @@ public class tests extends parent_tests
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
 		
-		async_market.update_enabled(true);
+		async_market.enable();
 		
 		Class<?> class0 = async_market.class;
 		String name0 = class0.getName();

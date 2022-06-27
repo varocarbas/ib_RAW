@@ -13,6 +13,7 @@ import accessory_ib._keys;
 import accessory_ib.config;
 import accessory_ib.errors;
 import accessory_ib.types;
+import db_ib.basic;
 import external_ib.wrapper;
 
 public class conn extends parent_static 
@@ -57,6 +58,8 @@ public class conn extends parent_static
 	private static volatile boolean _first_conn = false;
 	
 	public static String get_class_id() { return accessory.types.get_id(types.ID_CONN); }
+
+	public static int get_max_length_type() { return TYPE_GATEWAY_PAPER.length(); }
 	
 	public static boolean is_ok()
 	{		
@@ -70,6 +73,15 @@ public class conn extends parent_static
 	public static String get_conn_type() { return (String)config.get_conn(CONFIG_TYPE); }
 
 	public static String get_account_id() { return (String)config.get_conn(CONFIG_ACCOUNT_ID); }
+	
+	public static boolean account_id_is_ok(String account_id_) 
+	{ 
+		if (!conn_type_is_real()) return true;
+		
+		String account_id = get_account_id();
+		
+		return (!strings.is_ok(account_id) || strings.are_equal(account_id_, account_id));
+	}
 
 	public static boolean start() { return start((int)config.get_conn(types.CONFIG_CONN_ID), get_conn_type()); }
 	
@@ -83,7 +95,7 @@ public class conn extends parent_static
 			if (!type_is_ok(type_)) error = ERROR_TYPE;
 			else
 			{
-				sync_basic.update_conn_type(type_);
+				basic.update_conn_type(type_);
 				
 				_id = id_;
 				_port = get_port(type_);
@@ -133,7 +145,14 @@ public class conn extends parent_static
 
 		return message;	
 	}
-
+	
+	private static boolean conn_type_is_real() 
+	{
+		String conn_type = get_conn_type();
+		
+		return (strings.are_equal(conn_type, TYPE_TWS_REAL) || strings.are_equal(conn_type, TYPE_GATEWAY_REAL));
+	}
+	
 	private static void connect()
 	{	
 		_connected = false;

@@ -58,16 +58,14 @@ public class async_market extends parent_static
 	
 	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC_MARKET); }
 
-	public static boolean get_enabled() { return _enabled; }
+	public static void enable() { _enabled = true; }
 
-	public static void update_enabled(boolean enabled_) { _enabled = enabled_; }
-
+	public static void disable() { _enabled = false; }
+	
 	public static boolean is_ok(int id_) { return (_enabled && async.is_ok(id_)); }
 	
 	public static void __wrapper_tickPrice(int id_, int field_ib_, double price_)
 	{
-		if (!_enabled) return;
-		
 		String field = get_field(get_all_prices(), field_ib_);
 		if (!strings.is_ok(field)) return;
 
@@ -76,8 +74,6 @@ public class async_market extends parent_static
 	
 	public static void __wrapper_tickSize(int id_, int field_ib_, int size_)
 	{
-		if (!_enabled) return;
-		
 		String field = get_field(get_all_sizes(), field_ib_);
 		if (!strings.is_ok(field)) return;
 		
@@ -90,8 +86,6 @@ public class async_market extends parent_static
 	
 	public static void __wrapper_tickGeneric(int id_, int tick_, double value_)
 	{
-		if (!_enabled) return;
-		
 		String field = get_field(get_all_generics(), tick_);
 		if (!strings.is_ok(field)) return;
 

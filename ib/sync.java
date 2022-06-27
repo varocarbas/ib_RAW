@@ -16,6 +16,7 @@ import accessory_ib._alls;
 import accessory_ib.errors;
 import accessory_ib.types;
 import external_ib.calls;
+import external_ib.wrapper;
 
 public class sync extends parent_static 
 {
@@ -156,12 +157,23 @@ public class sync extends parent_static
 	}
 	
 	public static boolean is_ok() { return (_getting || _order_id > WRONG_ORDER_ID); }
-
-	public static boolean is_ok(int id_) { return (_getting && (_req_id == id_)); }
 	
 	public static void end() { if (_getting) _getting = false; }
 
 	public static boolean wait_orders(String type_) { return wait(DEFAULT_TIMEOUT, true, type_); }
+
+	static boolean is_ok(int id_) { return (_getting && (_req_id == id_)); }
+
+	static boolean is_ok(int id_, String key_) 
+	{
+		if (!is_ok(id_)) return false;
+	
+		boolean is_ok = true;
+		
+		if (_get.equals(GET_FUNDS) && !strings.are_equal(key_, wrapper.KEY_FUNDS)) is_ok = false; 
+		
+		return is_ok;
+	}
 
 	static boolean cancel_order(int id_) { return execute_order(ORDER_CANCEL, id_, null, null); }
 
@@ -307,9 +319,17 @@ public class sync extends parent_static
 		}
 		else return false;
 
-		return wait_get(timeout, cannot_fail);
+		boolean is_ok = wait_get(timeout, cannot_fail);
+		if (is_ok) get_after();
+		
+		return is_ok;
 	}
 
+	private static void get_after()
+	{
+		
+	}
+	
 	private static boolean wait_error()
 	{
 		_getting = true;
