@@ -77,7 +77,7 @@ public class async_execs extends parent_static
 		if (!execs.exists(exec_id_))
 		{
 			HashMap<String, Object> vals = new HashMap<String, Object>(_all_vals.get(exec_id_));
-			vals.put(execs.USER, common.USER);	
+			vals.put(execs.USER, basic.get_user());	
 			
 			execs.insert(vals);			
 		}

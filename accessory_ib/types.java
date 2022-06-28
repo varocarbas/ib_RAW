@@ -2,6 +2,8 @@ package accessory_ib;
 
 public class types
 {
+	public static final String CONFIG_BASIC_ID = "config_basic_id";
+	
 	public static final String CONFIG_CONN = "config_conn";
 	public static final String CONFIG_CONN_TYPE = "config_conn_type";
 	public static final String CONFIG_CONN_TYPE_TWS_REAL = "config_conn_type_tws_real";
@@ -94,6 +96,7 @@ public class types
 	public static final String ID_SYNC_ORDERS = "id_sync_orders";	
 	public static final String ID_SYNC_BASIC = "id_sync_basic";	
 	public static final String ID_CALLS = "id_calls";
+	public static final String ID_BASIC = "id_basic";
 	
 	public static final String SYNC = "sync";
 	public static final String SYNC_GET = "sync_get";
@@ -153,6 +156,8 @@ public class types
 	{		
 		return new String[]
 		{
+			CONFIG_BASIC_ID,
+				
 			CONFIG_CONN,
 			CONFIG_CONN_TYPE, 
 			CONFIG_CONN_TYPE_TWS_REAL, CONFIG_CONN_TYPE_TWS_PAPER, CONFIG_CONN_TYPE_GATEWAY_REAL, 
@@ -204,7 +209,8 @@ public class types
 			ID_SYNC,
 			ID_SYNC_ORDERS,
 			ID_COMMON, ID_CONN, ID_CALLS,
-				
+			ID_BASIC,
+			
 			SYNC,
 			SYNC_GET,
 			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_ORDERS, SYNC_GET_ERROR,

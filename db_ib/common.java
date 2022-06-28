@@ -142,7 +142,7 @@ public class common
 		return accessory.db.is_ok(source_);
 	}
 
-	public static String get_where_user(String source_) { return get_where(source_, FIELD_USER, ib.common.USER, false); }
+	public static String get_where_user(String source_) { return get_where(source_, FIELD_USER, ib.basic.get_user(), false); }
 
 	public static String get_where_symbol(String source_, String symbol_) { return get_where(source_, FIELD_SYMBOL, symbol_, false); }
 
@@ -163,7 +163,7 @@ public class common
 		if (is_quick_) where = accessory.db.get_variable(get_col(source_, field_)) + "=" + accessory.db.get_value(val_);
 		else where = (new db_where(source_, field_, val_)).toString();
 		
-		if (!strings.are_equal(field_, FIELD_USER) && check_user_ && source_includes_user(source_)) where = db_where.join(where, get_where_internal(source_, FIELD_USER, ib.common.USER, is_quick_, false), db_where.LINK_AND);
+		if (!strings.are_equal(field_, FIELD_USER) && check_user_ && source_includes_user(source_)) where = db_where.join(where, get_where_internal(source_, FIELD_USER, ib.basic.get_user(), is_quick_, false), db_where.LINK_AND);
 		
 		return where;		
 	}

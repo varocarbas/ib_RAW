@@ -6,6 +6,7 @@ import accessory.parent_ini_config;
 import external_ib.contracts;
 import external_ib.orders;
 import ib.async_market;
+import ib.basic;
 import ib.conn;
 
 public class _ini_config extends parent_ini_config 
@@ -15,15 +16,26 @@ public class _ini_config extends parent_ini_config
 	public _ini_config() { }
 	
 	public static void populate() { _instance.populate_all(); }
-
+	
 	protected void populate_all_internal()
 	{
+		load_config_basic();
 		load_config_conn();
 		load_config_order();
 		load_config_async();
 		load_config_contract();
 	}
 
+	private boolean load_config_basic()
+	{
+		String type = accessory.types.CONFIG_BASIC;
+
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		vals.put(basic.CONFIG_ID, basic.DEFAULT_ID);
+
+		return populate(type, null, vals);
+	}
+	
 	private boolean load_config_conn()
 	{
 		String type = types.CONFIG_CONN;

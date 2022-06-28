@@ -84,7 +84,7 @@ public class orders
 		HashMap<String, Object> db = new HashMap<String, Object>();
 		if (order_ == null) return db;
 
-		db.put(USER, ib.common.USER);
+		db.put(USER, ib.basic.get_user());
 		db.put(STATUS, status_type_order_to_db(sync_orders.DEFAULT_STATUS, true));
 		db.put(ORDER_ID_MAIN, order_.get_id_main());
 		db.put(ORDER_ID_SEC, order_.get_id_sec());
@@ -115,7 +115,7 @@ public class orders
 	{ 
 		ArrayList<db_where> wheres = new ArrayList<db_where>();
 		
-		wheres.add(new db_where(SOURCE, USER, db_where.OPERAND_EQUAL, ib.common.USER, db_where.LINK_AND));
+		wheres.add(new db_where(SOURCE, USER, db_where.OPERAND_EQUAL, ib.basic.get_user(), db_where.LINK_AND));
 		
 		for (int id: ids_) { wheres.add(new db_where(SOURCE, ORDER_ID_MAIN, (equal_ ? db_where.OPERAND_EQUAL : db_where.OPERAND_NOT_EQUAL), id, db_where.LINK_AND)); }
 		

@@ -320,6 +320,7 @@ public class sync extends parent_static
 		else return false;
 
 		boolean is_ok = wait_get(timeout, cannot_fail);
+
 		if (is_ok) get_after();
 		
 		return is_ok;
@@ -327,7 +328,9 @@ public class sync extends parent_static
 
 	private static void get_after()
 	{
+		if (!_getting) return;
 		
+		if (_get.equals(GET_FUNDS)) calls.cancelAccountSummary(_req_id);
 	}
 	
 	private static boolean wait_error()

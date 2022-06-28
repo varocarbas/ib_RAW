@@ -29,7 +29,7 @@ public class basic
 	public static final boolean update(HashMap<String, Object> vals_)
 	{
 		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
-		if (!vals.containsKey(USER)) vals.put(USER, ib.common.USER);
+		if (!vals.containsKey(USER)) vals.put(USER, ib.basic.get_user());
 		
 		db.insert_update(SOURCE, vals, common.get_where_user(SOURCE));
 	

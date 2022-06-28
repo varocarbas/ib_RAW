@@ -30,6 +30,8 @@ public class calls
 
 	public static void reqAccountSummary(int id_) { if (conn._client != null) conn._client.reqAccountSummary(id_, "All", "AvailableFunds"); }
 
+	public static void cancelAccountSummary(int id_) { if (conn._client != null) conn._client.cancelAccountSummary(id_); }
+	
 	public static void reqAllOpenOrders() { if (conn._client != null) conn._client.reqAllOpenOrders(); }
 
 	public static void reqIds() { if (conn._client != null) conn._client.reqIds(-1); }
