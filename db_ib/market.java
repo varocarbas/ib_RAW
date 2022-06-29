@@ -7,7 +7,7 @@ import accessory.arrays;
 import accessory.db_where;
 import accessory_ib.logs;
 
-public class market 
+public abstract class market 
 {
 	public static final String SOURCE = common.SOURCE_MARKET;
 	
@@ -73,19 +73,17 @@ public class market
 		return true; 
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static HashMap<String, Object> get_default_vals(String symbol_) 
 	{ 
-		HashMap<String, Object> vals = (HashMap<String, Object>)common.get_default_vals(SOURCE, false); 
+		HashMap<String, Object> vals = new HashMap<String, Object>(); 
 		vals.put(SYMBOL, symbol_);
 		
 		return vals;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static HashMap<String, String> get_default_vals_quick(String symbol_) 
 	{ 
-		HashMap<String, String> vals = (HashMap<String, String>)common.get_default_vals(SOURCE, true);
+		HashMap<String, String> vals = new HashMap<String, String>();
 		vals.put(get_col(SYMBOL), symbol_);
 		
 		return vals;

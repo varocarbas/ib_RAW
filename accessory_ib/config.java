@@ -1,6 +1,6 @@
 package accessory_ib;
 
-public class config 
+public abstract class config 
 {	
 	public static Object get_conn(String key_) { return accessory.config.get(types.CONFIG_CONN, key_); }
 

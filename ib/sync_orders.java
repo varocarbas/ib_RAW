@@ -14,7 +14,7 @@ import accessory_ib.types;
 import external_ib.contracts;
 import external_ib.orders;
 
-public class sync_orders extends parent_static  
+public abstract class sync_orders extends parent_static  
 {
 	public static final String CANCEL = types.SYNC_ORDERS_CANCEL;
 	public static final String PLACE = types.SYNC_ORDERS_PLACE;
@@ -48,8 +48,6 @@ public class sync_orders extends parent_static
 	
 	private static HashMap<Integer, Long> _cancellations = new HashMap<Integer, Long>();
 	
-	public static String get_class_id() { return accessory.types.get_id(types.ID_SYNC_ORDERS); }
-
 	public static boolean place_market(String symbol_, double quantity_, double stop_) { return place(PLACE_MARKET, symbol_, quantity_, stop_, WRONG_VALUE); }
 
 	public static boolean place_stop(String symbol_, double quantity_, double stop_, double start_) { return place(PLACE_STOP, symbol_, quantity_, stop_, start_); }
@@ -75,7 +73,7 @@ public class sync_orders extends parent_static
 		boolean is_ok = true; 
 		if (!arrays.value_exists(get_ids(STATUS_SUBMITTED), id_)) return is_ok;
 
-		_cancellations = new HashMap<Integer, Long>(common.start_wait(order.get_id_sec(id_), common.start_wait(id_, _cancellations)));
+		_cancellations = new HashMap<Integer, Long>(common_xsync.start_wait(order.get_id_sec(id_), common_xsync.start_wait(id_, _cancellations)));
 		
 		is_ok = sync.cancel_order(id_);
 		if (is_ok) db_ib.orders.delete(id_);	
@@ -85,7 +83,7 @@ public class sync_orders extends parent_static
 	
 	public static boolean is_cancelling(int id_)
 	{
-		HashMap<Integer, Long> temp = common.wait_is_over_sync(id_, _cancellations);
+		HashMap<Integer, Long> temp = common_xsync.wait_is_over_sync(id_, _cancellations);
 		
 		boolean output = (temp == null);
 		if (!output) _cancellations = new HashMap<Integer, Long>(temp);
@@ -190,7 +188,7 @@ public class sync_orders extends parent_static
 		
 		for (Entry<Integer, Long> item: _cancellations.entrySet())
 		{
-			HashMap<Integer, Long> temp = common.wait_is_over_sync(item.getKey(), output);
+			HashMap<Integer, Long> temp = common_xsync.wait_is_over_sync(item.getKey(), output);
 			if (temp != null) output = new HashMap<Integer, Long>(temp);
 		}
 		

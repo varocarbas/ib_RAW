@@ -2,7 +2,7 @@ package external_ib;
 
 import accessory.numbers;
 
-public class errors 
+public abstract class errors 
 {
 	//------ To be synced with the corresponding get_all_[...]() methods.
 

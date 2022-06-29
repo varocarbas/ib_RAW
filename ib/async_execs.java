@@ -9,17 +9,14 @@ import com.ib.client.Execution;
 
 import accessory.arrays;
 import accessory.parent_static;
-import accessory_ib.types;
 import db_ib.execs;
 
-public class async_execs extends parent_static 
+public abstract class async_execs extends parent_static 
 {
 	private static final int COLS_TOT = 7;
 	
 	private static boolean _enabled = false; 
 	private volatile static Hashtable<String, Hashtable<String, Object>> _all_vals = new Hashtable<String, Hashtable<String, Object>>();
-
-	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC_EXECS); }
 	
 	public static void enable() { _enabled = true; }
 

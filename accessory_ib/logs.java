@@ -2,7 +2,7 @@ package accessory_ib;
 
 import accessory.strings;
 
-public class logs 
+public abstract class logs 
 {
 	public static void update_screen(int id_, String symbol_, String message_) 
 	{

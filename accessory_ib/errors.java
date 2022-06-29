@@ -8,12 +8,12 @@ import accessory.logs;
 import accessory.misc;
 import accessory.strings;
 import ib.async_market;
-import ib.common;
+import ib.common_xsync;
 import ib.conn;
 import ib.sync;
 import ib.sync_orders;
 
-public class errors
+public abstract class errors
 {
 	public static final String MESSAGE = _keys.MESSAGE;
 	
@@ -25,7 +25,7 @@ public class errors
 	{
 		String message = (strings.is_ok(message_) ? message_ : strings.DEFAULT);
 		
-		if (common.req_id_is_ok(id_))
+		if (common_xsync.req_id_is_ok(id_))
 		{
 			String id = Integer.toString(id_);
 			if (!message.contains(id)) message += misc.SEPARATOR_CONTENT + "id: " + id;			

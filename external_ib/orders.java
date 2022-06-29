@@ -8,7 +8,7 @@ import accessory_ib._alls;
 import ib.order;
 import ib.sync_orders;
 
-public class orders 
+public abstract class orders 
 {
 	//--- To be synced with the execution.side values (https://interactivebrokers.github.io/tws-api/classIBApi_1_1Execution.html).
 	public static final String EXEC_SIDE_BOUGHT = "bot";

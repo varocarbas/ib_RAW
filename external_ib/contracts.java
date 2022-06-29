@@ -10,7 +10,7 @@ import accessory_ib._alls;
 import accessory_ib.config;
 import accessory_ib.types;
 
-public class contracts 
+public abstract class contracts 
 {
 	public static final String CONFIG_SECURITY_TYPE = types.CONFIG_CONTRACT_SECURITY_TYPE;
 	public static final String CONFIG_CURRENCY = types.CONFIG_CONTRACT_CURRENCY;

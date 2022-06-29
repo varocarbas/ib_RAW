@@ -18,7 +18,7 @@ import accessory_ib.types;
 import external_ib.calls;
 import external_ib.wrapper;
 
-public class sync extends parent_static 
+public abstract class sync extends parent_static 
 {
 	public static final String GET_ID = types.SYNC_GET_ID;
 	public static final String GET_ORDERS = types.SYNC_GET_ORDERS;
@@ -55,8 +55,6 @@ public class sync extends parent_static
 	private static int _order_id = WRONG_ORDER_ID;
 	private static String _get = strings.DEFAULT;
 	private static String _out = strings.DEFAULT;
-
-	public static String get_class_id() { return accessory.types.get_id(types.ID_SYNC); }
 
 	public static int get_order_id() { return (int)get(GET_ID); }
 	
@@ -227,7 +225,7 @@ public class sync extends parent_static
 	
 	private static Object get(String type_)
 	{
-		common.get_req_id(true);
+		common_xsync.get_req_id(true);
 		if (!get_ini(type_)) return null;
 		
 		get(); 
@@ -287,7 +285,7 @@ public class sync extends parent_static
 	{
 		_get = get_;
 		_out = get_all_get_outs().get(_get);		
-		_req_id = common.get_req_id(true);
+		_req_id = common_xsync.get_req_id(true);
 
 		return true;
 	}

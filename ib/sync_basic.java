@@ -1,14 +1,11 @@
 package ib;
 
 import accessory.parent_static;
-import accessory_ib.types;
 import db_ib.basic;
 import external_ib.contracts;
 
-public class sync_basic extends parent_static  
+public abstract class sync_basic extends parent_static  
 {
-	public static String get_class_id() { return accessory.types.get_id(types.ID_SYNC_BASIC); }
-
 	public static void start()
 	{
 		get_conn_type();

@@ -9,7 +9,7 @@ import accessory.strings;
 import ib.order;
 import ib.sync_orders;
 
-public class orders 
+public abstract class orders 
 {
 	public static final String SOURCE = common.SOURCE_ORDERS;
 	

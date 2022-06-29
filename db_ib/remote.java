@@ -1,6 +1,6 @@
 package db_ib;
 
-public class remote 
+public abstract class remote 
 {
 	public static final String SOURCE = common.SOURCE_REMOTE;
 	

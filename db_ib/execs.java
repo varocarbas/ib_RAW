@@ -2,7 +2,7 @@ package db_ib;
 
 import java.util.HashMap;
 
-public class execs 
+public abstract class execs 
 {
 	public static final String SOURCE = common.SOURCE_EXECS;
 	

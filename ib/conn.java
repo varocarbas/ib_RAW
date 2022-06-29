@@ -16,7 +16,7 @@ import accessory_ib.types;
 import db_ib.basic;
 import external_ib.wrapper;
 
-public class conn extends parent_static 
+public abstract class conn extends parent_static 
 {
 	public static final String CONFIG_TYPE = types.CONFIG_CONN_TYPE;
 	public static final String CONFIG_CONN_ID = types.CONFIG_CONN_ID;
@@ -57,8 +57,6 @@ public class conn extends parent_static
 	private static volatile boolean _connected = false;
 	private static volatile boolean _first_conn = false;
 	
-	public static String get_class_id() { return accessory.types.get_id(types.ID_CONN); }
-
 	public static int get_max_length_type() { return TYPE_GATEWAY_PAPER.length(); }
 	
 	public static boolean is_ok()

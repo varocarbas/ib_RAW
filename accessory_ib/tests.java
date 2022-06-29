@@ -42,9 +42,13 @@ public class tests extends parent_tests
 		
 		update_screen(name0, true, level);		
 
-		String[] tables = new String[] { common.SOURCE_MARKET, common.SOURCE_EXECS, common.SOURCE_BASIC, common.SOURCE_REMOTE, common.SOURCE_ORDERS };
+		String[] sources = new String[] 
+		{ 
+			common.SOURCE_MARKET, common.SOURCE_EXECS, common.SOURCE_BASIC, common.SOURCE_REMOTE, 
+			common.SOURCE_ORDERS, common.SOURCE_TRADES, common.SOURCE_WATCHLIST 
+		};
 		
-		for (String table: tables) { accessory.tests.create_table(table); }
+		for (String source: sources) { accessory.tests.create_table(source); }
 		
 		update_screen(name0, false, level);
 		

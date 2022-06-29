@@ -3,7 +3,7 @@ package external_ib;
 import accessory.arrays;
 import accessory_ib._alls;
 
-public class market 
+public abstract class market 
 {
 	//------ To be synced with the corresponding get_all_[...]() methods.
 

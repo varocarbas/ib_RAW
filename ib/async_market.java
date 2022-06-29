@@ -17,7 +17,7 @@ import external_ib.calls;
 import external_ib.contracts;
 import db_ib.market;
 
-public class async_market extends parent_static 
+public abstract class async_market extends parent_static 
 {
 	public static final String CONFIG_SNAPSHOT_QUICK = types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK;
 	public static final String CONFIG_SNAPSHOT_NONSTOP = types.CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP;
@@ -55,8 +55,6 @@ public class async_market extends parent_static
 	private static volatile HashMap<Integer, Integer> _data_types = new HashMap<Integer, Integer>();
 	private static volatile HashMap<Integer, HashMap<String, Object>> _vals = new HashMap<Integer, HashMap<String, Object>>();
 	private static volatile HashMap<Integer, HashMap<String, String>> _vals_quick = new HashMap<Integer, HashMap<String, String>>();
-	
-	public static String get_class_id() { return accessory.types.get_id(types.ID_ASYNC_MARKET); }
 
 	public static void enable() { _enabled = true; }
 
@@ -64,7 +62,7 @@ public class async_market extends parent_static
 	
 	public static boolean is_ok(int id_) { return (_enabled && async.is_ok(id_)); }
 	
-	public static void __wrapper_tickPrice(int id_, int field_ib_, double price_)
+	public static void __tick_price(int id_, int field_ib_, double price_)
 	{
 		String field = get_field(get_all_prices(), field_ib_);
 		if (!strings.is_ok(field)) return;

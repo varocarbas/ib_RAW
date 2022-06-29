@@ -36,6 +36,7 @@ import com.ib.client.TickAttribLast;
 import accessory_ib.errors;
 import ib.async_execs;
 import ib.async_market;
+import ib.common_wrapper;
 import ib.conn;
 import ib.sync;
 import ib.sync_basic;
@@ -75,12 +76,7 @@ public class wrapper implements EWrapper
 	}
 	
 	@Override
-	public void tickPrice(int id_, int field_ib_, double price_, TickAttrib attribs_) 
-	{
-		if (!async_market.is_ok(id_)) return;
-		
-		async_market.__wrapper_tickPrice(id_, field_ib_, price_); 
-	}
+	public void tickPrice(int id_, int field_ib_, double price_, TickAttrib attribs_) { common_wrapper.__tickPrice(id_, field_ib_, price_); }
 	
 	@Override
 	public void tickSize(int id_, int field_ib_, int size_) 

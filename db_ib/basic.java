@@ -5,7 +5,7 @@ import java.util.HashMap;
 import accessory.arrays;
 import accessory.db;
 
-public class basic 
+public abstract class basic 
 {
 	public static final String SOURCE = common.SOURCE_BASIC;
 	

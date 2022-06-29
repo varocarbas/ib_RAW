@@ -3,13 +3,10 @@ package external_ib;
 import com.ib.client.Contract;
 import com.ib.client.Order;
 
-import accessory_ib.types;
 import ib.conn;
 
-public class calls 
+public abstract class calls 
 {	
-	public static String get_class_id() { return accessory.types.get_id(types.ID_CALLS); }
-
 	public static boolean reqMktData(int id_, String symbol_, boolean is_snapshot_) 
 	{ 
 		Contract contract = contracts.get_contract(symbol_);
