@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import accessory.parent_ini_first;
 import ib.async_market;
+import ib.async_trades;
+import ib.async_watchlist;
 import ib.sync;
 
 public class _alls extends parent_ini_first
@@ -14,10 +16,18 @@ public class _alls extends parent_ini_first
 	public static void populate() { _instance.populate_internal_common(); }
 	
 	public static HashMap<String, String> SYNC_GET_OUTS = null;
+	
 	public static HashMap<Integer, String> ASYNC_MARKET_PRICES = null;
 	public static HashMap<Integer, String> ASYNC_MARKET_SIZES = null;
 	public static HashMap<Integer, String> ASYNC_MARKET_GENERICS = null;
-
+	
+	public static HashMap<Integer, String> ASYNC_TRADES_PRICES = null;
+	public static HashMap<Integer, String> ASYNC_TRADES_GENERICS = null;
+	
+	public static HashMap<Integer, String> ASYNC_WATCHLIST_PRICES = null;
+	public static HashMap<Integer, String> ASYNC_WATCHLIST_SIZES = null;
+	public static HashMap<Integer, String> ASYNC_WATCHLIST_GENERICS = null;
+	
 	public static String[] EXTERNAL_CONTRACTS_SECURITIES = null;
 	
 	public static int[] EXTERNAL_MARKET_TICKS = null;
@@ -39,10 +49,18 @@ public class _alls extends parent_ini_first
 		accessory._alls.populate_types(types.populate_all_types());
 		
 		SYNC_GET_OUTS = sync.populate_all_get_outs();
+		
 		ASYNC_MARKET_PRICES = async_market.populate_all_prices();
 		ASYNC_MARKET_SIZES = async_market.populate_all_sizes();
 		ASYNC_MARKET_GENERICS = async_market.populate_all_generics();
-
+		
+		ASYNC_TRADES_PRICES = async_trades.populate_all_prices();
+		ASYNC_TRADES_GENERICS = async_trades.populate_all_generics();
+		
+		ASYNC_WATCHLIST_PRICES = async_watchlist.populate_all_prices();
+		ASYNC_WATCHLIST_SIZES = async_watchlist.populate_all_sizes();
+		ASYNC_WATCHLIST_GENERICS = async_watchlist.populate_all_generics();
+		
 		EXTERNAL_CONTRACTS_SECURITIES = external_ib.contracts.populate_all_securities();
 		
 		EXTERNAL_MARKET_TICKS = external_ib.market.populate_all_ticks();

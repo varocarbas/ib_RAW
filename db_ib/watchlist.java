@@ -16,4 +16,8 @@ public abstract class watchlist
 	public static final String TIME_ELAPSED = common.FIELD_TIME_ELAPSED;
 	public static final String HALTED = common.FIELD_HALTED;
 	public static final String HALTED_TOT = common.FIELD_HALTED_TOT;	
+	public static final String FLU = common.FIELD_FLU;
+	public static final String FLU2 = common.FIELD_FLU2;
+	public static final String FLU2_MIN = common.FIELD_FLU2_MIN;
+	public static final String FLU2_MAX = common.FIELD_FLU2_MAX;
 }

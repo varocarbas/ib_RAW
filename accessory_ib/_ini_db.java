@@ -88,12 +88,12 @@ public class _ini_db extends parent_ini_db
 		String table = "ib_execs";
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
-		
-		info.put(execs.EXEC_ID, new db_field(data.STRING, 30, 0, null, new String[] { db_field.KEY_UNIQUE }));
+
+		info.put(execs.USER, get_user());
+		info.put(execs.EXEC_ID, new db_field(data.STRING, 30));
 		info.put(execs.SYMBOL, get_symbol(false));
 		info.put(execs.ORDER_ID, get_order_id(false));
 		info.put(execs.SIDE, new db_field(data.STRING, 3)); //Synced with execution.side's max. length as defined in external_ib.orders.
-		info.put(execs.USER, get_user());
 		info.put(execs.PRICE, get_price());
 		info.put(execs.QUANTITY, get_quantity());
 		info.put(execs.FEES, get_money());
@@ -108,9 +108,9 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
+		info.put(basic.USER, get_user());
 		info.put(basic.CONN_TYPE, new db_field(data.STRING, conn.get_max_length_type()));
 		info.put(basic.ACCOUNT_ID, get_status_type());
-		info.put(basic.USER, get_user());
 		info.put(basic.MONEY, get_money());
 		info.put(basic.MONEY_INI, get_money());
 		info.put(basic.CURRENCY, new db_field(data.STRING, contracts.get_max_length_currency()));
@@ -124,14 +124,14 @@ public class _ini_db extends parent_ini_db
 		String table = "ib_remote";		
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
-			
-		info.put(remote.ORDER_ID_MAIN, get_order_id(true));
-		info.put(remote.ORDER_ID_SEC, get_order_id(true));
+
+		info.put(remote.USER, get_user());
+		info.put(remote.ORDER_ID_MAIN, get_order_id(false));
+		info.put(remote.ORDER_ID_SEC, get_order_id(false));
 		info.put(remote.SYMBOL, get_symbol(false));
 		info.put(remote.TIME, get_time());
 		info.put(remote.STATUS, get_status_type());
 		info.put(remote.STATUS2, get_status_type());
-		info.put(remote.USER, get_user());
 		info.put(remote.START, get_price());
 		info.put(remote.START2, get_price());
 		info.put(remote.STOP, get_price());
@@ -147,12 +147,12 @@ public class _ini_db extends parent_ini_db
 		String table = "ib_orders";		
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
-			
-		info.put(orders.ORDER_ID_MAIN, get_order_id(true));
-		info.put(orders.ORDER_ID_SEC, get_order_id(true));
+		
+		info.put(orders.USER, get_user());
+		info.put(orders.ORDER_ID_MAIN, get_order_id(false));
+		info.put(orders.ORDER_ID_SEC, get_order_id(false));
 		info.put(orders.SYMBOL, get_symbol(false));
 		info.put(orders.STATUS, get_status_type());
-		info.put(orders.USER, get_user());
 		info.put(orders.START, get_price());
 		info.put(orders.START2, get_price());
 		info.put(orders.STOP, get_price());
@@ -173,7 +173,8 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
-		info.put(trades.SYMBOL, get_symbol(true));
+		info.put(trades.USER, get_user());
+		info.put(trades.SYMBOL, get_symbol(false));
 		info.put(trades.PRICE, get_price());
 		info.put(trades.TIME_ELAPSED, get_time_elapsed());
 		info.put(trades.START, get_price());
@@ -203,7 +204,11 @@ public class _ini_db extends parent_ini_db
 		info.put(watchlist.TIME_ELAPSED, get_time_elapsed());
 		info.put(watchlist.HALTED, get_halted());
 		info.put(watchlist.HALTED_TOT, get_halted_tot());
-		
+		info.put(watchlist.FLU, get_decimal_tiny());
+		info.put(watchlist.FLU2, get_decimal_tiny());
+		info.put(watchlist.FLU2_MIN, get_decimal_tiny());
+		info.put(watchlist.FLU2_MAX, get_decimal_tiny());
+
 		return add_source_common(db_, source, table, info, sources_);		
 	}
 		
@@ -221,7 +226,11 @@ public class _ini_db extends parent_ini_db
 
 	private static db_field get_decimal() { return get_decimal(common.DEFAULT_SIZE_DECIMAL); }
 
+	private static db_field get_decimal_tiny() { return get_decimal(3); }
+
 	private static db_field get_decimal(int size_) { return new db_field(data.DECIMAL, size_, numbers.DEFAULT_DECIMALS); }
+	
+	private static db_field get_price() { return new db_field(data.DECIMAL, common.MAX_SIZE_PRICE, 2); }
 	
 	private static db_field get_halted() { return get_boolean(false); }
 
@@ -230,8 +239,6 @@ public class _ini_db extends parent_ini_db
 	private static db_field get_halted_tot() { return get_tiny(); }
 
 	private static db_field get_tiny() { return new db_field(data.TINYINT); }
-	
-	private static db_field get_price() { return new db_field(data.DECIMAL, common.MAX_SIZE_PRICE, 2); }
 
 	private static db_field get_time() { return get_time(true); }
 	

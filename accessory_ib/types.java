@@ -100,7 +100,11 @@ public abstract class types
 	public static final String CONFIG_DB_IB_FIELD_VOLUME_INI = "config_db_ib_field_volume_ini";
 	public static final String CONFIG_DB_IB_FIELD_VOLUME_MIN = "config_db_ib_field_volume_min";
 	public static final String CONFIG_DB_IB_FIELD_VOLUME_MAX = "config_db_ib_field_volume_max";
-
+	public static final String CONFIG_DB_IB_FIELD_FLU = "config_db_ib_field_flu";
+	public static final String CONFIG_DB_IB_FIELD_FLU2 = "config_db_ib_field_flu2";
+	public static final String CONFIG_DB_IB_FIELD_FLU2_MIN = "config_db_ib_field_flu2_min";
+	public static final String CONFIG_DB_IB_FIELD_FLU2_MAX = "config_db_ib_field_flu2_max";	
+	
 	public static final String SYNC = "sync";
 	public static final String SYNC_GET = "sync_get";
 	public static final String SYNC_GET_FUNDS = "sync_get_funds";
@@ -211,7 +215,8 @@ public abstract class types
 			CONFIG_DB_IB_FIELD_STATUS, CONFIG_DB_IB_FIELD_STATUS2, CONFIG_DB_IB_FIELD_IS_MARKET, CONFIG_DB_IB_FIELD_TYPE_PLACE, 
 			CONFIG_DB_IB_FIELD_TYPE_MAIN, CONFIG_DB_IB_FIELD_TYPE_SEC, CONFIG_DB_IB_FIELD_TIME_ELAPSED, CONFIG_DB_IB_FIELD_UNREALISED,
 			CONFIG_DB_IB_FIELD_PRICE_INI, CONFIG_DB_IB_FIELD_PRICE_MIN, CONFIG_DB_IB_FIELD_PRICE_MAX, CONFIG_DB_IB_FIELD_VOLUME_INI,
-			CONFIG_DB_IB_FIELD_VOLUME_MIN, CONFIG_DB_IB_FIELD_VOLUME_MAX,
+			CONFIG_DB_IB_FIELD_VOLUME_MIN, CONFIG_DB_IB_FIELD_VOLUME_MAX, CONFIG_DB_IB_FIELD_FLU, CONFIG_DB_IB_FIELD_FLU2, 
+			CONFIG_DB_IB_FIELD_FLU2_MIN, CONFIG_DB_IB_FIELD_FLU2_MAX,
 			
 			SYNC,
 			SYNC_GET,

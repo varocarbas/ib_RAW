@@ -35,7 +35,6 @@ import com.ib.client.TickAttribLast;
 
 import accessory_ib.errors;
 import ib.async_execs;
-import ib.async_market;
 import ib.common_wrapper;
 import ib.conn;
 import ib.sync;
@@ -79,32 +78,13 @@ public class wrapper implements EWrapper
 	public void tickPrice(int id_, int field_ib_, double price_, TickAttrib attribs_) { common_wrapper.__tickPrice(id_, field_ib_, price_); }
 	
 	@Override
-	public void tickSize(int id_, int field_ib_, int size_) 
-	{ 
-		if (!async_market.is_ok(id_)) return;
-		
-		async_market.__wrapper_tickSize(id_, field_ib_, size_); 
-	}
-
-	@Override
-	public void tickSnapshotEnd(int id_) 
-	{
-		if (!async_market.is_ok(id_)) return;
-		
-		//In some cases, reaching this point might take too long and relying on tickSize could
-		//appreciably speed everything up. That is, all the relevant information is assumed to 
-		//have already been received right after getting certain size value.
-
-		async_market.__stop_snapshot(id_);
-	}
+	public void tickSize(int id_, int field_ib_, int size_) { common_wrapper.__tickSize(id_, field_ib_, size_); }
 	
 	@Override
-	public void tickGeneric(int id_, int tick_, double value_) 
-	{ 
-		if (!async_market.is_ok(id_)) return;
-		
-		async_market.__wrapper_tickGeneric(id_, tick_, value_); 
-	}
+	public void tickGeneric(int id_, int tick_, double value_) { common_wrapper.__tickGeneric(id_, tick_, value_); }
+
+	@Override
+	public void tickSnapshotEnd(int id_) { common_wrapper.__tickSnapshotEnd(id_); }
 	
 	@Override
 	public void error(int id_, int code_, String message_) 

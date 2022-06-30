@@ -12,7 +12,7 @@ import accessory.parent_static;
 import db_ib.execs;
 
 public abstract class async_execs extends parent_static 
-{
+{	
 	private static final int COLS_TOT = 7;
 	
 	private static boolean _enabled = false; 

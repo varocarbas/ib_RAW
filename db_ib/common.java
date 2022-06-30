@@ -70,6 +70,11 @@ public abstract class common
 	public static final String FIELD_VOLUME_MIN = types.CONFIG_DB_IB_FIELD_VOLUME_MIN;
 	public static final String FIELD_VOLUME_MAX = types.CONFIG_DB_IB_FIELD_VOLUME_MAX;
 
+	public static final String FIELD_FLU = types.CONFIG_DB_IB_FIELD_FLU;
+	public static final String FIELD_FLU2 = types.CONFIG_DB_IB_FIELD_FLU2;
+	public static final String FIELD_FLU2_MIN = types.CONFIG_DB_IB_FIELD_FLU2_MIN;
+	public static final String FIELD_FLU2_MAX = types.CONFIG_DB_IB_FIELD_FLU2_MAX;
+	
 	public static final int MAX_SIZE_USER = 15;
 	public static final int MAX_SIZE_MONEY = 7;
 	public static final int MAX_SIZE_PRICE = 4;
@@ -133,7 +138,7 @@ public abstract class common
 	
 	public static boolean source_includes_user(String source_) { return arrays.value_exists(get_all_sources_user(), source_); }
 
-	public static String[] populate_all_sources_user() { return new String[] { SOURCE_BASIC, SOURCE_EXECS, SOURCE_ORDERS, SOURCE_REMOTE }; }
+	public static String[] populate_all_sources_user() { return new String[] { SOURCE_BASIC, SOURCE_EXECS, SOURCE_ORDERS, SOURCE_REMOTE, SOURCE_TRADES }; }
 	
 	private static String[] get_all_sources_user() { return _alls.DB_SOURCES_USER; }
 
