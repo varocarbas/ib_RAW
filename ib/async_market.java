@@ -1,177 +1,59 @@
 package ib;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
 
-import com.ib.client.Contract;
-
-import accessory.arrays;
-import accessory.misc;
-import accessory.parent_static;
-import accessory.strings;
 import accessory_ib._alls;
-import accessory_ib.logs;
-import external_ib.calls;
-import external_ib.contracts;
 import db_ib.market;
 
-public abstract class async_market extends parent_static 
+public class async_market extends parent_async_data 
 {	
-	private static final int PRICE = async_data.PRICE;
-	private static final int OPEN = async_data.OPEN;
-	private static final int CLOSE = async_data.CLOSE;
-	private static final int LOW = async_data.LOW;
-	private static final int HIGH = async_data.HIGH;
-	private static final int ASK = async_data.ASK;
-	private static final int BID = async_data.BID;
-	private static final int HALTED = async_data.HALTED;
-	private static final int VOLUME = async_data.VOLUME;
-	private static final int SIZE = async_data.SIZE;
-	private static final int ASK_SIZE = async_data.ASK_SIZE;
-	private static final int BID_SIZE = async_data.BID_SIZE;
+	public static async_market _instance = new async_market();
 	
-	private static volatile boolean _stop_all = false;
-	private static boolean _logs_to_screen = async_data.DEFAULT_LOGS_TO_SCREEN;
-	private static boolean _is_db_quick = async_data.DEFAULT_IS_DB_QUICK;  
-	private static int _nonstop_pause = async_data.DEFAULT_NONSTOP_PAUSE; 
-	private static boolean _enabled = false; 
+	public async_market() { }
+ 	
+	public static void enable() { _instance._enabled = true; }
 
-	private static volatile HashMap<Integer, String> _ids = new HashMap<Integer, String>();
-	private static volatile HashMap<Integer, String> _symbols = new HashMap<Integer, String>();
-	private static volatile HashMap<Integer, Integer> _data_types = new HashMap<Integer, Integer>();
-	private static volatile HashMap<Integer, HashMap<String, Object>> _vals = new HashMap<Integer, HashMap<String, Object>>();
-	private static volatile HashMap<Integer, HashMap<String, String>> _vals_quick = new HashMap<Integer, HashMap<String, String>>();
+	public static void disable() { _instance._enabled = false; }
 
-	public static void enable() { _enabled = true; }
+	public static boolean get_logs_to_screen() { return _instance._logs_to_screen; }
 
-	public static void disable() { _enabled = false; }
-	
-	public static boolean __is_ok(int id_) { return (_enabled && _id_exists(id_, true)); }
-	
-	public static void __tick_price(int id_, int field_ib_, double price_)
-	{
-		String field = get_field(get_all_prices(), field_ib_);
-		if (!strings.is_ok(field)) return;
+	public static void update_logs_to_screen() { _instance._logs_to_screen = DEFAULT_LOGS_TO_SCREEN; }
 
-		__update(id_, field, price_);
-	}
-	
-	public static void __tick_size(int id_, int field_ib_, int size_)
-	{
-		String field = get_field(get_all_sizes(), field_ib_);
-		if (!strings.is_ok(field)) return;
-		
-		boolean is_snapshot = __is_snapshot(id_);
-		
-		__update(id_, field, size_, is_snapshot);
+	public static void update_logs_to_screen(boolean logs_to_screen_) { _instance._logs_to_screen = logs_to_screen_; }
 
-		if (is_snapshot && field_ib_ == VOLUME && async_data.snapshot_is_quick()) __stop_snapshot(id_); 
-	}
-	
-	public static void __tick_generic(int id_, int tick_, double value_)
-	{
-		String field = get_field(get_all_generics(), tick_);
-		if (!strings.is_ok(field)) return;
-
-		__update(id_, field, value_);
-	}
-
-	public static boolean get_logs_to_screen() { return _logs_to_screen; }
-
-	public static void update_logs_to_screen() { _logs_to_screen = async_data.DEFAULT_LOGS_TO_SCREEN; }
-
-	public static void update_logs_to_screen(boolean logs_to_screen_) { _logs_to_screen = logs_to_screen_; }
-
-	public static boolean get_is_db_quick() { return _is_db_quick; }
+	public static boolean get_is_db_quick() { return _instance._is_db_quick; }
 
 	//Use carefully! It relies on col-based/no-data-checks db methods (i.e., "_quick" ones).
-	public static void update_is_db_quick() { update_is_db_quick(async_data.DEFAULT_IS_DB_QUICK); }
+	public static void update_is_db_quick() { update_is_db_quick(DEFAULT_IS_DB_QUICK); }
 
 	//Use carefully! It relies on col-based/no-data-checks db methods (i.e., "_quick" ones).
-	public static void update_is_db_quick(boolean is_db_quick_) { _is_db_quick = is_db_quick_; }
+	public static void update_is_db_quick(boolean is_db_quick_) { _instance._is_db_quick = is_db_quick_; }
 
-	public static int get_nonstop_pause() { return _nonstop_pause; }
+	public static int get_nonstop_pause() { return _instance._nonstop_pause; }
 
-	public static void update_nonstop_pause() { update_nonstop_pause(async_data.DEFAULT_NONSTOP_PAUSE); }
+	public static void update_nonstop_pause() { update_nonstop_pause(DEFAULT_NONSTOP_PAUSE); }
 
-	public static void update_nonstop_pause(int nonstop_pause_) { _nonstop_pause = (nonstop_pause_ >= 0 ? nonstop_pause_ : async_data.DEFAULT_NONSTOP_PAUSE); }
+	public static void update_nonstop_pause(int nonstop_pause_) { _instance._nonstop_pause = (nonstop_pause_ >= 0 ? nonstop_pause_ : DEFAULT_NONSTOP_PAUSE); }
 	
-	public static void __stop_all()
-	{	
-		__lock();	
+	public static void __stop_all() { _instance.__stop_all_internal(); }
 	
-		_stop_all = true;
-		
-		HashMap<Integer, String> ids = new HashMap<Integer, String>(_ids);
-		
-		__unlock();
-		
-		if (!arrays.is_ok(ids)) return;
-		
-		for (Entry<Integer, String> item: ids.entrySet())
-		{
-			int id = item.getKey();
-			
-			if (__is_snapshot(id)) __stop_snapshot(id);
-			else __stop_stream(id);	
-		}
-	}
+	public static boolean __start_snapshot(String symbol_) { return _instance.__start_snapshot_internal(symbol_, DEFAULT_DATA_TYPE); }
+
+	public static boolean __start_snapshot(String symbol_, int data_type_) { return _instance.__start_snapshot_internal(symbol_, data_type_); }
+
+	public static boolean __start_stream(String symbol_) { return __start_stream(symbol_, DEFAULT_DATA_TYPE); }
+
+	public static boolean __start_stream(String symbol_, int data_type_) { return _instance.__start_stream_internal(symbol_, data_type_); }
+
+	public static void __stop_snapshot(String symbol_) { _instance.__stop_snapshot_internal(symbol_); }
+
+	public static void __stop_snapshot(int id_) { _instance.__stop_snapshot_internal(id_); }
 	
-	public static boolean __is_snapshot(int id_) { return strings.are_equal((String)arrays.__get_value_async(_ids, id_), async_data.TYPE_SNAPSHOT); }
+	public static void __stop_stream(String symbol_) { _instance.__stop_stream_internal(symbol_); }
 
-	public static boolean __start_snapshot(String symbol_) { return __start_snapshot(symbol_, async_data.DEFAULT_DATA_TYPE); }
-
-	public static boolean __start_snapshot(String symbol_, int data_type_) { return __start(symbol_, data_type_, true); }
-
-	public static boolean __start_stream(String symbol_) { return __start_stream(symbol_, async_data.DEFAULT_DATA_TYPE); }
-
-	public static boolean __start_stream(String symbol_, int data_type_) { return __start(symbol_, data_type_, false); }
-
-	public static void __stop_snapshot(int id_) 
-	{	
-		__lock();
-		
-		String symbol = _get_symbol(id_, false);
-		
-		if (!strings.is_ok(symbol)) 
-		{
-			__unlock();
-			
-			return;
-		}
-		
-		boolean restart = (async_data.snapshot_is_nonstop() && !_stop_all);
-		int data_type = (restart ? _get_data_type(id_, false) : 0);
-		
-		update_db(id_, symbol);
-		stop_common(id_, symbol);
+	public static void __stop_stream(int id_) { _instance.__stop_stream_internal(id_); }
 	
-		__unlock();
-		
-		if (restart) 
-		{
-			misc.pause_secs(_nonstop_pause);
-			
-			__start_snapshot(symbol, data_type);
-		}
-	}
-	
-	public static void __stop_stream(String symbol_) { __stop_stream(__get_id(symbol_)); }
-
-	public static void __stop_stream(int id_) 
-	{
-		__lock();
-		
-		if (stop_common(id_, _get_symbol(id_, false))) calls.cancelMktData(id_);
-		
-		__unlock();
-	}
-	
-	public static String __get_symbol(int id_) { return _get_symbol(id_, true); }
-
-	public static int __get_data_type(int id_) { return _get_data_type(id_, true); }
-	
-	public static int __get_id(String symbol_) { return _get_id(symbol_, true); }
+	public static String __get_symbol(int id_) { return _instance._get_symbol(id_, true); }
 
 	public static HashMap<Integer, String> populate_all_prices()
 	{		
@@ -208,174 +90,34 @@ public abstract class async_market extends parent_static
 		
 		return all;
 	}
+
+	protected boolean is_enabled(String symbol_) { return market.is_enabled(symbol_); }
+
+	protected boolean exists(String symbol_) { return market.exists(symbol_); }
+
+	protected void insert(String symbol_) { market.insert(symbol_); }
 	
-	private static boolean _id_exists(int id_, boolean lock_) { return (lock_ ? arrays.__key_exists_async(_ids, id_) : arrays.key_exists(_ids, id_) ); }
+	protected void insert_quick(String symbol_) { market.insert_quick(symbol_); } 
 
-	private static String _get_symbol(int id_, boolean lock_) { return (String)(lock_ ? arrays.__get_value_async(_symbols, id_) : arrays.get_value(_symbols, id_)); }
-
-	private static int _get_id(String symbol_, boolean lock_) { return (int)(lock_ ? arrays.__get_key_async(_symbols, symbol_) : arrays.get_key(_symbols, symbol_)); }
-
-	private static int _get_data_type(int id_, boolean lock_) { return (int)(lock_ ? arrays.__get_value_async(_data_types, id_) : arrays.get_value(_data_types, id_)); }
+	protected void update(String symbol_, HashMap<String, Object> vals_) { market.update(symbol_, vals_); }
 	
-	private static HashMap<Integer, String> get_all_prices() { return _alls.ASYNC_MARKET_PRICES; }
+	protected void update(String symbol_, String field_, Object val_) { market.update(symbol_, field_, val_); }
 	
-	private static HashMap<Integer, String> get_all_sizes() { return _alls.ASYNC_MARKET_SIZES; }
+	protected void update_quick(String symbol_, HashMap<String, String> vals_) { market.update_quick(symbol_, vals_); } 
 	
-	private static HashMap<Integer, String> get_all_generics() { return _alls.ASYNC_MARKET_GENERICS; }
-
-	private static String get_field(HashMap<Integer, String> all_, int field_ib_)
-	{
-		for (Entry<Integer, String> item: all_.entrySet())
-		{
-			if (field_ib_ == item.getKey()) return item.getValue();
-		}
-		
-		return strings.DEFAULT;
-	}
+	protected void update_quick(String symbol_, String col_, String val_) { market.update_quick(symbol_, col_, val_); }
 	
-	private static boolean __start(String symbol_, int data_type_, boolean is_snapshot_)
-	{
-		__lock();
-		
-		String symbol = common.check_symbol(symbol_);
-		
-		if (_stop_all || !strings.is_ok(symbol) || arrays.value_exists(_symbols, symbol_)) 
-		{
-			__unlock();
-			
-			return false;
-		}
-		
-		int data_type = (external_ib.market.data_is_ok(data_type_) ? data_type_ : async_data.DEFAULT_DATA_TYPE);
-		int id = add(symbol, data_type, is_snapshot_);
-
-		if (!market.exists(symbol)) 
-		{
-			if (_is_db_quick) market.insert_quick(symbol);
-			else market.insert(symbol);
-		}
-		else if (!market.is_enabled(symbol)) 
-		{
-			remove(id);	
-
-			__unlock();
-			
-			return false;
-		}
-		
-		Contract contract = contracts.get_contract(symbol);
-		if (contract == null) 
-		{
-			remove(id);
-
-			__unlock();
-			
-			return false;
-		}
-
-		calls.reqMarketDataType(data_type_);
-		
-		if (!calls.reqMktData(id, symbol_, is_snapshot_)) 
-		{
-			remove(id);			
-
-			__unlock();
-			
-			return false;
-		}
-		
-		to_screen(id, symbol, "started");
-
-		__unlock();
-		
-		return true;		
-	}
-
-	private static int add(String symbol_, int data_type_, boolean is_snapshot_)
-	{
-		int id = async.get_req_id();
-
-		_ids.put(id, async_data.get_type(is_snapshot_));
-		_symbols.put(id, symbol_);
-		_data_types.put(id, data_type_);
-		
-		if (_is_db_quick) _vals_quick.put(id, new HashMap<String, String>());
-		else _vals.put(id, new HashMap<String, Object>());
-		
-		return id;
-	}
-
-	@SuppressWarnings("unchecked")
-	private static boolean remove(int id_) 
-	{ 
-		if (!_id_exists(id_, false)) return false;
-		
-		_ids.remove(id_);
-		
-		_symbols = (HashMap<Integer, String>)arrays.remove_key(_symbols, id_);
-		_data_types = (HashMap<Integer, Integer>)arrays.remove_key(_data_types, id_);
+	protected String get_col(String field_) { return market.get_col(field_); }
 	
-		if (_is_db_quick) _vals_quick = (HashMap<Integer, HashMap<String, String>>)arrays.remove_key(_vals_quick, id_);
-		else _vals = (HashMap<Integer, HashMap<String, Object>>)arrays.remove_key(_vals, id_);
-		
-		return true;
-	}
+	static void __tick_price(int id_, int field_ib_, double price_) { _instance.__tick_price_internal(id_, field_ib_, price_); }
 	
-	private static boolean stop_common(int id_, String symbol_) 
-	{ 
-		if (!remove(id_)) return false;
-		
-		to_screen(id_, symbol_, "stopped");
-		
-		return true;
-	}
-
-	private static void __update(int id_, String field_, double val_) { __update(id_, field_, val_, __is_snapshot(id_)); }
-
-	private static void __update(int id_, String field_, double val_, boolean is_snapshot_)
-	{
-		if (!strings.is_ok(field_) || val_ <= 0.0) return;  
-		
-		if (is_snapshot_) __update_vals(id_, field_, val_);
-		else update_db(id_, __get_symbol(id_), field_, val_);
-	}
+	static void __tick_size(int id_, int field_ib_, int size_) { _instance.__tick_size_internal(id_, field_ib_, size_); }
 	
-	private static void __update_vals(int id_, String field_, double val_)
-	{
-		if (_is_db_quick && arrays.__key_exists_async(_vals_quick, id_)) _vals_quick.get(id_).put(market.get_col(field_), Double.toString(val_));
-		else if (!_is_db_quick && arrays.__key_exists_async(_vals, id_)) _vals.get(id_).put(field_, val_);
-		
-		__to_screen_update(id_, false);
-	}
+	static void __tick_generic(int id_, int tick_, double value_) { _instance.__tick_generic_internal(id_, tick_, value_); }
 	
-	private static void update_db(int id_, String symbol_, String field_, double val_)
-	{
-		if (_is_db_quick) market.update_quick(symbol_, market.get_col(field_), Double.toString(val_));
-		else market.update(symbol_, field_, val_);
-		
-		to_screen_update(id_, symbol_, true);
-	}
+	protected HashMap<Integer, String> get_all_prices() { return _alls.ASYNC_MARKET_PRICES; }
 	
-	@SuppressWarnings("unchecked")
-	private static void update_db(int id_, String symbol_)
-	{
-		if (_is_db_quick)
-		{
-			HashMap<String, String> vals = (HashMap<String, String>)arrays.get_value(_vals_quick, id_);
-			if (arrays.is_ok(vals)) market.update_quick(symbol_, vals);
-		}
-		else
-		{
-			HashMap<String, Object> vals = (HashMap<String, Object>)arrays.get_value(_vals, id_);
-			if (arrays.is_ok(vals)) market.update(symbol_, vals);
-		}
-		
-		to_screen_update(id_, symbol_, true);
-	}
+	protected HashMap<Integer, String> get_all_sizes() { return _alls.ASYNC_MARKET_SIZES; }
 	
-	private static void __to_screen_update(int id_, boolean is_db_) { to_screen_update(id_, __get_symbol(id_), is_db_); }
-
-	private static void to_screen_update(int id_, String symbol_, boolean is_db_) { to_screen(id_, symbol_, (is_db_ ? "stored" : "updated")); }
-	
-	private static void to_screen(int id_, String symbol_, String message_) { if (_logs_to_screen) logs.update_screen(id_, symbol_, message_); }
+	protected HashMap<Integer, String> get_all_generics() { return _alls.ASYNC_MARKET_GENERICS; }
 }

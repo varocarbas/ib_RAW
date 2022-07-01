@@ -9,9 +9,9 @@ public abstract class async_watchlist
 {
 	public static final String _ID = "async_watchlist";
 	
-	private static final int PRICE = async_data.PRICE;
-	private static final int HALTED = async_data.HALTED;
-	private static final int VOLUME = async_data.VOLUME;
+	private static final int PRICE = parent_async_data.PRICE;
+	private static final int HALTED = parent_async_data.HALTED;
+	private static final int VOLUME = parent_async_data.VOLUME;
 
 	private static volatile HashMap<Integer, String> _ids = new HashMap<Integer, String>();
 	private static boolean _enabled = false; 
