@@ -85,7 +85,7 @@ public abstract class common
 	
 	public static boolean exists(String source_, String where_) { return strings.is_ok(accessory.db.select_one_string(source_, FIELD_SYMBOL, where_, null)); }
 	
-	public static boolean is_enabled(String source_, String where_) { return accessory.db.select_one_boolean(source_, FIELD_ENABLED, where_, null); }
+	public static boolean is_enabled(String source_, String where_) { return (!arrays.value_exists(get_all_sources_enabled(), source_) || accessory.db.select_one_boolean(source_, FIELD_ENABLED, where_, null)); }
 
 	public static HashMap<String, String> get_vals(String source_, String where_) { return get_vals(source_, null, where_); }
 
@@ -111,7 +111,7 @@ public abstract class common
 		
 		return accessory.db.is_ok(source_);
 	}
-	
+
 	public static boolean update_quick(String source_, HashMap<String, String> vals_, String where_)
 	{		
 		accessory.db.update_quick(source_, vals_, where_);
@@ -139,8 +139,12 @@ public abstract class common
 	public static boolean source_includes_user(String source_) { return arrays.value_exists(get_all_sources_user(), source_); }
 
 	public static String[] populate_all_sources_user() { return new String[] { SOURCE_BASIC, SOURCE_EXECS, SOURCE_ORDERS, SOURCE_REMOTE, SOURCE_TRADES }; }
+
+	public static String[] populate_all_sources_enabled() { return new String[] { SOURCE_MARKET }; }
 	
 	private static String[] get_all_sources_user() { return _alls.DB_SOURCES_USER; }
+
+	private static String[] get_all_sources_enabled() { return _alls.DB_SOURCES_ENABLED; }
 
 	private static String get_where_internal(String source_, String field_, String val_, boolean is_quick_, boolean check_user_) 
 	{

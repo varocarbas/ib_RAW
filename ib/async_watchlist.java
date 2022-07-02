@@ -2,25 +2,51 @@ package ib;
 
 import java.util.HashMap;
 
-import accessory.arrays;
+import accessory_ib._alls;
 import db_ib.watchlist;
 
-public abstract class async_watchlist 
+public class async_watchlist extends parent_async_data 
 {
-	public static final String _ID = "async_watchlist";
+	private static async_watchlist _instance = instantiate();
 	
-	private static final int PRICE = parent_async_data.PRICE;
-	private static final int HALTED = parent_async_data.HALTED;
-	private static final int VOLUME = parent_async_data.VOLUME;
+	private async_watchlist() { }
+ 	
+	private static async_watchlist instantiate()
+	{
+		async_watchlist instance = new async_watchlist();
+		
+		instance._source = watchlist.SOURCE;
+		
+		return instance;
+	}
 
-	private static volatile HashMap<Integer, String> _ids = new HashMap<Integer, String>();
-	private static boolean _enabled = false; 
-	
-	public static void enable() { _enabled = true; }
+	public static void enable() { _instance.enable_internal(); }
 
-	public static void disable() { _enabled = false; }
+	public static void update_nonstop_pause(int nonstop_pause_) { _instance.update_nonstop_pause_internal(nonstop_pause_); }
+
+	public static void update_logs_to_screen(boolean logs_to_screen_) { _instance.update_logs_to_screen_internal(logs_to_screen_); }
+
+	public static void restart_after_stop_all(int pause_secs_) { _instance.restart_after_stop_all_internal(pause_secs_); }
 	
-	public static boolean __is_ok(int id_) { return (_enabled && arrays.__key_exists_async(_ids, id_)); }
+	public static void __stop_all() { _instance.__stop_all_internal(); }
+	
+	public static boolean __start_snapshot(String symbol_) { return _instance.__start_snapshot_internal(symbol_, DEFAULT_DATA_TYPE); }
+
+	public static boolean __start_snapshot(String symbol_, int data_type_) { return _instance.__start_snapshot_internal(symbol_, data_type_); }
+
+	public static boolean __start_stream(String symbol_) { return _instance.__start_stream_internal(symbol_, DEFAULT_DATA_TYPE); }
+
+	public static boolean __start_stream(String symbol_, int data_type_) { return _instance.__start_stream_internal(symbol_, data_type_); }
+
+	public static boolean __stop_snapshot(String symbol_) { return _instance.__stop_snapshot_internal(symbol_); }
+
+	public static boolean __stop_snapshot(int id_) { return _instance.__stop_snapshot_internal(id_); }
+	
+	public static boolean __stop_stream(String symbol_) { return _instance.__stop_stream_internal(symbol_); }
+
+	public static boolean __stop_stream(int id_) { return _instance.__stop_stream_internal(id_); }
+	
+	public static String __get_symbol(int id_) { return _instance._get_symbol(id_, true); }
 
 	public static HashMap<Integer, String> populate_all_prices()
 	{		
@@ -48,4 +74,16 @@ public abstract class async_watchlist
 		
 		return all;
 	}
+	
+	static void __tick_price(int id_, int field_ib_, double price_) { _instance.__tick_price_internal(id_, field_ib_, price_); }
+	
+	static void __tick_size(int id_, int field_ib_, int size_) { _instance.__tick_size_internal(id_, field_ib_, size_); }
+	
+	static void __tick_generic(int id_, int tick_, double value_) { _instance.__tick_generic_internal(id_, tick_, value_); }
+
+	protected HashMap<Integer, String> get_all_prices() { return _alls.ASYNC_WATCHLIST_PRICES; }
+	
+	protected HashMap<Integer, String> get_all_sizes() { return _alls.ASYNC_WATCHLIST_SIZES; }
+	
+	protected HashMap<Integer, String> get_all_generics() { return _alls.ASYNC_WATCHLIST_GENERICS; }
 }
