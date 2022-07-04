@@ -33,45 +33,23 @@ import com.ib.client.TickAttrib;
 import com.ib.client.TickAttribBidAsk;
 import com.ib.client.TickAttribLast;
 
-import accessory_ib.errors;
 import ib.async_execs;
 import ib.common_wrapper;
-import ib.conn;
-import ib.sync;
-import ib.sync_basic;
 
 public class wrapper implements EWrapper 
-{
-	public static final String KEY_FUNDS = "AvailableFunds";
+{	
+	@Override
+	public void accountSummary(int id_, String account_, String tag_, String value_, String currency_) { common_wrapper.accountSummary(id_, account_, tag_, value_, currency_); }
 	
 	@Override
-	public void accountSummary(int id_, String account_, String tag_, String value_, String currency_) 
-	{
-		if (!sync_basic.is_ok(id_, account_, tag_, currency_)) return;
-
-		sync.update(value_);
-	}
-	
-	@Override
-	public void accountSummaryEnd(int id_) 
-	{
-		if (!sync_basic.is_ok(id_)) return;
-
-		sync.end();
-	}
+	public void accountSummaryEnd(int id_) { common_wrapper.accountSummaryEnd(id_); }
 	
 	@Override
 	public void nextValidId(int id_) 
 	{
 		currentOrderId = id_;
 
-		if (sync.is_ok()) 
-		{
-			sync.update(id_);
-
-			sync.end();
-		}
-		else conn._started = true;
+		common_wrapper.nextValidId(id_);
 	}
 	
 	@Override
@@ -87,40 +65,19 @@ public class wrapper implements EWrapper
 	public void tickSnapshotEnd(int id_) { common_wrapper.__tickSnapshotEnd(id_); }
 	
 	@Override
-	public void error(int id_, int code_, String message_) 
-	{
-		if (sync.is_ok()) sync.update_error_triggered(true);
-		
-		errors.__wrapper_error(id_, code_, message_); 
-	}
+	public void error(int id_, int code_, String message_) { common_wrapper.__error(id_, code_, message_); }
 	
 	@Override
-	public void orderStatus(int id, String status, double filled, double remaining, double avg_fill_price, int perm_id, int parent_id, double last_fill_price, int client_id, String why_held, double mkt_cap_price) 
-	{	
-		if (!sync.is_ok()) return;
-
-		sync.update(id);
-		sync.update(status);
-	}
+	public void orderStatus(int order_id_, String status_ib_, double filled_, double remaining_, double avg_fill_price_, int perm_id_, int parent_id_, double last_fill_price_, int client_id_, String why_held_, double mkt_cap_price_) { common_wrapper.orderStatus(order_id_, status_ib_); }
 	
 	@Override
-	public void openOrderEnd() { sync.end(); }
+	public void openOrderEnd() { common_wrapper.openOrderEnd(); }
 
 	@Override
-	public void execDetails(int id_, Contract contract_, Execution execution_) 
-	{
-		if (!async_execs.is_ok()) return;
-		
-		async_execs.__wrapper_execDetails(id_, contract_, execution_); 
-	}
+	public void execDetails(int id_, Contract contract_, Execution execution_) { common_wrapper.__execDetails(id_, contract_, execution_); }
 	
 	@Override
-	public void commissionReport(CommissionReport report_) 
-	{
-		if (!async_execs.is_ok()) return;
-		
-		async_execs.__wrapper_commissionReport(report_); 
-	}
+	public void commissionReport(CommissionReport report_) { async_execs.__commission_report(report_); }
 
 	public EClientSocket getClient() { return clientSocket; }
 	

@@ -104,34 +104,36 @@ public abstract class types
 	public static final String CONFIG_DB_IB_FIELD_FLU2 = "config_db_ib_field_flu2";
 	public static final String CONFIG_DB_IB_FIELD_FLU2_MIN = "config_db_ib_field_flu2_min";
 	public static final String CONFIG_DB_IB_FIELD_FLU2_MAX = "config_db_ib_field_flu2_max";	
-	
+
+	public static final String ORDER = "order";
+	public static final String ORDER_CANCEL = "order_cancel";
+	public static final String ORDER_PLACE = "order_place";
+	public static final String ORDER_PLACE_MARKET = "order_place_market";
+	public static final String ORDER_PLACE_STOP = "order_place_stop";
+	public static final String ORDER_PLACE_LIMIT = "order_place_limit";
+	public static final String ORDER_PLACE_STOP_LIMIT = "order_place_stop_limit";
+	public static final String ORDER_UPDATE = "order_update";
+	public static final String ORDER_UPDATE_START = "order_update_start";
+	public static final String ORDER_UPDATE_START_VALUE = "order_update_start_value";
+	public static final String ORDER_UPDATE_START2 = "order_update_start2";
+	public static final String ORDER_UPDATE_START2_VALUE = "order_update_start2_value";
+	public static final String ORDER_UPDATE_START_MARKET = "order_update_start_market";
+	public static final String ORDER_UPDATE_STOP = "order_update_stop";
+	public static final String ORDER_UPDATE_STOP_VALUE = "order_update_stop_value";
+	public static final String ORDER_UPDATE_STOP_MARKET = "order_update_stop_market";
+	public static final String ORDER_STATUS = "order_status";
+	public static final String ORDER_STATUS_SUBMITTED = "order_status_submitted";
+	public static final String ORDER_STATUS_FILLED = "order_status_filled";
+	public static final String ORDER_STATUS_ACTIVE = "order_status_active";
+	public static final String ORDER_STATUS_INACTIVE = "order_status_inactive";	
+
 	public static final String SYNC = "sync";
 	public static final String SYNC_GET = "sync_get";
 	public static final String SYNC_GET_FUNDS = "sync_get_funds";
 	public static final String SYNC_GET_ID = "sync_get_id";
 	public static final String SYNC_GET_ORDERS = "sync_get_orders";
 	public static final String SYNC_GET_ERROR = "sync_get_error";
-	public static final String SYNC_ORDERS = "sync_orders";
-	public static final String SYNC_ORDERS_CANCEL = "sync_orders_cancel";
-	public static final String SYNC_ORDERS_PLACE = "sync_orders_place";
-	public static final String SYNC_ORDERS_PLACE_MARKET = "sync_orders_place_market";
-	public static final String SYNC_ORDERS_PLACE_STOP = "sync_orders_place_stop";
-	public static final String SYNC_ORDERS_PLACE_LIMIT = "sync_orders_place_limit";
-	public static final String SYNC_ORDERS_PLACE_STOP_LIMIT = "sync_orders_place_stop_limit";
-	public static final String SYNC_ORDERS_UPDATE = "sync_orders_update";
-	public static final String SYNC_ORDERS_UPDATE_START = "sync_orders_update_start";
-	public static final String SYNC_ORDERS_UPDATE_START_VALUE = "sync_orders_update_start_value";
-	public static final String SYNC_ORDERS_UPDATE_START2 = "sync_orders_update_start2";
-	public static final String SYNC_ORDERS_UPDATE_START2_VALUE = "sync_orders_update_start2_value";
-	public static final String SYNC_ORDERS_UPDATE_START_MARKET = "sync_orders_update_start_market";
-	public static final String SYNC_ORDERS_UPDATE_STOP = "sync_orders_update_stop";
-	public static final String SYNC_ORDERS_UPDATE_STOP_VALUE = "sync_orders_update_stop_value";
-	public static final String SYNC_ORDERS_UPDATE_STOP_MARKET = "sync_orders_update_stop_market";
-	public static final String SYNC_ORDERS_STATUS = "sync_orders_status";
-	public static final String SYNC_ORDERS_STATUS_SUBMITTED = "sync_orders_status_submitted";
-	public static final String SYNC_ORDERS_STATUS_FILLED = "sync_orders_status_filled";
-	public static final String SYNC_ORDERS_STATUS_ACTIVE = "sync_orders_status_active";
-	public static final String SYNC_ORDERS_STATUS_INACTIVE = "sync_orders_status_inactive";
+	public static final String SYNC_ORDERS = ORDER;
 	public static final String SYNC_OUT = "sync_out";
 	public static final String SYNC_OUT_INT = "sync_out_int";
 	public static final String SYNC_OUT_DECIMAL = "sync_out_decimal";
@@ -218,24 +220,18 @@ public abstract class types
 			CONFIG_DB_IB_FIELD_VOLUME_MIN, CONFIG_DB_IB_FIELD_VOLUME_MAX, CONFIG_DB_IB_FIELD_FLU, CONFIG_DB_IB_FIELD_FLU2, 
 			CONFIG_DB_IB_FIELD_FLU2_MIN, CONFIG_DB_IB_FIELD_FLU2_MAX,
 			
+			ORDER,
+			ORDER_CANCEL, ORDER_PLACE, ORDER_PLACE_MARKET, ORDER_PLACE_STOP, ORDER_PLACE_LIMIT, ORDER_PLACE_STOP_LIMIT, ORDER_UPDATE,
+			ORDER_UPDATE_START, ORDER_UPDATE_START_VALUE, ORDER_UPDATE_START2, ORDER_UPDATE_START2_VALUE, ORDER_UPDATE_START_MARKET,
+			ORDER_UPDATE_STOP, ORDER_UPDATE_STOP_VALUE, ORDER_UPDATE_STOP_MARKET, ORDER_STATUS, ORDER_STATUS_SUBMITTED, ORDER_STATUS_FILLED,
+			ORDER_STATUS_ACTIVE, ORDER_STATUS_INACTIVE,
+			
 			SYNC,
 			SYNC_GET,
 			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_ORDERS, SYNC_GET_ERROR,
 			SYNC_OUT,
 			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_STRINGS, SYNC_OUT_ORDERS,
 			SYNC_ORDERS,
-			SYNC_ORDERS_CANCEL,
-			SYNC_ORDERS_PLACE,
-			SYNC_ORDERS_PLACE_MARKET, SYNC_ORDERS_PLACE_STOP, SYNC_ORDERS_PLACE_LIMIT, SYNC_ORDERS_PLACE_STOP_LIMIT,
-			SYNC_ORDERS_UPDATE,
-			SYNC_ORDERS_UPDATE_START,
-			SYNC_ORDERS_UPDATE_START_VALUE, SYNC_ORDERS_UPDATE_START_MARKET, 
-			SYNC_ORDERS_UPDATE_START2,
-			SYNC_ORDERS_UPDATE_START2_VALUE, 
-			SYNC_ORDERS_UPDATE_STOP,
-			SYNC_ORDERS_UPDATE_STOP_VALUE, SYNC_ORDERS_UPDATE_STOP_MARKET,
-			SYNC_ORDERS_STATUS,
-			SYNC_ORDERS_STATUS_SUBMITTED, SYNC_ORDERS_STATUS_FILLED, SYNC_ORDERS_STATUS_ACTIVE, SYNC_ORDERS_STATUS_INACTIVE,
 			
 			ASYNC,
 			ASYNC_MARKET,

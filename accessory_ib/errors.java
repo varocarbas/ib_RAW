@@ -7,7 +7,7 @@ import accessory.arrays;
 import accessory.logs;
 import accessory.misc;
 import accessory.strings;
-import ib.async_market;
+import ib.async_data_market;
 import ib.common_xsync;
 import ib.conn;
 import ib.sync;
@@ -65,7 +65,7 @@ public abstract class errors
 		
 		if (code_ == external_ib.errors.ERROR_200)
 		{
-			String symbol = async_market.__get_symbol(id_);
+			String symbol = async_data_market.__get_symbol(id_);
 			if (strings.is_ok(symbol)) info.put("symbol", symbol);
 		}
 

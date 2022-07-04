@@ -1,10 +1,9 @@
 package ib;
 
-import accessory.parent_static;
 import db_ib.basic;
 import external_ib.contracts;
 
-public abstract class sync_basic extends parent_static  
+public abstract class sync_basic 
 {
 	public static void start()
 	{

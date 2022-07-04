@@ -9,7 +9,7 @@ import accessory.misc;
 import accessory.numbers;
 import accessory.parent_tests;
 import db_ib.common;
-import ib.async_market;
+import ib.async_data_market;
 import ib.conn;
 import ib.sync;
 import ib.sync_basic;
@@ -254,9 +254,9 @@ public class tests extends parent_tests
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
 		
-		async_market.enable();
+		async_data_market.enable();
 		
-		Class<?> class0 = async_market.class;
+		Class<?> class0 = async_data_market.class;
 		String name0 = class0.getName();
 		
 		update_screen(name0, true, 1);
@@ -288,7 +288,7 @@ public class tests extends parent_tests
 		misc.pause_secs(pause1);
 		output.put(name, is_ok);
 		
-		async_market.__stop_all();
+		async_data_market.__stop_all();
 		misc.pause_secs(pause2);
 		
 		outputs.put(name0, output);

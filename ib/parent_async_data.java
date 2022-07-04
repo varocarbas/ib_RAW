@@ -64,7 +64,8 @@ public abstract class parent_async_data extends parent_static
 	protected volatile HashMap<Integer, HashMap<String, String>> _vals_quick = new HashMap<Integer, HashMap<String, String>>();
 	protected volatile HashMap<Integer, String> _ids = new HashMap<Integer, String>();
 	protected volatile HashMap<Integer, Integer> _data_types = new HashMap<Integer, Integer>();
-	
+
+	protected String _id = strings.DEFAULT; 
 	protected String _source = strings.DEFAULT; 
 	
 	protected abstract HashMap<Integer, String> get_all_prices();
@@ -101,7 +102,7 @@ public abstract class parent_async_data extends parent_static
 	{
 		if (!_stop_all) return;
 			
-		misc.pause_secs(pause_secs_);
+		if (pause_secs_ > 0) misc.pause_secs(pause_secs_);
 		
 		_stop_all = false;
 	}
@@ -202,7 +203,7 @@ public abstract class parent_async_data extends parent_static
 		
 		return output; 
 	}
-
+	
 	protected int _get_id(String symbol_, boolean lock_) { return (int)(lock_ ? arrays.__get_key_async(_symbols, symbol_) : arrays.get_key(_symbols, symbol_)); }
 
 	protected int _get_data_type(int id_, boolean lock_) 
@@ -239,16 +240,6 @@ public abstract class parent_async_data extends parent_static
 	}
 
 	protected void __update(int id_, String field_, double val_) { __update(id_, field_, val_, __is_snapshot(id_)); }
-		
-	protected void update_db(int id_, String symbol_, String field_, double val_)
-	{
-		if (_is_db_quick) async_data.update_quick(_source, symbol_, async_data.get_col(_source, field_), Double.toString(val_));
-		else async_data.update(_source, symbol_, field_, val_);	
-		
-		to_screen_update(id_, symbol_, true);
-	}	
-	
-	protected void to_screen(int id_, String symbol_, String message_) { if (_logs_to_screen) logs.update_screen(id_, symbol_, message_); }
 
 	protected void __update(int id_, String field_, double val_, boolean is_snapshot_)
 	{
@@ -271,7 +262,17 @@ public abstract class parent_async_data extends parent_static
 				
 		to_screen_update(id_, symbol_, true);
 	}
+			
+	protected void update_db(int id_, String symbol_, String field_, double val_)
+	{
+		if (_is_db_quick) async_data.update_quick(_source, symbol_, async_data.get_col(_source, field_), Double.toString(val_));
+		else async_data.update(_source, symbol_, field_, val_);	
+		
+		to_screen_update(id_, symbol_, true);
+	}	
 	
+	protected void to_screen(int id_, String symbol_, String message_) { if (_logs_to_screen) logs.update_screen(id_, symbol_, (_id + misc.SEPARATOR_CONTENT + message_)); }
+
 	protected void __stop_all_internal()
 	{	
 		__lock();	
@@ -307,15 +308,17 @@ public abstract class parent_async_data extends parent_static
 		return true;
 	}
 
+	protected String normalise_symbol(String symbol_) { return common.check_symbol(symbol_); }
+	
 	private boolean __is_ok(int id_) { return (_enabled && _id_exists(id_, true)); }
 
 	private boolean __start(String symbol_, int data_type_, boolean is_snapshot_)
 	{
 		__lock();
 		
-		String symbol = common.check_symbol(symbol_);
+		String symbol = normalise_symbol(symbol_);
 		
-		if (_stop_all || !strings.is_ok(symbol) || _symbols.containsValue(symbol_)) 
+		if (_stop_all || _symbols.containsValue(symbol_)) 
 		{
 			__unlock();
 			

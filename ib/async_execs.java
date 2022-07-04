@@ -24,7 +24,7 @@ public abstract class async_execs extends parent_static
 	
 	public static boolean is_ok() { return _enabled; }
 	
-	public static void __wrapper_execDetails(int id_, Contract contract_, Execution execution_)
+	static void __exec_details(int id_, Contract contract_, Execution execution_) 
 	{
 		if (!_enabled) return;
 		
@@ -42,7 +42,7 @@ public abstract class async_execs extends parent_static
 		__unlock();
 	}
 
-	public static void __wrapper_commissionReport(CommissionReport report_)
+	public static void __commission_report(CommissionReport report_)
 	{
 		if (!_enabled) return;
 		

@@ -16,7 +16,6 @@ import accessory_ib._alls;
 import accessory_ib.errors;
 import accessory_ib.types;
 import external_ib.calls;
-import external_ib.wrapper;
 
 public abstract class sync extends parent_static 
 {
@@ -82,12 +81,7 @@ public abstract class sync extends parent_static
 
 		boolean is_order = strings.are_equal(_out, OUT_ORDERS);
 		
-		if (is_order || strings.are_equal(_out, OUT_STRINGS)) 
-		{
-			_out_strings.add(val_);
-			
-			if (is_order && (_order_id > WRONG_ORDER_ID)) sync_orders.update_status(_order_id, val_);
-		}
+		if (is_order || strings.are_equal(_out, OUT_STRINGS)) _out_strings.add(val_); 
 		else if (strings.is_number(val_)) is_ok = update(strings.to_number_decimal(val_));
 		else is_ok = false;
 		
@@ -159,7 +153,37 @@ public abstract class sync extends parent_static
 	public static void end() { if (_getting) _getting = false; }
 
 	public static boolean wait_orders(String type_) { return wait(DEFAULT_TIMEOUT, true, type_); }
+	
+	static void account_summary(int id_, String account_, String tag_, String value_, String currency_) 
+	{
+		if (!sync_basic.is_ok(id_, account_, tag_, currency_)) return;
 
+		update(value_);
+	}
+	
+	static void account_summary_end(int id_) 
+	{
+		if (!sync_basic.is_ok(id_)) return;
+
+		end();
+	}
+
+	static void next_valid_id(int id_) 
+	{
+		update(id_);
+
+		end();
+	}
+	
+	static void order_status(int order_id_, String status_ib_) 
+	{	
+		update(order_id_);
+		
+		update(status_ib_);
+	}
+	
+	static void open_order_end() { end(); }
+	
 	static boolean is_ok(int id_) { return (_getting && (_req_id == id_)); }
 
 	static boolean is_ok(int id_, String key_) 
@@ -168,7 +192,7 @@ public abstract class sync extends parent_static
 	
 		boolean is_ok = true;
 		
-		if (_get.equals(GET_FUNDS) && !strings.are_equal(key_, wrapper.KEY_FUNDS)) is_ok = false; 
+		if (_get.equals(GET_FUNDS) && !strings.are_equal(key_, common_wrapper.KEY_FUNDS)) is_ok = false; 
 		
 		return is_ok;
 	}

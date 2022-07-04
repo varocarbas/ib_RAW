@@ -3,19 +3,22 @@ package ib;
 import java.util.HashMap;
 
 import accessory_ib._alls;
-import db_ib.watchlist;
+import db_ib.market;
 
-public class async_watchlist extends parent_async_data 
-{
-	private static async_watchlist _instance = instantiate();
+public class async_data_market extends parent_async_data 
+{	
+	public static String _ID = "market";
 	
-	private async_watchlist() { }
+	public static async_data_market _instance = instantiate();
+	
+	private async_data_market() { }
  	
-	private static async_watchlist instantiate()
+	private static async_data_market instantiate()
 	{
-		async_watchlist instance = new async_watchlist();
+		async_data_market instance = new async_data_market();
 		
-		instance._source = watchlist.SOURCE;
+		instance._source = market.SOURCE;
+		instance._id = _ID;
 		
 		return instance;
 	}
@@ -52,7 +55,13 @@ public class async_watchlist extends parent_async_data
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();
 			
-		all.put(PRICE, watchlist.PRICE);
+		all.put(PRICE, market.PRICE);
+		all.put(OPEN, market.OPEN);
+		all.put(CLOSE, market.CLOSE);
+		all.put(LOW, market.LOW);
+		all.put(HIGH, market.HIGH);
+		all.put(ASK, market.ASK);
+		all.put(BID, market.BID);
 		
 		return all;
 	}
@@ -61,7 +70,10 @@ public class async_watchlist extends parent_async_data
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();
 		
-		all.put(VOLUME, watchlist.VOLUME);
+		all.put(VOLUME, market.VOLUME);
+		all.put(SIZE, market.SIZE);
+		all.put(ASK_SIZE, market.ASK_SIZE);
+		all.put(BID_SIZE, market.BID_SIZE);
 		
 		return all;
 	}
@@ -70,7 +82,7 @@ public class async_watchlist extends parent_async_data
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();			
 
-		all.put(HALTED, watchlist.HALTED);
+		all.put(HALTED, market.HALTED);
 		
 		return all;
 	}
@@ -80,10 +92,10 @@ public class async_watchlist extends parent_async_data
 	static void __tick_size(int id_, int field_ib_, int size_) { _instance.__tick_size_internal(id_, field_ib_, size_); }
 	
 	static void __tick_generic(int id_, int tick_, double value_) { _instance.__tick_generic_internal(id_, tick_, value_); }
-
-	protected HashMap<Integer, String> get_all_prices() { return _alls.ASYNC_WATCHLIST_PRICES; }
+		
+	protected HashMap<Integer, String> get_all_prices() { return _alls.ASYNC_MARKET_PRICES; }
 	
-	protected HashMap<Integer, String> get_all_sizes() { return _alls.ASYNC_WATCHLIST_SIZES; }
+	protected HashMap<Integer, String> get_all_sizes() { return _alls.ASYNC_MARKET_SIZES; }
 	
-	protected HashMap<Integer, String> get_all_generics() { return _alls.ASYNC_WATCHLIST_GENERICS; }
+	protected HashMap<Integer, String> get_all_generics() { return _alls.ASYNC_MARKET_GENERICS; }
 }

@@ -31,6 +31,13 @@ public abstract class orders
 	
 	public static order get_to_order(String symbol_) { return to_order(get(symbol_)); }
 
+	public static String get_symbol(int id_) 
+	{ 
+		HashMap<String, String> vals = get(id_);
+		
+		return (arrays.is_ok(vals) ? vals.get(SYMBOL) : strings.DEFAULT); 
+	}
+
 	public static HashMap<String, String> get(int id_) { return common.get_vals(SOURCE, get_where_order_id(id_)); }
 
 	public static HashMap<String, String> get(String symbol_) { return common.get_vals(SOURCE, get_where_symbol(symbol_)); }

@@ -37,7 +37,7 @@ public abstract class market
 		for (String symbol: symbols_)
 		{
 			if (async_data.exists(SOURCE, symbol)) continue;
-			if (!common.insert(SOURCE, async_data.get_default_vals(symbol))) return false;
+			if (!async_data.insert(SOURCE, symbol)) return false;
 			
 			logs.update_screen(symbol, true);
 		}

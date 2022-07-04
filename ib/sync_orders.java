@@ -16,27 +16,28 @@ import external_ib.orders;
 
 public abstract class sync_orders extends parent_static  
 {
-	public static final String CANCEL = types.SYNC_ORDERS_CANCEL;
-	public static final String PLACE = types.SYNC_ORDERS_PLACE;
-	public static final String PLACE_MARKET = types.SYNC_ORDERS_PLACE_MARKET;
-	public static final String PLACE_STOP = types.SYNC_ORDERS_PLACE_STOP;
-	public static final String PLACE_LIMIT = types.SYNC_ORDERS_PLACE_LIMIT;
-	public static final String PLACE_STOP_LIMIT = types.SYNC_ORDERS_PLACE_STOP_LIMIT;
-	public static final String UPDATE = types.SYNC_ORDERS_UPDATE;
-	public static final String UPDATE_START = types.SYNC_ORDERS_UPDATE_START;
-	public static final String UPDATE_START_VALUE = types.SYNC_ORDERS_UPDATE_START_VALUE;
-	public static final String UPDATE_START_MARKET = types.SYNC_ORDERS_UPDATE_START_MARKET;
-	public static final String UPDATE_START2 = types.SYNC_ORDERS_UPDATE_START2;
-	public static final String UPDATE_START2_VALUE = types.SYNC_ORDERS_UPDATE_START2_VALUE;
-	public static final String UPDATE_STOP = types.SYNC_ORDERS_UPDATE_STOP;
-	public static final String UPDATE_STOP_VALUE = types.SYNC_ORDERS_UPDATE_STOP_VALUE;
-	public static final String UPDATE_STOP_MARKET = types.SYNC_ORDERS_UPDATE_STOP_MARKET;
+	public static final String PLACE = types.ORDER_PLACE;
+	public static final String PLACE_MARKET = order.TYPE_PLACE_MARKET;
+	public static final String PLACE_STOP = order.TYPE_PLACE_STOP;
+	public static final String PLACE_LIMIT = order.TYPE_PLACE_LIMIT;
+	public static final String PLACE_STOP_LIMIT = order.TYPE_STOP_LIMIT;
 
-	public static final String STATUS = types.SYNC_ORDERS_STATUS;
-	public static final String STATUS_SUBMITTED = types.SYNC_ORDERS_STATUS_SUBMITTED;
-	public static final String STATUS_FILLED = types.SYNC_ORDERS_STATUS_FILLED;
-	public static final String STATUS_ACTIVE = types.SYNC_ORDERS_STATUS_ACTIVE;
-	public static final String STATUS_INACTIVE = types.SYNC_ORDERS_STATUS_INACTIVE;
+	public static final String STATUS = types.ORDER_STATUS;
+	public static final String STATUS_SUBMITTED = order.STATUS_SUBMITTED;
+	public static final String STATUS_FILLED = order.STATUS_FILLED;
+	public static final String STATUS_ACTIVE = order.STATUS_ACTIVE;
+	public static final String STATUS_INACTIVE = order.STATUS_INACTIVE;
+	
+	public static final String CANCEL = types.ORDER_CANCEL;
+	public static final String UPDATE = types.ORDER_UPDATE;
+	public static final String UPDATE_START = types.ORDER_UPDATE_START;
+	public static final String UPDATE_START_VALUE = types.ORDER_UPDATE_START_VALUE;
+	public static final String UPDATE_START_MARKET = types.ORDER_UPDATE_START_MARKET;
+	public static final String UPDATE_START2 = types.ORDER_UPDATE_START2;
+	public static final String UPDATE_START2_VALUE = types.ORDER_UPDATE_START2_VALUE;
+	public static final String UPDATE_STOP = types.ORDER_UPDATE_STOP;
+	public static final String UPDATE_STOP_VALUE = types.ORDER_UPDATE_STOP_VALUE;
+	public static final String UPDATE_STOP_MARKET = types.ORDER_UPDATE_STOP_MARKET;
 
 	public static final double WRONG_VALUE = order.WRONG_VALUE;
 	public static final int WRONG_ORDER_ID = order.WRONG_ORDER_ID;
@@ -128,28 +129,8 @@ public abstract class sync_orders extends parent_static
 		String status = check_status(status_);
 		if (!strings.is_ok(status)) return false;
 
-		return strings.are_equal(status, get_status(status_ib_, !status_is_generic(status)));
+		return strings.are_equal(status, order.get_status(status_ib_, !status_is_generic(status)));
 	}
-	
-	public static void update_status(int id_, String status_ib_) 
-	{ 
-		String status = get_status(status_ib_, true);
-		if (!strings.is_ok(status) || status.equals(STATUS_INACTIVE)) return;
-		
-		db_ib.orders.update_status(id_, status);	
-	}
-	
-	static String get_status(String status_ib_, boolean be_specific_)
-	{
-		String status = strings.DEFAULT;
-		if (!strings.is_ok(status_ib_)) return status;
-
-		if (status_ib_.equals(orders.STATUS_SUBMITTED) || status_ib_.equals(orders.STATUS_PRESUBMITTED)) status = (be_specific_ ? STATUS_SUBMITTED : STATUS_ACTIVE);
-		else if (status_ib_.equals(orders.STATUS_FILLED)) status = (be_specific_ ? STATUS_FILLED : STATUS_ACTIVE);
-		else if (!status_ib_.equals(orders.STATUS_PENDING_SUBMIT) && !status_ib_.equals(orders.STATUS_PENDING_CANCEL) && !status_ib_.equals(orders.STATUS_API_CANCELLED)) status = STATUS_INACTIVE;
-		
-		return status;
-	}	
 	
 	public static String get_type(String input_, boolean is_status_) { return db_ib.orders.status_type_db_to_order(input_, is_status_); }
 

@@ -14,14 +14,20 @@ public class order extends parent
 	public static final String CONFIG_TIF = types.CONFIG_ORDER_TIF;
 	public static final String CONFIG_QUANTITIES_INT = types.CONFIG_ORDER_QUANTITIES_INT;
 
+	public static final String STATUS = types.ORDER_STATUS;
+	public static final String STATUS_SUBMITTED = types.ORDER_STATUS_SUBMITTED;
+	public static final String STATUS_FILLED = types.ORDER_STATUS_FILLED;
+	public static final String STATUS_ACTIVE = types.ORDER_STATUS_ACTIVE;
+	public static final String STATUS_INACTIVE = types.ORDER_STATUS_INACTIVE;
+	
 	public static final String TYPE_MARKET = orders.TYPE_MARKET;
 	public static final String TYPE_STOP = orders.TYPE_STOP;
 	public static final String TYPE_LIMIT = orders.TYPE_LIMIT;
 	public static final String TYPE_STOP_LIMIT = orders.TYPE_STOP_LIMIT;
-	public static final String TYPE_PLACE_MARKET = sync_orders.PLACE_MARKET;
-	public static final String TYPE_PLACE_STOP = sync_orders.PLACE_STOP;
-	public static final String TYPE_PLACE_LIMIT = sync_orders.PLACE_LIMIT;
-	public static final String TYPE_PLACE_STOP_LIMIT = sync_orders.PLACE_STOP_LIMIT;
+	public static final String TYPE_PLACE_MARKET = types.ORDER_PLACE_MARKET;
+	public static final String TYPE_PLACE_STOP = types.ORDER_PLACE_STOP;
+	public static final String TYPE_PLACE_LIMIT = types.ORDER_PLACE_LIMIT;
+	public static final String TYPE_PLACE_STOP_LIMIT = types.ORDER_PLACE_STOP_LIMIT;
 	
 	public static final double WRONG_VALUE = 0.0;
 	public static final int WRONG_ORDER_ID = -1;
@@ -73,6 +79,20 @@ public class order extends parent
 		
 		return output;
 	}
+	
+	public static String get_status(String status_ib_, boolean be_specific_)
+	{
+		String status = strings.DEFAULT;
+		if (!strings.is_ok(status_ib_)) return status;
+
+		if (status_ib_.equals(orders.STATUS_IB_SUBMITTED) || status_ib_.equals(orders.STATUS_IB_PRESUBMITTED)) status = (be_specific_ ? STATUS_SUBMITTED : STATUS_ACTIVE);
+		else if (status_ib_.equals(orders.STATUS_IB_FILLED)) status = (be_specific_ ? STATUS_FILLED : STATUS_ACTIVE);
+		else if (!status_ib_.equals(orders.STATUS_IB_PENDING_SUBMIT) && !status_ib_.equals(orders.STATUS_IB_PENDING_CANCEL) && !status_ib_.equals(orders.STATUS_IB_API_CANCELLED)) status = STATUS_INACTIVE;
+		
+		return status;
+	}	
+
+	public static String get_symbol(int id_) { return db_ib.orders.get_symbol(id_); }
 	
 	public order(order input_) { instantiate(input_); }
 	

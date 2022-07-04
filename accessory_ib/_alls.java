@@ -3,9 +3,9 @@ package accessory_ib;
 import java.util.HashMap;
 
 import accessory.parent_ini_first;
-import ib.async_market;
-import ib.async_trades;
-import ib.async_watchlist;
+import ib.async_data_market;
+import ib.async_data_trades;
+import ib.async_data_watchlist;
 import ib.sync;
 
 public class _alls extends parent_ini_first
@@ -51,16 +51,16 @@ public class _alls extends parent_ini_first
 		
 		SYNC_GET_OUTS = sync.populate_all_get_outs();
 		
-		ASYNC_MARKET_PRICES = async_market.populate_all_prices();
-		ASYNC_MARKET_SIZES = async_market.populate_all_sizes();
-		ASYNC_MARKET_GENERICS = async_market.populate_all_generics();
+		ASYNC_MARKET_PRICES = async_data_market.populate_all_prices();
+		ASYNC_MARKET_SIZES = async_data_market.populate_all_sizes();
+		ASYNC_MARKET_GENERICS = async_data_market.populate_all_generics();
 		
-		ASYNC_TRADES_PRICES = async_trades.populate_all_prices();
-		ASYNC_TRADES_GENERICS = async_trades.populate_all_generics();
+		ASYNC_TRADES_PRICES = async_data_trades.populate_all_prices();
+		ASYNC_TRADES_GENERICS = async_data_trades.populate_all_generics();
 		
-		ASYNC_WATCHLIST_PRICES = async_watchlist.populate_all_prices();
-		ASYNC_WATCHLIST_SIZES = async_watchlist.populate_all_sizes();
-		ASYNC_WATCHLIST_GENERICS = async_watchlist.populate_all_generics();
+		ASYNC_WATCHLIST_PRICES = async_data_watchlist.populate_all_prices();
+		ASYNC_WATCHLIST_SIZES = async_data_watchlist.populate_all_sizes();
+		ASYNC_WATCHLIST_GENERICS = async_data_watchlist.populate_all_generics();
 		
 		EXTERNAL_CONTRACTS_SECURITIES = external_ib.contracts.populate_all_securities();
 		
