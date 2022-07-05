@@ -74,46 +74,6 @@ public abstract class sync extends parent_static
 	public static boolean order_is_filled(int id_) { return order_is_common(id_, sync_orders.STATUS_FILLED); }
 
 	public static boolean order_is_inactive(int id_) { return order_is_common(id_, sync_orders.STATUS_INACTIVE); }
-	
-	public static boolean update(String val_) 
-	{ 
-		boolean is_ok = true;
-
-		boolean is_order = strings.are_equal(_out, OUT_ORDERS);
-		
-		if (is_order || strings.are_equal(_out, OUT_STRINGS)) _out_strings.add(val_); 
-		else if (strings.is_number(val_)) is_ok = update(strings.to_number_decimal(val_));
-		else is_ok = false;
-		
-		return is_ok;
-	}
-	
-	public static boolean update(double val_)
-	{
-		if (!strings.are_equal(_out, OUT_DECIMAL)) return false;
-
-		_out_decimal = val_;
-
-		return true;
-	}
-
-	public static boolean update(int val_)
-	{
-		boolean is_ok = true;
-
-		if (strings.are_equal(_out, OUT_ORDERS) || strings.are_equal(_out, OUT_INTS)) _out_ints.add(val_);
-		else if (strings.are_equal(_out, OUT_INT)) _out_int = val_;
-		else is_ok = false;
-
-		return is_ok;
-	}
-	
-	public static boolean update_error_triggered(boolean triggered_)
-	{ 
-		_error_triggered = triggered_;
-
-		return true;
-	}
 
 	public static int get_req_id() { return _req_id; }
 
@@ -175,13 +135,6 @@ public abstract class sync extends parent_static
 		end();
 	}
 	
-	static void order_status(int order_id_, String status_ib_) 
-	{	
-		update(order_id_);
-		
-		update(status_ib_);
-	}
-	
 	static void open_order_end() { end(); }
 	
 	static boolean is_ok(int id_) { return (_getting && (_req_id == id_)); }
@@ -203,6 +156,62 @@ public abstract class sync extends parent_static
 
 	static boolean update_order(int id_, Contract contract_, Order order_) { return execute_order(ORDER_UPDATE, id_, contract_, order_); }
 	
+	static boolean update(String val_) 
+	{ 
+		boolean is_ok = true;
+
+		if (strings.are_equal(_out, OUT_STRINGS)) _out_strings.add(val_); 
+		else if (strings.is_number(val_)) is_ok = update(strings.to_number_decimal(val_));
+		else is_ok = false;
+		
+		return is_ok;
+	}
+	
+	static boolean update(double val_)
+	{
+		if (!strings.are_equal(_out, OUT_DECIMAL)) return false;
+
+		_out_decimal = val_;
+
+		return true;
+	}
+
+	static boolean update(int val_)
+	{
+		if (strings.are_equal(_out, OUT_INTS)) _out_ints.add(val_);
+		else if (strings.are_equal(_out, OUT_INT)) _out_int = val_;
+		else return false;
+
+		return true;
+	}
+	
+	static boolean update_orders(String val_) 
+	{ 
+		if (!strings.are_equal(_out, OUT_ORDERS)) return false;
+
+		_out_strings.add(val_); 
+		
+		return true;
+	}
+
+	static boolean update_orders(int val_)
+	{
+		if (!strings.are_equal(_out, OUT_ORDERS)) return false;
+
+		_out_ints.add(val_);
+
+		return true;
+	}
+	
+	static boolean update_error_triggered(boolean triggered_)
+	{ 
+		if (!is_ok()) return false;
+		
+		_error_triggered = triggered_;
+
+		return true;
+	}
+
 	private static boolean order_is_common(int id_, String target_)
 	{
 		HashMap<Integer, String> orders = new HashMap<Integer, String>(get_orders());

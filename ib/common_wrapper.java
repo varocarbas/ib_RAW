@@ -54,14 +54,14 @@ public abstract class common_wrapper
 	
 	public static void __error(int id_, int code_, String message_) 
 	{
-		if (sync.is_ok()) sync.update_error_triggered(true);
+		sync.update_error_triggered(true);
 		
 		errors.__wrapper_error(id_, code_, message_); 
 	}
 	
 	public static void orderStatus(int order_id_, String status_ib_) 
 	{ 
-		if (sync.is_ok()) sync.order_status(order_id_, status_ib_); 
+		sync_orders.order_status(order_id_, status_ib_); 
 		
 		async_orders.order_status(order_id_, status_ib_);
 	}

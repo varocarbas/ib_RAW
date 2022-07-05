@@ -26,8 +26,6 @@ public class async_data_watchlist extends parent_async_data
 		return instance;
 	}
 
-	public static void enable() { _instance.enable_internal(); }
-
 	public static void update_nonstop_pause(int nonstop_pause_) { _instance.update_nonstop_pause_internal(nonstop_pause_); }
 
 	public static void update_logs_to_screen(boolean logs_to_screen_) { _instance.update_logs_to_screen_internal(logs_to_screen_); }
@@ -38,13 +36,13 @@ public class async_data_watchlist extends parent_async_data
 	
 	public static void __stop_all() { _instance.__stop_all_internal(); }
 	
-	public static boolean __start_snapshot(String symbol_) { return _instance.__start_snapshot_internal(symbol_, DEFAULT_DATA_TYPE); }
+	public static int __start_snapshot(String symbol_) { return _instance.__start_snapshot_internal(symbol_, DEFAULT_DATA_TYPE); }
 
-	public static boolean __start_snapshot(String symbol_, int data_type_) { return _instance.__start_snapshot_internal(symbol_, data_type_); }
+	public static int __start_snapshot(String symbol_, int data_type_) { return _instance.__start_snapshot_internal(symbol_, data_type_); }
 
-	public static boolean __start_stream(String symbol_) { return _instance.__start_stream_internal(symbol_, DEFAULT_DATA_TYPE); }
+	public static int __start_stream(String symbol_) { return _instance.__start_stream_internal(symbol_, DEFAULT_DATA_TYPE); }
 
-	public static boolean __start_stream(String symbol_, int data_type_) { return _instance.__start_stream_internal(symbol_, data_type_); }
+	public static int __start_stream(String symbol_, int data_type_) { return _instance.__start_stream_internal(symbol_, data_type_); }
 
 	public static boolean __stop_snapshot(String symbol_) { return _instance.__stop_snapshot_internal(symbol_); }
 
@@ -60,7 +58,7 @@ public class async_data_watchlist extends parent_async_data
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();
 			
-		all.put(PRICE, watchlist.PRICE);
+		all.put(PRICE_IB, watchlist.PRICE);
 		
 		return all;
 	}
@@ -69,7 +67,7 @@ public class async_data_watchlist extends parent_async_data
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();
 		
-		all.put(VOLUME, watchlist.VOLUME);
+		all.put(VOLUME_IB, watchlist.VOLUME);
 		
 		return all;
 	}
@@ -78,7 +76,7 @@ public class async_data_watchlist extends parent_async_data
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();			
 
-		all.put(HALTED, watchlist.HALTED);
+		all.put(HALTED_IB, watchlist.HALTED);
 		
 		return all;
 	}

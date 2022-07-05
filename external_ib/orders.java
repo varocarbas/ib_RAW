@@ -48,9 +48,6 @@ public abstract class orders
 	public static final String STATUS_IB_INACTIVE = "Inactive"; //Indicates that the order was received by the system but is no longer active because it was rejected or canceled.
 	//---
 
-	public static final String DEFAULT_TIF = orders.TIF_GTC; 
-	public static final boolean DEFAULT_QUANTITIES_INT = true;
-
 	public static Order get_order_new(order order_, boolean is_main_) { return get_order(order_, is_main_, null, sync_orders.WRONG_VALUE, false); }
 	
 	public static Order get_order_update(order order_, String update_type_, double update_val_, boolean is_main_) { return get_order(order_, is_main_, update_type_, update_val_, true); }

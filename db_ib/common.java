@@ -1,5 +1,6 @@
 package db_ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
@@ -135,6 +136,19 @@ public abstract class common
 	public static String get_where_symbol_quick(String source_, String symbol_) { return get_where(source_, FIELD_SYMBOL, symbol_, true); }
 	
 	public static String get_where(String source_, String field_, String val_, boolean is_quick_) { return get_where_internal(source_, field_, val_, is_quick_, true); }
+
+	public static String get_where_order_id(String source_, int id_) { return get_where_order_id(source_, new Integer[] { id_ }, true); }
+
+	public static String get_where_order_id(String source_, Integer[] ids_, boolean equal_) 
+	{ 
+		ArrayList<db_where> wheres = new ArrayList<db_where>();
+		
+		if (source_includes_user(source_)) wheres.add(new db_where(source_, FIELD_USER, db_where.OPERAND_EQUAL, ib.basic.get_user(), db_where.LINK_AND));
+		
+		for (int id: ids_) { wheres.add(new db_where(source_, FIELD_ORDER_ID_MAIN, (equal_ ? db_where.OPERAND_EQUAL : db_where.OPERAND_NOT_EQUAL), id, db_where.LINK_AND)); }
+		
+		return db_where.to_string(wheres); 
+	}
 	
 	public static boolean source_includes_user(String source_) { return arrays.value_exists(get_all_sources_user(), source_); }
 

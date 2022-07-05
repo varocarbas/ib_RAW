@@ -24,4 +24,11 @@ public abstract class trades
 		
 		return common.insert(SOURCE, vals);
 	}
+	
+	public static boolean delete(int order_id_)
+	{
+		accessory.db.delete(SOURCE, common.get_where_order_id(SOURCE, order_id_));
+		
+		return accessory.db.is_ok(SOURCE);
+	}
 }

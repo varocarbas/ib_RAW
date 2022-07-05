@@ -4,9 +4,9 @@ import java.util.HashMap;
 
 import accessory.parent_ini_config;
 import external_ib.contracts;
-import external_ib.orders;
 import ib.basic;
 import ib.conn;
+import ib.order;
 import ib.parent_async_data;
 
 public class _ini_config extends parent_ini_config 
@@ -49,12 +49,12 @@ public class _ini_config extends parent_ini_config
 
 	private boolean load_config_order()
 	{
-		String type = types.CONFIG_ORDER;
+		String type = types.CONFIG_ORDERS;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
-		vals.put(types.CONFIG_ORDER_TIF, orders.DEFAULT_TIF);
-		vals.put(types.CONFIG_ORDER_QUANTITIES_INT, orders.DEFAULT_QUANTITIES_INT);
+		vals.put(order.CONFIG_TIF, order.DEFAULT_TIF);
+		vals.put(order.CONFIG_QUANTITIES_INT, order.DEFAULT_QUANTITIES_INT);
 
 		return populate(type, null, vals);
 	}

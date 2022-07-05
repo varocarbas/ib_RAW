@@ -13,6 +13,8 @@ public class async_data_trades extends parent_async_data
 	public static final int DATA = external_ib.data.DATA_LIVE;
 	public static final String TARGET_STATUS = order.STATUS_SUBMITTED;
 	
+	private volatile HashMap<Integer, Integer> _orders_ids = new HashMap<Integer, Integer>();
+	
 	public static async_data_trades _instance = instantiate();
 	
 	private async_data_trades() { }
@@ -27,8 +29,6 @@ public class async_data_trades extends parent_async_data
 		return instance;
 	}
 
-	public static void enable() { _instance.enable_internal(); }
-
 	public static void update_logs_to_screen(boolean logs_to_screen_) { _instance.update_logs_to_screen_internal(logs_to_screen_); }
 
 	public static boolean is_ok(String status_ib_) { return (_instance._enabled && order.get_status(status_ib_, true).equals(TARGET_STATUS)); }
@@ -37,14 +37,14 @@ public class async_data_trades extends parent_async_data
 	{ 
 		if (!is_ok(status_ib_)) return;
 		
-		_instance.__start(order_id_);
+		__start(order_id_);
 	}
 
 	public static HashMap<Integer, String> populate_all_prices()
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();
 			
-		all.put(PRICE, trades.PRICE);
+		all.put(PRICE_IB, trades.PRICE);
 		
 		return all;
 	}
@@ -53,10 +53,14 @@ public class async_data_trades extends parent_async_data
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();			
 
-		all.put(HALTED, trades.HALTED);
+		all.put(HALTED_IB, trades.HALTED);
 		
 		return all;
 	}
+
+	static void __start(int order_id_) { _instance.__add(order_id_); }
+
+	static void __stop(int order_id_) { _instance.__remove(order_id_); }
 	
 	static void __tick_price(int id_, int field_ib_, double price_) { _instance.__tick_price_internal(id_, field_ib_, price_); }
 	
@@ -74,13 +78,56 @@ public class async_data_trades extends parent_async_data
 
 	private String get_symbol(int order_id_) { return order.get_symbol(order_id_); }
 	
-	private void __start(int order_id_) 
+	private void __add(int order_id_) 
 	{
-		String symbol = get_symbol(order_id_);
-		if (!strings.is_ok(symbol)) return;
+		__lock();
 		
+		if (_orders_ids.containsKey(order_id_))
+		{
+			__unlock();
+			
+			return;
+		}
+		
+		String symbol = get_symbol(order_id_);
+		if (!strings.is_ok(symbol))
+		{
+			__unlock();
+			
+			return;
+		}
+		
+		int id = _start_snapshot_internal(symbol, DATA, false);
+		if (id == WRONG_ID)
+		{
+			__unlock();
+			
+			return;
+		}
+		
+		_orders_ids.put(order_id_, id);
 		trades.insert(order_id_, symbol);
 		
-		__start_snapshot_internal(symbol, DATA); 
+		__unlock();
+	}
+	
+	private void __remove(int order_id_) 
+	{
+		__lock();
+		
+		if (!_orders_ids.containsKey(order_id_))
+		{
+			__unlock();
+			
+			return;
+		}
+
+		__stop_snapshot(_orders_ids.get(order_id_));
+		
+		_orders_ids.remove(order_id_);
+		
+		trades.delete(order_id_);
+		
+		__unlock();
 	}
 }

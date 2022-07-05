@@ -1,10 +1,8 @@
 package db_ib;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
-import accessory.db_where;
 import accessory.strings;
 import ib.order;
 import ib.sync_orders;
@@ -38,7 +36,7 @@ public abstract class orders
 		return (arrays.is_ok(vals) ? vals.get(SYMBOL) : strings.DEFAULT); 
 	}
 
-	public static HashMap<String, String> get(int id_) { return common.get_vals(SOURCE, get_where_order_id(id_)); }
+	public static HashMap<String, String> get(int id_) { return common.get_vals(SOURCE, common.get_where_order_id(SOURCE, id_)); }
 
 	public static HashMap<String, String> get(String symbol_) { return common.get_vals(SOURCE, get_where_symbol(symbol_)); }
 
@@ -50,7 +48,7 @@ public abstract class orders
 		
 		HashMap<String, Object> vals = to_hashmap(order_);
 		
-		return common.update(SOURCE, vals, get_where_order_id((int)vals.get(ORDER_ID_MAIN)));
+		return common.update(SOURCE, vals, common.get_where_order_id(SOURCE, (int)vals.get(ORDER_ID_MAIN)));
 	}
 
 	public static boolean update_status(int id_, String status_) 
@@ -61,14 +59,14 @@ public abstract class orders
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		vals.put(STATUS, status);
 		
-		return common.update(SOURCE, vals, get_where_order_id(id_));
+		return common.update(SOURCE, vals, common.get_where_order_id(SOURCE, id_));
 	}
 	
 	public static boolean delete() { return common.delete(SOURCE, get_where_user()); }
 	
-	public static boolean delete(int id_) { return common.delete(SOURCE, get_where_order_id(id_)); }
+	public static boolean delete(int id_) { return common.delete(SOURCE, common.get_where_order_id(SOURCE, id_)); }
 	
-	public static boolean delete_except(Integer[] ids_) { return (arrays.is_ok(ids_) ? common.delete(SOURCE, get_where_order_id(ids_, false)) : delete()); }
+	public static boolean delete_except(Integer[] ids_) { return (arrays.is_ok(ids_) ? common.delete(SOURCE, common.get_where_order_id(SOURCE, ids_, false)) : delete()); }
 
 	public static order to_order(HashMap<String, String> db_)
 	{
@@ -115,17 +113,4 @@ public abstract class orders
 	private static String get_where_user() { return common.get_where_user(SOURCE); }
 
 	private static String get_where_symbol(String symbol_) { return common.get_where_symbol(SOURCE, symbol_); }
-
-	private static String get_where_order_id(int id_) { return get_where_order_id(new Integer[] { id_ }, true); }
-
-	private static String get_where_order_id(Integer[] ids_, boolean equal_) 
-	{ 
-		ArrayList<db_where> wheres = new ArrayList<db_where>();
-		
-		wheres.add(new db_where(SOURCE, USER, db_where.OPERAND_EQUAL, ib.basic.get_user(), db_where.LINK_AND));
-		
-		for (int id: ids_) { wheres.add(new db_where(SOURCE, ORDER_ID_MAIN, (equal_ ? db_where.OPERAND_EQUAL : db_where.OPERAND_NOT_EQUAL), id, db_where.LINK_AND)); }
-		
-		return db_where.to_string(wheres); 
-	}
 }
