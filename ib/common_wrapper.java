@@ -64,6 +64,8 @@ public abstract class common_wrapper
 		sync_orders.order_status(order_id_, status_ib_); 
 		
 		async_orders.order_status(order_id_, status_ib_);
+		
+		async_data_trades.__order_status(order_id_, status_ib_);
 	}
 
 	public static void openOrderEnd() { sync.open_order_end(); }

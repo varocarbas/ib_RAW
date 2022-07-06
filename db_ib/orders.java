@@ -25,18 +25,20 @@ public abstract class orders
 	public static final String TYPE_SEC = common.FIELD_TYPE_SEC;
 	public static final String QUANTITY = common.FIELD_QUANTITY;
 	
-	public static order get_to_order(int id_) { return to_order(get(id_)); }
+	public static boolean exists(int id_main_) { return common.exists(SOURCE, common.get_where_order_id(SOURCE, id_main_)); }
+
+	public static order get_to_order(int id_main_) { return to_order(get(id_main_)); }
 	
 	public static order get_to_order(String symbol_) { return to_order(get(symbol_)); }
 
-	public static String get_symbol(int id_) 
+	public static String get_symbol(int id_main_) 
 	{ 
-		HashMap<String, String> vals = get(id_);
+		HashMap<String, String> vals = get(id_main_);
 		
 		return (arrays.is_ok(vals) ? vals.get(SYMBOL) : strings.DEFAULT); 
 	}
 
-	public static HashMap<String, String> get(int id_) { return common.get_vals(SOURCE, common.get_where_order_id(SOURCE, id_)); }
+	public static HashMap<String, String> get(int id_main_) { return common.get_vals(SOURCE, common.get_where_order_id(SOURCE, id_main_)); }
 
 	public static HashMap<String, String> get(String symbol_) { return common.get_vals(SOURCE, get_where_symbol(symbol_)); }
 
@@ -51,7 +53,7 @@ public abstract class orders
 		return common.update(SOURCE, vals, common.get_where_order_id(SOURCE, (int)vals.get(ORDER_ID_MAIN)));
 	}
 
-	public static boolean update_status(int id_, String status_) 
+	public static boolean update_status(int id_main_, String status_) 
 	{ 
 		String status = status_type_order_to_db(status_, true);
 		if (!strings.is_ok(status)) return false;
@@ -59,14 +61,14 @@ public abstract class orders
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		vals.put(STATUS, status);
 		
-		return common.update(SOURCE, vals, common.get_where_order_id(SOURCE, id_));
+		return common.update(SOURCE, vals, common.get_where_order_id(SOURCE, id_main_));
 	}
 	
 	public static boolean delete() { return common.delete(SOURCE, get_where_user()); }
 	
-	public static boolean delete(int id_) { return common.delete(SOURCE, common.get_where_order_id(SOURCE, id_)); }
+	public static boolean delete(int id_main_) { return common.delete(SOURCE, common.get_where_order_id(SOURCE, id_main_)); }
 	
-	public static boolean delete_except(Integer[] ids_) { return (arrays.is_ok(ids_) ? common.delete(SOURCE, common.get_where_order_id(SOURCE, ids_, false)) : delete()); }
+	public static boolean delete_except(Integer[] ids_main_) { return (arrays.is_ok(ids_main_) ? common.delete(SOURCE, common.get_where_order_id(SOURCE, ids_main_, false)) : delete()); }
 
 	public static order to_order(HashMap<String, String> db_)
 	{

@@ -16,6 +16,8 @@ public abstract class trades
 	public static final String HALTED = common.FIELD_HALTED;
 	public static final String UNREALISED = common.FIELD_UNREALISED;	
 
+	public static boolean order_id_is_ok(int order_id_) { return orders.exists(order_id_); }
+	
 	public static boolean insert(int order_id_, String symbol) 
 	{ 
 		HashMap<String, Object> vals = new HashMap<String, Object>();

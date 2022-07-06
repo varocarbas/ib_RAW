@@ -26,33 +26,13 @@ public class async_data_watchlist extends parent_async_data
 		return instance;
 	}
 
-	public static void update_nonstop_pause(int nonstop_pause_) { _instance.update_nonstop_pause_internal(nonstop_pause_); }
-
 	public static void update_logs_to_screen(boolean logs_to_screen_) { _instance.update_logs_to_screen_internal(logs_to_screen_); }
-
-	public static void restart_after_stop_all(int pause_secs_) { _instance.restart_after_stop_all_internal(pause_secs_); }
 	
 	public void __add(String symbol_) { __add_internal(symbol_); }
 	
 	public static void __stop_all() { _instance.__stop_all_internal(); }
 	
-	public static int __start_snapshot(String symbol_) { return _instance.__start_snapshot_internal(symbol_, DEFAULT_DATA_TYPE); }
-
-	public static int __start_snapshot(String symbol_, int data_type_) { return _instance.__start_snapshot_internal(symbol_, data_type_); }
-
-	public static int __start_stream(String symbol_) { return _instance.__start_stream_internal(symbol_, DEFAULT_DATA_TYPE); }
-
-	public static int __start_stream(String symbol_, int data_type_) { return _instance.__start_stream_internal(symbol_, data_type_); }
-
-	public static boolean __stop_snapshot(String symbol_) { return _instance.__stop_snapshot_internal(symbol_); }
-
 	public static boolean __stop_snapshot(int id_) { return _instance.__stop_snapshot_internal(id_); }
-	
-	public static boolean __stop_stream(String symbol_) { return _instance.__stop_stream_internal(symbol_); }
-
-	public static boolean __stop_stream(int id_) { return _instance.__stop_stream_internal(id_); }
-	
-	public static String __get_symbol(int id_) { return _instance._get_symbol(id_, true); }
 
 	public static HashMap<Integer, String> populate_all_prices()
 	{		
@@ -95,11 +75,18 @@ public class async_data_watchlist extends parent_async_data
 	
 	private void __add_internal(String symbol_) 
 	{
-		String symbol = normalise_symbol(symbol_);
-		if (!strings.is_ok(symbol)) return;
+		__lock();
 		
-		__start(symbol_); 
-	}
+		String symbol = normalise_symbol(symbol_);
+		if (!strings.is_ok(symbol)) 
+		{
+			__unlock();
+			
+			return;
+		}
 	
-	private void __start(String symbol_) { __start_snapshot_internal(symbol_, DATA); }
+		_start_snapshot_internal(symbol_, DATA, false);
+		
+		__unlock();
+	}
 }

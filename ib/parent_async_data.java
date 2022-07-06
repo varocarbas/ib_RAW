@@ -107,30 +107,57 @@ public abstract class parent_async_data extends parent_static
 	
 	protected void __tick_price_internal(int id_, int field_ib_, double price_)
 	{
-		if (!__is_ok(id_)) return;
+		__lock();
+		
+		if (!_is_ok(id_, false)) 
+		{
+			__unlock();
+		
+			return;
+		}
 		
 		String field = get_field(get_all_prices(), field_ib_);	
-		if (field != null) __update(id_, field, price_);
+		if (field != null) update(id_, field, price_);
+		
+		__unlock();
 	}
 	
 	protected void __tick_size_internal(int id_, int field_ib_, int size_)
 	{
-		if (!__is_ok(id_)) return;
+		__lock();
 		
-		boolean is_snapshot = __is_snapshot(id_);
+		if (!_is_ok(id_, false)) 
+		{
+			__unlock();
+			
+			return;
+		}
+		
+		boolean is_snapshot = _is_snapshot(id_, false);
 		
 		String field = get_field(get_all_sizes(), field_ib_);
-		if (field != null) __update(id_, field, size_, is_snapshot);
+		if (field != null) update(id_, field, size_, is_snapshot);
 	
-		if (is_snapshot && field_ib_ == VOLUME_IB && snapshot_is_quick()) __stop_snapshot_internal(id_); 
+		if (is_snapshot && field_ib_ == VOLUME_IB && snapshot_is_quick()) _stop_snapshot_internal(id_, false);
+		
+		__unlock();
 	}
 	
 	protected void __tick_generic_internal(int id_, int tick_, double value_)
 	{
-		if (!__is_ok(id_)) return;
+		__lock();
+		
+		if (!_is_ok(id_, false)) 
+		{
+			__unlock();
+			
+			return;
+		}
 		
 		String field = get_field(get_all_generics(), tick_);
-		if (field != null) __update(id_, field, value_);	
+		if (field != null) update(id_, field, value_);
+		
+		__unlock();
 	}
 
 	protected int __start_snapshot_internal(String symbol_) { return __start_snapshot_internal(symbol_, DEFAULT_DATA_TYPE); }
@@ -141,7 +168,9 @@ public abstract class parent_async_data extends parent_static
 
 	protected int __start_stream_internal(String symbol_) { return __start_stream_internal(symbol_, DEFAULT_DATA_TYPE); }
 
-	protected int __start_stream_internal(String symbol_, int data_type_) { return __start(symbol_, data_type_, false); }
+	protected int __start_stream_internal(String symbol_, int data_type_) { return _start_stream_internal(symbol_, data_type_, false); }
+
+	protected int _start_stream_internal(String symbol_, int data_type_, boolean lock_) { return _start(symbol_, data_type_, false, lock_); }
 
 	protected boolean __stop_snapshot_internal(int id_) { return _stop_snapshot_internal(id_, true); }
 
@@ -151,7 +180,7 @@ public abstract class parent_async_data extends parent_static
 	{	
 		if (lock_) __lock();
 		
-		if (!_is_ok(id_, false)) 
+		if (!_id_exists(id_, false)) 
 		{
 			if (lock_) __unlock();
 			
@@ -193,7 +222,7 @@ public abstract class parent_async_data extends parent_static
 	{
 		if (lock_) __lock();
 		
-		if (!_is_ok(id_, false)) 
+		if (!_id_exists(id_, false))
 		{
 			if (lock_) __unlock();
 			
@@ -242,25 +271,25 @@ public abstract class parent_async_data extends parent_static
 		return output;
 	}
 	
-	protected boolean __is_snapshot(int id_) 
+	protected boolean _is_snapshot(int id_, boolean lock_) 
 	{
-		__lock();
+		if (lock_) __lock();
 		
 		boolean output = (_ids.containsKey(id_) ? _ids.get(id_).equals(TYPE_SNAPSHOT) : false);	
 		
-		__unlock();
+		if (lock_) __unlock();
 		
 		return output;
 	}
 
-	protected void __update(int id_, String field_, double val_) { __update(id_, field_, val_, __is_snapshot(id_)); }
+	protected void update(int id_, String field_, double val_) { update(id_, field_, val_, _is_snapshot(id_, false)); }
 
-	protected void __update(int id_, String field_, double val_, boolean is_snapshot_)
+	protected void update(int id_, String field_, double val_, boolean is_snapshot_)
 	{
 		if (!strings.is_ok(field_) || val_ <= 0.0) return;  
 		
-		if (is_snapshot_) __update_vals(id_, field_, val_);
-		else update_db(id_, _get_symbol(id_, true), field_, val_);
+		if (is_snapshot_) update_vals(id_, field_, val_);
+		else update_db(id_, _get_symbol(id_, false), field_, val_);
 	}
 	
 	protected void update_db(int id_, String symbol_)
@@ -291,21 +320,32 @@ public abstract class parent_async_data extends parent_static
 	{	
 		__lock();	
 	
+		misc.pause_secs(5);
+		
 		_stop_all = true;
 		
 		HashMap<Integer, String> ids = new HashMap<Integer, String>(_ids);
 		
-		__unlock();
-		
-		if (ids.size() == 0) return;
-		
+		if (ids.size() == 0) 
+		{
+			_stop_all = false;
+			
+			__unlock();
+			
+			return;
+		}
+				
 		for (Entry<Integer, String> item: ids.entrySet())
 		{
 			int id = item.getKey();
 			
-			if (__is_snapshot(id)) __stop_snapshot_internal(id);
-			else __stop_stream_internal(id);	
+			misc.pause_secs(1);
+			
+			if (_is_snapshot(id, false)) _stop_snapshot_internal(id, false);
+			else _stop_stream_internal(id, false);	
 		}
+		
+		__unlock();
 	}
 	
 	protected boolean remove(int id_) 
@@ -335,17 +375,14 @@ public abstract class parent_async_data extends parent_static
 	}
 
 	protected String normalise_symbol(String symbol_) { return common.check_symbol(symbol_); }
-	
-	private boolean __is_ok(int id_) { return _is_ok(id_, true); }
 
 	private boolean _is_ok(int id_, boolean lock_) { return (_enabled && _id_exists(id_, lock_)); }
 
-	private int __start(String symbol_, int data_type_, boolean is_snapshot_) { return _start(symbol_, data_type_, is_snapshot_, true); }
-
 	private int _start(String symbol_, int data_type_, boolean is_snapshot_, boolean lock_)
 	{
-		int id = WRONG_ID;
 		if (lock_) __lock();
+	
+		int id = WRONG_ID;
 		
 		String symbol = normalise_symbol(symbol_);
 		
@@ -439,19 +476,15 @@ public abstract class parent_async_data extends parent_static
 		return output;
 	}
 
-	private void __update_vals(int id_, String field_, double val_)
-	{
-		__lock();
-		
+	private void update_vals(int id_, String field_, double val_)
+	{	
 		if (_is_db_quick && arrays.key_exists(_vals_quick, id_)) _vals_quick.get(id_).put(async_data.get_col(_source, field_), Double.toString(val_));
 		else if (!_is_db_quick && arrays.key_exists(_vals, id_)) _vals.get(id_).put(field_, val_);			
 
-		__unlock();
-		
-		__to_screen_update(id_, false);
+		to_screen_update(id_, false);
 	}
 
-	private void __to_screen_update(int id_, boolean is_db_) { to_screen_update(id_, _get_symbol(id_, true), is_db_); }
+	private void to_screen_update(int id_, boolean is_db_) { to_screen_update(id_, _get_symbol(id_, false), is_db_); }
 
 	private void to_screen_update(int id_, String symbol_, boolean is_db_) { to_screen(id_, symbol_, (is_db_ ? "stored" : "updated")); }
 }
