@@ -33,7 +33,6 @@ import com.ib.client.TickAttrib;
 import com.ib.client.TickAttribBidAsk;
 import com.ib.client.TickAttribLast;
 
-import ib.async_execs;
 import ib.common_wrapper;
 
 public class wrapper implements EWrapper 
@@ -68,7 +67,7 @@ public class wrapper implements EWrapper
 	public void error(int id_, int code_, String message_) { common_wrapper.__error(id_, code_, message_); }
 	
 	@Override
-	public void orderStatus(int order_id_, String status_ib_, double filled_, double remaining_, double avg_fill_price_, int perm_id_, int parent_id_, double last_fill_price_, int client_id_, String why_held_, double mkt_cap_price_) { common_wrapper.orderStatus(order_id_, status_ib_); }
+	public void orderStatus(int order_id_, String status_ib_, double filled_, double remaining_, double avg_fill_price_, int perm_id_, int parent_id_, double last_fill_price_, int client_id_, String why_held_, double mkt_cap_price_) { common_wrapper.__orderStatus(order_id_, status_ib_); }
 	
 	@Override
 	public void openOrderEnd() { common_wrapper.openOrderEnd(); }
@@ -77,7 +76,7 @@ public class wrapper implements EWrapper
 	public void execDetails(int id_, Contract contract_, Execution execution_) { common_wrapper.__execDetails(id_, contract_, execution_); }
 	
 	@Override
-	public void commissionReport(CommissionReport report_) { async_execs.__commission_report(report_); }
+	public void commissionReport(CommissionReport report_) { common_wrapper.__commissionReport(report_); }
 
 	public EClientSocket getClient() { return clientSocket; }
 	

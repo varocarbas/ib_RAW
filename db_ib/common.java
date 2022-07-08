@@ -8,6 +8,7 @@ import accessory.db_where;
 import accessory.strings;
 import accessory_ib._alls;
 import accessory_ib.types;
+import ib.basic;
 
 public abstract class common 
 {
@@ -63,7 +64,8 @@ public abstract class common
 
 	public static final String FIELD_TIME_ELAPSED = types.CONFIG_DB_IB_FIELD_TIME_ELAPSED;
 	public static final String FIELD_UNREALISED = types.CONFIG_DB_IB_FIELD_UNREALISED;
-
+	public static final String FIELD_IS_ACTIVE = types.CONFIG_DB_IB_FIELD_IS_ACTIVE;
+	
 	public static final String FIELD_PRICE_INI = types.CONFIG_DB_IB_FIELD_PRICE_INI;
 	public static final String FIELD_PRICE_MIN = types.CONFIG_DB_IB_FIELD_PRICE_MIN;
 	public static final String FIELD_PRICE_MAX = types.CONFIG_DB_IB_FIELD_PRICE_MAX;
@@ -94,14 +96,24 @@ public abstract class common
 
 	public static boolean insert(String source_, HashMap<String, Object> vals_) 
 	{ 
-		accessory.db.insert(source_, vals_);
+		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
+		if (!arrays.is_ok(vals)) return false;
+		
+		if (source_includes_user(source_)) vals.put(FIELD_USER, basic.get_user());
+			
+		accessory.db.insert(source_, vals);
 
 		return accessory.db.is_ok(source_);
 	}
 
 	public static boolean insert_quick(String source_, HashMap<String, String> vals_) 
 	{ 
-		accessory.db.insert_quick(source_, vals_);
+		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_);
+		if (!arrays.is_ok(vals)) return false;
+		
+		if (source_includes_user(source_)) vals.put(get_col(source_, FIELD_USER), basic.get_user());
+		
+		accessory.db.insert_quick(source_, vals);
 
 		return accessory.db.is_ok(source_);
 	}
@@ -115,6 +127,8 @@ public abstract class common
 
 	public static boolean update_quick(String source_, HashMap<String, String> vals_, String where_)
 	{		
+		if (!arrays.is_ok(vals_)) return false;
+		
 		accessory.db.update_quick(source_, vals_, where_);
 		
 		return accessory.db.is_ok(source_);

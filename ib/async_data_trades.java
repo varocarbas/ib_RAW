@@ -2,8 +2,6 @@ package ib;
 
 import java.util.HashMap;
 
-import accessory.arrays;
-import accessory.strings;
 import accessory_ib._alls;
 import db_ib.trades;
 
@@ -11,10 +9,15 @@ public class async_data_trades extends parent_async_data
 {
 	public static String _ID = "trades";
 	
-	public static final int DATA = external_ib.data.DATA_LIVE;
-	public static final String TARGET_STATUS = order.STATUS_SUBMITTED;
+	public static final String SOURCE = trades.SOURCE;
 	
-	private volatile HashMap<Integer, Integer> _orders_ids = new HashMap<Integer, Integer>();
+	public static final String PRICE = trades.PRICE;
+	public static final String HALTED = trades.HALTED;
+	
+	public static final String TYPE = TYPE_SNAPSHOT;
+	public static final int DATA = external_ib.data.DATA_LIVE;
+	
+	private volatile HashMap<Integer, String> _order_ids = new HashMap<Integer, String>();
 	
 	public static async_data_trades _instance = instantiate();
 	
@@ -24,7 +27,7 @@ public class async_data_trades extends parent_async_data
 	{
 		async_data_trades instance = new async_data_trades();
 		
-		instance._source = trades.SOURCE;
+		instance._source = SOURCE;
 		instance._id = _ID;
 		
 		return instance;
@@ -36,7 +39,7 @@ public class async_data_trades extends parent_async_data
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();
 			
-		all.put(PRICE_IB, trades.PRICE);
+		all.put(PRICE_IB, PRICE);
 		
 		return all;
 	}
@@ -45,57 +48,40 @@ public class async_data_trades extends parent_async_data
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();			
 
-		all.put(HALTED_IB, trades.HALTED);
+		all.put(HALTED_IB, HALTED);
 		
 		return all;
 	}
-	
-	static void __order_status(int order_id_, String status_ib_) 
-	{ 
-		__lock();
-		
-		if (!is_ok(order_id_, status_ib_))
-		{
-			__unlock();
-			
-			return;
-		}
-		
-		_instance.start_order_id_internal(order_id_); 
-		
-		__unlock();
-	}
 
-	static void __start_order_id(int order_id_) 
+	static boolean _start(int order_id_, String symbol_, boolean lock_) 
 	{ 
-		__lock();
+		if (lock_) __lock();
+
+		boolean output = (_instance.order_id_exists(order_id_) ? true : _instance.start(order_id_, symbol_)); 
+
+		if (lock_) __unlock();
 		
-		if (!is_ok(order_id_))
-		{
-			__unlock();
-			
-			return;
-		}
+		return output;
+	}
+	
+	static boolean _stop(int order_id_, boolean lock_) 
+	{ 
+		if (lock_) __lock();
 		
-		_instance.start_order_id_internal(order_id_); 
+		int id = _instance.get_id(order_id_);
+
+		boolean output = (id == WRONG_ID ? true : _instance.stop(order_id_, id)); 
 		
-		__unlock();
+		if (lock_) __unlock();
+		
+		return output;
 	}
 	
 	static boolean __stop_snapshot(int id_) 
 	{ 
 		__lock();
-		
-		boolean output = false;
-		
-		if (!id_is_ok(id_))
-		{
-			__unlock();
-			
-			return output;
-		}
-		
-		output = _instance.stop_id_internal(id_); 
+
+		boolean output = (_instance.id_is_ok(id_) ? _instance.stop_id(id_, true) : true); 
 
 		__unlock();
 		
@@ -113,60 +99,33 @@ public class async_data_trades extends parent_async_data
 	protected HashMap<Integer, String> get_all_sizes() { return null; }
 	
 	protected HashMap<Integer, String> get_all_generics() { return _alls.ASYNC_TRADES_GENERICS; }
-
-	private static boolean is_ok(int order_id_, String status_ib_) { return (is_ok(order_id_) && order.get_status(status_ib_, true).equals(TARGET_STATUS)); }
 	
-	private static boolean is_ok(int order_id_) { return (_instance._enabled && !_instance._orders_ids.containsKey(order_id_) && trades.order_id_is_ok(order_id_)); }
+	protected String[] get_fields() { return trades.get_fields(); }
+
+	private boolean order_id_exists(int order_id_) { return _instance._order_ids.containsKey(order_id_); }
+
+	private boolean id_is_ok(int id_) { return (get_id(_get_symbol(id_, false)) == id_); }
+
+	private int get_id(int order_id_) { return (_order_ids.containsKey(order_id_) ? get_id(_order_ids.get(order_id_)) : WRONG_ID); }
+
+	private int get_id(String symbol_) { return _get_id(symbol_, false); }
 	
-	private static boolean id_is_ok(int id_) { return _instance._orders_ids.containsValue(id_); }
-
-	private String get_symbol(int order_id_) { return order.get_symbol(order_id_); }
-
-	private int get_order_id(int id_) { return (_orders_ids.containsValue(id_) ? (int)arrays.get_key(_orders_ids, id_) : WRONG_ID); }
-
-	private void start_order_id_internal(int order_id_) 
-	{
-		String symbol = get_symbol(order_id_);
-		if (!strings.is_ok(symbol)) return;
-		
-		start_trade(order_id_, symbol);
-		
-		add_trade(order_id_, symbol);
-	}
-
-	private boolean stop_id_internal(int id_) 
-	{ 	
-		boolean output = stop_trade(id_);
-		
-		remove_trade(get_order_id(id_));
-		
-		return output;
-	}
-	
-	private void start_trade(int order_id_, String symbol_) 
+	private boolean start(int order_id_, String symbol_) 
 	{ 
-		if (order_id_ == WRONG_ID) return;
-		
 		int id = _start_snapshot_internal(symbol_, DATA, false);
+		if (id == WRONG_ID) return false;
+			
+		_order_ids.put(order_id_, symbol_);
 		
-		if (id != WRONG_ID) _orders_ids.put(order_id_, id);
+		return true;
+	}
+		
+	private boolean stop(int order_id_, int id_) 
+	{ 		
+		_order_ids.remove(order_id_);
+		
+		return stop_id(id_, false);
 	}
 	
-	private void add_trade(int order_id_, String symbol_) 
-	{ 
-		if (order_id_ == WRONG_ID) return;
-		
-		trades.insert(order_id_, symbol_); 
-	}
-	
-	private boolean stop_trade(int id_) { return (id_ == WRONG_ID ? false : _stop_snapshot_internal(id_, false)); }
-	
-	private void remove_trade(int order_id_) 
-	{
-		if (order_id_ == WRONG_ID) return;
-		
-		_orders_ids.remove(order_id_);
-		
-		trades.delete(order_id_);
-	}
+	private boolean stop_id(int id_, boolean restart_) { return _stop_snapshot_internal(id_, restart_, false); }
 }

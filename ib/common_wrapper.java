@@ -16,8 +16,7 @@ public abstract class common_wrapper
 	
 	public static void nextValidId(int id_) 
 	{
-		if (sync.is_ok()) sync.next_valid_id(id_);
-		else conn._started = true;
+		if (!sync.next_valid_id(id_)) conn._started = true;
 	}
 
 	public static void __tickPrice(int id_, int field_ib_, double price_)
@@ -59,13 +58,13 @@ public abstract class common_wrapper
 		errors.__wrapper_error(id_, code_, message_); 
 	}
 	
-	public static void orderStatus(int order_id_, String status_ib_) 
+	public static void __orderStatus(int order_id_, String status_ib_) 
 	{ 
 		sync_orders.order_status(order_id_, status_ib_); 
 		
 		async_orders.order_status(order_id_, status_ib_);
 		
-		async_data_trades.__order_status(order_id_, status_ib_);
+		async_trades.__order_status(order_id_, status_ib_);
 	}
 
 	public static void openOrderEnd() { sync.open_order_end(); }

@@ -27,7 +27,7 @@ public abstract class market
 	public static final String HALTED = common.FIELD_HALTED;
 	public static final String HALTED_TOT = common.FIELD_HALTED_TOT;
 	public static final String ENABLED = common.FIELD_ENABLED;
-
+	
 	public static ArrayList<String> get_all_symbols() { return accessory.db.select_some_strings(SOURCE, SYMBOL, (new db_where(SOURCE, ENABLED, true)).toString(), 0, null); }
 
 	public static boolean insert_all(ArrayList<String> symbols_) 
@@ -46,4 +46,6 @@ public abstract class market
 	}
 	
 	public static HashMap<String, String> get_val(String symbol_) { return common.get_vals(SOURCE, null, common.get_where_symbol(SOURCE, symbol_)); }
+	
+	public static String[] get_fields() { return new String[] { SYMBOL, PRICE, SIZE, TIME, OPEN, CLOSE, LOW, HIGH, VOLUME, ASK, ASK_SIZE, BID, BID_SIZE, HALTED, HALTED_TOT, ENABLED }; }
 }

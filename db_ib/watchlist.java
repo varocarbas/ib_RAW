@@ -1,5 +1,7 @@
 package db_ib;
 
+import java.util.HashMap;
+
 public abstract class watchlist 
 {
 	public static final String SOURCE = common.SOURCE_WATCHLIST;
@@ -20,4 +22,18 @@ public abstract class watchlist
 	public static final String FLU2 = common.FIELD_FLU2;
 	public static final String FLU2_MIN = common.FIELD_FLU2_MIN;
 	public static final String FLU2_MAX = common.FIELD_FLU2_MAX;
+	
+	public static String[] get_fields() { return new String[] { SYMBOL, PRICE, PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME, VOLUME_INI, VOLUME_MIN, VOLUME_MAX, TIME_ELAPSED, HALTED, HALTED_TOT, FLU, FLU2, FLU2_MIN, FLU2_MAX }; }
+
+	public static boolean exists(String symbol_) { return common.exists(SOURCE, common.get_where_symbol(SOURCE, symbol_)); }
+	
+	public static boolean insert(String symbol_) 
+	{ 
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		vals.put(SYMBOL, symbol_);
+		
+		return common.insert(SOURCE, vals);
+	}
+
+	public static boolean delete(String symbol_) { return common.delete(SOURCE, common.get_where_symbol(SOURCE, symbol_)); }
 }

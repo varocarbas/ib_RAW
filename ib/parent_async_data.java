@@ -21,9 +21,6 @@ public abstract class parent_async_data extends parent_static
 {
 	public static final String CONFIG_SNAPSHOT_QUICK = types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK;
 	public static final String CONFIG_SNAPSHOT_NONSTOP = types.CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP;
-
-	public static final String TYPE_SNAPSHOT = types.ASYNC_MARKET_SNAPSHOT;
-	public static final String TYPE_STREAM = types.ASYNC_MARKET_STREAM;
 	
 	public static final int PRICE_IB = external_ib.data.TICK_LAST;
 	public static final int OPEN_IB = external_ib.data.TICK_OPEN;
@@ -38,27 +35,25 @@ public abstract class parent_async_data extends parent_static
 	public static final int ASK_SIZE_IB = external_ib.data.TICK_ASK_SIZE;
 	public static final int BID_SIZE_IB = external_ib.data.TICK_BID_SIZE;
 
+	public static final String TYPE_SNAPSHOT = types.ASYNC_MARKET_SNAPSHOT;
+	public static final String TYPE_STREAM = types.ASYNC_MARKET_STREAM;
+	
+	public static final double FACTOR_VOLUME = 1.0 / 1000.0;
+	
 	public static final int WRONG_ID = common.WRONG_ID;
+	public static final int WRONG_DATA = data.WRONG_DATA;
 	
 	public static final boolean DEFAULT_SNAPSHOT_QUICK = true;
 	public static final boolean DEFAULT_SNAPSHOT_NONSTOP = true;
 	public static final int DEFAULT_DATA_TYPE = external_ib.data.DATA_LIVE;
 	public static final boolean DEFAULT_LOGS_TO_SCREEN = true;
 	public static final boolean DEFAULT_IS_DB_QUICK = true;
-	public static final boolean DEFAULT_ENABLED = false;
 	public static final int DEFAULT_PAUSE_NONSTOP = 0;
 	public static final int DEFAULT_PAUSE_AFTER_STOP_ALL = 30;
 	
-	public static boolean snapshot_is_quick() { return config.get_async_boolean(CONFIG_SNAPSHOT_QUICK); }
-
-	public static boolean snapshot_is_nonstop() { return config.get_async_boolean(CONFIG_SNAPSHOT_NONSTOP); }
-
-	public static String get_type(boolean is_snapshot_) { return (is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM); }
-	
-	protected volatile boolean _stop_all = false;	
+	protected volatile boolean _stop_all = false;
 	protected volatile boolean _logs_to_screen = DEFAULT_LOGS_TO_SCREEN;
 	protected volatile boolean _is_db_quick = DEFAULT_IS_DB_QUICK;  
-	protected volatile boolean _enabled = DEFAULT_ENABLED;
 	protected volatile int _nonstop_pause = DEFAULT_PAUSE_NONSTOP;
 	
 	protected volatile HashMap<Integer, String> _symbols = new HashMap<Integer, String>();
@@ -69,10 +64,21 @@ public abstract class parent_async_data extends parent_static
 
 	protected String _id = strings.DEFAULT; 
 	protected String _source = strings.DEFAULT; 
+
+	private static HashMap<String, String> _cols = new HashMap<String, String>();
 	
 	protected abstract HashMap<Integer, String> get_all_prices();
 	protected abstract HashMap<Integer, String> get_all_sizes();
 	protected abstract HashMap<Integer, String> get_all_generics();
+	protected abstract String[] get_fields();
+	
+	public static boolean snapshot_is_quick() { return config.get_async_boolean(CONFIG_SNAPSHOT_QUICK); }
+
+	public static boolean snapshot_is_nonstop() { return config.get_async_boolean(CONFIG_SNAPSHOT_NONSTOP); }
+
+	public static String get_type(boolean is_snapshot_) { return (is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM); }
+
+	static String normalise_symbol(String symbol_) { return common.check_symbol(symbol_); }
 
 	protected boolean get_logs_to_screen_internal() { return _logs_to_screen; }
 
@@ -104,7 +110,7 @@ public abstract class parent_async_data extends parent_static
 		
 		_stop_all = false;
 	}
-	
+		
 	protected void __tick_price_internal(int id_, int field_ib_, double price_)
 	{
 		__lock();
@@ -136,7 +142,13 @@ public abstract class parent_async_data extends parent_static
 		boolean is_snapshot = _is_snapshot(id_, false);
 		
 		String field = get_field(get_all_sizes(), field_ib_);
-		if (field != null) update(id_, field, size_, is_snapshot);
+		if (field != null) 
+		{
+			double size = size_;
+			if (field_ib_ == VOLUME_IB) size *= FACTOR_VOLUME;
+			
+			update(id_, field, size, is_snapshot);
+		}
 	
 		if (is_snapshot && field_ib_ == VOLUME_IB && snapshot_is_quick()) _stop_snapshot_internal(id_, false);
 		
@@ -176,7 +188,9 @@ public abstract class parent_async_data extends parent_static
 
 	protected boolean __stop_snapshot_internal(String symbol_) { return _stop_snapshot_internal(_get_id(symbol_, true), true); }
 	
-	protected boolean _stop_snapshot_internal(int id_, boolean lock_) 
+	protected boolean _stop_snapshot_internal(int id_, boolean lock_) { return _stop_snapshot_internal(id_, true, lock_); }
+
+	protected boolean _stop_snapshot_internal(int id_, boolean restart_, boolean lock_) 
 	{	
 		if (lock_) __lock();
 		
@@ -196,7 +210,7 @@ public abstract class parent_async_data extends parent_static
 			return false;
 		}
 		
-		boolean restart = (snapshot_is_nonstop() && !_stop_all);
+		boolean restart = (restart_ && snapshot_is_nonstop() && !_stop_all);
 		int data_type = (restart ? _get_data_type(id_, false) : 0);
 		
 		update_db(id_, symbol);
@@ -247,14 +261,36 @@ public abstract class parent_async_data extends parent_static
 		return output; 
 	}
 	
-	protected int _get_id(String symbol_, boolean lock_) { return (int)(lock_ ? arrays.__get_key_async(_symbols, symbol_) : arrays.get_key(_symbols, symbol_)); }
+	protected int _get_id(String symbol_, boolean lock_) 
+	{
+		if (lock_) __lock();
+
+		String symbol = normalise_symbol(symbol_);
+		
+		int output = (_symbols.containsValue(symbol) ? (int)arrays.get_key(_symbols, symbol) : WRONG_ID);
+		
+		if (lock_) __unlock();
+		
+		return output; 
+	}
 
 	protected int _get_data_type(int id_, boolean lock_) 
 	{ 
 		if (lock_) __lock();
 		
-		int output = (_data_types.containsKey(id_) ? _data_types.get(id_) : data.WRONG_DATA);
+		int output = (_data_types.containsKey(id_) ? _data_types.get(id_) : WRONG_DATA);
 		
+		if (lock_) __unlock();
+		
+		return output;
+	}
+
+	protected String _get_id_type(int id_, boolean lock_) 
+	{ 
+		if (lock_) __lock();
+
+		String output = (_ids.containsKey(id_) ? _ids.get(id_) : strings.DEFAULT);	
+
 		if (lock_) __unlock();
 		
 		return output;
@@ -264,7 +300,7 @@ public abstract class parent_async_data extends parent_static
 	{ 
 		if (lock_) __lock();
 		
-		String output = (_symbols.containsKey(id_) ? _symbols.get(id_) : null);	
+		String output = (_symbols.containsKey(id_) ? _symbols.get(id_) : strings.DEFAULT);	
 		
 		if (lock_) __unlock();
 		
@@ -275,7 +311,7 @@ public abstract class parent_async_data extends parent_static
 	{
 		if (lock_) __lock();
 		
-		boolean output = (_ids.containsKey(id_) ? _ids.get(id_).equals(TYPE_SNAPSHOT) : false);	
+		boolean output = _get_id_type(id_, false).equals(TYPE_SNAPSHOT);	
 		
 		if (lock_) __unlock();
 		
@@ -308,7 +344,7 @@ public abstract class parent_async_data extends parent_static
 			
 	protected void update_db(int id_, String symbol_, String field_, double val_)
 	{
-		if (_is_db_quick) async_data.update_quick(_source, symbol_, async_data.get_col(_source, field_), Double.toString(val_));
+		if (_is_db_quick) async_data.update_quick(_source, symbol_, get_col(field_), Double.toString(val_));
 		else async_data.update(_source, symbol_, field_, val_);	
 
 		to_screen_update(id_, symbol_, true);
@@ -318,11 +354,9 @@ public abstract class parent_async_data extends parent_static
 
 	protected void __stop_all_internal()
 	{	
-		__lock();	
-	
-		misc.pause_secs(5);
-		
 		_stop_all = true;
+
+		__lock();	
 		
 		HashMap<Integer, String> ids = new HashMap<Integer, String>(_ids);
 		
@@ -339,9 +373,7 @@ public abstract class parent_async_data extends parent_static
 		{
 			int id = item.getKey();
 			
-			misc.pause_secs(1);
-			
-			if (_is_snapshot(id, false)) _stop_snapshot_internal(id, false);
+			if (_is_snapshot(id, false)) _stop_snapshot_internal(id, false, false);
 			else _stop_stream_internal(id, false);	
 		}
 		
@@ -356,27 +388,22 @@ public abstract class parent_async_data extends parent_static
 		_symbols.remove(id_);
 		_data_types.remove(id_);
 	
-		int tot = 0;
-		
-		if (_is_db_quick) 
-		{
-			_vals_quick.remove(id_);
-			tot = _vals_quick.size();
-		}
-		else 
-		{
-			_vals.remove(id_);
-			tot = _vals.size();
-		}
-
-		if (tot == 0) _enabled = false;
+		if (_is_db_quick) _vals_quick.remove(id_); 
+		else _vals.remove(id_); 
 		
 		return true;
 	}
 
-	protected String normalise_symbol(String symbol_) { return common.check_symbol(symbol_); }
+	private String get_col(String field_) 
+	{ 
+		if (_cols.size() == 0) populate_cols();
+		
+		return (_cols.containsKey(field_) ? _cols.get(field_) : strings.DEFAULT);
+	}
 
-	private boolean _is_ok(int id_, boolean lock_) { return (_enabled && _id_exists(id_, lock_)); }
+	private void populate_cols() { _cols = async_data.populate_cols(_source, get_fields()); }
+	
+	private boolean _is_ok(int id_, boolean lock_) { return _id_exists(id_, lock_); }
 
 	private int _start(String symbol_, int data_type_, boolean is_snapshot_, boolean lock_)
 	{
@@ -431,8 +458,6 @@ public abstract class parent_async_data extends parent_static
 			return id;
 		}
 		
-		_enabled = true;
-		
 		to_screen(id, symbol, "started");
 
 		if (lock_) __unlock();
@@ -478,7 +503,7 @@ public abstract class parent_async_data extends parent_static
 
 	private void update_vals(int id_, String field_, double val_)
 	{	
-		if (_is_db_quick && arrays.key_exists(_vals_quick, id_)) _vals_quick.get(id_).put(async_data.get_col(_source, field_), Double.toString(val_));
+		if (_is_db_quick && arrays.key_exists(_vals_quick, id_)) _vals_quick.get(id_).put(get_col(field_), Double.toString(val_));
 		else if (!_is_db_quick && arrays.key_exists(_vals, id_)) _vals.get(id_).put(field_, val_);			
 
 		to_screen_update(id_, false);

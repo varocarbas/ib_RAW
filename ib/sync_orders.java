@@ -47,8 +47,6 @@ public abstract class sync_orders extends parent_static
 	private static int _last_id_main = 0;
 	private static int _last_id_sec = 0;
 
-	private static HashMap<Integer, Long> _cancellations = new HashMap<Integer, Long>();
-
 	public static boolean place_market(String symbol_, double quantity_, double stop_) { return place(PLACE_MARKET, symbol_, quantity_, stop_, WRONG_VALUE); }
 
 	public static boolean place_stop(String symbol_, double quantity_, double stop_, double start_) { return place(PLACE_STOP, symbol_, quantity_, stop_, start_); }
@@ -74,7 +72,7 @@ public abstract class sync_orders extends parent_static
 		boolean is_ok = true; 
 		if (!arrays.value_exists(get_ids(STATUS_SUBMITTED), id_)) return is_ok;
 
-		_cancellations = new HashMap<Integer, Long>(common_xsync.start_wait(order.get_id_sec(id_), common_xsync.start_wait(id_, _cancellations)));
+		async_orders._cancellations = new HashMap<Integer, Long>(common_xsync.start_wait(order.get_id_sec(id_), common_xsync.start_wait(id_, async_orders._cancellations)));
 
 		is_ok = sync.cancel_order(id_);
 		if (is_ok) db_ib.orders.delete(id_);	
@@ -84,10 +82,10 @@ public abstract class sync_orders extends parent_static
 
 	public static boolean is_cancelling(int id_)
 	{
-		HashMap<Integer, Long> temp = common_xsync.wait_is_over_sync(id_, _cancellations);
+		HashMap<Integer, Long> temp = common_xsync.wait_is_over_sync(id_, async_orders._cancellations);
 
 		boolean output = (temp == null);
-		if (!output) _cancellations = new HashMap<Integer, Long>(temp);
+		if (!output) async_orders._cancellations = new HashMap<Integer, Long>(temp);
 
 		return output;
 	}
@@ -104,7 +102,7 @@ public abstract class sync_orders extends parent_static
 	{
 		ArrayList<Integer> ids = new ArrayList<Integer>();
 
-		String status = check_status(status_);
+		String status = order.check_status(status_);
 		if (!strings.is_ok(status)) return ids;
 
 		HashMap<Integer, String> orders = arrays.get_new_hashmap_xy(orders_);
@@ -116,27 +114,17 @@ public abstract class sync_orders extends parent_static
 			int id = order.getKey();
 			String status_ib = order.getValue();
 
-			if (is_status(status_ib, status_)) ids.add(id);
+			if (ib.order.is_status(status_ib, status_)) ids.add(id);
 		}
 
 		return ids;
 	}	
 
-	public static boolean is_status(String status_ib_, String status_)
-	{
-		if (!orders.status_is_ok(status_ib_)) return false;
-
-		String status = check_status(status_);
-		if (!strings.is_ok(status)) return false;
-
-		return strings.are_equal(status, order.get_status(status_ib_, !status_is_generic(status)));
-	}
-
 	public static String get_type(String input_, boolean is_status_) { return db_ib.orders.status_type_db_to_order(input_, is_status_); }
 
 	public static String get_key(String input_, boolean is_status_) { return db_ib.orders.status_type_order_to_db(input_, is_status_); }
 
-	public static boolean is_status(String type_) { return strings.is_ok(check_status(type_)); }
+	public static boolean is_status(String type_) { return strings.is_ok(order.check_status(type_)); }
 
 	public static boolean is_place(String type_) { return strings.is_ok(check_place(type_)); }
 
@@ -160,8 +148,6 @@ public abstract class sync_orders extends parent_static
 
 	public static boolean is_cancel(String type_) { return strings.is_ok(check_cancel(type_)); }
 
-	public static String check_status(String type_) { return accessory.types.check_type(type_, STATUS); }
-
 	public static String check_place(String type_) { return accessory.types.check_type(type_, PLACE); }
 
 	public static String check_update(String type_) { return accessory.types.check_type(type_, UPDATE); }
@@ -177,56 +163,22 @@ public abstract class sync_orders extends parent_static
 		sync.update_orders(status_ib_);
 	}
 
-	static void sync_all(HashMap<Integer, String> orders_) { sync_all(get_ids(STATUS_ACTIVE, orders_, false)); }
-
-	private static boolean status_is_generic(String status_) 
-	{ 
-		String status = check_status(status_);
-		if (!strings.is_ok(status)) return false;
-
-		return (status.equals(STATUS_ACTIVE) || status.equals(STATUS_INACTIVE)); 
-	}
-
 	private static boolean update(String symbol_, String type_, double val_) { return update(get_order(symbol_), check_update(type_), val_); }
 
 	private static boolean update(order order_, String type_, double val_) { return ((order_ != null && strings.is_ok(type_)) ? place_update(order_, type_, val_) : false); }
 
 	private static boolean place(String type_place_, String symbol_, double quantity_, double stop_, double start_) { return place_update(new order(type_place_, symbol_, quantity_, stop_, start_)); }
 
-	private static void sync_all() { sync_all(get_ids(STATUS_ACTIVE)); }
-
-	private static void sync_all(ArrayList<Integer> active_)
-	{
-		sync_all_orders(active_);
-
-		sync_all_waits();
-	}
-
-	private static void sync_all_orders(ArrayList<Integer> active_) { db_ib.orders.delete_except(arrays.to_array(active_)); }
-
-	private static void sync_all_waits()
-	{
-		HashMap<Integer, Long> output = new HashMap<Integer, Long>(_cancellations);
-
-		for (Entry<Integer, Long> item: _cancellations.entrySet())
-		{
-			HashMap<Integer, Long> temp = common_xsync.wait_is_over_sync(item.getKey(), output);
-			if (temp != null) output = new HashMap<Integer, Long>(temp);
-		}
-
-		_cancellations = new HashMap<Integer, Long>(output);
-	}
-
 	private static order get_order(int id_)
 	{
-		sync_all();
+		async_orders.perform_regular_checks();
 
 		return db_ib.orders.get_to_order(id_);
 	}
 
 	private static order get_order(String symbol_)
 	{
-		sync_all();
+		async_orders.perform_regular_checks();
 
 		return db_ib.orders.get_to_order(symbol_);
 	}
@@ -297,7 +249,7 @@ public abstract class sync_orders extends parent_static
 	{
 		db_ib.orders.insert(order_);
 
-		sync_all();
+		async_orders.perform_regular_checks();
 	}
 
 	private static boolean update_order(int id_, double val_, boolean is_market_, boolean is_main_)

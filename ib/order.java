@@ -95,6 +95,18 @@ public class order extends parent
 		return status;
 	}	
 
+	public static boolean is_status(String status_ib_, String status_)
+	{
+		if (!orders.status_is_ok(status_ib_)) return false;
+
+		String status = check_status(status_);
+		if (!strings.is_ok(status)) return false;
+
+		return strings.are_equal(status, order.get_status(status_ib_, !status_is_generic(status)));
+	}
+	
+	public static String check_status(String type_) { return accessory.types.check_type(type_, STATUS); }
+
 	public static String get_symbol(int id_) { return db_ib.orders.get_symbol(id_); }
 	
 	public order(order input_) { instantiate(input_); }
@@ -205,6 +217,14 @@ public class order extends parent
 		);		
 	}
 
+	private static boolean status_is_generic(String status_) 
+	{ 
+		String status = check_status(status_);
+		if (!strings.is_ok(status)) return false;
+
+		return (status.equals(STATUS_ACTIVE) || status.equals(STATUS_INACTIVE)); 
+	}
+	
 	private void instantiate(order input_)
 	{
 		instantiate_common();

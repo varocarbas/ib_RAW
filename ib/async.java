@@ -2,7 +2,7 @@ package ib;
 
 import accessory.parent_static;
 
-public abstract class async extends parent_static 
+abstract class async extends parent_static 
 {	
 	public static final int WRONG_ID = common.WRONG_ID;
 	

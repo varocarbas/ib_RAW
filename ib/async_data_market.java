@@ -9,6 +9,21 @@ public class async_data_market extends parent_async_data
 {	
 	public static String _ID = "market";
 	
+	public static final String SOURCE = market.SOURCE;
+	
+	public static final String PRICE = market.PRICE;
+	public static final String SIZE = market.SIZE;
+	public static final String OPEN = market.OPEN;
+	public static final String CLOSE = market.CLOSE;
+	public static final String LOW = market.LOW;
+	public static final String HIGH = market.HIGH;
+	public static final String VOLUME = market.VOLUME;		
+	public static final String ASK = market.ASK;
+	public static final String ASK_SIZE = market.ASK_SIZE;
+	public static final String BID = market.BID;
+	public static final String BID_SIZE = market.BID_SIZE;
+	public static final String HALTED = market.HALTED;
+	
 	public static async_data_market _instance = instantiate();
 	
 	private async_data_market() { }
@@ -17,7 +32,7 @@ public class async_data_market extends parent_async_data
 	{
 		async_data_market instance = new async_data_market();
 		
-		instance._source = market.SOURCE;
+		instance._source = SOURCE;
 		instance._id = _ID;
 		
 		return instance;
@@ -26,8 +41,6 @@ public class async_data_market extends parent_async_data
 	public static void update_nonstop_pause(int nonstop_pause_) { _instance.update_nonstop_pause_internal(nonstop_pause_); }
 
 	public static void update_logs_to_screen(boolean logs_to_screen_) { _instance.update_logs_to_screen_internal(logs_to_screen_); }
-
-	public static void restart_after_stop_all(int pause_secs_) { _instance.restart_after_stop_all_internal(pause_secs_); }
 	
 	public static void __stop_all() { _instance.__stop_all_internal(); }
 	
@@ -53,13 +66,13 @@ public class async_data_market extends parent_async_data
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();
 			
-		all.put(PRICE_IB, market.PRICE);
-		all.put(OPEN_IB, market.OPEN);
-		all.put(CLOSE_IB, market.CLOSE);
-		all.put(LOW_IB, market.LOW);
-		all.put(HIGH_IB, market.HIGH);
-		all.put(ASK_IB, market.ASK);
-		all.put(BID_IB, market.BID);
+		all.put(PRICE_IB, PRICE);
+		all.put(OPEN_IB, OPEN);
+		all.put(CLOSE_IB, CLOSE);
+		all.put(LOW_IB, LOW);
+		all.put(HIGH_IB, HIGH);
+		all.put(ASK_IB, ASK);
+		all.put(BID_IB, BID);
 		
 		return all;
 	}
@@ -68,10 +81,10 @@ public class async_data_market extends parent_async_data
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();
 		
-		all.put(VOLUME_IB, market.VOLUME);
-		all.put(SIZE_IB, market.SIZE);
-		all.put(ASK_SIZE_IB, market.ASK_SIZE);
-		all.put(BID_SIZE_IB, market.BID_SIZE);
+		all.put(VOLUME_IB, VOLUME);
+		all.put(SIZE_IB, SIZE);
+		all.put(ASK_SIZE_IB, ASK_SIZE);
+		all.put(BID_SIZE_IB, BID_SIZE);
 		
 		return all;
 	}
@@ -80,7 +93,7 @@ public class async_data_market extends parent_async_data
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();			
 
-		all.put(HALTED_IB, market.HALTED);
+		all.put(HALTED_IB, HALTED);
 		
 		return all;
 	}
@@ -96,4 +109,6 @@ public class async_data_market extends parent_async_data
 	protected HashMap<Integer, String> get_all_sizes() { return _alls.ASYNC_MARKET_SIZES; }
 	
 	protected HashMap<Integer, String> get_all_generics() { return _alls.ASYNC_MARKET_GENERICS; }
+	
+	protected String[] get_fields() { return market.get_fields(); }
 }

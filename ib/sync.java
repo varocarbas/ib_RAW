@@ -64,7 +64,7 @@ public abstract class sync extends parent_static
 	{ 	
 		HashMap<Integer, String> orders = (HashMap<Integer, String>)get(GET_ORDERS); 
 			
-		sync_orders.sync_all(orders);
+		async_orders.perform_regular_checks(orders);
 		
 		return orders; 
 	}
@@ -128,11 +128,15 @@ public abstract class sync extends parent_static
 		end();
 	}
 
-	static void next_valid_id(int id_) 
+	static boolean next_valid_id(int id_) 
 	{
+		if (!is_ok()) return false;
+		
 		update(id_);
 
 		end();
+		
+		return true;
 	}
 	
 	static void open_order_end() { end(); }
@@ -218,7 +222,7 @@ public abstract class sync extends parent_static
 
 		String status = (String)arrays.get_value(orders, id_);
 
-		return (strings.is_ok(status) ? sync_orders.is_status(status, target_) : strings.are_equal(target_, sync_orders.STATUS_INACTIVE));
+		return (strings.is_ok(status) ? order.is_status(status, target_) : strings.are_equal(target_, sync_orders.STATUS_INACTIVE));
 	}
 	
 	private static HashMap<String, String> get_all_get_outs() { return _alls.SYNC_GET_OUTS; }

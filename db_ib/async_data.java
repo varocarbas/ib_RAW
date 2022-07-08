@@ -2,9 +2,11 @@ package db_ib;
 
 import java.util.HashMap;
 
+import accessory.arrays;
+
 public abstract class async_data 
 {
-	public static String SYMBOL = common.FIELD_SYMBOL;
+	public static final String SYMBOL = common.FIELD_SYMBOL;
 	
 	public static boolean exists(String source_, String symbol_) { return common.exists(source_, common.get_where_symbol(source_, symbol_)); }
 
@@ -35,7 +37,7 @@ public abstract class async_data
 	public static boolean update_quick(String source_, String symbol_, HashMap<String, String> vals_) { return common.update_quick(source_, vals_, common.get_where_symbol_quick(source_, symbol_)); }
 
 	public static String get_col(String source_, String field_) { return common.get_col(source_, field_); }
-
+	
 	public static HashMap<String, Object> get_default_vals(String symbol_) 
 	{ 
 		HashMap<String, Object> vals = new HashMap<String, Object>(); 
@@ -50,5 +52,15 @@ public abstract class async_data
 		vals.put(get_col(source_, SYMBOL), symbol_);
 		
 		return vals;
+	}
+
+	public static HashMap<String, String> populate_cols(String source_, String[] fields_)
+	{
+		HashMap<String, String> output = new HashMap<String, String>();
+		if (!arrays.is_ok(fields_)) return output;
+		
+		for (String field: fields_) { output.put(field, get_col(source_, field)); }
+		
+		return output;
 	}
 }

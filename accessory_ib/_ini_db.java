@@ -182,6 +182,7 @@ public class _ini_db extends parent_ini_db
 		info.put(trades.STOP, get_price());
 		info.put(trades.HALTED, get_halted());
 		info.put(trades.UNREALISED, get_money());
+		info.put(trades.IS_ACTIVE, get_boolean(true));
 		
 		return add_source_common(db_, source, table, info, sources_);		
 	}
@@ -223,7 +224,7 @@ public class _ini_db extends parent_ini_db
 	
 	private static db_field get_quantity() { return get_decimal(); }
 
-	private static db_field get_size_volume() { return get_decimal(); }
+	private static db_field get_size_volume() { return get_decimal(4); }
 
 	private static db_field get_decimal() { return get_decimal(common.DEFAULT_SIZE_DECIMAL); }
 

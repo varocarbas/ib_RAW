@@ -3,6 +3,7 @@ package db_ib;
 import java.util.HashMap;
 
 import accessory.arrays;
+import accessory.db_where;
 import accessory.strings;
 import ib.order;
 import ib.sync_orders;
@@ -24,8 +25,14 @@ public abstract class orders
 	public static final String TYPE_MAIN = common.FIELD_TYPE_MAIN;
 	public static final String TYPE_SEC = common.FIELD_TYPE_SEC;
 	public static final String QUANTITY = common.FIELD_QUANTITY;
+
+	public static final String STATUS_INACTIVE = ib.order.STATUS_INACTIVE;
 	
-	public static boolean exists(int id_main_) { return common.exists(SOURCE, common.get_where_order_id(SOURCE, id_main_)); }
+	public static boolean exists(int id_main_) { return exists_internal(id_main_, null); }
+
+	public static boolean exists_active(int id_main_) { return exists_internal(id_main_, (new db_where(SOURCE, STATUS, db_where.OPERAND_NOT_EQUAL, STATUS_INACTIVE)).toString()); }
+
+	public static boolean exists_inactive(int id_main_) { return exists_internal(id_main_, (new db_where(SOURCE, STATUS, db_where.OPERAND_EQUAL, STATUS_INACTIVE)).toString()); }
 
 	public static order get_to_order(int id_main_) { return to_order(get(id_main_)); }
 	
@@ -111,6 +118,15 @@ public abstract class orders
 	public static String status_type_db_to_order(String input_, boolean is_status_) { return (strings.is_ok(input_) ? ((is_status_ ? sync_orders.STATUS : sync_orders.PLACE) + accessory.types.SEPARATOR + input_) : strings.DEFAULT); }
 
 	public static String status_type_order_to_db(String input_, boolean is_status_) { return (strings.is_ok(input_) ? accessory._keys.get_key(input_, (is_status_ ? sync_orders.STATUS : sync_orders.PLACE)) : strings.DEFAULT); }
+
+	private static boolean exists_internal(int id_main_, String where_) 
+	{ 
+		String where = common.get_where_order_id(SOURCE, id_main_);
+		
+		if (strings.is_ok(where_)) where = db_where.join(where, where_, db_where.LINK_AND);
+		
+		return common.exists(SOURCE, where); 
+	}
 	
 	private static String get_where_user() { return common.get_where_user(SOURCE); }
 

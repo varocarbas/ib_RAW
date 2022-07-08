@@ -2,7 +2,6 @@ package ib;
 
 import java.util.HashMap;
 
-import accessory.strings;
 import accessory_ib._alls;
 import db_ib.watchlist;
 
@@ -10,6 +9,13 @@ public class async_data_watchlist extends parent_async_data
 {
 	public static String _ID = "watchlist";
 	
+	public static final String SOURCE = watchlist.SOURCE;
+	
+	public static final String PRICE = watchlist.PRICE;
+	public static final String VOLUME = watchlist.VOLUME;
+	public static final String HALTED = watchlist.HALTED;
+	
+	public static final String TYPE = TYPE_SNAPSHOT;
 	public static final int DATA = external_ib.data.DATA_LIVE;
 	
 	public static async_data_watchlist _instance = instantiate();
@@ -20,25 +26,19 @@ public class async_data_watchlist extends parent_async_data
 	{
 		async_data_watchlist instance = new async_data_watchlist();
 		
-		instance._source = watchlist.SOURCE;
+		instance._source = SOURCE;
 		instance._id = _ID;
 		
 		return instance;
 	}
 
 	public static void update_logs_to_screen(boolean logs_to_screen_) { _instance.update_logs_to_screen_internal(logs_to_screen_); }
-	
-	public void __add(String symbol_) { __add_internal(symbol_); }
-	
-	public static void __stop_all() { _instance.__stop_all_internal(); }
-	
-	public static boolean __stop_snapshot(int id_) { return _instance.__stop_snapshot_internal(id_); }
 
 	public static HashMap<Integer, String> populate_all_prices()
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();
 			
-		all.put(PRICE_IB, watchlist.PRICE);
+		all.put(PRICE_IB, PRICE);
 		
 		return all;
 	}
@@ -47,7 +47,7 @@ public class async_data_watchlist extends parent_async_data
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();
 		
-		all.put(VOLUME_IB, watchlist.VOLUME);
+		all.put(VOLUME_IB, VOLUME);
 		
 		return all;
 	}
@@ -56,9 +56,44 @@ public class async_data_watchlist extends parent_async_data
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();			
 
-		all.put(HALTED_IB, watchlist.HALTED);
+		all.put(HALTED_IB, HALTED);
 		
 		return all;
+	}
+
+	static boolean _start(String symbol_, boolean lock_) 
+	{ 
+		if (lock_) __lock();
+	
+		boolean output = _instance.start(symbol_); 
+
+		if (lock_) __unlock();
+		
+		return output;
+	}
+	
+	static boolean _stop(String symbol_, boolean lock_) 
+	{ 
+		if (lock_) __lock();
+
+		int id = _instance._get_id(symbol_, false);
+		
+		boolean output = (id == WRONG_ID ? true : _instance.stop(id)); 
+
+		if (lock_) __unlock();
+		
+		return output;
+	}
+	
+	static boolean __stop_snapshot(int id_) 
+	{ 
+		__lock();
+
+		boolean output = (_instance.id_is_ok(id_) ? _instance.stop_id(id_, true) : true); 
+
+		__unlock();
+		
+		return output;
 	}
 	
 	static void __tick_price(int id_, int field_ib_, double price_) { _instance.__tick_price_internal(id_, field_ib_, price_); }
@@ -73,20 +108,15 @@ public class async_data_watchlist extends parent_async_data
 	
 	protected HashMap<Integer, String> get_all_generics() { return _alls.ASYNC_WATCHLIST_GENERICS; }
 	
-	private void __add_internal(String symbol_) 
-	{
-		__lock();
+	protected String[] get_fields() { return watchlist.get_fields(); }
+
+	private boolean id_is_ok(int id_) { return (get_id(_get_symbol(id_, false)) == id_); }
+
+	private int get_id(String symbol_) { return _get_id(symbol_, false); }
+
+	private boolean start(String symbol_) { return (_start_snapshot_internal(symbol_, DATA, false) != WRONG_ID); }
 		
-		String symbol = normalise_symbol(symbol_);
-		if (!strings.is_ok(symbol)) 
-		{
-			__unlock();
-			
-			return;
-		}
+	private boolean stop(int id_) { return stop_id(id_, false); }
 	
-		_start_snapshot_internal(symbol_, DATA, false);
-		
-		__unlock();
-	}
+	private boolean stop_id(int id_, boolean restart_) { return _stop_snapshot_internal(id_, restart_, false); }
 }
