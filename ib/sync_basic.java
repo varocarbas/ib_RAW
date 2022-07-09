@@ -9,7 +9,7 @@ public abstract class sync_basic
 	{
 		get_conn_type();
 		
-		get_account_id();
+		get_account_ib();
 		
 		get_currency();
 		
@@ -27,17 +27,19 @@ public abstract class sync_basic
 		return conn_type;
 	} 
 	
-	public static boolean is_ok(int req_id_, String account_id_, String key_, String currency_) { return (sync.is_ok(req_id_, key_) && conn.account_id_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
+	public static boolean is_ok(int req_id_, String account_id_, String key_, String currency_) { return (sync.is_ok(req_id_, key_) && ib.basic.account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
 	
 	public static boolean is_ok(int req_id_) { return sync.is_ok(req_id_); }
 
-	public static String get_account_id() 
+	public static String get_account_ib() 
 	{
-		String account_id = conn.get_account_id();
+		String account_ib = ib.basic.get_account_ib_config();
 		
-		basic.update_account_id(account_id); 
+		basic.update_account_ib(account_ib); 
 		
-		return account_id;
+		account_ib = ib.basic.decrypt(ib.basic.get_account_ib_id(), account_ib);
+
+		return account_ib;
 	} 
 	
 	public static String get_currency() 

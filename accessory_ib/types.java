@@ -2,8 +2,9 @@ package accessory_ib;
 
 public abstract class types
 {
-	public static final String CONFIG_BASIC_ID = "config_basic_id";
-	
+	public static final String CONFIG_BASIC_MAIN_ID = "config_basic_main_id";
+	public static final String CONFIG_BASIC_ACCOUNT_IB = "config_basic_account_ib";
+
 	public static final String CONFIG_CONN = "config_conn";
 	public static final String CONFIG_CONN_TYPE = "config_conn_type";
 	public static final String CONFIG_CONN_TYPE_TWS_REAL = "config_conn_type_tws_real";
@@ -11,7 +12,6 @@ public abstract class types
 	public static final String CONFIG_CONN_TYPE_GATEWAY_REAL = "config_conn_type_gateway_real";
 	public static final String CONFIG_CONN_TYPE_GATEWAY_PAPER = "config_conn_type_gateway_paper";
 	public static final String CONFIG_CONN_ID = "config_conn_id";
-	public static final String CONFIG_CONN_ACCOUNT_ID = "config_conn_account_id";
 	
 	public static final String CONFIG_ORDERS = "config_orders";
 	public static final String CONFIG_ORDERS_TIF = "config_orders_tif";
@@ -75,7 +75,7 @@ public abstract class types
 	public static final String CONFIG_DB_IB_FIELD_MONEY = "config_db_ib_field_money";
 	public static final String CONFIG_DB_IB_FIELD_MONEY_INI = "config_db_ib_field_money_ini";
 	public static final String CONFIG_DB_IB_FIELD_CONN_TYPE = "config_db_ib_field_conn_type";
-	public static final String CONFIG_DB_IB_FIELD_ACCOUNT_ID = "config_db_ib_field_account_id";
+	public static final String CONFIG_DB_IB_FIELD_ACCOUNT_IB = "config_db_ib_field_account_ib";
 	public static final String CONFIG_DB_IB_FIELD_CURRENCY = "config_db_ib_field_currency";
 
 	public static final String CONFIG_DB_IB_FIELD_START = "config_db_ib_field_start";
@@ -166,14 +166,14 @@ public abstract class types
 	{		
 		return new String[]
 		{
-			CONFIG_BASIC_ID,
+			CONFIG_BASIC_MAIN_ID,
+			CONFIG_BASIC_ACCOUNT_IB,
 				
 			CONFIG_CONN,
 			CONFIG_CONN_TYPE, 
 			CONFIG_CONN_TYPE_TWS_REAL, CONFIG_CONN_TYPE_TWS_PAPER, CONFIG_CONN_TYPE_GATEWAY_REAL, 
 			CONFIG_CONN_TYPE_GATEWAY_PAPER,
 			CONFIG_CONN_ID,
-			CONFIG_CONN_ACCOUNT_ID,
 			
 			CONFIG_ORDERS,
 			CONFIG_ORDERS_TIF, CONFIG_ORDERS_QUANTITIES_INT,
@@ -213,7 +213,7 @@ public abstract class types
 			CONFIG_DB_IB_FIELD_BID, CONFIG_DB_IB_FIELD_BID_SIZE, CONFIG_DB_IB_FIELD_HALTED, CONFIG_DB_IB_FIELD_HALTED_TOT,
 			CONFIG_DB_IB_FIELD_ENABLED, CONFIG_DB_IB_FIELD_ORDER_ID, CONFIG_DB_IB_FIELD_QUANTITY, CONFIG_DB_IB_FIELD_SIDE, 
 			CONFIG_DB_IB_FIELD_FEES, CONFIG_DB_IB_FIELD_EXEC_ID, CONFIG_DB_IB_FIELD_MONEY, CONFIG_DB_IB_FIELD_MONEY_INI, 
-			CONFIG_DB_IB_FIELD_CONN_TYPE, CONFIG_DB_IB_FIELD_ACCOUNT_ID, CONFIG_DB_IB_FIELD_CURRENCY, CONFIG_DB_IB_FIELD_START, 
+			CONFIG_DB_IB_FIELD_CONN_TYPE, CONFIG_DB_IB_FIELD_ACCOUNT_IB, CONFIG_DB_IB_FIELD_CURRENCY, CONFIG_DB_IB_FIELD_START, 
 			CONFIG_DB_IB_FIELD_START2, CONFIG_DB_IB_FIELD_STOP, CONFIG_DB_IB_FIELD_ORDER_ID_MAIN, CONFIG_DB_IB_FIELD_ORDER_ID_SEC, 
 			CONFIG_DB_IB_FIELD_STATUS, CONFIG_DB_IB_FIELD_STATUS2, CONFIG_DB_IB_FIELD_IS_MARKET, CONFIG_DB_IB_FIELD_TYPE_PLACE, 
 			CONFIG_DB_IB_FIELD_TYPE_MAIN, CONFIG_DB_IB_FIELD_TYPE_SEC, CONFIG_DB_IB_FIELD_TIME_ELAPSED, CONFIG_DB_IB_FIELD_UNREALISED,

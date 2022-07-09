@@ -35,10 +35,13 @@ public abstract class parent_async_data extends parent_static
 	public static final int ASK_SIZE_IB = external_ib.data.TICK_ASK_SIZE;
 	public static final int BID_SIZE_IB = external_ib.data.TICK_BID_SIZE;
 
+	public static final String PRICE = db_ib.common.FIELD_PRICE;
+	public static final String VOLUME = db_ib.common.FIELD_VOLUME;
+	
 	public static final String TYPE_SNAPSHOT = types.ASYNC_MARKET_SNAPSHOT;
 	public static final String TYPE_STREAM = types.ASYNC_MARKET_STREAM;
 	
-	public static final double FACTOR_VOLUME = 1.0 / 1000.0;
+	public static final double MULTIPLIER_VOLUME = 1.0 / 1000.0;
 	
 	public static final int WRONG_ID = common.WRONG_ID;
 	public static final int WRONG_DATA = data.WRONG_DATA;
@@ -123,7 +126,7 @@ public abstract class parent_async_data extends parent_static
 		}
 		
 		String field = get_field(get_all_prices(), field_ib_);	
-		if (field != null) update(id_, field, price_);
+		if (field != null) update(id_, field, adapt_val(price_, field_ib_));
 		
 		__unlock();
 	}
@@ -142,13 +145,7 @@ public abstract class parent_async_data extends parent_static
 		boolean is_snapshot = _is_snapshot(id_, false);
 		
 		String field = get_field(get_all_sizes(), field_ib_);
-		if (field != null) 
-		{
-			double size = size_;
-			if (field_ib_ == VOLUME_IB) size *= FACTOR_VOLUME;
-			
-			update(id_, field, size, is_snapshot);
-		}
+		if (field != null) update(id_, field, adapt_val(size_, field_ib_), is_snapshot);
 	
 		if (is_snapshot && field_ib_ == VOLUME_IB && snapshot_is_quick()) _stop_snapshot_internal(id_, false);
 		
@@ -392,6 +389,20 @@ public abstract class parent_async_data extends parent_static
 		else _vals.remove(id_); 
 		
 		return true;
+	}
+	
+	private double adapt_val(double val_, int field_ib_)
+	{
+		double output = val_;
+
+		if (field_ib_ == VOLUME_IB) 
+		{
+			output *= MULTIPLIER_VOLUME;
+			output = common.adapt_val(output, VOLUME);
+		}
+		else if (field_ib_ == PRICE_IB) output = common.adapt_val(output, PRICE);
+		
+		return output;
 	}
 
 	private String get_col(String field_) 

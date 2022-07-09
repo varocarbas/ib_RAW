@@ -42,6 +42,7 @@ public class _alls extends parent_ini_first
 
 	public static String[] DB_SOURCES_USER = null;
 	public static String[] DB_SOURCES_ENABLED = null;
+	public static HashMap<String, Integer> DB_VAL_MAX_SIZES = null;
 	
 	public void populate_internal() 
 	{ 
@@ -76,6 +77,7 @@ public class _alls extends parent_ini_first
 		
 		DB_SOURCES_USER = db_ib.common.populate_all_sources_user();
 		DB_SOURCES_ENABLED = db_ib.common.populate_all_sources_enabled();
+		DB_VAL_MAX_SIZES = db_ib.common.populate_all_val_max_sizes();
 		
 		_populated = true;
 	}

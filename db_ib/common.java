@@ -47,7 +47,7 @@ public abstract class common
 	public static final String FIELD_MONEY = types.CONFIG_DB_IB_FIELD_MONEY;
 	public static final String FIELD_MONEY_INI = types.CONFIG_DB_IB_FIELD_MONEY_INI;
 	public static final String FIELD_CONN_TYPE = types.CONFIG_DB_IB_FIELD_CONN_TYPE;
-	public static final String FIELD_ACCOUNT_ID = types.CONFIG_DB_IB_FIELD_ACCOUNT_ID;
+	public static final String FIELD_ACCOUNT_IB = types.CONFIG_DB_IB_FIELD_ACCOUNT_IB;
 	public static final String FIELD_CURRENCY = types.CONFIG_DB_IB_FIELD_CURRENCY;
 	
 	public static final String FIELD_START = types.CONFIG_DB_IB_FIELD_START;
@@ -81,6 +81,7 @@ public abstract class common
 	public static final int MAX_SIZE_USER = 15;
 	public static final int MAX_SIZE_MONEY = 7;
 	public static final int MAX_SIZE_PRICE = 4;
+	public static final int MAX_SIZE_VOLUME = 4;
 	
 	public static final String DEFAULT_DB = types.CONFIG_DB_IB;
 	public static final String DEFAULT_DB_NAME = accessory.db.DEFAULT_DB_NAME;
@@ -134,6 +135,18 @@ public abstract class common
 		return accessory.db.is_ok(source_);
 	}
 	
+	public static <x> boolean insert_update(String source_, HashMap<String, Object> vals_, String where_)
+	{	
+		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
+		if (!arrays.is_ok(vals)) return false;
+		
+		if (source_includes_user(source_)) vals.put(FIELD_USER, basic.get_user());
+
+		accessory.db.insert_update(source_, vals, where_);
+		
+		return accessory.db.is_ok(source_);
+	}
+	
 	public static String get_col(String source_, String field_) { return accessory.db.get_col(source_, field_); }
 
 	public static boolean delete(String source_, String where_)
@@ -169,6 +182,19 @@ public abstract class common
 	public static String[] populate_all_sources_user() { return new String[] { SOURCE_BASIC, SOURCE_EXECS, SOURCE_ORDERS, SOURCE_REMOTE, SOURCE_TRADES }; }
 
 	public static String[] populate_all_sources_enabled() { return new String[] { SOURCE_MARKET }; }
+	
+	public static HashMap<String, Integer> populate_all_val_max_sizes()
+	{
+		HashMap<String, Integer> all = new HashMap<String, Integer>();
+		
+		all.put(FIELD_MONEY, MAX_SIZE_MONEY);
+		all.put(FIELD_PRICE, MAX_SIZE_PRICE);
+		all.put(FIELD_VOLUME, MAX_SIZE_VOLUME);
+		
+		return all;
+	}
+	
+	public static HashMap<String, Integer> get_all_val_max_sizes() { return _alls.DB_VAL_MAX_SIZES; }
 	
 	private static String[] get_all_sources_user() { return _alls.DB_SOURCES_USER; }
 

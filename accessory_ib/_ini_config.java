@@ -31,7 +31,10 @@ public class _ini_config extends parent_ini_config
 		String type = accessory.types.CONFIG_BASIC;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(basic.CONFIG_ID, basic.DEFAULT_ID);
+		vals.put(basic.CONFIG_MAIN_ID, basic.DEFAULT_MAIN_ID);
+		
+		vals.put(basic.CONFIG_ACCOUNT_IB, basic.encrypt_account_ib_ini(_ini.get_account_ib()));		
+		_ini.delete_account_ib();		
 
 		return populate(type, null, vals);
 	}
@@ -43,7 +46,7 @@ public class _ini_config extends parent_ini_config
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		vals.put(conn.CONFIG_TYPE, conn.DEFAULT_TYPE);
 		vals.put(conn.CONFIG_CONN_ID, conn.DEFAULT_ID);
-
+		
 		return populate(type, null, vals);
 	}
 

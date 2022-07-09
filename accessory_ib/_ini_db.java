@@ -110,7 +110,7 @@ public class _ini_db extends parent_ini_db
 		
 		info.put(basic.USER, get_user());
 		info.put(basic.CONN_TYPE, new db_field(data.STRING, conn.get_max_length_type()));
-		info.put(basic.ACCOUNT_ID, get_status_type());
+		info.put(basic.ACCOUNT_IB, get_status_type());
 		info.put(basic.MONEY, get_money());
 		info.put(basic.MONEY_INI, get_money());
 		info.put(basic.CURRENCY, new db_field(data.STRING, contracts.get_max_length_currency()));
@@ -224,7 +224,7 @@ public class _ini_db extends parent_ini_db
 	
 	private static db_field get_quantity() { return get_decimal(); }
 
-	private static db_field get_size_volume() { return get_decimal(4); }
+	private static db_field get_size_volume() { return get_decimal(common.MAX_SIZE_VOLUME); }
 
 	private static db_field get_decimal() { return get_decimal(common.DEFAULT_SIZE_DECIMAL); }
 

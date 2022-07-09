@@ -8,6 +8,8 @@ public abstract class config
 
 	public static boolean update_conn(String key_, int val_) { return accessory.config.update(types.CONFIG_CONN, key_, val_); }
 
+	public static boolean update_conn(String key_, boolean val_) { return accessory.config.update(types.CONFIG_CONN, key_, val_); }
+
 	public static Object get_order(String key_) { return accessory.config.get(types.CONFIG_ORDERS, key_); }
 
 	public static boolean get_order_boolean(String key_) { return accessory.config.get_boolean(types.CONFIG_ORDERS, key_); }

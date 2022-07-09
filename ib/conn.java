@@ -20,7 +20,6 @@ public abstract class conn extends parent_static
 {
 	public static final String CONFIG_TYPE = types.CONFIG_CONN_TYPE;
 	public static final String CONFIG_CONN_ID = types.CONFIG_CONN_ID;
-	public static final String CONFIG_ACCOUNT_ID = types.CONFIG_CONN_ACCOUNT_ID;
 	
 	public static final String TYPE_TWS_REAL = _keys.TWS_REAL;
 	public static final String TYPE_TWS_PAPER = _keys.TWS_PAPER;
@@ -28,7 +27,8 @@ public abstract class conn extends parent_static
 	public static final String TYPE_GATEWAY_PAPER = _keys.GATEWAY_PAPER;
 	
 	public static final String DEFAULT_TYPE = TYPE_GATEWAY_REAL;
-	public static final int DEFAULT_ID = 18; 
+	public static final int DEFAULT_ID = 18;  
+	
 	public static final int DEFAULT_PORT_TWS_REAL = 7496;
 	public static final int DEFAULT_PORT_TWS_PAPER = 7497;
 	public static final int DEFAULT_PORT_GATEWAY_REAL = 4001;
@@ -69,17 +69,6 @@ public abstract class conn extends parent_static
 	}
 
 	public static String get_conn_type() { return (String)config.get_conn(CONFIG_TYPE); }
-
-	public static String get_account_id() { return (String)config.get_conn(CONFIG_ACCOUNT_ID); }
-	
-	public static boolean account_id_is_ok(String account_id_) 
-	{ 
-		if (!conn_type_is_real()) return true;
-		
-		String account_id = get_account_id();
-		
-		return (!strings.is_ok(account_id) || strings.are_equal(account_id_, account_id));
-	}
 
 	public static boolean start() { return start((int)config.get_conn(types.CONFIG_CONN_ID), get_conn_type()); }
 	
@@ -144,7 +133,7 @@ public abstract class conn extends parent_static
 		return message;	
 	}
 	
-	private static boolean conn_type_is_real() 
+	static boolean conn_type_is_real() 
 	{
 		String conn_type = get_conn_type();
 		
