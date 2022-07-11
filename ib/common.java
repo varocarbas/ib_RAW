@@ -28,8 +28,7 @@ public abstract class common
 		HashMap<String, Integer> sizes = db_ib.common.get_all_val_max_sizes();
 		if (!sizes.containsKey(field_)) return val_;
 		
-		int size = sizes.get(field_);
-		double max = Math.pow(10, (size + 1)) - 1.0;
+		double max = Math.pow(10.0, ((double)sizes.get(field_) + 1.0)) - 1.0;
 		
 		return (val_ < max ? val_ : max);
 	}

@@ -14,6 +14,7 @@ import accessory_ib.config;
 import accessory_ib.errors;
 import accessory_ib.types;
 import db_ib.basic;
+import external_ib.calls;
 import external_ib.wrapper;
 
 public abstract class conn extends parent_static 
@@ -51,11 +52,12 @@ public abstract class conn extends parent_static
 	private static final int PORT_GATEWAY_REAL = DEFAULT_PORT_GATEWAY_REAL;
 	private static final int PORT_GATEWAY_PAPER = DEFAULT_PORT_GATEWAY_PAPER;
 
+	private static volatile boolean _connected = false;
+	private static volatile boolean _first_conn = false;
+
 	private static wrapper _wrapper = null;
 	private static int _id = MIN_ID - 1; 
 	private static int _port = PORT_TWS_REAL - 1;
-	private static volatile boolean _connected = false;
-	private static volatile boolean _first_conn = false;
 	
 	public static int get_max_length_type() { return TYPE_GATEWAY_PAPER.length(); }
 	
@@ -77,36 +79,29 @@ public abstract class conn extends parent_static
 		String error = null;
 
 		if (!numbers.is_ok(id_, MIN_ID, MAX_ID)) error = ERROR_ID;
-		else 
-		{
-			if (!type_is_ok(type_)) error = ERROR_TYPE;
-			else
-			{
-				basic.update_conn_type(type_);
-				
-				_id = id_;
-				_port = get_port(type_);
-			}
-		}
+		else if (!type_is_ok(type_)) error = ERROR_TYPE;
 
-		if (strings.is_ok(error))
+		if (error != null)
 		{
 			errors.manage(error);
 
 			return false;
 		}
 
+		basic.update_conn_type(type_);
+		
+		_id = id_;
+		_port = get_port(type_);
+		
 		_wrapper = new wrapper();
 		_client = _wrapper.getClient();
 
-		connect();
-
-		return _connected;
+		return connect();
 	}
 
 	public static void end() { disconnect(); }
 
-	public static void disconnect() { if (_client != null) _client.eDisconnect(); }
+	public static void disconnect() { calls.eDisconnect(); }
 
 	public static boolean connection_is_ok()
 	{
@@ -140,7 +135,7 @@ public abstract class conn extends parent_static
 		return (strings.are_equal(conn_type, TYPE_TWS_REAL) || strings.are_equal(conn_type, TYPE_GATEWAY_REAL));
 	}
 	
-	private static void connect()
+	private static boolean connect()
 	{	
 		_connected = false;
 
@@ -153,55 +148,19 @@ public abstract class conn extends parent_static
 
 			errors.manage(ERROR_NONE);
 		}
+		
+		return _connected;
 	}
 
 	private static void connect_internal()
 	{
 		_started = false;
 
-		final EReaderSignal signal = _wrapper.getSignal();
-		
-		_client.eConnect("127.0.0.1", _port, _id);
-		final EReader reader = new EReader(_client, signal);   
-
-		reader.start();
-
-		new Thread
-		(
-			new Runnable()
-			{
-				@Override
-				public void run() 
-				{
-					while (_client.isConnected()) 
-					{
-						_connected = true;
-						_first_conn = true;
-						
-						signal.waitForSignal();
-						
-						try { reader.processMsgs(); } 
-						catch (Exception e) 
-						{
-							String message = e.getMessage();							
-							if (strings.is_ok(message)) 
-							{
-								accessory_ib.errors.manage(ERROR_GENERIC, message);
-								
-								disconnect();
-								break;
-							}
-						}
-					}
-
-					_connected = false;
-				}			
-			}
-		)
-		.start();
+		connect_reader();
 
 		int count = 0;
 		int max = 3;
+		
 		while (!_started)
 		{
 			misc.pause_loop();
@@ -211,6 +170,53 @@ public abstract class conn extends parent_static
 		}	
 	}
 
+	private static void connect_reader()
+	{
+		final EReaderSignal signal = _wrapper.getSignal();
+		
+		calls.eConnect("127.0.0.1", _port, _id);
+		
+		final EReader reader = new EReader(_client, signal);   
+
+		reader.start();
+		
+		new Thread
+		(
+			new Runnable()
+			{
+				@Override
+				public void run() { connect_reader_loop(reader, signal); }			
+			}				
+		)
+		.start();
+	}
+
+	private static void connect_reader_loop(EReader reader_, EReaderSignal signal_)
+	{
+		while (_client.isConnected()) 
+		{
+			_connected = true;
+			_first_conn = true;
+			
+			signal_.waitForSignal();
+			
+			try { reader_.processMsgs(); } 
+			catch (Exception e) 
+			{
+				String message = e.getMessage();							
+				if (strings.is_ok(message)) 
+				{
+					accessory_ib.errors.manage(ERROR_GENERIC, message);
+					
+					disconnect();
+					break;
+				}
+			}
+		}
+
+		_connected = false;
+	}
+	
 	private static int get_port(String type_)
 	{
 		int port = -1;

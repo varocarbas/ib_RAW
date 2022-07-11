@@ -91,6 +91,8 @@ public abstract class common
 	
 	public static boolean is_enabled(String source_, String where_) { return (!arrays.value_exists(get_all_sources_enabled(), source_) || accessory.db.select_one_boolean(source_, FIELD_ENABLED, where_, null)); }
 
+	public static String get_val(String source_, String field_, String where_) { return accessory.db.select_one_string(source_, field_, where_, null); }
+
 	public static HashMap<String, String> get_vals(String source_, String where_) { return get_vals(source_, null, where_); }
 
 	public static HashMap<String, String> get_vals(String source_, String[] fields_, String where_) { return accessory.db.select_one(source_, fields_, where_, null); }
@@ -135,7 +137,7 @@ public abstract class common
 		return accessory.db.is_ok(source_);
 	}
 	
-	public static <x> boolean insert_update(String source_, HashMap<String, Object> vals_, String where_)
+	public static boolean insert_update(String source_, HashMap<String, Object> vals_, String where_)
 	{	
 		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
 		if (!arrays.is_ok(vals)) return false;

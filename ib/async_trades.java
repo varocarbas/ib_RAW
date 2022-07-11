@@ -17,7 +17,7 @@ abstract class async_trades extends parent_static
 		{
 			if (status_is_ok(status_ib_, true))
 			{
-				if (!order_id_exists(order_id_)) add(order_id_);
+				if (!order_id_exists(order_id_)) start(order_id_);
 			}
 			else if (status_is_ok(status_ib_, false))
 			{
@@ -28,11 +28,11 @@ abstract class async_trades extends parent_static
 		__unlock();
 	}
 
-	static void _add(int order_id_, boolean lock_) 
+	static void _start(int order_id_, boolean lock_) 
 	{ 
 		if (lock_) __lock();
 		
-		if (order_id_is_ok(order_id_) && !order_id_exists(order_id_)) add(order_id_); 
+		if (order_id_is_ok(order_id_) && !order_id_exists(order_id_)) start(order_id_); 
 		
 		if (lock_) __unlock();
 	}
@@ -54,7 +54,7 @@ abstract class async_trades extends parent_static
 
 	private static boolean status_is_ok(String status_ib_, boolean is_add_) { return order.is_status(status_ib_, (is_add_ ? STATUS_FILLED : STATUS_INACTIVE)); }
 
-	private static void add(int order_id_) 
+	private static void start(int order_id_) 
 	{
 		String symbol = get_symbol(order_id_);
 		if (!strings.is_ok(symbol)) return;

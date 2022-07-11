@@ -1,5 +1,7 @@
 package ib;
 
+import accessory.strings;
+import accessory_ib._ini;
 import db_ib.basic;
 import external_ib.contracts;
 
@@ -33,14 +35,14 @@ public abstract class sync_basic
 
 	public static String get_account_ib() 
 	{
-		String account_ib = ib.basic.get_account_ib_config();
+		String account_ib = _ini.get_account_ib();
 		
 		basic.update_account_ib(account_ib); 
 		
-		account_ib = ib.basic.decrypt(ib.basic.get_account_ib_id(), account_ib);
-
-		return account_ib;
+		return get_account_ib_last(account_ib, true);
 	} 
+	
+	public static String get_account_ib_ini(boolean decrypt_) { return get_account_ib_last(basic.get_account_ib(), decrypt_); } 
 	
 	public static String get_currency() 
 	{
@@ -49,6 +51,19 @@ public abstract class sync_basic
 		basic.update_currency(currency); 
 		
 		return currency;
+	} 
+
+	private static String get_account_ib_last(String account_ib_, boolean decrypt_) 
+	{
+		String account_ib = account_ib_;
+		
+		if (strings.is_ok(account_ib))
+		{
+			if (decrypt_) account_ib = ib.basic.decrypt_account_ib(account_ib);	
+		}
+		else account_ib = strings.DEFAULT;
+
+		return account_ib;
 	} 
 	
 	private static double get_funds(boolean ini_too_) 

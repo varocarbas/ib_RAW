@@ -91,7 +91,7 @@ public abstract class async_execs extends parent_static
 			int order_id = (int)vals.get(ORDER_ID);
 			String side = (String)vals.get(SIDE);
 			
-			if (side.equals(SIDE_BOUGHT)) async_trades._add(order_id, false);
+			if (side.equals(SIDE_BOUGHT)) async_trades._start(order_id, false);
 			else if (side.equals(SIDE_SOLD)) async_trades._end(order_id, false);
 
 			execs.insert(vals);			

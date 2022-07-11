@@ -3,7 +3,6 @@ package accessory_ib;
 public abstract class types
 {
 	public static final String CONFIG_BASIC_MAIN_ID = "config_basic_main_id";
-	public static final String CONFIG_BASIC_ACCOUNT_IB = "config_basic_account_ib";
 
 	public static final String CONFIG_CONN = "config_conn";
 	public static final String CONFIG_CONN_TYPE = "config_conn_type";
@@ -167,7 +166,6 @@ public abstract class types
 		return new String[]
 		{
 			CONFIG_BASIC_MAIN_ID,
-			CONFIG_BASIC_ACCOUNT_IB,
 				
 			CONFIG_CONN,
 			CONFIG_CONN_TYPE, 

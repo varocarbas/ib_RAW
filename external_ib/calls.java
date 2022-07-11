@@ -32,4 +32,8 @@ public abstract class calls
 	public static void reqAllOpenOrders() { if (conn._client != null) conn._client.reqAllOpenOrders(); }
 
 	public static void reqIds() { if (conn._client != null) conn._client.reqIds(-1); }
+
+	public static void eConnect(String arg0_, int arg1_, int arg2_) { if (conn._client != null) conn._client.eConnect(arg0_, arg1_, arg2_); }
+
+	public static void eDisconnect() { if (conn._client != null) conn._client.eDisconnect(); }
 }

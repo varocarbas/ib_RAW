@@ -12,7 +12,6 @@ import accessory_ib.types;
 public abstract class basic extends parent_static 
 {
 	public static final String CONFIG_MAIN_ID = types.CONFIG_BASIC_MAIN_ID;
-	public static final String CONFIG_ACCOUNT_IB = types.CONFIG_BASIC_ACCOUNT_IB;
 
 	public static final String SEPARATOR = misc.SEPARATOR_NAME;
 	
@@ -43,27 +42,39 @@ public abstract class basic extends parent_static
 
 	public static String get_encryption_id(String id_) 
 	{
-		String output = get_main_id();
+		String output = strings.DEFAULT;
 		
-		if (strings.is_ok(id_)) output += SEPARATOR + id_;
+		String temp = get_main_id();
+		if (strings.is_ok(temp)) output = temp;
+		
+		if (strings.is_ok(id_)) 
+		{
+			if (!output.equals(strings.DEFAULT)) output += SEPARATOR;
+			
+			output += id_;
+		}
 		
 		return output;
 	}
 	
+	public static String encrypt_account_ib(String plain_) { return encrypt(get_account_ib_id(), plain_); }
+
 	public static String encrypt(String id_, String plain_) { return encrypt_internal(get_encryption_id(id_), get_user(), plain_); }
 
-	public static String encrypt_account_ib_ini(String plain_) { return encrypt_internal((DEFAULT_MAIN_ID + SEPARATOR + ID_ACCOUNT_IB), get_user(), plain_); }
+	public static String decrypt_account_ib(String encrypted_) { return decrypt(get_account_ib_id(), encrypted_); }
 
 	public static String decrypt(String id_, String encrypted_) { return credentials.decrypt_string(get_encryption_id(id_), get_user(), encrypted_); }
 
-	public static String get_encrypted_file_path(String id_) { return credentials.get_path(get_encryption_id(id_), basic.get_user(), true); }
+	public static boolean encrypt_account_ib_to_file(String plain_) { return encrypt_to_file(get_account_ib_id(), plain_); }
 
 	public static boolean encrypt_to_file(String id_, String plain_) { return credentials.encrypt_string_to_file(get_encryption_id(id_), basic.get_user(), plain_); }
 
+	public static String get_account_ib_from_file() { return get_from_file(get_account_ib_id()); }
+
 	public static String get_from_file(String id_) { return credentials.get_string_from_file(get_encryption_id(id_), basic.get_user(), true); }
 
-	static String get_account_ib_config() { return (String)config.get_basic(CONFIG_ACCOUNT_IB); }
-	
+	public static String get_encrypted_file_path(String id_) { return credentials.get_path(get_encryption_id(id_), basic.get_user(), true); }
+
 	private static String encrypt_internal(String id_, String user_, String plain_) { return credentials.encrypt_string(id_, user_, plain_); }
 
 	private static String get_user_internal()
