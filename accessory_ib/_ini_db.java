@@ -234,7 +234,7 @@ public class _ini_db extends parent_ini_db
 	
 	private static db_field get_price() { return new db_field(data.DECIMAL, common.MAX_SIZE_PRICE, 2); }
 	
-	private static db_field get_halted() { return get_boolean(false); }
+	private static db_field get_halted() { return get_tiny(); }
 
 	private static db_field get_boolean(boolean default_) { return new db_field(data.BOOLEAN, 0, 0, default_, null); }
 

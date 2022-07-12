@@ -16,7 +16,7 @@ public abstract class basic
 	public static final String MONEY_INI = common.FIELD_MONEY_INI;
 	public static final String CURRENCY = common.FIELD_CURRENCY;
 	
-	public static String get_account_ib() { return common.get_val(SOURCE, ACCOUNT_IB, common.get_where_user(SOURCE)); }
+	public static String get_account_ib() { return common.get_string(SOURCE, ACCOUNT_IB, common.get_where_user(SOURCE)); }
 
 	public static boolean update_conn_type(String val_) { return update(CONN_TYPE, val_); }
 

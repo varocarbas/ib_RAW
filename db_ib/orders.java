@@ -6,7 +6,6 @@ import accessory.arrays;
 import accessory.db_where;
 import accessory.strings;
 import ib.order;
-import ib.sync_orders;
 
 public abstract class orders 
 {
@@ -99,7 +98,7 @@ public abstract class orders
 		if (order_ == null) return db;
 
 		db.put(USER, ib.basic.get_user());
-		db.put(STATUS, status_type_order_to_db(sync_orders.DEFAULT_STATUS, true));
+		db.put(STATUS, status_type_order_to_db(ib.orders.DEFAULT_STATUS, true));
 		db.put(ORDER_ID_MAIN, order_.get_id_main());
 		db.put(ORDER_ID_SEC, order_.get_id_sec());
 		db.put(TYPE_PLACE, status_type_order_to_db(order_.get_type_place(), false));
@@ -115,9 +114,9 @@ public abstract class orders
 		return db;
 	}
 
-	public static String status_type_db_to_order(String input_, boolean is_status_) { return (strings.is_ok(input_) ? ((is_status_ ? sync_orders.STATUS : sync_orders.PLACE) + accessory.types.SEPARATOR + input_) : strings.DEFAULT); }
+	public static String status_type_db_to_order(String input_, boolean is_status_) { return (strings.is_ok(input_) ? ((is_status_ ? ib.orders.STATUS : ib.orders.PLACE) + accessory.types.SEPARATOR + input_) : strings.DEFAULT); }
 
-	public static String status_type_order_to_db(String input_, boolean is_status_) { return (strings.is_ok(input_) ? accessory._keys.get_key(input_, (is_status_ ? sync_orders.STATUS : sync_orders.PLACE)) : strings.DEFAULT); }
+	public static String status_type_order_to_db(String input_, boolean is_status_) { return (strings.is_ok(input_) ? accessory._keys.get_key(input_, (is_status_ ? ib.orders.STATUS : ib.orders.PLACE)) : strings.DEFAULT); }
 
 	private static boolean exists_internal(int id_main_, String where_) 
 	{ 

@@ -6,7 +6,6 @@ import accessory.arrays;
 import accessory.strings;
 import accessory_ib._alls;
 import ib.order;
-import ib.sync_orders;
 
 public abstract class orders 
 {
@@ -48,7 +47,7 @@ public abstract class orders
 	public static final String STATUS_IB_INACTIVE = "Inactive"; //Indicates that the order was received by the system but is no longer active because it was rejected or canceled.
 	//---
 
-	public static Order get_order_new(order order_, boolean is_main_) { return get_order(order_, is_main_, null, sync_orders.WRONG_VALUE, false); }
+	public static Order get_order_new(order order_, boolean is_main_) { return get_order(order_, is_main_, null, order.WRONG_VALUE, false); }
 	
 	public static Order get_order_update(order order_, String update_type_, double update_val_, boolean is_main_) { return get_order(order_, is_main_, update_type_, update_val_, true); }
 	
@@ -111,10 +110,10 @@ public abstract class orders
 		
 		if (is_update_) 
 		{
-			if (type.equals(TYPE_STOP_LIMIT) && update_type_.equals(sync_orders.UPDATE_START2_VALUE)) val2 = update_val_;
+			if (type.equals(TYPE_STOP_LIMIT) && update_type_.equals(ib.orders.UPDATE_START2_VALUE)) val2 = update_val_;
 			else val = update_val_;
 		}
-		if ((val <= sync_orders.WRONG_VALUE && !is_market) || (val2 <= sync_orders.WRONG_VALUE && type.equals(TYPE_STOP_LIMIT))) return null;
+		if ((val <= order.WRONG_VALUE && !is_market) || (val2 <= order.WRONG_VALUE && type.equals(TYPE_STOP_LIMIT))) return null;
 		
 		output.action((is_main_ ? ACTION_BUY : ACTION_SELL));		
 
@@ -125,7 +124,7 @@ public abstract class orders
 			if (type.equals(TYPE_STOP_LIMIT)) output.auxPrice(val2);
 		}
 
-		boolean transmit = (!is_main_ || (is_main_ && sync_orders.is_update_start_start2(update_type_)));
+		boolean transmit = (!is_main_ || (is_main_ && ib.orders.is_update_start_start2(update_type_)));
 
 		output.transmit(transmit);
 
@@ -140,8 +139,8 @@ public abstract class orders
 		{
 			type = order_.get_type(is_main_);
 			
-			if (type.equals(TYPE_MARKET) || (update_type_.equals(sync_orders.UPDATE_START2_VALUE) && !type.equals(TYPE_STOP_LIMIT))) type = null;
-			else if (sync_orders.is_update_market(update_type_)) type = TYPE_MARKET;
+			if (type.equals(TYPE_MARKET) || (update_type_.equals(ib.orders.UPDATE_START2_VALUE) && !type.equals(TYPE_STOP_LIMIT))) type = null;
+			else if (ib.orders.is_update_market(update_type_)) type = TYPE_MARKET;
 		}
 		else type = order_.get_type(is_main_);  
 		

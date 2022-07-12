@@ -9,10 +9,9 @@ import com.ib.client.Execution;
 
 import accessory.arrays;
 import accessory.parent_static;
-import db_ib.execs;
 import external_ib.orders;
 
-public abstract class async_execs extends parent_static 
+abstract class async_execs extends parent_static 
 {
 	public static final String USER = execs.USER;
 	public static final String SYMBOL = execs.SYMBOL;
@@ -28,16 +27,13 @@ public abstract class async_execs extends parent_static
 	public static final String SIDE_BOUGHT = orders.EXEC_SIDE_BOUGHT;
 	public static final String SIDE_SOLD = orders.EXEC_SIDE_SOLD;
 	
-	private static volatile boolean _enabled = false; 
+	public static volatile boolean _enabled = false; 
+	
 	private static volatile Hashtable<String, Hashtable<String, Object>> _all_vals = new Hashtable<String, Hashtable<String, Object>>();
-
-	public static void enable() { _enabled = true; }
-
-	public static void disable() { _enabled = false; }
 	
 	public static boolean is_ok() { return _enabled; }
 	
-	static void __exec_details(int id_, Contract contract_, Execution execution_) 
+	public static void __exec_details(int id_, Contract contract_, Execution execution_) 
 	{
 		if (!_enabled) return;
 		
@@ -84,17 +80,17 @@ public abstract class async_execs extends parent_static
 	{
 		if (_all_vals.get(exec_id_).size() < TARGET_TOT_FIELDS) return;
 		
-		if (!execs.exists(exec_id_))
+		if (!db_ib.execs.exists(exec_id_))
 		{	
 			HashMap<String, Object> vals = new HashMap<String, Object>(_all_vals.get(exec_id_));
 		
 			int order_id = (int)vals.get(ORDER_ID);
 			String side = (String)vals.get(SIDE);
 			
-			if (side.equals(SIDE_BOUGHT)) async_trades._start(order_id, false);
-			else if (side.equals(SIDE_SOLD)) async_trades._end(order_id, false);
+			if (side.equals(SIDE_BOUGHT)) trades._start(order_id, false);
+			else if (side.equals(SIDE_SOLD)) trades._end(order_id, false);
 
-			execs.insert(vals);			
+			db_ib.execs.insert(vals);			
 		}
 		
 		_all_vals.remove(exec_id_);

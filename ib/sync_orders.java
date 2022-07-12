@@ -10,62 +10,40 @@ import com.ib.client.Order;
 import accessory.arrays;
 import accessory.parent_static;
 import accessory.strings;
-import accessory_ib.types;
 import external_ib.contracts;
-import external_ib.orders;
 
-public abstract class sync_orders extends parent_static  
+abstract class sync_orders extends parent_static  
 {
-	public static final String PLACE = types.ORDERS_PLACE;
-	public static final String PLACE_MARKET = types.ORDERS_PLACE_MARKET;
-	public static final String PLACE_STOP = types.ORDERS_PLACE_STOP;
-	public static final String PLACE_LIMIT = types.ORDERS_PLACE_LIMIT;
-	public static final String PLACE_STOP_LIMIT = types.ORDERS_PLACE_STOP_LIMIT;
+	public static final String PLACE = orders.PLACE;
+	public static final String PLACE_MARKET = orders.PLACE_MARKET;
+	public static final String PLACE_STOP = orders.PLACE_STOP;
+	public static final String PLACE_LIMIT = orders.PLACE_LIMIT;
+	public static final String PLACE_STOP_LIMIT = orders.PLACE_STOP_LIMIT;
 
-	public static final String STATUS = types.ORDERS_STATUS;
-	public static final String STATUS_SUBMITTED = types.ORDERS_STATUS_SUBMITTED;
-	public static final String STATUS_FILLED = types.ORDERS_STATUS_FILLED;
-	public static final String STATUS_ACTIVE = types.ORDERS_STATUS_ACTIVE;
-	public static final String STATUS_INACTIVE = types.ORDERS_STATUS_INACTIVE;
+	public static final String STATUS = orders.STATUS;
+	public static final String STATUS_SUBMITTED = orders.STATUS_SUBMITTED;
+	public static final String STATUS_FILLED = orders.STATUS_FILLED;
+	public static final String STATUS_ACTIVE = orders.STATUS_ACTIVE;
+	public static final String STATUS_INACTIVE = orders.STATUS_INACTIVE;
 
-	public static final String CANCEL = types.ORDERS_CANCEL;
-	public static final String UPDATE = types.ORDERS_UPDATE;
-	public static final String UPDATE_START = types.ORDERS_UPDATE_START;
-	public static final String UPDATE_START_VALUE = types.ORDERS_UPDATE_START_VALUE;
-	public static final String UPDATE_START_MARKET = types.ORDERS_UPDATE_START_MARKET;
-	public static final String UPDATE_START2 = types.ORDERS_UPDATE_START2;
-	public static final String UPDATE_START2_VALUE = types.ORDERS_UPDATE_START2_VALUE;
-	public static final String UPDATE_STOP = types.ORDERS_UPDATE_STOP;
-	public static final String UPDATE_STOP_VALUE = types.ORDERS_UPDATE_STOP_VALUE;
-	public static final String UPDATE_STOP_MARKET = types.ORDERS_UPDATE_STOP_MARKET;
+	public static final String CANCEL = orders.CANCEL;
+	public static final String UPDATE = orders.UPDATE;
+	public static final String UPDATE_START = orders.UPDATE_START;
+	public static final String UPDATE_START_VALUE = orders.UPDATE_START_VALUE;
+	public static final String UPDATE_START_MARKET = orders.UPDATE_START_MARKET;
+	public static final String UPDATE_START2 = orders.UPDATE_START2;
+	public static final String UPDATE_START2_VALUE = orders.UPDATE_START2_VALUE;
+	public static final String UPDATE_STOP = orders.UPDATE_STOP;
+	public static final String UPDATE_STOP_VALUE = orders.UPDATE_STOP_VALUE;
+	public static final String UPDATE_STOP_MARKET = orders.UPDATE_STOP_MARKET;
 
 	public static final double WRONG_VALUE = order.WRONG_VALUE;
 	public static final int WRONG_ORDER_ID = order.WRONG_ORDER_ID;
 
-	public static final String DEFAULT_STATUS = STATUS_ACTIVE;
+	public static final String DEFAULT_STATUS = orders.DEFAULT_STATUS;
 
-	private static int _last_id_main = 0;
-	private static int _last_id_sec = 0;
-
-	public static boolean place_market(String symbol_, double quantity_, double stop_) { return place(PLACE_MARKET, symbol_, quantity_, stop_, WRONG_VALUE); }
-
-	public static boolean place_stop(String symbol_, double quantity_, double stop_, double start_) { return place(PLACE_STOP, symbol_, quantity_, stop_, start_); }
-
-	public static boolean place_limit(String symbol_, double quantity_, double stop_, double start_) { return place(PLACE_LIMIT, symbol_, quantity_, stop_, start_); }
-
-	public static boolean place_stop_limit(String symbol_, double quantity_, double stop_, double start_limit_, double start_stop_) { return place_update(new order(PLACE_STOP_LIMIT, symbol_, quantity_, stop_, start_limit_, start_stop_)); }
-
-	public static boolean update(int id_, String type_, double val_) { return update(get_order(id_), check_update(type_), val_); }
-
-	public static boolean update_start(String symbol_, double start_) { return update(symbol_, UPDATE_START_VALUE, start_); }
-
-	public static boolean update_start_market(String symbol_) { return update(symbol_, UPDATE_START_MARKET, WRONG_VALUE); }
-
-	public static boolean update_stop(String symbol_, double stop_) { return update(symbol_, UPDATE_STOP_VALUE, stop_); }
-
-	public static boolean update_stop_market(String symbol_) { return update(symbol_, UPDATE_STOP_MARKET, WRONG_VALUE); }
-
-	public static boolean update_start2(String symbol_, double start2_) { return update(symbol_, UPDATE_START2_VALUE, start2_); }
+	static int _last_id_main = 0;
+	static int _last_id_sec = 0;
 
 	public static boolean cancel(int id_)
 	{
@@ -89,10 +67,6 @@ public abstract class sync_orders extends parent_static
 
 		return output;
 	}
-
-	public static int get_last_id_main() { return _last_id_main; }
-
-	public static int get_last_id_sec() { return _last_id_sec; }
 
 	public static ArrayList<Integer> get_ids(String status_) { return get_ids(status_, null, true); }
 
@@ -120,41 +94,7 @@ public abstract class sync_orders extends parent_static
 		return ids;
 	}	
 
-	public static String get_type(String input_, boolean is_status_) { return db_ib.orders.status_type_db_to_order(input_, is_status_); }
-
-	public static String get_key(String input_, boolean is_status_) { return db_ib.orders.status_type_order_to_db(input_, is_status_); }
-
-	public static boolean is_status(String type_) { return strings.is_ok(order.check_status(type_)); }
-
-	public static boolean is_place(String type_) { return strings.is_ok(check_place(type_)); }
-
-	public static boolean is_update(String type_) { return strings.is_ok(check_update(type_)); }
-
-	public static boolean is_update_start(String type_) { return strings.is_ok(accessory.types.check_type(type_, UPDATE_START)); }
-
-	public static boolean is_update_stop(String type_) { return strings.is_ok(accessory.types.check_type(type_, UPDATE_STOP)); }
-
-	public static boolean is_update_start2(String type_) { return strings.is_ok(accessory.types.check_type(type_, UPDATE_START2)); }
-
-	public static boolean is_update_start_start2(String type_) { return (is_update_start(type_) || is_update_start2(type_)); }
-
-	public static boolean is_update_market(String type_) 
-	{ 
-		String type = check_update(type_);
-		if (!strings.is_ok(type)) return false;
-
-		return (type.equals(UPDATE_START_MARKET) || type.equals(UPDATE_STOP_MARKET)); 
-	}
-
-	public static boolean is_cancel(String type_) { return strings.is_ok(check_cancel(type_)); }
-
-	public static String check_place(String type_) { return accessory.types.check_type(type_, PLACE); }
-
-	public static String check_update(String type_) { return accessory.types.check_type(type_, UPDATE); }
-
-	public static String check_cancel(String type_) { return accessory.types.check_type(type_, CANCEL); }
-
-	static void order_status(int order_id_, String status_ib_) 
+	public static void order_status(int order_id_, String status_ib_) 
 	{	
 		if (!sync.is_ok()) return;
 		
@@ -162,19 +102,23 @@ public abstract class sync_orders extends parent_static
 		
 		sync.update_orders(status_ib_);
 	}
+	
+	public static void open_order_end() { sync.end(); }
+	
+	public static boolean update(String symbol_, String type_, double val_) { return update(get_order(symbol_), orders.check_update(type_), val_); }
 
-	private static boolean update(String symbol_, String type_, double val_) { return update(get_order(symbol_), check_update(type_), val_); }
+	public static boolean update(order order_, String type_, double val_) { return ((order_ != null && strings.is_ok(type_)) ? place_update(order_, type_, val_) : false); }
 
-	private static boolean update(order order_, String type_, double val_) { return ((order_ != null && strings.is_ok(type_)) ? place_update(order_, type_, val_) : false); }
+	public static boolean place(String type_place_, String symbol_, double quantity_, double stop_, double start_) { return place_update(new order(type_place_, symbol_, quantity_, stop_, start_)); }
 
-	private static boolean place(String type_place_, String symbol_, double quantity_, double stop_, double start_) { return place_update(new order(type_place_, symbol_, quantity_, stop_, start_)); }
-
-	private static order get_order(int id_)
+	public static order get_order(int id_)
 	{
 		async_orders.perform_regular_checks();
 
 		return db_ib.orders.get_to_order(id_);
 	}
+
+	public static boolean place_update(order order_) { return place_update(order_, null, WRONG_VALUE); }
 
 	private static order get_order(String symbol_)
 	{
@@ -183,13 +127,11 @@ public abstract class sync_orders extends parent_static
 		return db_ib.orders.get_to_order(symbol_);
 	}
 
-	private static boolean place_update(order order_) { return place_update(order_, null, WRONG_VALUE); }
-
 	private static boolean place_update(order order_, String update_type_, double update_val_) 
 	{
 		if (!order.is_ok(order_)) return false;
 
-		boolean is_update = is_update(update_type_);
+		boolean is_update = orders.is_update(update_type_);
 
 		Contract contract = contracts.get_contract(order_.get_symbol());
 		if (contract == null) return false;
@@ -203,11 +145,11 @@ public abstract class sync_orders extends parent_static
 		for (int i = 0; i < 2; i++)
 		{
 			boolean is_main = (i == 0);	
-			if (((is_update_start_start2(update_type_)) && !is_main) || (is_update_stop(update_type_) && is_main)) continue;
+			if (((orders.is_update_start_start2(update_type_)) && !is_main) || (orders.is_update_stop(update_type_) && is_main)) continue;
 
 			int id = order_.get_id(is_main);
 
-			Order order = (is_update ? orders.get_order_update(order_, update_type_, update_val_, is_main) : orders.get_order_new(order_, is_main));
+			Order order = (is_update ? external_ib.orders.get_order_update(order_, update_type_, update_val_, is_main) : external_ib.orders.get_order_new(order_, is_main));
 			if (order == null) return false;
 
 			boolean is_ok = true;
@@ -234,7 +176,7 @@ public abstract class sync_orders extends parent_static
 			}
 		}
 
-		if (is_update) update_order(main, update_val_, is_update_market(update_type_), is_update_start_start2(update_type_));
+		if (is_update) update_order(main, update_val_, orders.is_update_market(update_type_), orders.is_update_start_start2(update_type_));
 		else
 		{
 			if (!sync.wait_orders(PLACE)) return false;

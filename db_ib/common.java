@@ -91,11 +91,15 @@ public abstract class common
 	
 	public static boolean is_enabled(String source_, String where_) { return (!arrays.value_exists(get_all_sources_enabled(), source_) || accessory.db.select_one_boolean(source_, FIELD_ENABLED, where_, null)); }
 
-	public static String get_val(String source_, String field_, String where_) { return accessory.db.select_one_string(source_, field_, where_, null); }
+	public static String get_string(String source_, String field_, String where_) { return accessory.db.select_one_string(source_, field_, where_, null); }
+
+	public static int get_int(String source_, String col_field_, String where_, boolean is_quick_) { return (is_quick_ ? accessory.db.select_one_int(source_, col_field_, where_, null) : accessory.db.select_one_int_quick(source_, col_field_, where_, null)); }
 
 	public static HashMap<String, String> get_vals(String source_, String where_) { return get_vals(source_, null, where_); }
 
 	public static HashMap<String, String> get_vals(String source_, String[] fields_, String where_) { return accessory.db.select_one(source_, fields_, where_, null); }
+
+	public static HashMap<String, String> get_vals_quick(String source_, String[] cols_, String where_) { return accessory.db.select_one_quick(source_, cols_, where_, null); }
 
 	public static boolean insert(String source_, HashMap<String, Object> vals_) 
 	{ 
@@ -159,6 +163,8 @@ public abstract class common
 	}
 
 	public static String get_where_user(String source_) { return get_where(source_, FIELD_USER, ib.basic.get_user(), false); }
+
+	public static String get_where_symbol(String source_, String symbol_, boolean quick_) { return (quick_ ? get_where_symbol_quick(source_, symbol_) : get_where_symbol(source_, symbol_)); }
 
 	public static String get_where_symbol(String source_, String symbol_) { return get_where(source_, FIELD_SYMBOL, symbol_, false); }
 

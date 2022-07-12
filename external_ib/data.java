@@ -37,10 +37,12 @@ public abstract class data
 	//------
 
 	public static final int WRONG_DATA = 0;
-	
+
+	public static boolean is_halted(int val_) { return (halted_is_ok(val_) && (val_ != HALTED_NA && val_ != HALTED_NOT)); }
+
 	public static boolean tick_is_ok(int tick_) { return arrays.value_exists(get_all_ticks(), tick_); }
 
-	public static boolean halt_is_ok(int halt_) { return arrays.value_exists(get_all_halted(), halt_); }
+	public static boolean halted_is_ok(int val_) { return arrays.value_exists(get_all_halted(), val_); }
 
 	public static boolean data_is_ok(int data_) { return arrays.value_exists(get_all_data(), data_); }
 

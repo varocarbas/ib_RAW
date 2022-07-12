@@ -24,6 +24,8 @@ public abstract class basic extends parent_static
 	public static String get_main_id() { return (String)config.get_basic(CONFIG_MAIN_ID); }
 
 	public static boolean update_main_id(String id_) { return config.update_basic(CONFIG_MAIN_ID, id_); }
+
+	public static void start() { sync_basic.start(); }
 	
 	public static String get_user() { return USER; }
 
@@ -75,6 +77,8 @@ public abstract class basic extends parent_static
 
 	public static String get_encrypted_file_path(String id_) { return credentials.get_path(get_encryption_id(id_), basic.get_user(), true); }
 
+	public static String get_account_ib_ini(boolean decrypt_) { return sync_basic.get_account_ib_last(db_ib.basic.get_account_ib(), decrypt_); } 
+	
 	private static String encrypt_internal(String id_, String user_, String plain_) { return credentials.encrypt_string(id_, user_, plain_); }
 
 	private static String get_user_internal()

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import accessory.parent_ini;
 import accessory.strings;
 import ib.basic;
-import ib.sync_basic;
 
 public class _ini extends parent_ini
 {	
@@ -74,15 +73,15 @@ public class _ini extends parent_ini
 		String account_ib = (strings.is_ok(account_ib_) ? account_ib_ : basic.get_account_ib_from_file());
 		if (!strings.is_ok(account_ib)) account_ib = strings.DEFAULT;
 		
-		String current = sync_basic.get_account_ib_ini(true);
+		String current = basic.get_account_ib_ini(true);
 		
 		if (!(!strings.is_ok(account_ib) && !strings.is_ok(current)) && !account_ib.equals(current))
 		{
 			account_ib = ib.basic.encrypt_account_ib(account_ib);
-			
+
 			db_ib.basic.update_account_ib(account_ib);
 		}
-		
-		_account_ib = sync_basic.get_account_ib_ini(false);
+
+		_account_ib = basic.get_account_ib_ini(false);
 	}
 }

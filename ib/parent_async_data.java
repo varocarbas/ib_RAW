@@ -35,8 +35,15 @@ public abstract class parent_async_data extends parent_static
 	public static final int ASK_SIZE_IB = external_ib.data.TICK_ASK_SIZE;
 	public static final int BID_SIZE_IB = external_ib.data.TICK_BID_SIZE;
 
+	public static final int HALTED_NA = -1;
+	public static final int HALTED_NOT = 0;
+	public static final int HALTED_GENERAL = 1;	
+	public static final int HALTED_VOLATILITY = 2;	
+	
 	public static final String PRICE = db_ib.common.FIELD_PRICE;
 	public static final String VOLUME = db_ib.common.FIELD_VOLUME;
+	public static final String HALTED = db_ib.common.FIELD_HALTED;
+	public static final String HALTED_TOT = db_ib.common.FIELD_HALTED_TOT;
 	
 	public static final String TYPE_SNAPSHOT = types.ASYNC_MARKET_SNAPSHOT;
 	public static final String TYPE_STREAM = types.ASYNC_MARKET_STREAM;
@@ -45,6 +52,7 @@ public abstract class parent_async_data extends parent_static
 	
 	public static final int WRONG_ID = common.WRONG_ID;
 	public static final int WRONG_DATA = data.WRONG_DATA;
+	public static final int WRONG_HALTED = HALTED_NA - 1;
 	
 	public static final boolean DEFAULT_SNAPSHOT_QUICK = true;
 	public static final boolean DEFAULT_SNAPSHOT_NONSTOP = true;
@@ -64,10 +72,12 @@ public abstract class parent_async_data extends parent_static
 	protected volatile HashMap<Integer, HashMap<String, String>> _vals_quick = new HashMap<Integer, HashMap<String, String>>();
 	protected volatile HashMap<Integer, String> _ids = new HashMap<Integer, String>();
 	protected volatile HashMap<Integer, Integer> _data_types = new HashMap<Integer, Integer>();
-
+	
 	protected String _id = strings.DEFAULT; 
 	protected String _source = strings.DEFAULT; 
-
+	protected boolean _includes_halted = false; 
+	protected boolean _includes_halted_tot = false;
+	
 	private static HashMap<String, String> _cols = new HashMap<String, String>();
 	
 	protected abstract HashMap<Integer, String> get_all_prices();
@@ -164,7 +174,15 @@ public abstract class parent_async_data extends parent_static
 		}
 		
 		String field = get_field(get_all_generics(), tick_);
-		if (field != null) update(id_, field, value_);
+		if (field != null) 
+		{
+			if (tick_ == HALTED_IB) 
+			{
+				int val = adapt_halted(id_, value_);
+				if (val != WRONG_HALTED) update(id_, field, val);
+			}
+			else update(id_, field, value_);
+		}
 		
 		__unlock();
 	}
@@ -384,7 +402,7 @@ public abstract class parent_async_data extends parent_static
 		_ids.remove(id_);	
 		_symbols.remove(id_);
 		_data_types.remove(id_);
-	
+		
 		if (_is_db_quick) _vals_quick.remove(id_); 
 		else _vals.remove(id_); 
 		
@@ -405,6 +423,25 @@ public abstract class parent_async_data extends parent_static
 		return output;
 	}
 
+	private int adapt_halted(int id_, double val_)
+	{
+		int output = WRONG_HALTED;
+		if (!_includes_halted) return output;
+		
+		int val = (int)val_;
+		String symbol = _get_symbol(id_, false);
+
+		boolean halted = data.is_halted(val);
+		boolean halted_db = db_ib.async_data.is_halted(_source, symbol, _is_db_quick);
+	
+		if (halted == halted_db) return output;		
+		output = val;
+		
+		if (_includes_halted_tot && halted && !halted_db) async_data.update_halted_tot(_source, symbol, _is_db_quick);		
+
+		return output;
+	}
+	
 	private String get_col(String field_) 
 	{ 
 		if (_cols.size() == 0) populate_cols();

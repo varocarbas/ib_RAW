@@ -9,11 +9,11 @@ import accessory.misc;
 import accessory.numbers;
 import accessory.parent_tests;
 import db_ib.common;
-import ib.async_data_market;
+import ib.basic;
 import ib.conn;
+import ib.market;
+import ib.orders;
 import ib.sync;
-import ib.sync_basic;
-import ib.sync_orders;
 
 public class tests extends parent_tests 
 {
@@ -110,7 +110,7 @@ public class tests extends parent_tests
 		Entry<String, Double> symbol_info = get_symbol(0);
 		int pause = 5;
 		
-		Class<?> class0 = sync_orders.class;
+		Class<?> class0 = orders.class;
 		String name0 = class0.getName();
 
 		update_screen(name0, true, 1);
@@ -133,20 +133,20 @@ public class tests extends parent_tests
 		Object target = true;
 		
 		HashMap<String, String> items = new HashMap<String, String>();
-		items.put(sync_orders.PLACE_MARKET, "place_market");
-		items.put(sync_orders.PLACE_STOP, "place_stop");
-		items.put(sync_orders.PLACE_LIMIT, "place_limit");
-		items.put(sync_orders.PLACE_STOP_LIMIT, "place_stop_limit");
+		items.put(orders.PLACE_MARKET, "place_market");
+		items.put(orders.PLACE_STOP, "place_stop");
+		items.put(orders.PLACE_LIMIT, "place_limit");
+		items.put(orders.PLACE_STOP_LIMIT, "place_stop_limit");
 
 		double stop_new = numbers.apply_perc(stop, -2, true);
 		double start_new = numbers.apply_perc(start, 3, true);
 		double start2_new = numbers.apply_perc(start2, 1, true);
 		
 		HashMap<String, String[]> items2 = new HashMap<String, String[]>();
-		items2.put(sync_orders.PLACE_MARKET, new String[] { "update_stop", "update_stop_market" });
-		items2.put(sync_orders.PLACE_STOP, new String[] { "update_start", "update_start_market" });
-		items2.put(sync_orders.PLACE_LIMIT, new String[] { "update_start", "update_stop_market" });
-		items2.put(sync_orders.PLACE_STOP_LIMIT, new String[] { "update_start", "update_start2" });
+		items2.put(orders.PLACE_MARKET, new String[] { "update_stop", "update_stop_market" });
+		items2.put(orders.PLACE_STOP, new String[] { "update_start", "update_start_market" });
+		items2.put(orders.PLACE_LIMIT, new String[] { "update_start", "update_stop_market" });
+		items2.put(orders.PLACE_STOP_LIMIT, new String[] { "update_start", "update_start2" });
 
 		for (Entry<String, String> item: items.entrySet())
 		{
@@ -212,7 +212,7 @@ public class tests extends parent_tests
 			name = "cancel";
 			String name2 = name + "_" + type;
 			
-			int id = sync_orders.get_last_id_main();
+			int id = orders.get_last_id_main();
 			
 			args = new ArrayList<Object>();
 			args.add(id);
@@ -231,7 +231,7 @@ public class tests extends parent_tests
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
 
-		Class<?> class0 = sync_basic.class;
+		Class<?> class0 = basic.class;
 		String name0 = class0.getName();
 
 		update_screen(name0, true, 1);
@@ -254,7 +254,7 @@ public class tests extends parent_tests
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
 		
-		Class<?> class0 = async_data_market.class;
+		Class<?> class0 = market.class;
 		String name0 = class0.getName();
 		
 		update_screen(name0, true, 1);
@@ -286,7 +286,7 @@ public class tests extends parent_tests
 		misc.pause_secs(pause1);
 		output.put(name, is_ok);
 		
-		async_data_market.__stop_all();
+		market.__stop_all();
 		misc.pause_secs(pause2);
 		
 		outputs.put(name0, output);

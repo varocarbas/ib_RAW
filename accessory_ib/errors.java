@@ -7,11 +7,11 @@ import accessory.arrays;
 import accessory.logs;
 import accessory.misc;
 import accessory.strings;
-import ib.async_data_market;
 import ib.common_xsync;
 import ib.conn;
+import ib.market;
+import ib.orders;
 import ib.sync;
-import ib.sync_orders;
 
 public abstract class errors
 {
@@ -65,7 +65,7 @@ public abstract class errors
 		
 		if (code_ == external_ib.errors.ERROR_200)
 		{
-			String symbol = async_data_market.__get_symbol(id_);
+			String symbol = market.__get_symbol(id_);
 			if (strings.is_ok(symbol)) info.put("symbol", symbol);
 		}
 
@@ -76,7 +76,7 @@ public abstract class errors
 	{
 		return 
 		(
-			(code_ == external_ib.errors.ERROR_202 && sync_orders.is_cancelling(id_)) ||
+			(code_ == external_ib.errors.ERROR_202 && orders.is_cancelling(id_)) ||
 			code_ == external_ib.errors.ERROR_300
 		);
 	}

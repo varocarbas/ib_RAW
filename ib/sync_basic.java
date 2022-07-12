@@ -5,7 +5,7 @@ import accessory_ib._ini;
 import db_ib.basic;
 import external_ib.contracts;
 
-public abstract class sync_basic 
+abstract class sync_basic 
 {
 	public static void start()
 	{
@@ -29,10 +29,6 @@ public abstract class sync_basic
 		return conn_type;
 	} 
 	
-	public static boolean is_ok(int req_id_, String account_id_, String key_, String currency_) { return (sync.is_ok(req_id_, key_) && ib.basic.account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
-	
-	public static boolean is_ok(int req_id_) { return sync.is_ok(req_id_); }
-
 	public static String get_account_ib() 
 	{
 		String account_ib = _ini.get_account_ib();
@@ -41,8 +37,6 @@ public abstract class sync_basic
 		
 		return get_account_ib_last(account_ib, true);
 	} 
-	
-	public static String get_account_ib_ini(boolean decrypt_) { return get_account_ib_last(basic.get_account_ib(), decrypt_); } 
 	
 	public static String get_currency() 
 	{
@@ -53,7 +47,21 @@ public abstract class sync_basic
 		return currency;
 	} 
 
-	private static String get_account_ib_last(String account_ib_, boolean decrypt_) 
+	public static void account_summary(int id_, String account_, String tag_, String value_, String currency_) 
+	{
+		if (!is_ok(id_, account_, tag_, currency_)) return;
+
+		sync.update(value_);
+	}
+	
+	public static void account_summary_end(int id_) 
+	{
+		if (!sync.is_ok(id_)) return;
+
+		sync.end();
+	}
+
+	public static String get_account_ib_last(String account_ib_, boolean decrypt_) 
 	{
 		String account_ib = account_ib_;
 		
@@ -65,7 +73,9 @@ public abstract class sync_basic
 
 		return account_ib;
 	} 
-	
+		
+	private static boolean is_ok(int req_id_, String account_id_, String key_, String currency_) { return (sync.is_ok(req_id_, key_) && ib.basic.account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
+
 	private static double get_funds(boolean ini_too_) 
 	{ 
 		double money = sync.get_funds();

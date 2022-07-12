@@ -3,14 +3,41 @@ package db_ib;
 import java.util.HashMap;
 
 import accessory.arrays;
+import external_ib.data;
 
 public abstract class async_data 
 {
 	public static final String SYMBOL = common.FIELD_SYMBOL;
+	public static final String HALTED = common.FIELD_HALTED;
+	public static final String HALTED_TOT = common.FIELD_HALTED_TOT;
 	
 	public static boolean exists(String source_, String symbol_) { return common.exists(source_, common.get_where_symbol(source_, symbol_)); }
 
 	public static boolean is_enabled(String source_, String symbol_) { return common.is_enabled(source_, common.get_where_symbol(source_, symbol_)); }
+
+	public static boolean is_halted(String source_, String symbol_, boolean is_quick_)
+	{
+		int temp = common.get_int(source_, HALTED, common.get_where_symbol(source_, symbol_, is_quick_), is_quick_);
+	
+		return data.is_halted(temp);
+	}
+	
+	public static int get_halted_tot(String source_, String symbol_, boolean is_quick_) { return common.get_int(source_, (is_quick_ ? get_col(source_, HALTED_TOT) : HALTED_TOT), common.get_where_symbol(source_, symbol_, is_quick_), is_quick_); }
+	
+	public static boolean update_halted_tot(String source_, String symbol_, boolean is_quick_) 
+	{ 
+		boolean output = false;
+		
+		int val = get_halted_tot(source_, symbol_, is_quick_);
+		
+		if (val < 0) val = 0;
+		val++;
+		
+		if (is_quick_) output = async_data.update_quick(source_, symbol_, get_col(source_, HALTED_TOT), Integer.toString(val));
+		else output = async_data.update(source_, symbol_, HALTED_TOT, val);
+		
+		return output;
+	}
 
 	public static boolean insert(String source_, String symbol_) { return common.insert(source_, get_default_vals(symbol_)); }
 

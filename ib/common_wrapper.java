@@ -10,9 +10,9 @@ public abstract class common_wrapper
 {
 	public static final String KEY_FUNDS = "AvailableFunds";
 	
-	public static void accountSummary(int id_, String account_, String tag_, String value_, String currency_) { sync.account_summary(id_, account_, tag_, value_, currency_); }
+	public static void accountSummary(int id_, String account_, String tag_, String value_, String currency_) { sync_basic.account_summary(id_, account_, tag_, value_, currency_); }
 	
-	public static void accountSummaryEnd(int id_) { sync.account_summary_end(id_); }
+	public static void accountSummaryEnd(int id_) { sync_basic.account_summary_end(id_); }
 	
 	public static void nextValidId(int id_) 
 	{
@@ -46,7 +46,7 @@ public abstract class common_wrapper
 		//appreciably speed everything up. That is, all the relevant information is assumed to 
 		//have already been received right after getting certain size value.
 
-		async_data_market.__stop_snapshot(id_);
+		market.__stop_snapshot(id_);
 		async_data_trades.__stop_snapshot(id_);
 		async_data_watchlist.__stop_snapshot(id_);
 	}	
@@ -67,7 +67,7 @@ public abstract class common_wrapper
 		async_trades.__order_status(order_id_, status_ib_);
 	}
 
-	public static void openOrderEnd() { sync.open_order_end(); }
+	public static void openOrderEnd() { sync_orders.open_order_end(); }
 	
 	public static void __execDetails(int id_, Contract contract_, Execution execution_) { async_execs.__exec_details(id_, contract_, execution_); }
 

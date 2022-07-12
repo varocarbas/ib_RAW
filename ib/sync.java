@@ -34,6 +34,8 @@ public abstract class sync extends parent_static
 	public static final String OUT_STRINGS = types.SYNC_OUT_STRINGS;
 	public static final String OUT_ORDERS = types.SYNC_OUT_ORDERS;
 
+	public static final String KEY_FUNDS = common_wrapper.KEY_FUNDS;
+	
 	public static final int WRONG_REQ_ID = common.WRONG_ID;
 	public static final int WRONG_ORDER_ID = sync_orders.WRONG_ORDER_ID;
 	
@@ -113,20 +115,6 @@ public abstract class sync extends parent_static
 	public static void end() { if (_getting) _getting = false; }
 
 	public static boolean wait_orders(String type_) { return wait(DEFAULT_TIMEOUT, true, type_); }
-	
-	static void account_summary(int id_, String account_, String tag_, String value_, String currency_) 
-	{
-		if (!sync_basic.is_ok(id_, account_, tag_, currency_)) return;
-
-		update(value_);
-	}
-	
-	static void account_summary_end(int id_) 
-	{
-		if (!sync_basic.is_ok(id_)) return;
-
-		end();
-	}
 
 	static boolean next_valid_id(int id_) 
 	{
@@ -139,8 +127,6 @@ public abstract class sync extends parent_static
 		return true;
 	}
 	
-	static void open_order_end() { end(); }
-	
 	static boolean is_ok(int id_) { return (_getting && (_req_id == id_)); }
 
 	static boolean is_ok(int id_, String key_) 
@@ -149,7 +135,7 @@ public abstract class sync extends parent_static
 	
 		boolean is_ok = true;
 		
-		if (_get.equals(GET_FUNDS) && !strings.are_equal(key_, common_wrapper.KEY_FUNDS)) is_ok = false; 
+		if (_get.equals(GET_FUNDS)) is_ok = strings.are_equal(key_, KEY_FUNDS); 
 		
 		return is_ok;
 	}
@@ -231,7 +217,7 @@ public abstract class sync extends parent_static
 	{	
 		_order_id = id_;
 
-		boolean is_cancel = sync_orders.is_cancel(type_);
+		boolean is_cancel = orders.is_cancel(type_);
 
 		boolean wait_default = false;
 		boolean wait_error = false;
@@ -388,8 +374,8 @@ public abstract class sync extends parent_static
 		boolean is_place = false;
 		boolean is_cancel = false;
 		
-		if (sync_orders.is_place(type_)) is_place = true;
-		else if (sync_orders.is_cancel(type_)) is_cancel = true;
+		if (orders.is_place(type_)) is_place = true;
+		else if (orders.is_cancel(type_)) is_cancel = true;
 		else 
 		{
 			if (!_getting) return false;

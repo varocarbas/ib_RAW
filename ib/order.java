@@ -7,7 +7,6 @@ import accessory.parent;
 import accessory.strings;
 import accessory_ib.config;
 import accessory_ib.types;
-import external_ib.orders;
 
 public class order extends parent
 {
@@ -20,10 +19,10 @@ public class order extends parent
 	public static final String STATUS_ACTIVE = types.ORDERS_STATUS_ACTIVE;
 	public static final String STATUS_INACTIVE = types.ORDERS_STATUS_INACTIVE;
 	
-	public static final String TYPE_MARKET = orders.TYPE_MARKET;
-	public static final String TYPE_STOP = orders.TYPE_STOP;
-	public static final String TYPE_LIMIT = orders.TYPE_LIMIT;
-	public static final String TYPE_STOP_LIMIT = orders.TYPE_STOP_LIMIT;
+	public static final String TYPE_MARKET = external_ib.orders.TYPE_MARKET;
+	public static final String TYPE_STOP = external_ib.orders.TYPE_STOP;
+	public static final String TYPE_LIMIT = external_ib.orders.TYPE_LIMIT;
+	public static final String TYPE_STOP_LIMIT = external_ib.orders.TYPE_STOP_LIMIT;
 	public static final String TYPE_PLACE_MARKET = types.ORDERS_PLACE_MARKET;
 	public static final String TYPE_PLACE_STOP = types.ORDERS_PLACE_STOP;
 	public static final String TYPE_PLACE_LIMIT = types.ORDERS_PLACE_LIMIT;
@@ -32,7 +31,7 @@ public class order extends parent
 	public static final double WRONG_VALUE = 0.0;
 	public static final int WRONG_ORDER_ID = -1;
 
-	public static final String DEFAULT_TIF = orders.TIF_GTC; 
+	public static final String DEFAULT_TIF = external_ib.orders.TIF_GTC; 
 	public static final boolean DEFAULT_QUANTITIES_INT = true;
 	
 	private int _id_main = WRONG_ORDER_ID;
@@ -57,16 +56,16 @@ public class order extends parent
 	{ 
 		String tif = (String)config.get_order(CONFIG_TIF);
 		
-		return (orders.tif_is_ok(tif) ? tif : strings.DEFAULT);
+		return (external_ib.orders.tif_is_ok(tif) ? tif : strings.DEFAULT);
 	}
 
 	public static boolean quantities_int() { return config.get_order_boolean(CONFIG_QUANTITIES_INT); }
 
-	public static String check_type_place(String type_) { return sync_orders.check_place(type_); }
+	public static String check_type_place(String type_) { return ib.orders.check_place(type_); }
 
 	public static String check_symbol(String symbol_) { return common.check_symbol(symbol_); }
 	
-	public static boolean type_is_ok(String type_) { return orders.type_is_ok(type_); }
+	public static boolean type_is_ok(String type_) { return external_ib.orders.type_is_ok(type_); }
 	
 	public static String type_from_place(String type_place_)
 	{
@@ -88,16 +87,16 @@ public class order extends parent
 		String status = strings.DEFAULT;
 		if (!strings.is_ok(status_ib_)) return status;
 
-		if (status_ib_.equals(orders.STATUS_IB_SUBMITTED) || status_ib_.equals(orders.STATUS_IB_PRESUBMITTED)) status = (be_specific_ ? STATUS_SUBMITTED : STATUS_ACTIVE);
-		else if (status_ib_.equals(orders.STATUS_IB_FILLED)) status = (be_specific_ ? STATUS_FILLED : STATUS_ACTIVE);
-		else if (!status_ib_.equals(orders.STATUS_IB_PENDING_SUBMIT) && !status_ib_.equals(orders.STATUS_IB_PENDING_CANCEL) && !status_ib_.equals(orders.STATUS_IB_API_CANCELLED)) status = STATUS_INACTIVE;
+		if (status_ib_.equals(external_ib.orders.STATUS_IB_SUBMITTED) || status_ib_.equals(external_ib.orders.STATUS_IB_PRESUBMITTED)) status = (be_specific_ ? STATUS_SUBMITTED : STATUS_ACTIVE);
+		else if (status_ib_.equals(external_ib.orders.STATUS_IB_FILLED)) status = (be_specific_ ? STATUS_FILLED : STATUS_ACTIVE);
+		else if (!status_ib_.equals(external_ib.orders.STATUS_IB_PENDING_SUBMIT) && !status_ib_.equals(external_ib.orders.STATUS_IB_PENDING_CANCEL) && !status_ib_.equals(external_ib.orders.STATUS_IB_API_CANCELLED)) status = STATUS_INACTIVE;
 		
 		return status;
 	}	
 
 	public static boolean is_status(String status_ib_, String status_)
 	{
-		if (!orders.status_is_ok(status_ib_)) return false;
+		if (!external_ib.orders.status_is_ok(status_ib_)) return false;
 
 		String status = check_status(status_);
 		if (!strings.is_ok(status)) return false;
