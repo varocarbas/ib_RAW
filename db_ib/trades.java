@@ -1,5 +1,6 @@
 package db_ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import ib.order;
@@ -18,18 +19,22 @@ public abstract class trades
 	public static final String HALTED = common.FIELD_HALTED;
 	public static final String UNREALISED = common.FIELD_UNREALISED;	
 	public static final String IS_ACTIVE = common.FIELD_IS_ACTIVE;
-
+	public static final String POSITION = common.FIELD_POSITION;
+	
 	public static boolean exists(int order_id_) { return common.exists(SOURCE, common.get_where_order_id(SOURCE, order_id_)); }
 
 	public static boolean is_ok(int order_id_) { return orders.exists_active(order_id_); }
 	
 	public static String get_symbol(int order_id_) { return order.get_symbol(order_id_); }
+
+	public static ArrayList<Double> get_all_positions(String symbol_) { return common.get_all_decimals(SOURCE, POSITION, common.get_where_symbol(SOURCE, symbol_)); }
 	
 	public static boolean insert(int order_id_, String symbol_) 
 	{ 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		vals.put(ORDER_ID_MAIN, order_id_);
 		vals.put(SYMBOL, symbol_);
+		vals.put(POSITION, ib.trades.get_position(symbol_));
 		
 		return common.insert(SOURCE, vals);
 	}

@@ -7,8 +7,6 @@ abstract class async_watchlist extends parent_static
 {
 	public static boolean symbol_exists(String symbol_) { return watchlist.exists(symbol_); }
 
-	public static String normalise_symbol(String symbol_) { return parent_async_data.normalise_symbol(symbol_); }
-	
 	public static void add(String symbol_) { async_data_watchlist._start(symbol_, false); }
 	
 	public static void remove(String symbol_) 

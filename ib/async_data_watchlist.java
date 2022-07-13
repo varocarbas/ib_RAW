@@ -10,11 +10,6 @@ class async_data_watchlist extends parent_async_data
 	
 	public static final String SOURCE = watchlist.SOURCE;
 	
-	public static final String PRICE = watchlist.PRICE;
-	public static final String VOLUME = watchlist.VOLUME;
-	public static final String HALTED = watchlist.HALTED;
-	public static final String HALTED_TOT = watchlist.HALTED_TOT;
-	
 	public static final String TYPE = TYPE_SNAPSHOT;
 	public static final int DATA = external_ib.data.DATA_LIVE;
 	

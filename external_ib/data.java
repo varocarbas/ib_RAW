@@ -1,6 +1,7 @@
 package external_ib;
 
 import accessory.arrays;
+import accessory.numbers;
 import accessory_ib._alls;
 
 public abstract class data 
@@ -37,15 +38,16 @@ public abstract class data
 	//------
 
 	public static final int WRONG_DATA = 0;
-
+	public static final int WRONG_HALTED = HALTED_NA - 1;
+	
 	public static boolean is_halted(int val_) { return (halted_is_ok(val_) && (val_ != HALTED_NA && val_ != HALTED_NOT)); }
 
-	public static boolean tick_is_ok(int tick_) { return arrays.value_exists(get_all_ticks(), tick_); }
+	public static boolean tick_is_ok(int val_) { return arrays.value_exists(get_all_ticks(), val_); }
 
-	public static boolean halted_is_ok(int val_) { return arrays.value_exists(get_all_halted(), val_); }
-
-	public static boolean data_is_ok(int data_) { return arrays.value_exists(get_all_data(), data_); }
-
+	public static boolean halted_is_ok(int val_) { return numbers.is_ok(val_, HALTED_NA, HALTED_VOLATILITY); }
+	
+	public static boolean data_is_ok(int val_) { return numbers.is_ok(val_, DATA_LIVE, DATA_DELAYED_FROZEN); }
+	
 	public static int[] populate_all_ticks()
 	{
 		return new int[]
@@ -55,13 +57,5 @@ public abstract class data
 		};
 	}
 
-	public static int[] populate_all_halted() { return new int[] { HALTED_NA, HALTED_NOT, HALTED_GENERAL, HALTED_VOLATILITY }; }
-
-	public static int[] populate_all_data() { return new int[] { DATA_LIVE, DATA_FROZEN, DATA_DELAYED, DATA_DELAYED_FROZEN }; }	
-
-	private static int[] get_all_ticks() { return _alls.EXTERNAL_MARKET_TICKS; }
-
-	private static int[] get_all_halted() { return _alls.EXTERNAL_MARKET_HALTED; }
-
-	private static int[] get_all_data() { return _alls.EXTERNAL_MARKET_DATA; }	
+	private static int[] get_all_ticks() { return _alls.EXTERNAL_DATA_TICKS; }
 }

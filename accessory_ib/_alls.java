@@ -30,9 +30,7 @@ public class _alls extends parent_ini_first
 	
 	public static String[] EXTERNAL_CONTRACTS_SECURITIES = null;
 	
-	public static int[] EXTERNAL_MARKET_TICKS = null;
-	public static int[] EXTERNAL_MARKET_HALTED = null;
-	public static int[] EXTERNAL_MARKET_DATA = null;
+	public static int[] EXTERNAL_DATA_TICKS = null;
 	
 	public static String[] EXTERNAL_ORDERS_EXEC_SIDES = null;
 	public static String[] EXTERNAL_ORDERS_ACTIONS = null;
@@ -65,9 +63,7 @@ public class _alls extends parent_ini_first
 		
 		EXTERNAL_CONTRACTS_SECURITIES = external_ib.contracts.populate_all_securities();
 		
-		EXTERNAL_MARKET_TICKS = external_ib.data.populate_all_ticks();
-		EXTERNAL_MARKET_HALTED = external_ib.data.populate_all_halted();
-		EXTERNAL_MARKET_DATA = external_ib.data.populate_all_data();		
+		EXTERNAL_DATA_TICKS = external_ib.data.populate_all_ticks();	
 		
 		EXTERNAL_ORDERS_EXEC_SIDES = external_ib.orders.populate_all_exec_sides();
 		EXTERNAL_ORDERS_ACTIONS = external_ib.orders.populate_all_actions();

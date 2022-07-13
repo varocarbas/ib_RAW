@@ -1,7 +1,6 @@
 package ib;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 
 import com.ib.client.CommissionReport;
 import com.ib.client.Contract;
@@ -29,7 +28,7 @@ abstract class async_execs extends parent_static
 	
 	public static volatile boolean _enabled = false; 
 	
-	private static volatile Hashtable<String, Hashtable<String, Object>> _all_vals = new Hashtable<String, Hashtable<String, Object>>();
+	private static volatile HashMap<String, HashMap<String, Object>> _all_vals = new HashMap<String, HashMap<String, Object>>();
 	
 	public static boolean is_ok() { return _enabled; }
 	
@@ -39,7 +38,7 @@ abstract class async_execs extends parent_static
 		
 		__lock();
 		
-		Hashtable<String, Object> vals = new Hashtable<String, Object>();		
+		HashMap<String, Object> vals = new HashMap<String, Object>();		
 		vals.put(SYMBOL, contract_.symbol());
 		vals.put(ORDER_ID, execution_.orderId());
 		vals.put(PRICE, execution_.price()); 
@@ -57,7 +56,7 @@ abstract class async_execs extends parent_static
 		
 		__lock();
 		
-		Hashtable<String, Object> vals = new Hashtable<String, Object>();
+		HashMap<String, Object> vals = new HashMap<String, Object>();
 		vals.put(FEES, report_.commission());
 		
 		update(report_.execId(), vals);
@@ -66,9 +65,9 @@ abstract class async_execs extends parent_static
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void update(String exec_id_, Hashtable<String, Object> vals_)
+	private static void update(String exec_id_, HashMap<String, Object> vals_)
 	{
-		Hashtable<String, Object> vals = (_all_vals.containsKey(exec_id_) ? (Hashtable<String, Object>)arrays.add(_all_vals.get(exec_id_), vals_) : (Hashtable<String, Object>)arrays.get_new(vals_));
+		HashMap<String, Object> vals = (_all_vals.containsKey(exec_id_) ? (HashMap<String, Object>)arrays.add(_all_vals.get(exec_id_), vals_) : (HashMap<String, Object>)arrays.get_new(vals_));
 		vals.put(EXEC_ID, exec_id_);
 		
 		_all_vals.put(exec_id_, vals);

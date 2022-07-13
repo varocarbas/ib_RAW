@@ -12,7 +12,10 @@ public abstract class watchlist extends parent_static
 	public static final String PRICE = db_ib.watchlist.PRICE;
 	public static final String VOLUME = db_ib.watchlist.VOLUME;
 	public static final String HALTED = db_ib.watchlist.HALTED;	
-	public static final String HALTED_TOT = db_ib.watchlist.HALTED_TOT;	
+
+	public static final int PRICE_IB = parent_async_data.PRICE_IB;
+	public static final int VOLUME_IB = parent_async_data.VOLUME_IB;
+	public static final int HALTED_IB = parent_async_data.HALTED_IB;
 	
 	public static void update_logs_to_screen(boolean logs_to_screen_) { async_data_watchlist._instance.update_logs_to_screen_internal(logs_to_screen_); }
 
@@ -20,7 +23,7 @@ public abstract class watchlist extends parent_static
 	{ 
 		__lock();
 		
-		String symbol = async_watchlist.normalise_symbol(symbol_);
+		String symbol = common.normalise_symbol(symbol_);
 		if (strings.is_ok(symbol) && !async_watchlist.symbol_exists(symbol)) async_watchlist.add(symbol); 
 		
 		__unlock();
@@ -30,7 +33,7 @@ public abstract class watchlist extends parent_static
 	{ 
 		__lock();
 		
-		String symbol = async_watchlist.normalise_symbol(symbol_);
+		String symbol = common.normalise_symbol(symbol_);
 		if (strings.is_ok(symbol) && async_watchlist.symbol_exists(symbol)) async_watchlist.remove(symbol);  
 		
 		__unlock();

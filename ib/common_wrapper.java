@@ -60,11 +60,9 @@ public abstract class common_wrapper
 	
 	public static void __orderStatus(int order_id_, String status_ib_) 
 	{ 
-		sync_orders.order_status(order_id_, status_ib_); 
+		orders.order_status(order_id_, status_ib_); 
 		
-		async_orders.order_status(order_id_, status_ib_);
-		
-		async_trades.__order_status(order_id_, status_ib_);
+		trades.__order_status(order_id_, status_ib_);
 	}
 
 	public static void openOrderEnd() { sync_orders.open_order_end(); }
@@ -72,4 +70,8 @@ public abstract class common_wrapper
 	public static void __execDetails(int id_, Contract contract_, Execution execution_) { async_execs.__exec_details(id_, contract_, execution_); }
 
 	public static void __commissionReport(CommissionReport report_) { async_execs.__commission_report(report_); }
+
+	public static void position(String account_, String symbol_, double pos_) { sync.position(account_, symbol_, pos_); }
+
+	public static void positionEnd() { sync.position_end(); }
 }

@@ -8,25 +8,6 @@ abstract class async_trades extends parent_static
 {	
 	public static final String STATUS_FILLED = order.STATUS_FILLED;
 	public static final String STATUS_INACTIVE = order.STATUS_INACTIVE;
-	
-	public static void __order_status(int order_id_, String status_ib_) 
-	{ 
-		__lock();
-		
-		if (order_id_is_ok(order_id_))
-		{
-			if (status_is_ok(status_ib_, true))
-			{
-				if (!order_id_exists(order_id_)) start(order_id_);
-			}
-			else if (status_is_ok(status_ib_, false))
-			{
-				if (order_id_exists(order_id_)) end(order_id_);				
-			}
-		}
-		
-		__unlock();
-	}
 
 	public static boolean order_id_is_ok(int order_id_) { return trades.is_ok(order_id_); }
 	
@@ -49,7 +30,7 @@ abstract class async_trades extends parent_static
 		async_data_trades._stop(order_id_, false);
 	}
 	
-	private static boolean status_is_ok(String status_ib_, boolean is_add_) { return order.is_status(status_ib_, (is_add_ ? STATUS_FILLED : STATUS_INACTIVE)); }
+	public static boolean status_is_ok(String status_ib_, boolean is_add_) { return order.is_status(status_ib_, (is_add_ ? STATUS_FILLED : STATUS_INACTIVE)); }
 	
 	private static String get_symbol(int order_id_) { return trades.get_symbol(order_id_); }
 }

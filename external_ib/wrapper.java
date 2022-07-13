@@ -78,6 +78,12 @@ public class wrapper implements EWrapper
 	@Override
 	public void commissionReport(CommissionReport report_) { common_wrapper.__commissionReport(report_); }
 
+	@Override
+	public void position(String account_, Contract contract_, double pos_, double avg_cost_) { common_wrapper.position(account_, contract_.symbol(), pos_); }
+
+	@Override
+	public void positionEnd() { common_wrapper.positionEnd(); }
+	
 	public EClientSocket getClient() { return clientSocket; }
 	
 	public EReaderSignal getSignal() { return readerSignal; }
@@ -305,21 +311,6 @@ public class wrapper implements EWrapper
 		//System.out.println("MarketDataType. ["+reqId+"], Type: ["+marketDataType+"]\n");
 	}
 	//! [marketdatatype]
-	
-	//! [position]
-	@Override
-	public void position(String account, Contract contract, double pos,
-			double avgCost) {
-		System.out.println("Position. "+account+" - Symbol: "+contract.symbol()+", SecType: "+contract.secType()+", Currency: "+contract.currency()+", Position: "+pos+", Avg cost: "+avgCost);
-	}
-	//! [position]
-	
-	//! [positionend]
-	@Override
-	public void positionEnd() {
-		System.out.println("PositionEnd \n");
-	}
-	//! [positionend]
 	
 	@Override
 	public void verifyMessageAPI(String apiData) {

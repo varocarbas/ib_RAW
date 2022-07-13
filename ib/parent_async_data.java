@@ -34,11 +34,6 @@ public abstract class parent_async_data extends parent_static
 	public static final int SIZE_IB = external_ib.data.TICK_LAST_SIZE;
 	public static final int ASK_SIZE_IB = external_ib.data.TICK_ASK_SIZE;
 	public static final int BID_SIZE_IB = external_ib.data.TICK_BID_SIZE;
-
-	public static final int HALTED_NA = -1;
-	public static final int HALTED_NOT = 0;
-	public static final int HALTED_GENERAL = 1;	
-	public static final int HALTED_VOLATILITY = 2;	
 	
 	public static final String PRICE = db_ib.common.FIELD_PRICE;
 	public static final String VOLUME = db_ib.common.FIELD_VOLUME;
@@ -52,19 +47,19 @@ public abstract class parent_async_data extends parent_static
 	
 	public static final int WRONG_ID = common.WRONG_ID;
 	public static final int WRONG_DATA = data.WRONG_DATA;
-	public static final int WRONG_HALTED = HALTED_NA - 1;
+	public static final int WRONG_HALTED = data.WRONG_HALTED;
 	
 	public static final boolean DEFAULT_SNAPSHOT_QUICK = true;
 	public static final boolean DEFAULT_SNAPSHOT_NONSTOP = true;
 	public static final int DEFAULT_DATA_TYPE = external_ib.data.DATA_LIVE;
 	public static final boolean DEFAULT_LOGS_TO_SCREEN = true;
-	public static final boolean DEFAULT_IS_DB_QUICK = true;
+	public static final boolean DEFAULT_IS_QUICK = true;
 	public static final int DEFAULT_PAUSE_NONSTOP = 0;
 	public static final int DEFAULT_PAUSE_AFTER_STOP_ALL = 30;
 	
 	protected volatile boolean _stop_all = false;
 	protected volatile boolean _logs_to_screen = DEFAULT_LOGS_TO_SCREEN;
-	protected volatile boolean _is_db_quick = DEFAULT_IS_DB_QUICK;  
+	protected volatile boolean _is_quick = DEFAULT_IS_QUICK;  
 	protected volatile int _nonstop_pause = DEFAULT_PAUSE_NONSTOP;
 	
 	protected volatile HashMap<Integer, String> _symbols = new HashMap<Integer, String>();
@@ -91,21 +86,19 @@ public abstract class parent_async_data extends parent_static
 
 	public static String get_type(boolean is_snapshot_) { return (is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM); }
 
-	static String normalise_symbol(String symbol_) { return common.check_symbol(symbol_); }
-
 	protected boolean get_logs_to_screen_internal() { return _logs_to_screen; }
 
 	protected void update_logs_to_screen_internal() { _logs_to_screen = DEFAULT_LOGS_TO_SCREEN; }
 
 	protected void update_logs_to_screen_internal(boolean logs_to_screen_) { _logs_to_screen = logs_to_screen_; }
 
-	protected boolean get_is_db_quick_internal() { return _is_db_quick; }
+	protected boolean get_is_quick_internal() { return _is_quick; }
 
 	//Use carefully! It relies on col-based/no-data-checks db methods (i.e., "_quick" ones).
-	protected void update_is_db_quick_internal() { update_is_db_quick_internal(DEFAULT_IS_DB_QUICK); }
+	protected void update_is_quick_internal() { update_is_quick_internal(DEFAULT_IS_QUICK); }
 
 	//Use carefully! It relies on col-based/no-data-checks db methods (i.e., "_quick" ones).
-	protected void update_is_db_quick_internal(boolean is_db_quick_) { _is_db_quick = is_db_quick_; }
+	protected void update_is_quick_internal(boolean is_quick_) { _is_quick = is_quick_; }
 
 	protected int get_nonstop_pause_internal() { return _nonstop_pause; }
 
@@ -280,7 +273,7 @@ public abstract class parent_async_data extends parent_static
 	{
 		if (lock_) __lock();
 
-		String symbol = normalise_symbol(symbol_);
+		String symbol = common.normalise_symbol(symbol_);
 		
 		int output = (_symbols.containsValue(symbol) ? (int)arrays.get_key(_symbols, symbol) : WRONG_ID);
 		
@@ -345,7 +338,7 @@ public abstract class parent_async_data extends parent_static
 	
 	protected void update_db(int id_, String symbol_)
 	{
-		if (_is_db_quick)
+		if (_is_quick)
 		{
 			if (_vals_quick.containsKey(id_)) async_data.update_quick(_source, symbol_, _vals_quick.get(id_));
 		}
@@ -359,7 +352,7 @@ public abstract class parent_async_data extends parent_static
 			
 	protected void update_db(int id_, String symbol_, String field_, double val_)
 	{
-		if (_is_db_quick) async_data.update_quick(_source, symbol_, get_col(field_), Double.toString(val_));
+		if (_is_quick) async_data.update_quick(_source, symbol_, get_col(field_), Double.toString(val_));
 		else async_data.update(_source, symbol_, field_, val_);	
 
 		to_screen_update(id_, symbol_, true);
@@ -403,7 +396,7 @@ public abstract class parent_async_data extends parent_static
 		_symbols.remove(id_);
 		_data_types.remove(id_);
 		
-		if (_is_db_quick) _vals_quick.remove(id_); 
+		if (_is_quick) _vals_quick.remove(id_); 
 		else _vals.remove(id_); 
 		
 		return true;
@@ -432,12 +425,12 @@ public abstract class parent_async_data extends parent_static
 		String symbol = _get_symbol(id_, false);
 
 		boolean halted = data.is_halted(val);
-		boolean halted_db = db_ib.async_data.is_halted(_source, symbol, _is_db_quick);
+		boolean halted_db = db_ib.async_data.is_halted(_source, symbol, _is_quick);
 	
 		if (halted == halted_db) return output;		
 		output = val;
 		
-		if (_includes_halted_tot && halted && !halted_db) async_data.update_halted_tot(_source, symbol, _is_db_quick);		
+		if (_includes_halted_tot && halted && !halted_db) async_data.update_halted_tot(_source, symbol, _is_quick);		
 
 		return output;
 	}
@@ -459,7 +452,7 @@ public abstract class parent_async_data extends parent_static
 	
 		int id = WRONG_ID;
 		
-		String symbol = normalise_symbol(symbol_);
+		String symbol = common.normalise_symbol(symbol_);
 		
 		if (_stop_all || !strings.is_ok(symbol) || _symbols.containsValue(symbol_)) 
 		{
@@ -473,7 +466,7 @@ public abstract class parent_async_data extends parent_static
 
 		if (!async_data.exists(_source, symbol)) 
 		{
-			if (_is_db_quick) async_data.insert_quick(_source, symbol);
+			if (_is_quick) async_data.insert_quick(_source, symbol);
 			else async_data.insert(_source, symbol);
 		}
 		else if (!async_data.is_enabled(_source, symbol)) 
@@ -521,7 +514,7 @@ public abstract class parent_async_data extends parent_static
 		_symbols.put(id, symbol_);
 		_data_types.put(id, data_type_);
 		
-		if (_is_db_quick) _vals_quick.put(id, new HashMap<String, String>());
+		if (_is_quick) _vals_quick.put(id, new HashMap<String, String>());
 		else _vals.put(id, new HashMap<String, Object>());
 		
 		return id;
@@ -551,8 +544,8 @@ public abstract class parent_async_data extends parent_static
 
 	private void update_vals(int id_, String field_, double val_)
 	{	
-		if (_is_db_quick && arrays.key_exists(_vals_quick, id_)) _vals_quick.get(id_).put(get_col(field_), Double.toString(val_));
-		else if (!_is_db_quick && arrays.key_exists(_vals, id_)) _vals.get(id_).put(field_, val_);			
+		if (_is_quick && arrays.key_exists(_vals_quick, id_)) _vals_quick.get(id_).put(get_col(field_), Double.toString(val_));
+		else if (!_is_quick && arrays.key_exists(_vals, id_)) _vals.get(id_).put(field_, val_);			
 
 		to_screen_update(id_, false);
 	}

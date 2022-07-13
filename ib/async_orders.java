@@ -14,7 +14,7 @@ abstract class async_orders
 	public static final String ACTIVE = order.STATUS_ACTIVE;
 	public static final String INACTIVE = order.STATUS_INACTIVE;
 
-	static volatile HashMap<Integer, Long> _cancellations = new HashMap<Integer, Long>();
+	public static volatile HashMap<Integer, Long> _cancellations = new HashMap<Integer, Long>();
 
 	public static void order_status(int order_id_, String status_ib_) 
 	{ 
@@ -24,9 +24,9 @@ abstract class async_orders
 		db_ib.orders.update_status(order_id_, status);	
 	}
 	
-	static void perform_regular_checks(HashMap<Integer, String> orders_) { perform_regular_checks(sync_orders.get_ids(ACTIVE, orders_, false)); }
+	public static void perform_regular_checks(HashMap<Integer, String> orders_) { perform_regular_checks(sync_orders.get_ids(ACTIVE, orders_, false)); }
 
-	static void perform_regular_checks() { perform_regular_checks(sync_orders.get_ids(ACTIVE)); }
+	public static void perform_regular_checks() { perform_regular_checks(sync_orders.get_ids(ACTIVE)); }
 
 	private static void perform_regular_checks(ArrayList<Integer> active_)
 	{

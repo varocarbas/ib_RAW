@@ -11,9 +11,6 @@ class async_data_trades extends parent_async_data
 	
 	public static final String SOURCE = trades.SOURCE;
 	
-	public static final String PRICE = trades.PRICE;
-	public static final String HALTED = trades.HALTED;
-	
 	public static final String TYPE = TYPE_SNAPSHOT;
 	public static final int DATA = external_ib.data.DATA_LIVE;
 	

@@ -6,7 +6,11 @@ import com.ib.client.Order;
 import ib.conn;
 
 public abstract class calls 
-{	
+{
+	public static void eConnect(String arg0_, int arg1_, int arg2_) { if (conn._client != null) conn._client.eConnect(arg0_, arg1_, arg2_); }
+
+	public static void eDisconnect() { if (conn._client != null) conn._client.eDisconnect(); }
+
 	public static boolean reqMktData(int id_, String symbol_, boolean is_snapshot_) 
 	{ 
 		Contract contract = contracts.get_contract(symbol_);
@@ -33,7 +37,7 @@ public abstract class calls
 
 	public static void reqIds() { if (conn._client != null) conn._client.reqIds(-1); }
 
-	public static void eConnect(String arg0_, int arg1_, int arg2_) { if (conn._client != null) conn._client.eConnect(arg0_, arg1_, arg2_); }
+	public static void reqPositions() { if (conn._client != null) conn._client.reqPositions(); }
 
-	public static void eDisconnect() { if (conn._client != null) conn._client.eDisconnect(); }
+	public static void cancelPositions() { if (conn._client != null) conn._client.cancelPositions(); }
 }

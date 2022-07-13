@@ -91,4 +91,11 @@ public abstract class orders
 	public static String check_cancel(String type_) { return accessory.types.check_type(type_, CANCEL); }
 
 	public static boolean is_cancelling(int id_) { return sync_orders.is_cancelling(id_); }
+
+	static void order_status(int order_id_, String status_ib_) 
+	{ 
+		sync_orders.order_status(order_id_, status_ib_); 
+		
+		async_orders.order_status(order_id_, status_ib_);
+	}
 }

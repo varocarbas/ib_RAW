@@ -42,8 +42,8 @@ abstract class sync_orders extends parent_static
 
 	public static final String DEFAULT_STATUS = orders.DEFAULT_STATUS;
 
-	static int _last_id_main = 0;
-	static int _last_id_sec = 0;
+	public static int _last_id_main = 0;
+	public static int _last_id_sec = 0;
 
 	public static boolean cancel(int id_)
 	{
@@ -94,14 +94,7 @@ abstract class sync_orders extends parent_static
 		return ids;
 	}	
 
-	public static void order_status(int order_id_, String status_ib_) 
-	{	
-		if (!sync.is_ok()) return;
-		
-		sync.update_orders(order_id_);
-		
-		sync.update_orders(status_ib_);
-	}
+	public static void order_status(int order_id_, String status_ib_) { sync.update_orders(order_id_, status_ib_); }
 	
 	public static void open_order_end() { sync.end(); }
 	

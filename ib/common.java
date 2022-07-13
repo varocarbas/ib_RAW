@@ -13,6 +13,8 @@ public abstract class common
 			
 	public static String get_market_time() { return dates.get_now_string(dates.FORMAT_TIME_SHORT); }
 
+	public static String normalise_symbol(String symbol_) { return check_symbol(symbol_); }
+	
 	public static String check_symbol(String symbol_)
 	{
 		String symbol = symbol_;

@@ -22,6 +22,7 @@ public abstract class sync extends parent_static
 	public static final String GET_ID = types.SYNC_GET_ID;
 	public static final String GET_ORDERS = types.SYNC_GET_ORDERS;
 	public static final String GET_FUNDS = types.SYNC_GET_FUNDS;
+	public static final String GET_POSITIONS = types.SYNC_GET_POSITIONS;
 	public static final String GET_ERROR = types.SYNC_GET_ERROR;
 	
 	public static final String ORDER_PLACE = sync_orders.PLACE;
@@ -33,13 +34,15 @@ public abstract class sync extends parent_static
 	public static final String OUT_INTS = types.SYNC_OUT_INTS;
 	public static final String OUT_STRINGS = types.SYNC_OUT_STRINGS;
 	public static final String OUT_ORDERS = types.SYNC_OUT_ORDERS;
-
+	public static final String OUT_POSITIONS = types.SYNC_OUT_POSITIONS;
+	
 	public static final String KEY_FUNDS = common_wrapper.KEY_FUNDS;
 	
 	public static final int WRONG_REQ_ID = common.WRONG_ID;
 	public static final int WRONG_ORDER_ID = sync_orders.WRONG_ORDER_ID;
 	
 	public static final long TIMEOUT_ORDERS = 3l;
+	public static final long TIMEOUT_POSITIONS = 3l;
 	public static final long TIMEOUT_ERROR = 3l;
 	public static final long DEFAULT_TIMEOUT = 10l;
 
@@ -51,6 +54,7 @@ public abstract class sync extends parent_static
 	private static volatile boolean _error_triggered = false;
 	private static volatile ArrayList<Integer> _out_ints = new ArrayList<Integer>();
 	private static volatile ArrayList<String> _out_strings = new ArrayList<String>();
+	private static volatile ArrayList<Double> _out_decimals = new ArrayList<Double>();
 
 	private static int _req_id = WRONG_REQ_ID;
 	private static int _order_id = WRONG_ORDER_ID;
@@ -71,6 +75,9 @@ public abstract class sync extends parent_static
 		return orders; 
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static HashMap<Double, String> get_positions() { return (HashMap<Double, String>)get(GET_POSITIONS); }
+		
 	public static boolean order_is_submitted(int id_) { return order_is_common(id_, sync_orders.STATUS_SUBMITTED); }
 	
 	public static boolean order_is_filled(int id_) { return order_is_common(id_, sync_orders.STATUS_FILLED); }
@@ -106,7 +113,8 @@ public abstract class sync extends parent_static
 		all.put(GET_ID, OUT_INT);
 		all.put(GET_FUNDS, OUT_DECIMAL);
 		all.put(GET_ORDERS, OUT_ORDERS);
-
+		all.put(GET_POSITIONS, OUT_POSITIONS);
+		
 		return all;
 	}
 	
@@ -115,7 +123,7 @@ public abstract class sync extends parent_static
 	public static void end() { if (_getting) _getting = false; }
 
 	public static boolean wait_orders(String type_) { return wait(DEFAULT_TIMEOUT, true, type_); }
-
+	
 	static boolean next_valid_id(int id_) 
 	{
 		if (!is_ok()) return false;
@@ -129,13 +137,15 @@ public abstract class sync extends parent_static
 	
 	static boolean is_ok(int id_) { return (_getting && (_req_id == id_)); }
 
+	static boolean is_ok(String get_) { return (_getting && (_get.equals(get_))); }
+	
 	static boolean is_ok(int id_, String key_) 
 	{
 		if (!is_ok(id_)) return false;
 	
 		boolean is_ok = true;
 		
-		if (_get.equals(GET_FUNDS)) is_ok = strings.are_equal(key_, KEY_FUNDS); 
+		if (is_ok(GET_FUNDS)) is_ok = strings.are_equal(key_, KEY_FUNDS); 
 		
 		return is_ok;
 	}
@@ -175,30 +185,41 @@ public abstract class sync extends parent_static
 		return true;
 	}
 	
-	static boolean update_orders(String val_) 
-	{ 
-		if (!strings.are_equal(_out, OUT_ORDERS)) return false;
-
-		_out_strings.add(val_); 
+	static boolean update_orders(int order_id_, String status_ib_) 
+	{	
+		if (!is_ok(GET_ORDERS)) return false;
+		
+		_out_ints.add(order_id_);
+		_out_strings.add(status_ib_);
 		
 		return true;
 	}
-
-	static boolean update_orders(int val_)
-	{
-		if (!strings.are_equal(_out, OUT_ORDERS)) return false;
-
-		_out_ints.add(val_);
-
-		return true;
-	}
-	
+		
 	static boolean update_error_triggered(boolean triggered_)
 	{ 
 		if (!is_ok()) return false;
 		
 		_error_triggered = triggered_;
 
+		return true;
+	}
+
+	static void position(String account_, String symbol_, double pos_) 
+	{	
+		if (!basic.account_ib_is_ok(account_)) return;
+		
+		update_position(symbol_, pos_);
+	}
+	
+	static void position_end() { end(); }
+
+	private static boolean update_position(String symbol_, double pos_) 
+	{	
+		if (!is_ok(GET_POSITIONS)) return false;
+		
+		_out_strings.add(symbol_); 
+		_out_decimals.add(pos_);
+		
 		return true;
 	}
 
@@ -300,6 +321,30 @@ public abstract class sync extends parent_static
 				output = orders;
 			}
 		}
+		else if (_out.equals(OUT_POSITIONS)) 
+		{
+			if (is_ini_) 
+			{
+				_out_decimals = new ArrayList<Double>();
+				_out_strings = new ArrayList<String>();
+			}
+			else 
+			{
+				//See above.
+				//!!!
+				HashMap<Double, String> positions = new HashMap<Double, String>();
+
+				for (int i = 0; i < _out_decimals.size(); i++)
+				{
+					double pos = _out_decimals.get(i);
+					String symbol = _out_strings.get(i);
+					
+					positions.put(pos, symbol);
+				}
+
+				output = positions;
+			}
+		}
 		
 		return (is_ini_ ? true : output);
 	}
@@ -322,7 +367,7 @@ public abstract class sync extends parent_static
 
 		if (_get.equals(GET_FUNDS))
 		{	
-			//accountSummary, accountSummaryEnd
+			//Methods called in external_ib.wrapper: accountSummary, accountSummaryEnd.
 			calls.reqAccountSummary(_req_id); 
 		}
 		else if (_get.equals(GET_ORDERS))
@@ -330,12 +375,20 @@ public abstract class sync extends parent_static
 			timeout = TIMEOUT_ORDERS;
 			cannot_fail = false;
 
-			//openOrder, openOrderEnd, orderStatus
+			//Methods called in external_ib.wrapper: openOrder, openOrderEnd, orderStatus.
 			calls.reqAllOpenOrders(); 
+		}
+		else if (_get.equals(GET_POSITIONS))
+		{	
+			timeout = TIMEOUT_POSITIONS;
+			cannot_fail = false;
+
+			//Methods called in external_ib.wrapper: position, positionEnd.
+			calls.reqPositions(); 
 		}
 		else if (_get.equals(GET_ID))
 		{	
-			//nextValidId
+			//Methods called in external_ib.wrapper: nextValidId.
 			calls.reqIds(); 
 		}
 		else return false;
@@ -349,9 +402,8 @@ public abstract class sync extends parent_static
 
 	private static void get_after()
 	{
-		if (!_getting) return;
-		
-		if (_get.equals(GET_FUNDS)) calls.cancelAccountSummary(_req_id);
+		if (is_ok(GET_FUNDS)) calls.cancelAccountSummary(_req_id);
+		else if (is_ok(GET_POSITIONS)) calls.cancelPositions();
 	}
 	
 	private static boolean wait_error()
@@ -399,7 +451,18 @@ public abstract class sync extends parent_static
 			{
 				if (!_getting) 
 				{
-					if (!(_get.equals(GET_ORDERS) && (_out_ints.size() != _out_strings.size()))) break;
+					boolean exit = true;
+					
+					if (_get.equals(GET_ORDERS))
+					{
+						if (_out_ints.size() != _out_strings.size()) exit = false;
+					}
+					else if (_get.equals(GET_POSITIONS))
+					{
+						if (_out_decimals.size() != _out_strings.size()) exit = false;
+					}
+					
+					if (exit) break;
 				}
 			}
 			else if (is_place || is_cancel)

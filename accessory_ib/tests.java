@@ -14,6 +14,7 @@ import ib.conn;
 import ib.market;
 import ib.orders;
 import ib.sync;
+import ib.watchlist;
 
 public class tests extends parent_tests 
 {
@@ -61,8 +62,12 @@ public class tests extends parent_tests
 		
 		conn.start();
 		
+		outputs = run_basic(outputs);
 		outputs = run_sync(outputs);
-		outputs = run_async(outputs);
+		
+		if (_orders_too) outputs = run_orders(outputs);
+		
+		outputs = run_data(outputs);
 		
 		conn.end();
 
@@ -81,27 +86,25 @@ public class tests extends parent_tests
 		Class<?> class0 = sync.class;
 		String name0 = class0.getName();
 
-		String[] methods = new String[] { "get_order_id", "get_orders" };
+		String[] methods = new String[] { "get_order_id", "get_orders", "get_positions" };
 		
 		outputs.put(name0, run_methods(class0, methods));
-		
-		if (_orders_too) outputs = run_sync_orders(outputs);
-		outputs = run_sync_basic(outputs);
 		
 		return outputs;	
 	}
 	
-	public static HashMap<String, HashMap<String, Boolean>> run_async(HashMap<String, HashMap<String, Boolean>> outputs_)
+	public static HashMap<String, HashMap<String, Boolean>> run_data(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = new HashMap<String, HashMap<String, Boolean>>();
 
-		outputs = run_async_market(outputs);
+		outputs = run_data_market(outputs);
+		outputs = run_data_watchlist(outputs);
 		
 		return outputs;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static HashMap<String, HashMap<String, Boolean>> run_sync_orders(HashMap<String, HashMap<String, Boolean>> outputs_)
+	public static HashMap<String, HashMap<String, Boolean>> run_orders(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
 
@@ -227,7 +230,7 @@ public class tests extends parent_tests
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static HashMap<String, HashMap<String, Boolean>> run_sync_basic(HashMap<String, HashMap<String, Boolean>> outputs_)
+	public static HashMap<String, HashMap<String, Boolean>> run_basic(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
 
@@ -250,7 +253,7 @@ public class tests extends parent_tests
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static HashMap<String, HashMap<String, Boolean>> run_async_market(HashMap<String, HashMap<String, Boolean>> outputs_)
+	public static HashMap<String, HashMap<String, Boolean>> run_data_market(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
 		
@@ -260,7 +263,7 @@ public class tests extends parent_tests
 		update_screen(name0, true, 1);
 
 		int pause1 = 5;
-		int pause2 = 5;
+		int pause2 = 2;
 		
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
 		String name = "__start_snapshot";
@@ -270,9 +273,9 @@ public class tests extends parent_tests
 		args.add(get_symbol(symbol_i).getKey());
 
 		boolean is_ok = run_method(class0, name, new Class<?>[] { String.class }, args, null);
+		output.put(name, is_ok);
 		
 		misc.pause_secs(pause1);
-		output.put(name, is_ok);
 
 		name = "__start_stream";
 		
@@ -280,6 +283,54 @@ public class tests extends parent_tests
 		
 		args = new ArrayList<Object>();
 		args.add(get_symbol(symbol_i).getKey());
+
+		is_ok = run_method(class0, name, new Class<?>[] { String.class }, args, null);
+		output.put(name, is_ok);
+		
+		misc.pause_secs(pause1);
+
+		name = "__stop_all";
+
+		is_ok = run_method(class0, name, null, null, null);
+		output.put(name, is_ok);
+		
+		misc.pause_secs(pause2);
+		
+		update_screen(name0, false, 1);		
+		
+		return outputs;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static HashMap<String, HashMap<String, Boolean>> run_data_watchlist(HashMap<String, HashMap<String, Boolean>> outputs_)
+	{
+		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
+		
+		Class<?> class0 = watchlist.class;
+		String name0 = class0.getName();
+		
+		update_screen(name0, true, 1);
+
+		int pause1 = 5;
+		int pause2 = 2;
+		
+		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
+		String name = "__add";
+		
+		String symbol = tests.get_symbol(0).getKey();
+		
+		ArrayList<Object> args = new ArrayList<Object>();
+		args.add(symbol);
+
+		boolean is_ok = run_method(class0, name, new Class<?>[] { String.class }, args, null);
+		
+		misc.pause_secs(pause1);
+		output.put(name, is_ok);
+
+		name = "__remove";
+		
+		args = new ArrayList<Object>();
+		args.add(symbol);
 
 		is_ok = run_method(class0, name, new Class<?>[] { String.class }, args, null);
 		
@@ -295,7 +346,7 @@ public class tests extends parent_tests
 		
 		return outputs;
 	}
-	
+		
 	private static Entry<String, Double> get_symbol(int i_) 
 	{ 
 		HashMap<String, Double> all = get_symbols();

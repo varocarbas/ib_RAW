@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
+import accessory.db;
 import accessory.db_where;
 import accessory.strings;
 import accessory_ib._alls;
@@ -65,6 +66,7 @@ public abstract class common
 	public static final String FIELD_TIME_ELAPSED = types.CONFIG_DB_IB_FIELD_TIME_ELAPSED;
 	public static final String FIELD_UNREALISED = types.CONFIG_DB_IB_FIELD_UNREALISED;
 	public static final String FIELD_IS_ACTIVE = types.CONFIG_DB_IB_FIELD_IS_ACTIVE;
+	public static final String FIELD_POSITION = types.CONFIG_DB_IB_FIELD_POSITION;
 	
 	public static final String FIELD_PRICE_INI = types.CONFIG_DB_IB_FIELD_PRICE_INI;
 	public static final String FIELD_PRICE_MIN = types.CONFIG_DB_IB_FIELD_PRICE_MIN;
@@ -82,24 +84,31 @@ public abstract class common
 	public static final int MAX_SIZE_MONEY = 7;
 	public static final int MAX_SIZE_PRICE = 4;
 	public static final int MAX_SIZE_VOLUME = 4;
+	public static final int MAX_SIZE_POSITION = 3;
 	
 	public static final String DEFAULT_DB = types.CONFIG_DB_IB;
 	public static final String DEFAULT_DB_NAME = accessory.db.DEFAULT_DB_NAME;
 	public static final int DEFAULT_SIZE_DECIMAL = MAX_SIZE_MONEY;
 	
-	public static boolean exists(String source_, String where_) { return strings.is_ok(accessory.db.select_one_string(source_, FIELD_SYMBOL, where_, null)); }
+	public static boolean exists(String source_, String where_) { return strings.is_ok(accessory.db.select_one_string(source_, FIELD_SYMBOL, where_, db.DEFAULT_ORDER)); }
 	
-	public static boolean is_enabled(String source_, String where_) { return (!arrays.value_exists(get_all_sources_enabled(), source_) || accessory.db.select_one_boolean(source_, FIELD_ENABLED, where_, null)); }
+	public static boolean is_enabled(String source_, String where_) { return (!arrays.value_exists(get_all_sources_enabled(), source_) || accessory.db.select_one_boolean(source_, FIELD_ENABLED, where_, db.DEFAULT_ORDER)); }
 
-	public static String get_string(String source_, String field_, String where_) { return accessory.db.select_one_string(source_, field_, where_, null); }
+	public static String get_string(String source_, String field_, String where_) { return accessory.db.select_one_string(source_, field_, where_, db.DEFAULT_ORDER); }
 
-	public static int get_int(String source_, String col_field_, String where_, boolean is_quick_) { return (is_quick_ ? accessory.db.select_one_int(source_, col_field_, where_, null) : accessory.db.select_one_int_quick(source_, col_field_, where_, null)); }
+	public static int get_int(String source_, String col_field_, String where_, boolean is_quick_) { return (is_quick_ ? accessory.db.select_one_int(source_, col_field_, where_, db.DEFAULT_ORDER) : accessory.db.select_one_int_quick(source_, col_field_, where_, db.DEFAULT_ORDER)); }
+
+	public static ArrayList<Double> get_all_decimals(String source_, String field_, String where_) { return accessory.db.select_some_decimals(source_, field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
+
+	public static ArrayList<String> get_all_strings(String source_, String field_, String where_) { return accessory.db.select_some_strings(source_, field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
+
+	public static ArrayList<HashMap<String, String>> get_all_vals(String source_, String[] fields_, String where_) { return accessory.db.select(source_, fields_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
 
 	public static HashMap<String, String> get_vals(String source_, String where_) { return get_vals(source_, null, where_); }
 
-	public static HashMap<String, String> get_vals(String source_, String[] fields_, String where_) { return accessory.db.select_one(source_, fields_, where_, null); }
+	public static HashMap<String, String> get_vals(String source_, String[] fields_, String where_) { return accessory.db.select_one(source_, fields_, where_, db.DEFAULT_ORDER); }
 
-	public static HashMap<String, String> get_vals_quick(String source_, String[] cols_, String where_) { return accessory.db.select_one_quick(source_, cols_, where_, null); }
+	public static HashMap<String, String> get_vals_quick(String source_, String[] cols_, String where_) { return accessory.db.select_one_quick(source_, cols_, where_, db.DEFAULT_ORDER); }
 
 	public static boolean insert(String source_, HashMap<String, Object> vals_) 
 	{ 

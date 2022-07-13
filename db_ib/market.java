@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
-import accessory.db_where;
 import accessory_ib.logs;
 
 public abstract class market 
@@ -28,7 +27,7 @@ public abstract class market
 	public static final String HALTED_TOT = common.FIELD_HALTED_TOT;
 	public static final String ENABLED = common.FIELD_ENABLED;
 	
-	public static ArrayList<String> get_all_symbols() { return accessory.db.select_some_strings(SOURCE, SYMBOL, (new db_where(SOURCE, ENABLED, true)).toString(), 0, null); }
+	public static ArrayList<String> get_all_symbols() { return common.get_all_strings(SOURCE, SYMBOL, common.get_where(SOURCE, ENABLED, "1", false)); }
 
 	public static boolean insert_all(ArrayList<String> symbols_) 
 	{ 
