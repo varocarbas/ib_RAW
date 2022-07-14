@@ -4,11 +4,6 @@ import ib.orders;
 
 public abstract class _keys 
 {
-	public static final String TWS_REAL = accessory._keys.get_key(types.CONFIG_CONN_TYPE_TWS_REAL, types.CONFIG_CONN);
-	public static final String TWS_PAPER = accessory._keys.get_key(types.CONFIG_CONN_TYPE_TWS_PAPER, types.CONFIG_CONN);
-	public static final String GATEWAY_REAL = accessory._keys.get_key(types.CONFIG_CONN_TYPE_GATEWAY_REAL, types.CONFIG_CONN);
-	public static final String GATEWAY_PAPER = accessory._keys.get_key(types.CONFIG_CONN_TYPE_GATEWAY_PAPER, types.CONFIG_CONN);
-
 	public static final String PLACE_MARKET = orders.get_key(orders.PLACE_MARKET, false);
 	public static final String PLACE_STOP = orders.get_key(orders.PLACE_STOP, false);
 	public static final String PLACE_LIMIT = orders.get_key(orders.PLACE_LIMIT, false);

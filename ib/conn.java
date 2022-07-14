@@ -9,27 +9,26 @@ import accessory.misc;
 import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
-import accessory_ib._keys;
-import accessory_ib.config;
 import accessory_ib.errors;
 import accessory_ib.types;
-import db_ib.basic;
 import external_ib.calls;
 import external_ib.wrapper;
 
 public abstract class conn extends parent_static 
-{
-	public static final String CONFIG_TYPE = types.CONFIG_CONN_TYPE;
-	public static final String CONFIG_CONN_ID = types.CONFIG_CONN_ID;
+{	
+	public static final String TYPE_TWS_REAL = "tws_real";
+	public static final String TYPE_TWS_PAPER = "tws_paper";
+	public static final String TYPE_GATEWAY_REAL = "gateway_real";
+	public static final String TYPE_GATEWAY_PAPER = "gateway_paper";
+
+	public static final int MIN_ID = 0;
+	public static final int MAX_ID = 31;
 	
-	public static final String TYPE_TWS_REAL = _keys.TWS_REAL;
-	public static final String TYPE_TWS_PAPER = _keys.TWS_PAPER;
-	public static final String TYPE_GATEWAY_REAL = _keys.GATEWAY_REAL;
-	public static final String TYPE_GATEWAY_PAPER = _keys.GATEWAY_PAPER;
+	public static final int WRONG_ID = MIN_ID - 1;
 	
 	public static final String DEFAULT_TYPE = TYPE_GATEWAY_REAL;
 	public static final int DEFAULT_ID = 18;  
-	
+
 	public static final int DEFAULT_PORT_TWS_REAL = 7496;
 	public static final int DEFAULT_PORT_TWS_PAPER = 7497;
 	public static final int DEFAULT_PORT_GATEWAY_REAL = 4001;
@@ -43,9 +42,6 @@ public abstract class conn extends parent_static
 	public static volatile boolean _started = false; 
 	
 	public static EClientSocket _client = null;
-	
-	private static final int MIN_ID = 0;
-	private static final int MAX_ID = 31;
 
 	private static final int PORT_TWS_REAL = DEFAULT_PORT_TWS_REAL;
 	private static final int PORT_TWS_PAPER = DEFAULT_PORT_TWS_PAPER;
@@ -70,15 +66,21 @@ public abstract class conn extends parent_static
 		return _connected;
 	}
 
-	public static String get_conn_type() { return (String)config.get_conn(CONFIG_TYPE); }
+	public static String get_account_ib() { return basic.get_account_ib(); }
 
-	public static boolean start() { return start((int)config.get_conn(types.CONFIG_CONN_ID), get_conn_type()); }
+	public static int get_conn_id() { return basic.get_conn_id(); }
+
+	public static String get_conn_type() { return basic.get_conn_type(); }
+
+	public static String update_conn_type(String conn_type_) { return basic.update_conn_type(conn_type_); }
+		
+	public static boolean start() { return start(get_conn_id(), get_conn_type()); }
 	
 	public static boolean start(int id_, String type_)
 	{
 		String error = null;
 
-		if (!numbers.is_ok(id_, MIN_ID, MAX_ID)) error = ERROR_ID;
+		if (!id_is_ok(id_)) error = ERROR_ID;
 		else if (!type_is_ok(type_)) error = ERROR_TYPE;
 
 		if (error != null)
@@ -94,7 +96,7 @@ public abstract class conn extends parent_static
 		_port = get_port(type_);
 		
 		_wrapper = new wrapper();
-		_client = _wrapper.getClient();
+		_client = _wrapper.get_client();
 
 		return connect();
 	}
@@ -110,6 +112,8 @@ public abstract class conn extends parent_static
 		return _connected;
 	}
 
+	public static boolean id_is_ok(int id_) { return numbers.is_ok(id_, MIN_ID, MAX_ID); }
+	
 	public static boolean type_is_ok(String type_) { return (strings.is_ok(type_) ? arrays.value_exists(new String[] { TYPE_TWS_REAL, TYPE_TWS_PAPER, TYPE_GATEWAY_REAL, TYPE_GATEWAY_PAPER }, type_) : false); }
 	
 	public static String check_error(String type_) { return accessory.types.check_type(type_, types.ERROR_IB_CONN); }
@@ -128,7 +132,7 @@ public abstract class conn extends parent_static
 		return message;	
 	}
 	
-	static boolean conn_type_is_real() 
+	static boolean type_is_real() 
 	{
 		String conn_type = get_conn_type();
 		
@@ -172,7 +176,7 @@ public abstract class conn extends parent_static
 
 	private static void connect_reader()
 	{
-		final EReaderSignal signal = _wrapper.getSignal();
+		final EReaderSignal signal = _wrapper.get_signal();
 		
 		calls.eConnect("127.0.0.1", _port, _id);
 		

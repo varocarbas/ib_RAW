@@ -1,7 +1,6 @@
 package ib;
 
 import accessory.strings;
-import accessory_ib._ini;
 import db_ib.basic;
 import external_ib.contracts;
 
@@ -10,34 +9,51 @@ abstract class sync_basic
 	public static void start()
 	{
 		get_conn_type();
-		
+
 		get_account_ib();
+		
+		get_conn_id();
 		
 		get_currency();
 		
 		get_funds(true);
 	}
 	
-	public static double get_funds() { return get_funds(false); } 
-	
 	public static String get_conn_type() 
-	{
-		String conn_type = conn.get_conn_type();
+	{ 
+		String conn_type = basic.get_conn_type();
+
+		return update_conn_type(conn_type);
+	} 
+	
+	public static String update_conn_type(String conn_type_) 
+	{ 
+		String conn_type = conn_type_;
 		
-		basic.update_conn_type(conn_type); 
+		if (!conn.type_is_ok(conn_type)) conn_type = ini_basic.get_conn_type();
+		if (!conn.type_is_ok(conn_type)) conn_type = conn.DEFAULT_TYPE;
+
+		basic.update_conn_type(conn_type);
 		
 		return conn_type;
-	} 
-	
+	}
+
 	public static String get_account_ib() 
 	{
-		String account_ib = _ini.get_account_ib();
+		basic.update_account_ib(); 
 		
-		basic.update_account_ib(account_ib); 
-		
-		return get_account_ib_last(account_ib, true);
+		return get_account_ib_last(ini_basic.get_account_ib(), true);
 	} 
-	
+
+	public static int get_conn_id() 
+	{
+		basic.update_conn_id(); 
+		
+		return ini_basic.get_conn_id();
+	} 
+
+	public static double get_funds() { return get_funds(false); } 
+
 	public static String get_currency() 
 	{
 		String currency = contracts.get_currency();
@@ -73,7 +89,7 @@ abstract class sync_basic
 
 		return account_ib;
 	} 
-		
+	
 	private static boolean is_ok(int req_id_, String account_id_, String key_, String currency_) { return (sync.is_ok(req_id_, key_) && ib.basic.account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
 
 	private static double get_funds(boolean ini_too_) 

@@ -14,7 +14,7 @@ public abstract class trades extends parent_static
 	public static final int PRICE_IB = parent_async_data.PRICE_IB;
 	public static final int HALTED_IB = parent_async_data.HALTED_IB;
 	
-	public static final double WRONG_POSITION = -1.0;
+	public static final double WRONG_POSITION = 0.0;
 	
 	public static void update_logs_to_screen(boolean logs_to_screen_) { async_data_trades._instance.update_logs_to_screen_internal(logs_to_screen_); }
 	

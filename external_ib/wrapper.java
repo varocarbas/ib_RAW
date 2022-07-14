@@ -1,6 +1,5 @@
 package external_ib;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +16,6 @@ import com.ib.client.EClientSocket;
 import com.ib.client.EJavaSignal;
 import com.ib.client.EReaderSignal;
 import com.ib.client.EWrapper;
-import com.ib.client.EWrapperMsgGenerator;
 import com.ib.client.Execution;
 import com.ib.client.FamilyCode;
 import com.ib.client.HistogramEntry;
@@ -33,634 +31,298 @@ import com.ib.client.TickAttrib;
 import com.ib.client.TickAttribBidAsk;
 import com.ib.client.TickAttribLast;
 
+import accessory.strings;
+import accessory_ib.logs;
 import ib.common_wrapper;
 
+//Implementation of the IB's EWrapper interface (https://interactivebrokers.github.io/tws-api/interfaceIBApi_1_1EWrapper.html).
+
 public class wrapper implements EWrapper 
-{	
-	@Override
-	public void accountSummary(int id_, String account_, String tag_, String value_, String currency_) { common_wrapper.accountSummary(id_, account_, tag_, value_, currency_); }
+{
+	private int _current_order_id = -1;
+	private EReaderSignal _reader_signal;
+	private EClientSocket _client_socket;
 	
+	public wrapper() 
+	{
+		_reader_signal = new EJavaSignal();
+		_client_socket = new EClientSocket(this, _reader_signal);
+	}
+
+	public EClientSocket get_client() { return _client_socket; }
+
+	public EReaderSignal get_signal() { return _reader_signal; }
+
+	public int get_current_order_id() { return _current_order_id; }
+
 	@Override
-	public void accountSummaryEnd(int id_) { common_wrapper.accountSummaryEnd(id_); }
-	
+	public void accountSummary(int id_, String account_, String tag_, String value_, String currency_) { common_wrapper.account_summary(id_, account_, tag_, value_, currency_); }
+
+	@Override
+	public void accountSummaryEnd(int id_) { common_wrapper.account_summary_end(id_); }
+
 	@Override
 	public void nextValidId(int id_) 
 	{
-		currentOrderId = id_;
+		_current_order_id = id_;
 
-		common_wrapper.nextValidId(id_);
+		common_wrapper.next_valid_id(id_);
 	}
-	
-	@Override
-	public void tickPrice(int id_, int field_ib_, double price_, TickAttrib attribs_) { common_wrapper.__tickPrice(id_, field_ib_, price_); }
-	
-	@Override
-	public void tickSize(int id_, int field_ib_, int size_) { common_wrapper.__tickSize(id_, field_ib_, size_); }
-	
-	@Override
-	public void tickGeneric(int id_, int tick_, double value_) { common_wrapper.__tickGeneric(id_, tick_, value_); }
 
 	@Override
-	public void tickSnapshotEnd(int id_) { common_wrapper.__tickSnapshotEnd(id_); }
-	
+	public void tickPrice(int id_, int field_ib_, double price_, TickAttrib attribs_) { common_wrapper.__tick_price(id_, field_ib_, price_); }
+
+	@Override
+	public void tickSize(int id_, int field_ib_, int size_) { common_wrapper.__tick_size(id_, field_ib_, size_); }
+
+	@Override
+	public void tickGeneric(int id_, int tick_, double value_) { common_wrapper.__tick_generic(id_, tick_, value_); }
+
+	@Override
+	public void tickSnapshotEnd(int id_) { common_wrapper.__tick_snapshot_end(id_); }
+
 	@Override
 	public void error(int id_, int code_, String message_) { common_wrapper.__error(id_, code_, message_); }
-	
-	@Override
-	public void orderStatus(int order_id_, String status_ib_, double filled_, double remaining_, double avg_fill_price_, int perm_id_, int parent_id_, double last_fill_price_, int client_id_, String why_held_, double mkt_cap_price_) { common_wrapper.__orderStatus(order_id_, status_ib_); }
-	
-	@Override
-	public void openOrderEnd() { common_wrapper.openOrderEnd(); }
 
 	@Override
-	public void execDetails(int id_, Contract contract_, Execution execution_) { common_wrapper.__execDetails(id_, contract_, execution_); }
-	
+	public void orderStatus(int order_id_, String status_ib_, double filled_, double remaining_, double avg_fill_price_, int perm_id_, int parent_id_, double last_fill_price_, int client_id_, String why_held_, double mkt_cap_price_) { common_wrapper.__order_status(order_id_, status_ib_); }
+
 	@Override
-	public void commissionReport(CommissionReport report_) { common_wrapper.__commissionReport(report_); }
+	public void openOrderEnd() { common_wrapper.open_order_end(); }
+
+	@Override
+	public void execDetails(int id_, Contract contract_, Execution execution_) { common_wrapper.__exec_details(id_, contract_, execution_); }
+
+	@Override
+	public void commissionReport(CommissionReport report_) { common_wrapper.__commission_report(report_); }
 
 	@Override
 	public void position(String account_, Contract contract_, double pos_, double avg_cost_) { common_wrapper.position(account_, contract_.symbol(), pos_); }
 
 	@Override
-	public void positionEnd() { common_wrapper.positionEnd(); }
-	
-	public EClientSocket getClient() { return clientSocket; }
-	
-	public EReaderSignal getSignal() { return readerSignal; }
+	public void positionEnd() { common_wrapper.position_end(); }
+
+	@Override
+	public void connectAck() 
+	{
+		if (_client_socket.isAsyncEConnect()) 
+		{
+			logs.update_screen("Acknowledging connection");
+
+			_client_socket.startAPI();
+		}
+	}
+
+	@Override
+	public void connectionClosed() { logs.update_screen("Connection closed"); }
+
+	@Override
+	public void error(Exception e_) { if (e_ != null) logs.update_screen(e_.getMessage()); }
+
+	@Override
+	public void error(String str_) { if (strings.is_ok(str_)) logs.update_screen(str_); }
 
 	//-----------------------------------------------------
 	//-----------------------------------------------------
-	
-	//! [socket_declare]
-	private EReaderSignal readerSignal;
-	private EClientSocket clientSocket;
-	protected int currentOrderId = -1;
-	//! [socket_declare]
-
-
-	//! [updateaccountvalue]
-	@Override
-	public void updateAccountValue(String key, String value, String currency, String accountName) 
-	{
-		System.out.println("UpdateAccountValue. Key: " + key + ", Value: " + value + ", Currency: " + currency + ", AccountName: " + accountName);
-	}
-	//! [updateaccountvalue]
-
-	//! [updateportfolio]
-	@Override
-	public void updatePortfolio
-	(
-		Contract contract, double position, double marketPrice, 
-		double marketValue, double averageCost, double unrealizedPNL, 
-		double realizedPNL, String accountName
-	) 
-	{
-		System.out.println("UpdatePortfolio. "+contract.symbol()+", "+contract.secType()+" @ "+contract.exchange()
-		        +": Position: "+position+", MarketPrice: "+marketPrice+", MarketValue: "+marketValue+", AverageCost: "+averageCost
-		        +", UnrealizedPNL: "+unrealizedPNL+", RealizedPNL: "+realizedPNL+", AccountName: "+accountName);
-	}
-	//! [updateportfolio]
-	
-	//! [accountdownloadend]
-	@Override
-	public void accountDownloadEnd(String accountName) 
-	{
-		System.out.println("Account download finished: "+accountName+"\n");
-	}
-	//! [accountdownloadend]
-
-
-	//! [socket_init]
-	public wrapper() {
-		readerSignal = new EJavaSignal();
-		clientSocket = new EClientSocket(this, readerSignal);
-	}
-	//! [socket_init]
-	
-	public int getCurrentOrderId() {
-		return currentOrderId;
-	}
-	
-	//! [tickoptioncomputation]
-	@Override
-	public void tickOptionComputation(int tickerId, int field,
-			double impliedVol, double delta, double optPrice,
-			double pvDividend, double gamma, double vega, double theta,
-			double undPrice) {
-		System.out.println("TickOptionComputation. TickerId: "+tickerId+", field: "+field+", ImpliedVolatility: "+impliedVol+", Delta: "+delta
-                +", OptionPrice: "+optPrice+", pvDividend: "+pvDividend+", Gamma: "+gamma+", Vega: "+vega+", Theta: "+theta+", UnderlyingPrice: "+undPrice);
-	}
-	//! [tickoptioncomputation]
-	
-	//! [tickstring]
-	@Override
-	public void tickString(int tickerId, int tickType, String value) {
-		//System.out.println("Tick string. Ticker Id:" + tickerId + ", Type: " + tickType + ", Value: " + value);
-	}
-	//! [tickstring]
-	@Override
-	public void tickEFP(int tickerId, int tickType, double basisPoints,
-			String formattedBasisPoints, double impliedFuture, int holdDays,
-			String futureLastTradeDate, double dividendImpact,
-			double dividendsToLastTradeDate) {
-		System.out.println("TickEFP. "+tickerId+", Type: "+tickType+", BasisPoints: "+basisPoints+", FormattedBasisPoints: "+
-			formattedBasisPoints+", ImpliedFuture: "+impliedFuture+", HoldDays: "+holdDays+", FutureLastTradeDate: "+futureLastTradeDate+
-			", DividendImpact: "+dividendImpact+", DividendsToLastTradeDate: "+dividendsToLastTradeDate);
-	}
-	
-	//! [openorder]
-	@Override
-	public void openOrder(int orderId, Contract contract, Order order,
-			OrderState orderState) { }
-	//! [openorder]
-	
-	//! [updateaccounttime]
-	@Override
-	public void updateAccountTime(String timeStamp) 
-	{		
-		//System.out.println("UpdateAccountTime. Time: " + timeStamp+"\n");
-	}
-	//! [updateaccounttime]
-	
-	//! [contractdetails]
-	@Override
-	public void contractDetails(int reqId, ContractDetails contractDetails) {
-		System.out.println(EWrapperMsgGenerator.contractDetails(reqId, contractDetails)); 
-	}
-	//! [contractdetails]
-	@Override
-	public void bondContractDetails(int reqId, ContractDetails contractDetails) {
-		System.out.println(EWrapperMsgGenerator.bondContractDetails(reqId, contractDetails)); 
-	}
-	//! [contractdetailsend]
-	@Override
-	public void contractDetailsEnd(int reqId) {
-		System.out.println("ContractDetailsEnd. "+reqId+"\n");
-	}
-	//! [contractdetailsend]
-	
-	//! [execdetailsend]
-	@Override
-	public void execDetailsEnd(int reqId) {
-		System.out.println("ExecDetailsEnd. "+reqId+"\n");
-	}
-	//! [execdetailsend]
-	
-	//! [updatemktdepth]
-	@Override
-	public void updateMktDepth(int tickerId, int position, int operation,
-			int side, double price, int size) {
-		System.out.println("UpdateMarketDepth. "+tickerId+" - Position: "+position+", Operation: "+operation+", Side: "+side+", Price: "+price+", Size: "+size+"");
-	}
-	//! [updatemktdepth]
-	
-	//! [updatemktdepthl2]
-	@Override
-	public void updateMktDepthL2(int tickerId, int position,
-			String marketMaker, int operation, int side, double price, int size, boolean isSmartDepth) {
-		System.out.println("UpdateMarketDepthL2. "+tickerId+" - Position: "+position+", Operation: "+operation+", Side: "+side+", Price: "+price+", Size: "+size+", isSmartDepth: "+isSmartDepth);
-	}
-	//! [updatemktdepthl2]
-	
-	//! [updatenewsbulletin]
-	@Override
-	public void updateNewsBulletin(int msgId, int msgType, String message,
-			String origExchange) {
-		System.out.println("News Bulletins. "+msgId+" - Type: "+msgType+", Message: "+message+", Exchange of Origin: "+origExchange+"\n");
-	}
-	//! [updatenewsbulletin]
-	
-	//! [managedaccounts]
-	@Override
-	public void managedAccounts(String accountsList) {
-		System.out.println("Account list: " +accountsList);
-	}
-	//! [managedaccounts]
-
-	//! [receivefa]
-	@Override
-	public void receiveFA(int faDataType, String xml) {
-		System.out.println("Receiving FA: "+faDataType+" - "+xml);
-	}
-	//! [receivefa]
-	
-	//! [historicaldata]
-	@Override
-	public void historicalData(int reqId, Bar bar) {
-		System.out.println("HistoricalData. "+reqId+" - Date: "+bar.time()+", Open: "+bar.open()+", High: "+bar.high()+", Low: "+bar.low()+", Close: "+bar.close()+", Volume: "+bar.volume()+", Count: "+bar.count()+", WAP: "+bar.wap());
-	}
-	//! [historicaldata]
-	
-	//! [historicaldataend]
-	@Override
-	public void historicalDataEnd(int reqId, String startDateStr, String endDateStr) {
-		System.out.println("HistoricalDataEnd. "+reqId+" - Start Date: "+startDateStr+", End Date: "+endDateStr);
-	}
-	//! [historicaldataend]
-	
-	
-	//! [scannerparameters]
-	@Override
-	public void scannerParameters(String xml) {
-		System.out.println("ScannerParameters. "+xml+"\n");
-	}
-	//! [scannerparameters]
-	
-	//! [scannerdata]
-	@Override
-	public void scannerData(int reqId, int rank,
-			ContractDetails contractDetails, String distance, String benchmark,
-			String projection, String legsStr) {
-		System.out.println("ScannerData. "+reqId+" - Rank: "+rank+", Symbol: "+contractDetails.contract().symbol()+", SecType: "+contractDetails.contract().secType()+", Currency: "+contractDetails.contract().currency()
-                +", Distance: "+distance+", Benchmark: "+benchmark+", Projection: "+projection+", Legs String: "+legsStr);
-	}
-	//! [scannerdata]
-	
-	//! [scannerdataend]
-	@Override
-	public void scannerDataEnd(int reqId) {
-		System.out.println("ScannerDataEnd. "+reqId);
-	}
-	//! [scannerdataend]
-	
-	//! [realtimebar]
-	@Override
-	public void realtimeBar(int reqId, long time, double open, double high,
-			double low, double close, long volume, double wap, int count) {
-		System.out.println("RealTimeBars. " + reqId + " - Time: " + time + ", Open: " + open + ", High: " + high + ", Low: " + low + ", Close: " + close + ", Volume: " + volume + ", Count: " + count + ", WAP: " + wap);
-	}
-	//! [realtimebar]
-	@Override
-	public void currentTime(long time) {
-		System.out.println("currentTime");
-	}
-	//! [fundamentaldata]
-	@Override
-	public void fundamentalData(int reqId, String data) {
-		System.out.println("FundamentalData. ReqId: ["+reqId+"] - Data: ["+data+"]");
-	}
-	//! [fundamentaldata]
-	@Override
-	public void deltaNeutralValidation(int reqId, DeltaNeutralContract deltaNeutralContract) {
-		System.out.println("deltaNeutralValidation");
-	}
-	
-	//! [marketdatatype]
-	@Override
-	public void marketDataType(int reqId, int marketDataType) {
-		//System.out.println("MarketDataType. ["+reqId+"], Type: ["+marketDataType+"]\n");
-	}
-	//! [marketdatatype]
-	
-	@Override
-	public void verifyMessageAPI(String apiData) {
-		System.out.println("verifyMessageAPI");
-	}
 
 	@Override
-	public void verifyCompleted(boolean isSuccessful, String errorText) {
-		System.out.println("verifyCompleted");
-	}
+	public void updateAccountValue(String key, String value, String currency, String accountName) { }
 
 	@Override
-	public void verifyAndAuthMessageAPI(String apiData, String xyzChallenge) {
-		System.out.println("verifyAndAuthMessageAPI");
-	}
+	public void updatePortfolio(Contract contract, double position, double marketPrice, double marketValue, double averageCost, double unrealizedPNL, double realizedPNL, String accountName) { }
 
 	@Override
-	public void verifyAndAuthCompleted(boolean isSuccessful, String errorText) {
-		System.out.println("verifyAndAuthCompleted");
-	}
-	//! [displaygrouplist]
-	@Override
-	public void displayGroupList(int reqId, String groups) {
-		System.out.println("Display Group List. ReqId: "+reqId+", Groups: "+groups+"\n");
-	}
-	//! [displaygrouplist]
-	
-	//! [displaygroupupdated]
-	@Override
-	public void displayGroupUpdated(int reqId, String contractInfo) {
-		System.out.println("Display Group Updated. ReqId: "+reqId+", Contract info: "+contractInfo+"\n");
-	}
-	//! [displaygroupupdated]
-	@Override
-	public void error(Exception e) {
-		System.out.println("Exception: "+e.getMessage());
-	}
+	public void accountDownloadEnd(String accountName) { }
 
 	@Override
-	public void error(String str) {
-		System.out.println("Error STR");
-	}
+	public void tickOptionComputation(int tickerId, int field, double impliedVol, double delta, double optPrice, double pvDividend, double gamma, double vega, double theta, double undPrice) { }
 
 	@Override
-	public void connectionClosed() {
-		System.out.println("Connection closed");
-	}
+	public void tickString(int tickerId, int tickType, String value) { }
 
-	//! [connectack]
 	@Override
-	public void connectAck() {
-		if (clientSocket.isAsyncEConnect()) {
-			System.out.println("Acknowledging connection");
-			clientSocket.startAPI();
-		}
-	}
-	//! [connectack]
-	
-	//! [positionmulti]
-	@Override
-	public void positionMulti(int reqId, String account, String modelCode,
-			Contract contract, double pos, double avgCost) {
-		System.out.println("Position Multi. Request: " + reqId + ", Account: " + account + ", ModelCode: " + modelCode + ", Symbol: " + contract.symbol() + ", SecType: " + contract.secType() + ", Currency: " + contract.currency() + ", Position: " + pos + ", Avg cost: " + avgCost + "\n");
-	}
-	//! [positionmulti]
-	
-	//! [positionmultiend]
-	@Override
-	public void positionMultiEnd(int reqId) {
-		System.out.println("Position Multi End. Request: " + reqId + "\n");
-	}
-	//! [positionmultiend]
-	
-	//! [accountupdatemulti]
-	@Override
-	public void accountUpdateMulti(int reqId, String account, String modelCode,
-			String key, String value, String currency) {
-		System.out.println("Account Update Multi. Request: " + reqId + ", Account: " + account + ", ModelCode: " + modelCode + ", Key: " + key + ", Value: " + value + ", Currency: " + currency + "\n");
-	}
-	//! [accountupdatemulti]
-	
-	//! [accountupdatemultiend]
-	@Override
-	public void accountUpdateMultiEnd(int reqId) {
-		System.out.println("Account Update Multi End. Request: " + reqId + "\n");
-	}
-	//! [accountupdatemultiend]
-	
-	//! [securityDefinitionOptionParameter]
-	@Override
-	public void securityDefinitionOptionalParameter(int reqId, String exchange,
-			int underlyingConId, String tradingClass, String multiplier,
-			Set<String> expirations, Set<Double> strikes) {
-		System.out.println("Security Definition Optional Parameter. Request: "+reqId+", Trading Class: "+tradingClass+", Multiplier: "+multiplier+" \n");
-	}
-	//! [securityDefinitionOptionParameter]
+	public void tickEFP(int tickerId, int tickType, double basisPoints, String formattedBasisPoints, double impliedFuture, int holdDays, String futureLastTradeDate, double dividendImpact, double dividendsToLastTradeDate) { }
 
-	//! [securityDefinitionOptionParameterEnd]
 	@Override
-	public void securityDefinitionOptionalParameterEnd(int reqId) {
-		System.out.println("Security Definition Optional Parameter End. Request: " + reqId);
-	}
-	//! [securityDefinitionOptionParameterEnd]
+	public void openOrder(int orderId, Contract contract, Order order, OrderState orderState) { }
 
-    //! [softDollarTiers]
 	@Override
-	public void softDollarTiers(int reqId, SoftDollarTier[] tiers) {
-		for (SoftDollarTier tier : tiers) {
-			System.out.print("tier: " + tier.toString() + ", ");
-		}
-		
-		System.out.println();
-	}
-    //! [softDollarTiers]
+	public void updateAccountTime(String timeStamp) { }
 
-    //! [familyCodes]
-    @Override
-    public void familyCodes(FamilyCode[] familyCodes) {
-        for (FamilyCode fc : familyCodes) {
-            System.out.print("Family Code. AccountID: " + fc.accountID() + ", FamilyCode: " + fc.familyCodeStr());
-        }
-
-        System.out.println();
-    }
-    //! [familyCodes]
-    
-    //! [symbolSamples]
-    @Override
-    public void symbolSamples(int reqId, ContractDescription[] contractDescriptions) {
-        System.out.println("Contract Descriptions. Request: " + reqId + "\n");
-        for (ContractDescription  cd : contractDescriptions) {
-            Contract c = cd.contract();
-            StringBuilder derivativeSecTypesSB = new StringBuilder();
-            for (String str : cd.derivativeSecTypes()) {
-                derivativeSecTypesSB.append(str);
-                derivativeSecTypesSB.append(",");
-            }
-            System.out.print("Contract. ConId: " + c.conid() + ", Symbol: " + c.symbol() + ", SecType: " + c.secType() + 
-                    ", PrimaryExch: " + c.primaryExch() + ", Currency: " + c.currency() + 
-                    ", DerivativeSecTypes:[" + derivativeSecTypesSB.toString() + "]");
-        }
-
-        System.out.println();
-    }
-    //! [symbolSamples]
-    
-	//! [mktDepthExchanges]
 	@Override
-	public void mktDepthExchanges(DepthMktDataDescription[] depthMktDataDescriptions) {
-		for (DepthMktDataDescription depthMktDataDescription : depthMktDataDescriptions) {
-			System.out.println("Depth Mkt Data Description. Exchange: " + depthMktDataDescription.exchange() +
-			", ListingExch: " + depthMktDataDescription.listingExch() + 
-			", SecType: " + depthMktDataDescription.secType() +
-			", ServiceDataType: " + depthMktDataDescription.serviceDataType() +
-			", AggGroup: " + depthMktDataDescription.aggGroup()
-			);
-		}
-	}
-	//! [mktDepthExchanges]
-	
-	//! [tickNews]
+	public void contractDetails(int reqId, ContractDetails contractDetails) { }
+
 	@Override
-	public void tickNews(int tickerId, long timeStamp, String providerCode, String articleId, String headline, String extraData) {
-		System.out.println("Tick News. TickerId: " + tickerId + ", TimeStamp: " + timeStamp + ", ProviderCode: " + providerCode + ", ArticleId: " + articleId + ", Headline: " + headline + ", ExtraData: " + extraData + "\n");
-	}
-	//! [tickNews]
+	public void bondContractDetails(int reqId, ContractDetails contractDetails) { }
 
-	//! [smartcomponents]
 	@Override
-	public void smartComponents(int reqId, Map<Integer, Entry<String, Character>> theMap) {
-		System.out.println("smart components req id:" + reqId);
-		
-		for (Map.Entry<Integer, Entry<String, Character>> item : theMap.entrySet()) {
-			System.out.println("bit number: " + item.getKey() + 
-					", exchange: " + item.getValue().getKey() + ", exchange letter: " + item.getValue().getValue());			
-		}
-	}
-	//! [smartcomponents]
+	public void contractDetailsEnd(int reqId) { }
 
-	//! [tickReqParams]
 	@Override
-	public void tickReqParams(int tickerId, double minTick, String bboExchange, int snapshotPermissions) {
-		//System.out.println("Tick req params. Ticker Id:" + tickerId + ", Min tick: " + minTick + ", bbo exchange: " + bboExchange + ", Snapshot permissions: " + snapshotPermissions);
-	}
-	//! [tickReqParams]
+	public void execDetailsEnd(int reqId) { }
 
-	//! [newsProviders]
 	@Override
-	public void newsProviders(NewsProvider[] newsProviders) {
-		for (NewsProvider np : newsProviders) {
-			System.out.print("News Provider. ProviderCode: " + np.providerCode() + ", ProviderName: " + np.providerName() + "\n");
-		}
+	public void updateMktDepth(int tickerId, int position, int operation, int side, double price, int size) { }
 
-		System.out.println();
-	}
-	//! [newsProviders]
-
-	//! [newsArticle]
 	@Override
-	public void newsArticle(int requestId, int articleType, String articleText) {
-		System.out.println("News Article. Request Id: " + requestId + ", ArticleType: " + articleType + 
-				", ArticleText: " + articleText);
-	}
-	//! [newsArticle]
+	public void updateMktDepthL2(int tickerId, int position, String marketMaker, int operation, int side, double price, int size, boolean isSmartDepth) { }
 
-	//! [historicalNews]
 	@Override
-	public void historicalNews(int requestId, String time, String providerCode, String articleId, String headline) {
-		System.out.println("Historical News. RequestId: " + requestId + ", Time: " + time + ", ProviderCode: " + providerCode + ", ArticleId: " + articleId + ", Headline: " + headline + "\n");
-	}
-	//! [historicalNews]
+	public void updateNewsBulletin(int msgId, int msgType, String message, String origExchange) { }
 
-	//! [historicalNewsEnd]
 	@Override
-	public void historicalNewsEnd(int requestId, boolean hasMore) {
-		System.out.println("Historical News End. RequestId: " + requestId + ", HasMore: " + hasMore + "\n");
-	}
-	//! [historicalNewsEnd]
+	public void managedAccounts(String accountsList) { }
 
-	//! [headTimestamp]
 	@Override
-	public void headTimestamp(int reqId, String headTimestamp) {
-		System.out.println("Head timestamp. Req Id: " + reqId + ", headTimestamp: " + headTimestamp);
-	}
-	//! [headTimestamp]
-	
-	//! [histogramData]
+	public void receiveFA(int faDataType, String xml) { }
+
 	@Override
-	public void histogramData(int reqId, List<HistogramEntry> items) {
-		System.out.println(EWrapperMsgGenerator.histogramData(reqId, items));
-	}
-	//! [histogramData]
+	public void historicalData(int reqId, Bar bar) { }
 
-	//! [historicalDataUpdate]
 	@Override
-    public void historicalDataUpdate(int reqId, Bar bar) {
-        System.out.println("HistoricalDataUpdate. "+reqId+" - Date: "+bar.time()+", Open: "+bar.open()+", High: "+bar.high()+", Low: "+bar.low()+", Close: "+bar.close()+", Volume: "+bar.volume()+", Count: "+bar.count()+", WAP: "+bar.wap());
-    }
-	//! [historicalDataUpdate]
-	
-	//! [rerouteMktDataReq]
+	public void historicalDataEnd(int reqId, String startDateStr, String endDateStr) { }
+
 	@Override
-	public void rerouteMktDataReq(int reqId, int conId, String exchange) {
-		System.out.println(EWrapperMsgGenerator.rerouteMktDataReq(reqId, conId, exchange));
-	}
-	//! [rerouteMktDataReq]
-	
-	//! [rerouteMktDepthReq]
+	public void scannerParameters(String xml) { }
+
 	@Override
-	public void rerouteMktDepthReq(int reqId, int conId, String exchange) {
-		System.out.println(EWrapperMsgGenerator.rerouteMktDepthReq(reqId, conId, exchange));
-	}
-	//! [rerouteMktDepthReq]
-	
-	//! [marketRule]
+	public void scannerData(int reqId, int rank, ContractDetails contractDetails, String distance, String benchmark, String projection, String legsStr) { }
+
 	@Override
-	public void marketRule(int marketRuleId, PriceIncrement[] priceIncrements) {
-		DecimalFormat df = new DecimalFormat("#.#");
-		df.setMaximumFractionDigits(340);
-		System.out.println("Market Rule Id: " + marketRuleId);
-		for (PriceIncrement pi : priceIncrements) {
-			System.out.println("Price Increment. Low Edge: " + df.format(pi.lowEdge()) + ", Increment: " + df.format(pi.increment()));
-		}
-	}
-	//! [marketRule]
-	
-	//! [pnl]
-    @Override
-    public void pnl(int reqId, double dailyPnL, double unrealizedPnL, double realizedPnL) {
-        System.out.println(EWrapperMsgGenerator.pnl(reqId, dailyPnL, unrealizedPnL, realizedPnL));
-    }
-    //! [pnl]
-	
-	//! [pnlsingle]
-    @Override
-    public void pnlSingle(int reqId, int pos, double dailyPnL, double unrealizedPnL, double realizedPnL, double value) {
-        System.out.println(EWrapperMsgGenerator.pnlSingle(reqId, pos, dailyPnL, unrealizedPnL, realizedPnL, value));                
-    }
-    //! [pnlsingle]
-	
-	//! [historicalticks]
-    @Override
-    public void historicalTicks(int reqId, List<HistoricalTick> ticks, boolean done) {
-        for (HistoricalTick tick : ticks) {
-            System.out.println(EWrapperMsgGenerator.historicalTick(reqId, tick.time(), tick.price(), tick.size()));
-        }
-    }
-    //! [historicalticks]
-	
-	//! [historicalticksbidask]
-    @Override
-    public void historicalTicksBidAsk(int reqId, List<HistoricalTickBidAsk> ticks, boolean done) {
-        for (HistoricalTickBidAsk tick : ticks) {
-            System.out.println(EWrapperMsgGenerator.historicalTickBidAsk(reqId, tick.time(), tick.tickAttribBidAsk(), tick.priceBid(), tick.priceAsk(), tick.sizeBid(),
-                    tick.sizeAsk()));
-        }
-    }   
-    //! [historicalticksbidask]
-	
-    @Override
-	//! [historicaltickslast]
-    public void historicalTicksLast(int reqId, List<HistoricalTickLast> ticks, boolean done) {
-        for (HistoricalTickLast tick : ticks) {
-            System.out.println(EWrapperMsgGenerator.historicalTickLast(reqId, tick.time(), tick.tickAttribLast(), tick.price(), tick.size(), tick.exchange(), 
-                tick.specialConditions()));
-        }
-    }
-    //! [historicaltickslast]
+	public void scannerDataEnd(int reqId) { }
 
-    //! [tickbytickalllast]
-   @Override
-    public void tickByTickAllLast(int reqId, int tickType, long time, double price, int size, TickAttribLast tickAttribLast,
-            String exchange, String specialConditions) {
-        System.out.println(EWrapperMsgGenerator.tickByTickAllLast(reqId, tickType, time, price, size, tickAttribLast, exchange, specialConditions));
-    }
-    //! [tickbytickalllast]
+	@Override
+	public void realtimeBar(int reqId, long time, double open, double high, double low, double close, long volume, double wap, int count) { }
 
-    //! [tickbytickbidask]
-    @Override
-    public void tickByTickBidAsk(int reqId, long time, double bidPrice, double askPrice, int bidSize, int askSize,
-            TickAttribBidAsk tickAttribBidAsk) {
-        System.out.println(EWrapperMsgGenerator.tickByTickBidAsk(reqId, time, bidPrice, askPrice, bidSize, askSize, tickAttribBidAsk));
-    }
-    //! [tickbytickbidask]
-    
-    //! [tickbytickmidpoint]
-    @Override
-    public void tickByTickMidPoint(int reqId, long time, double midPoint) {
-        System.out.println(EWrapperMsgGenerator.tickByTickMidPoint(reqId, time, midPoint));
-    }
-    //! [tickbytickmidpoint]
+	@Override
+	public void currentTime(long time) { }
 
-    //! [orderbound]
-    @Override
-    public void orderBound(long orderId, int apiClientId, int apiOrderId) {
-        System.out.println(EWrapperMsgGenerator.orderBound(orderId, apiClientId, apiOrderId));
-    }
-    //! [orderbound]
+	@Override
+	public void fundamentalData(int reqId, String data) { }
 
-    //! [completedorder]
-    @Override
-    public void completedOrder(Contract contract, Order order, OrderState orderState) {
-        System.out.println(EWrapperMsgGenerator.completedOrder(contract, order, orderState));
-    }
-    //! [completedorder]
+	@Override
+	public void deltaNeutralValidation(int reqId, DeltaNeutralContract deltaNeutralContract) { }
 
-    //! [completedordersend]
-    @Override
-    public void completedOrdersEnd() {
-        System.out.println(EWrapperMsgGenerator.completedOrdersEnd());
-    }
-    //! [completedordersend]
+	@Override
+	public void marketDataType(int reqId, int marketDataType) { }
+
+	@Override
+	public void verifyMessageAPI(String apiData) { }
+
+	@Override
+	public void verifyCompleted(boolean isSuccessful, String errorText) { }
+
+	@Override
+	public void verifyAndAuthMessageAPI(String apiData, String xyzChallenge) { }
+
+	@Override
+	public void verifyAndAuthCompleted(boolean isSuccessful, String errorText) { }
+
+	@Override
+	public void displayGroupList(int reqId, String groups) { }
+
+	@Override
+	public void displayGroupUpdated(int reqId, String contractInfo) { }
+
+	@Override
+	public void positionMulti(int reqId, String account, String modelCode, Contract contract, double pos, double avgCost) { }
+
+	@Override
+	public void positionMultiEnd(int reqId) { }
+
+	@Override
+	public void accountUpdateMulti(int reqId, String account, String modelCode, String key, String value, String currency) { }
+
+	@Override
+	public void accountUpdateMultiEnd(int reqId) { }
+
+	@Override
+	public void securityDefinitionOptionalParameter(int reqId, String exchange, int underlyingConId, String tradingClass, String multiplier, Set<String> expirations, Set<Double> strikes) { }
+
+	@Override
+	public void securityDefinitionOptionalParameterEnd(int reqId) { }
+
+	@Override
+	public void softDollarTiers(int reqId, SoftDollarTier[] tiers) { }
+
+	@Override
+	public void familyCodes(FamilyCode[] familyCodes) { }
+
+	@Override
+	public void symbolSamples(int reqId, ContractDescription[] contractDescriptions) { }
+
+	@Override
+	public void mktDepthExchanges(DepthMktDataDescription[] depthMktDataDescriptions) { }
+
+	@Override
+	public void tickNews(int tickerId, long timeStamp, String providerCode, String articleId, String headline, String extraData) { }
+
+	@Override
+	public void smartComponents(int reqId, Map<Integer, Entry<String, Character>> theMap) { }
+
+	@Override
+	public void tickReqParams(int tickerId, double minTick, String bboExchange, int snapshotPermissions) { }
+
+	@Override
+	public void newsProviders(NewsProvider[] newsProviders) { }
+
+	@Override
+	public void newsArticle(int requestId, int articleType, String articleText) { }
+
+	@Override
+	public void historicalNews(int requestId, String time, String providerCode, String articleId, String headline) { }
+
+	@Override
+	public void historicalNewsEnd(int requestId, boolean hasMore) { }
+
+	@Override
+	public void headTimestamp(int reqId, String headTimestamp) { }
+
+	@Override
+	public void histogramData(int reqId, List<HistogramEntry> items) { }
+
+	@Override
+	public void historicalDataUpdate(int reqId, Bar bar) { }
+
+	@Override
+	public void rerouteMktDataReq(int reqId, int conId, String exchange) { }
+
+	@Override
+	public void rerouteMktDepthReq(int reqId, int conId, String exchange) { }
+
+	@Override
+	public void marketRule(int marketRuleId, PriceIncrement[] priceIncrements) { }
+
+	@Override
+	public void pnl(int reqId, double dailyPnL, double unrealizedPnL, double realizedPnL) { }
+
+	@Override
+	public void pnlSingle(int reqId, int pos, double dailyPnL, double unrealizedPnL, double realizedPnL, double value) { }
+
+	@Override
+	public void historicalTicks(int reqId, List<HistoricalTick> ticks, boolean done) { }
+
+	@Override
+	public void historicalTicksBidAsk(int reqId, List<HistoricalTickBidAsk> ticks, boolean done) { }   
+
+	@Override
+	public void historicalTicksLast(int reqId, List<HistoricalTickLast> ticks, boolean done) { }
+
+	@Override
+	public void tickByTickAllLast(int reqId, int tickType, long time, double price, int size, TickAttribLast tickAttribLast,String exchange, String specialConditions) { }
+
+	@Override
+	public void tickByTickBidAsk(int reqId, long time, double bidPrice, double askPrice, int bidSize, int askSize, TickAttribBidAsk tickAttribBidAsk) { }
+
+	@Override
+	public void tickByTickMidPoint(int reqId, long time, double midPoint) { }
+
+	@Override
+	public void orderBound(long orderId, int apiClientId, int apiOrderId) { }
+
+	@Override
+	public void completedOrder(Contract contract, Order order, OrderState orderState) { }
+
+	@Override
+	public void completedOrdersEnd() { }
 }

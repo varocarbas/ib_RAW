@@ -114,7 +114,8 @@ public class _ini_db extends parent_ini_db
 		info.put(basic.MONEY, get_money());
 		info.put(basic.MONEY_INI, get_money());
 		info.put(basic.CURRENCY, new db_field(data.STRING, contracts.get_max_length_currency()));
-		
+		info.put(basic.CONN_ID, get_tiny());
+
 		return add_source_common(db_, source, table, info, sources_);
 	}
 	

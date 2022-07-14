@@ -50,6 +50,7 @@ public abstract class common
 	public static final String FIELD_CONN_TYPE = types.CONFIG_DB_IB_FIELD_CONN_TYPE;
 	public static final String FIELD_ACCOUNT_IB = types.CONFIG_DB_IB_FIELD_ACCOUNT_IB;
 	public static final String FIELD_CURRENCY = types.CONFIG_DB_IB_FIELD_CURRENCY;
+	public static final String FIELD_CONN_ID = types.CONFIG_DB_IB_FIELD_CONN_ID;
 	
 	public static final String FIELD_START = types.CONFIG_DB_IB_FIELD_START;
 	public static final String FIELD_START2 = types.CONFIG_DB_IB_FIELD_START2;
@@ -96,7 +97,7 @@ public abstract class common
 
 	public static String get_string(String source_, String field_, String where_) { return accessory.db.select_one_string(source_, field_, where_, db.DEFAULT_ORDER); }
 
-	public static int get_int(String source_, String col_field_, String where_, boolean is_quick_) { return (is_quick_ ? accessory.db.select_one_int(source_, col_field_, where_, db.DEFAULT_ORDER) : accessory.db.select_one_int_quick(source_, col_field_, where_, db.DEFAULT_ORDER)); }
+	public static int get_int(String source_, String col_field_, String where_, boolean is_quick_) { return (is_quick_ ? accessory.db.select_one_int_quick(source_, col_field_, where_, db.DEFAULT_ORDER) : accessory.db.select_one_int(source_, col_field_, where_, db.DEFAULT_ORDER)); }
 
 	public static ArrayList<Double> get_all_decimals(String source_, String field_, String where_) { return accessory.db.select_some_decimals(source_, field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
 
