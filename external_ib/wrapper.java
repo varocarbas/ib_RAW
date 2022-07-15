@@ -39,7 +39,8 @@ import ib.common_wrapper;
 
 public class wrapper implements EWrapper 
 {
-	private int _current_order_id = -1;
+	protected int currentOrderId = -1;
+	
 	private EReaderSignal _reader_signal;
 	private EClientSocket _client_socket;
 	
@@ -53,7 +54,7 @@ public class wrapper implements EWrapper
 
 	public EReaderSignal get_signal() { return _reader_signal; }
 
-	public int get_current_order_id() { return _current_order_id; }
+	public int get_current_order_id() { return currentOrderId; }
 
 	@Override
 	public void accountSummary(int id_, String account_, String tag_, String value_, String currency_) { common_wrapper.account_summary(id_, account_, tag_, value_, currency_); }
@@ -64,7 +65,7 @@ public class wrapper implements EWrapper
 	@Override
 	public void nextValidId(int id_) 
 	{
-		_current_order_id = id_;
+		currentOrderId = id_;
 
 		common_wrapper.next_valid_id(id_);
 	}

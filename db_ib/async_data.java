@@ -17,7 +17,7 @@ public abstract class async_data
 
 	public static boolean is_halted(String source_, String symbol_, boolean is_quick_)
 	{
-		int temp = common.get_int(source_, HALTED, common.get_where_symbol(source_, symbol_, is_quick_), is_quick_);
+		int temp = common.get_int(source_, (is_quick_ ? get_col(source_, HALTED) : HALTED), common.get_where_symbol(source_, symbol_, is_quick_), is_quick_);
 	
 		return data.is_halted(temp);
 	}

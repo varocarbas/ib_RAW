@@ -9,6 +9,7 @@ import accessory.misc;
 import accessory.numbers;
 import accessory.parent_tests;
 import db_ib.common;
+import ib.apps;
 import ib.basic;
 import ib.conn;
 import ib.market;
@@ -46,7 +47,7 @@ public class tests extends parent_tests
 		String[] sources = new String[] 
 		{ 
 			common.SOURCE_MARKET, common.SOURCE_EXECS, common.SOURCE_BASIC, common.SOURCE_REMOTE, 
-			common.SOURCE_ORDERS, common.SOURCE_TRADES, common.SOURCE_WATCHLIST 
+			common.SOURCE_ORDERS, common.SOURCE_TRADES, common.SOURCE_WATCHLIST, common.SOURCE_APPS 
 		};
 		
 		for (String source: sources) { accessory.tests.create_table(source); }
@@ -62,7 +63,8 @@ public class tests extends parent_tests
 		
 		conn.start();
 		
-		outputs = run_basic(outputs);
+		outputs = run_starts(outputs);
+
 		outputs = run_sync(outputs);
 		
 		if (_orders_too) outputs = run_orders(outputs);
@@ -228,30 +230,37 @@ public class tests extends parent_tests
 		
 		return outputs;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static HashMap<String, HashMap<String, Boolean>> run_basic(HashMap<String, HashMap<String, Boolean>> outputs_)
+	public static HashMap<String, HashMap<String, Boolean>> run_starts(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
 
-		Class<?> class0 = basic.class;
-		String name0 = class0.getName();
-
-		update_screen(name0, true, 1);
-		
-		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
+		ArrayList<Object> args = null;
 		String name = "start";
 		
-		ArrayList<Object> args = null;
+		Class<?>[] classes0 = new Class<?>[] { basic.class, apps.class };
+		
+		for (Class<?> class0: classes0)
+		{
+			String name0 = class0.getName();
+			
+			update_screen(name0, true, 1);
+			
+			HashMap<String, Boolean> output = new HashMap<String, Boolean>();
 
-		boolean is_ok = run_method(class0, name, null, args, null);
-		output.put(name, is_ok);
-		
-		update_screen(name0, false, 1);
-		
+			boolean is_ok = run_method(class0, name, null, args, null);
+			output.put(name, is_ok);
+			
+			String name2 = name + misc.SEPARATOR_NAME + name0;
+			outputs.put(name2, output);
+			
+			update_screen(name0, false, 1);
+		}
+
 		return outputs;
 	}
-	
+		
 	@SuppressWarnings("unchecked")
 	public static HashMap<String, HashMap<String, Boolean>> run_data_market(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{

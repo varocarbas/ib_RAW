@@ -6,7 +6,6 @@ import accessory.credentials;
 import accessory.misc;
 import accessory.parent_static;
 import accessory.strings;
-import accessory_ib._ini;
 import accessory_ib.types;
 
 public abstract class basic extends parent_static 
@@ -18,7 +17,6 @@ public abstract class basic extends parent_static
 	public static final String DEFAULT_USER = _defaults.USER;
 	public static final String DEFAULT_MAIN_ID = "ib";
 	
-	private static final String USER = get_user_internal();
 	private static final String ID_ACCOUNT_IB = "account_ib";
 
 	public static void start() { sync_basic.start(); }
@@ -27,15 +25,9 @@ public abstract class basic extends parent_static
 
 	public static boolean update_main_id(String id_) { return config.update_basic(CONFIG_MAIN_ID, id_); }
 	
-	public static String get_user() { return USER; }
-
+	public static String get_user() { return ini_basic.get_user(); }
+	
 	public static String get_account_ib() { return sync_basic.get_account_ib(); }
-
-	public static int get_conn_id() { return sync_basic.get_conn_id(); }
-
-	public static String get_conn_type() { return sync_basic.get_conn_type(); }
-
-	public static String update_conn_type(String conn_type_) { return sync_basic.update_conn_type(conn_type_); }
 	
 	public static String get_account_ib_id() { return ID_ACCOUNT_IB; }
 	
@@ -80,12 +72,4 @@ public abstract class basic extends parent_static
 	public static String get_encrypted_file_path(String id_) { return credentials.get_path(get_encryption_id(id_), basic.get_user(), true); }
 	
 	private static String encrypt_internal(String id_, String user_, String plain_) { return credentials.encrypt_string(id_, user_, plain_); }
-
-	private static String get_user_internal()
-	{
-		String user = _ini.get_user();
-		if (!strings.is_ok(user)) user = DEFAULT_USER;
-		
-		return strings.truncate(user, db_ib.common.MAX_SIZE_USER);
-	}
 }

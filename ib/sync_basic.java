@@ -8,34 +8,11 @@ abstract class sync_basic
 {
 	public static void start()
 	{
-		get_conn_type();
-
 		get_account_ib();
-		
-		get_conn_id();
 		
 		get_currency();
 		
 		get_funds(true);
-	}
-	
-	public static String get_conn_type() 
-	{ 
-		String conn_type = basic.get_conn_type();
-
-		return update_conn_type(conn_type);
-	} 
-	
-	public static String update_conn_type(String conn_type_) 
-	{ 
-		String conn_type = conn_type_;
-		
-		if (!conn.type_is_ok(conn_type)) conn_type = ini_basic.get_conn_type();
-		if (!conn.type_is_ok(conn_type)) conn_type = conn.DEFAULT_TYPE;
-
-		basic.update_conn_type(conn_type);
-		
-		return conn_type;
 	}
 
 	public static String get_account_ib() 
@@ -43,13 +20,6 @@ abstract class sync_basic
 		basic.update_account_ib(); 
 		
 		return get_account_ib_last(ini_basic.get_account_ib(), true);
-	} 
-
-	public static int get_conn_id() 
-	{
-		basic.update_conn_id(); 
-		
-		return ini_basic.get_conn_id();
 	} 
 
 	public static double get_funds() { return get_funds(false); } 

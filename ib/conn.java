@@ -68,11 +68,11 @@ public abstract class conn extends parent_static
 
 	public static String get_account_ib() { return basic.get_account_ib(); }
 
-	public static int get_conn_id() { return basic.get_conn_id(); }
+	public static int get_conn_id() { return apps.get_conn_id(); }
 
-	public static String get_conn_type() { return basic.get_conn_type(); }
+	public static String get_conn_type() { return apps.get_conn_type(); }
 
-	public static String update_conn_type(String conn_type_) { return basic.update_conn_type(conn_type_); }
+	public static String update_conn_type(String conn_type_) { return apps.update_conn_type(conn_type_); }
 		
 	public static boolean start() { return start(get_conn_id(), get_conn_type()); }
 	
@@ -90,7 +90,7 @@ public abstract class conn extends parent_static
 			return false;
 		}
 
-		basic.update_conn_type(type_);
+		apps.update_conn_type(type_);
 		
 		_id = id_;
 		_port = get_port(type_);

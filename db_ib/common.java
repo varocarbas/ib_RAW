@@ -20,6 +20,7 @@ public abstract class common
 	public static final String SOURCE_ORDERS = types.CONFIG_DB_IB_ORDERS_SOURCE;
 	public static final String SOURCE_TRADES = types.CONFIG_DB_IB_TRADES_SOURCE;
 	public static final String SOURCE_WATCHLIST = types.CONFIG_DB_IB_WATCHLIST_SOURCE;
+	public static final String SOURCE_APPS = types.CONFIG_DB_IB_APPS_SOURCE;
 	
 	public static final String FIELD_SYMBOL = types.CONFIG_DB_IB_FIELD_SYMBOL;
 	public static final String FIELD_PRICE = types.CONFIG_DB_IB_FIELD_PRICE;
@@ -47,10 +48,8 @@ public abstract class common
 	
 	public static final String FIELD_MONEY = types.CONFIG_DB_IB_FIELD_MONEY;
 	public static final String FIELD_MONEY_INI = types.CONFIG_DB_IB_FIELD_MONEY_INI;
-	public static final String FIELD_CONN_TYPE = types.CONFIG_DB_IB_FIELD_CONN_TYPE;
 	public static final String FIELD_ACCOUNT_IB = types.CONFIG_DB_IB_FIELD_ACCOUNT_IB;
 	public static final String FIELD_CURRENCY = types.CONFIG_DB_IB_FIELD_CURRENCY;
-	public static final String FIELD_CONN_ID = types.CONFIG_DB_IB_FIELD_CONN_ID;
 	
 	public static final String FIELD_START = types.CONFIG_DB_IB_FIELD_START;
 	public static final String FIELD_START2 = types.CONFIG_DB_IB_FIELD_START2;
@@ -80,18 +79,27 @@ public abstract class common
 	public static final String FIELD_FLU2 = types.CONFIG_DB_IB_FIELD_FLU2;
 	public static final String FIELD_FLU2_MIN = types.CONFIG_DB_IB_FIELD_FLU2_MIN;
 	public static final String FIELD_FLU2_MAX = types.CONFIG_DB_IB_FIELD_FLU2_MAX;
-	
+
+	public static final String FIELD_APP = types.CONFIG_DB_IB_FIELD_APP;
+	public static final String FIELD_CONN_ID = types.CONFIG_DB_IB_FIELD_CONN_ID;
+	public static final String FIELD_CONN_TYPE = types.CONFIG_DB_IB_FIELD_CONN_TYPE;
+	public static final String FIELD_COUNT = types.CONFIG_DB_IB_FIELD_COUNT;
+	public static final String FIELD_ERROR = types.CONFIG_DB_IB_FIELD_ERROR;
+
 	public static final int MAX_SIZE_USER = 15;
 	public static final int MAX_SIZE_MONEY = 7;
 	public static final int MAX_SIZE_PRICE = 4;
 	public static final int MAX_SIZE_VOLUME = 4;
 	public static final int MAX_SIZE_POSITION = 3;
+	public static final int MAX_SIZE_ERROR = 30;
 	
 	public static final String DEFAULT_DB = types.CONFIG_DB_IB;
 	public static final String DEFAULT_DB_NAME = accessory.db.DEFAULT_DB_NAME;
 	public static final int DEFAULT_SIZE_DECIMAL = MAX_SIZE_MONEY;
-	
-	public static boolean exists(String source_, String where_) { return strings.is_ok(accessory.db.select_one_string(source_, FIELD_SYMBOL, where_, db.DEFAULT_ORDER)); }
+
+	public static boolean exists(String source_, String where_) { return exists(source_, FIELD_SYMBOL, where_); }
+
+	public static boolean exists(String source_, String field_, String where_) { return strings.is_ok(accessory.db.select_one_string(source_, field_, where_, db.DEFAULT_ORDER)); }
 	
 	public static boolean is_enabled(String source_, String where_) { return (!arrays.value_exists(get_all_sources_enabled(), source_) || accessory.db.select_one_boolean(source_, FIELD_ENABLED, where_, db.DEFAULT_ORDER)); }
 
@@ -151,6 +159,14 @@ public abstract class common
 		return accessory.db.is_ok(source_);
 	}
 	
+	public static boolean insert_update(String source_, String field_, Object val_, String where_)
+	{
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		vals.put(field_, val_);
+
+		return insert_update(source_, vals, where_);
+	}
+	
 	public static boolean insert_update(String source_, HashMap<String, Object> vals_, String where_)
 	{	
 		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
@@ -197,7 +213,7 @@ public abstract class common
 	
 	public static boolean source_includes_user(String source_) { return arrays.value_exists(get_all_sources_user(), source_); }
 
-	public static String[] populate_all_sources_user() { return new String[] { SOURCE_BASIC, SOURCE_EXECS, SOURCE_ORDERS, SOURCE_REMOTE, SOURCE_TRADES }; }
+	public static String[] populate_all_sources_user() { return new String[] { SOURCE_BASIC, SOURCE_EXECS, SOURCE_ORDERS, SOURCE_REMOTE, SOURCE_TRADES, SOURCE_APPS }; }
 
 	public static String[] populate_all_sources_enabled() { return new String[] { SOURCE_MARKET }; }
 	

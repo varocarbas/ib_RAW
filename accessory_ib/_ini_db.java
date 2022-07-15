@@ -12,6 +12,7 @@ import accessory.strings;
 import external_ib.contracts;
 import ib.conn;
 import ib.order;
+import db_ib.apps;
 import db_ib.basic;
 import db_ib.common;
 import db_ib.execs;
@@ -49,6 +50,7 @@ public class _ini_db extends parent_ini_db
 		sources = add_source_orders(db, sources);
 		sources = add_source_trades(db, sources);
 		sources = add_source_watchlist(db, sources);
+		sources = add_source_apps(db, sources);
 		
 		boolean is_ok = populate_db(db, name, sources, setup_vals);
 		
@@ -90,10 +92,10 @@ public class _ini_db extends parent_ini_db
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 
 		info.put(execs.USER, get_user());
-		info.put(execs.EXEC_ID, new db_field(data.STRING, 30));
+		info.put(execs.EXEC_ID, get_string(30));
 		info.put(execs.SYMBOL, get_symbol(false));
 		info.put(execs.ORDER_ID, get_order_id(false));
-		info.put(execs.SIDE, new db_field(data.STRING, 3)); //Synced with execution.side's max. length as defined in external_ib.orders.
+		info.put(execs.SIDE, get_string(3)); //Synced with execution.side's max. length as defined in external_ib.orders.
 		info.put(execs.PRICE, get_price());
 		info.put(execs.QUANTITY, get_quantity());
 		info.put(execs.FEES, get_money());
@@ -109,12 +111,10 @@ public class _ini_db extends parent_ini_db
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
 		info.put(basic.USER, get_user());
-		info.put(basic.CONN_TYPE, new db_field(data.STRING, conn.get_max_length_type()));
 		info.put(basic.ACCOUNT_IB, get_status_type());
 		info.put(basic.MONEY, get_money());
 		info.put(basic.MONEY_INI, get_money());
-		info.put(basic.CURRENCY, new db_field(data.STRING, contracts.get_max_length_currency()));
-		info.put(basic.CONN_ID, get_tiny());
+		info.put(basic.CURRENCY, get_string(contracts.get_max_length_currency()));
 
 		return add_source_common(db_, source, table, info, sources_);
 	}
@@ -153,7 +153,7 @@ public class _ini_db extends parent_ini_db
 		info.put(orders.ORDER_ID_MAIN, get_order_id(false));
 		info.put(orders.ORDER_ID_SEC, get_order_id(false));
 		info.put(orders.SYMBOL, get_symbol(false));
-		info.put(orders.STATUS, get_status_type());
+		info.put(orders.STATUS, get_status_type(orders.status_type_order_to_db(ib.orders.DEFAULT_STATUS, true)));
 		info.put(orders.START, get_price());
 		info.put(orders.START2, get_price());
 		info.put(orders.STOP, get_price());
@@ -162,7 +162,6 @@ public class _ini_db extends parent_ini_db
 		info.put(orders.TYPE_MAIN, get_status_type());
 		info.put(orders.TYPE_SEC, get_status_type());
 		info.put(orders.QUANTITY, get_quantity());
-		info.put(orders.STATUS, get_status_type());
 		
 		return add_source_common(db_, source, table, info, sources_);
 	}
@@ -215,10 +214,28 @@ public class _ini_db extends parent_ini_db
 
 		return add_source_common(db_, source, table, info, sources_);		
 	}
+	
+	private HashMap<String, Object[]> add_source_apps(String db_, HashMap<String, Object[]> sources_)
+	{
+		String source = apps.SOURCE;
+		String table = "ib_apps";
+		
+		HashMap<String, db_field> info = new HashMap<String, db_field>();
+		
+		info.put(apps.APP, get_name(true));
+		info.put(apps.USER, get_user());
+		info.put(apps.CONN_ID, get_tiny());
+		info.put(apps.CONN_TYPE, get_string(conn.get_max_length_type()));
+		info.put(apps.COUNT, get_int());
+		info.put(apps.STATUS, get_status_type(apps.status_to_db(ib.apps.DEFAULT_STATUS)));
+		info.put(apps.ERROR, get_string(common.MAX_SIZE_ERROR));
+		
+		return add_source_common(db_, source, table, info, sources_);		
+	}
 		
 	private HashMap<String, Object[]> add_source_common(String db_, String source_, String table_, HashMap<String, db_field> info_, HashMap<String, Object[]> sources_) { return add_source(source_, table_, db_, info_, true, sources_); }
 
-	private static db_field get_symbol(boolean is_unique_) { return (is_unique_ ? new db_field(data.STRING, contracts.MAX_LENGTH_SYMBOL_US_ANY, 0, null, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.STRING, contracts.MAX_LENGTH_SYMBOL_US_ANY)); }
+	private static db_field get_symbol(boolean is_unique_) { return get_string(contracts.MAX_LENGTH_SYMBOL_US_ANY, is_unique_); }
 
 	private static db_field get_order_id(boolean is_unique_) { return (is_unique_ ? new db_field(data.INT, 0, order.WRONG_ORDER_ID, null, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.INT)); }
 
@@ -269,7 +286,19 @@ public class _ini_db extends parent_ini_db
 		return new db_field(data.STRING, size, 0, def_val, null); 
 	}
 
-	private static db_field get_user() { return new db_field(data.STRING, common.MAX_SIZE_USER); }
+	private static db_field get_user() { return get_string(common.MAX_SIZE_USER); }
 
-	private static db_field get_status_type() { return new db_field(data.STRING, 15); }
+	private static db_field get_status_type() { return get_status_type(null); }
+
+	private static db_field get_status_type(String default_) { return get_string(15, false, default_); }
+
+	private static db_field get_name(boolean is_unique_) { return get_string(30, is_unique_); }
+
+	private static db_field get_int() { return new db_field(data.INT); }
+
+	private static db_field get_string(int size_) { return get_string(size_, false); }
+	
+	private static db_field get_string(int size_, boolean is_unique_) { return get_string(size_, is_unique_, null); }
+
+	private static db_field get_string(int size_, boolean is_unique_, String default_) { return new db_field(data.STRING, size_, 0, (strings.is_ok(default_) ? default_ : null), (is_unique_ ? new String[] { db_field.KEY_UNIQUE } : null)); }
 }

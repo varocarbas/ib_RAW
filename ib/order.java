@@ -33,6 +33,7 @@ public class order extends parent
 
 	public static final String DEFAULT_TIF = external_ib.orders.TIF_GTC; 
 	public static final boolean DEFAULT_QUANTITIES_INT = true;
+	public static final String DEFAULT_STATUS = STATUS_ACTIVE;
 	
 	private int _id_main = WRONG_ORDER_ID;
 	private int _id_sec = WRONG_ORDER_ID;	

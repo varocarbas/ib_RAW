@@ -37,6 +37,8 @@ public abstract class types
 	public static final String CONFIG_DB_IB_TRADES_SOURCE = "config_db_ib_trades_source";
 	public static final String CONFIG_DB_IB_WATCHLIST = "config_db_ib_watchlist";
 	public static final String CONFIG_DB_IB_WATCHLIST_SOURCE = "config_db_ib_watchlist_source";
+	public static final String CONFIG_DB_IB_APPS = "config_db_ib_apps";
+	public static final String CONFIG_DB_IB_APPS_SOURCE = "config_db_ib_apps_source";
 
 	public static final String CONFIG_DB_IB_FIELD = "config_db_ib_field";
 	public static final String CONFIG_DB_IB_FIELD_USER = "config_db_ib_field_user";
@@ -65,10 +67,8 @@ public abstract class types
 
 	public static final String CONFIG_DB_IB_FIELD_MONEY = "config_db_ib_field_money";
 	public static final String CONFIG_DB_IB_FIELD_MONEY_INI = "config_db_ib_field_money_ini";
-	public static final String CONFIG_DB_IB_FIELD_CONN_TYPE = "config_db_ib_field_conn_type";
 	public static final String CONFIG_DB_IB_FIELD_ACCOUNT_IB = "config_db_ib_field_account_ib";
 	public static final String CONFIG_DB_IB_FIELD_CURRENCY = "config_db_ib_field_currency";
-	public static final String CONFIG_DB_IB_FIELD_CONN_ID = "config_db_ib_field_conn_id";
 
 	public static final String CONFIG_DB_IB_FIELD_START = "config_db_ib_field_start";
 	public static final String CONFIG_DB_IB_FIELD_START2 = "config_db_ib_field_start2";
@@ -99,6 +99,12 @@ public abstract class types
 	public static final String CONFIG_DB_IB_FIELD_FLU2_MIN = "config_db_ib_field_flu2_min";
 	public static final String CONFIG_DB_IB_FIELD_FLU2_MAX = "config_db_ib_field_flu2_max";	
 
+	public static final String CONFIG_DB_IB_FIELD_APP = "config_db_ib_field_app";	
+	public static final String CONFIG_DB_IB_FIELD_CONN_ID = "config_db_ib_field_conn_id";
+	public static final String CONFIG_DB_IB_FIELD_CONN_TYPE = "config_db_ib_field_conn_type";
+	public static final String CONFIG_DB_IB_FIELD_COUNT = "config_db_ib_field_count";	
+	public static final String CONFIG_DB_IB_FIELD_ERROR = "config_db_ib_field_error";	
+
 	public static final String ORDERS = "orders";
 	public static final String ORDERS_CANCEL = "orders_cancel";
 	public static final String ORDERS_PLACE = "orders_place";
@@ -121,6 +127,12 @@ public abstract class types
 	public static final String ORDERS_STATUS_ACTIVE = "orders_status_active";
 	public static final String ORDERS_STATUS_INACTIVE = "orders_status_inactive";	
 
+	public static final String APPS = "apps";
+	public static final String APPS_STATUS = "apps_status";
+	public static final String APPS_STATUS_STOPPED = "apps_status_stopped";
+	public static final String APPS_STATUS_RUNNING = "apps_status_running";
+	public static final String APPS_STATUS_ERROR = "apps_status_error";
+	
 	public static final String SYNC = "sync";
 	public static final String SYNC_GET = "sync_get";
 	public static final String SYNC_GET_FUNDS = "sync_get_funds";
@@ -193,7 +205,9 @@ public abstract class types
 			CONFIG_DB_IB_TRADES_SOURCE,
 			CONFIG_DB_IB_WATCHLIST,
 			CONFIG_DB_IB_WATCHLIST_SOURCE,
-			
+			CONFIG_DB_IB_APPS,
+			CONFIG_DB_IB_APPS_SOURCE,	
+
 			CONFIG_DB_IB_FIELD,
 			CONFIG_DB_IB_FIELD_USER, CONFIG_DB_IB_FIELD_SIZE, CONFIG_DB_IB_FIELD_TIME, CONFIG_DB_IB_FIELD_SYMBOL, 
 			CONFIG_DB_IB_FIELD_PRICE, CONFIG_DB_IB_FIELD_OPEN, CONFIG_DB_IB_FIELD_CLOSE, CONFIG_DB_IB_FIELD_LOW, 
@@ -201,20 +215,24 @@ public abstract class types
 			CONFIG_DB_IB_FIELD_BID, CONFIG_DB_IB_FIELD_BID_SIZE, CONFIG_DB_IB_FIELD_HALTED, CONFIG_DB_IB_FIELD_HALTED_TOT,
 			CONFIG_DB_IB_FIELD_ENABLED, CONFIG_DB_IB_FIELD_ORDER_ID, CONFIG_DB_IB_FIELD_QUANTITY, CONFIG_DB_IB_FIELD_SIDE, 
 			CONFIG_DB_IB_FIELD_FEES, CONFIG_DB_IB_FIELD_EXEC_ID, CONFIG_DB_IB_FIELD_MONEY, CONFIG_DB_IB_FIELD_MONEY_INI, 
-			CONFIG_DB_IB_FIELD_CONN_TYPE, CONFIG_DB_IB_FIELD_ACCOUNT_IB, CONFIG_DB_IB_FIELD_CURRENCY, CONFIG_DB_IB_FIELD_CONN_ID, 
-			CONFIG_DB_IB_FIELD_START, CONFIG_DB_IB_FIELD_START2, CONFIG_DB_IB_FIELD_STOP, CONFIG_DB_IB_FIELD_ORDER_ID_MAIN, 
-			CONFIG_DB_IB_FIELD_ORDER_ID_SEC, CONFIG_DB_IB_FIELD_STATUS, CONFIG_DB_IB_FIELD_STATUS2, CONFIG_DB_IB_FIELD_IS_MARKET, 
-			CONFIG_DB_IB_FIELD_TYPE_PLACE, CONFIG_DB_IB_FIELD_TYPE_MAIN, CONFIG_DB_IB_FIELD_TYPE_SEC, CONFIG_DB_IB_FIELD_TIME_ELAPSED, 
-			CONFIG_DB_IB_FIELD_UNREALISED, CONFIG_DB_IB_FIELD_IS_ACTIVE, CONFIG_DB_IB_FIELD_POSITION, CONFIG_DB_IB_FIELD_PRICE_INI, 
-			CONFIG_DB_IB_FIELD_PRICE_MIN, CONFIG_DB_IB_FIELD_PRICE_MAX, CONFIG_DB_IB_FIELD_VOLUME_INI, CONFIG_DB_IB_FIELD_VOLUME_MIN, 
-			CONFIG_DB_IB_FIELD_VOLUME_MAX, CONFIG_DB_IB_FIELD_FLU, CONFIG_DB_IB_FIELD_FLU2, CONFIG_DB_IB_FIELD_FLU2_MIN, 
-			CONFIG_DB_IB_FIELD_FLU2_MAX,
+			CONFIG_DB_IB_FIELD_ACCOUNT_IB, CONFIG_DB_IB_FIELD_CURRENCY, CONFIG_DB_IB_FIELD_START, CONFIG_DB_IB_FIELD_START2, 
+			CONFIG_DB_IB_FIELD_STOP, CONFIG_DB_IB_FIELD_ORDER_ID_MAIN, CONFIG_DB_IB_FIELD_ORDER_ID_SEC, CONFIG_DB_IB_FIELD_STATUS, 
+			CONFIG_DB_IB_FIELD_STATUS2, CONFIG_DB_IB_FIELD_IS_MARKET, CONFIG_DB_IB_FIELD_TYPE_PLACE, CONFIG_DB_IB_FIELD_TYPE_MAIN, 
+			CONFIG_DB_IB_FIELD_TYPE_SEC, CONFIG_DB_IB_FIELD_TIME_ELAPSED, CONFIG_DB_IB_FIELD_UNREALISED, CONFIG_DB_IB_FIELD_IS_ACTIVE, 
+			CONFIG_DB_IB_FIELD_POSITION, CONFIG_DB_IB_FIELD_PRICE_INI, CONFIG_DB_IB_FIELD_PRICE_MIN, CONFIG_DB_IB_FIELD_PRICE_MAX, 
+			CONFIG_DB_IB_FIELD_VOLUME_INI, CONFIG_DB_IB_FIELD_VOLUME_MIN, CONFIG_DB_IB_FIELD_VOLUME_MAX, CONFIG_DB_IB_FIELD_FLU, 
+			CONFIG_DB_IB_FIELD_FLU2, CONFIG_DB_IB_FIELD_FLU2_MIN, CONFIG_DB_IB_FIELD_FLU2_MAX, CONFIG_DB_IB_FIELD_APP, 
+			CONFIG_DB_IB_FIELD_CONN_ID, CONFIG_DB_IB_FIELD_CONN_TYPE, CONFIG_DB_IB_FIELD_COUNT, CONFIG_DB_IB_FIELD_ERROR,
 			
 			ORDERS,
 			ORDERS_CANCEL, ORDERS_PLACE, ORDERS_PLACE_MARKET, ORDERS_PLACE_STOP, ORDERS_PLACE_LIMIT, ORDERS_PLACE_STOP_LIMIT, ORDERS_UPDATE,
 			ORDERS_UPDATE_START, ORDERS_UPDATE_START_VALUE, ORDERS_UPDATE_START2, ORDERS_UPDATE_START2_VALUE, ORDERS_UPDATE_START_MARKET,
 			ORDERS_UPDATE_STOP, ORDERS_UPDATE_STOP_VALUE, ORDERS_UPDATE_STOP_MARKET, ORDERS_STATUS, ORDERS_STATUS_SUBMITTED, ORDERS_STATUS_FILLED,
 			ORDERS_STATUS_ACTIVE, ORDERS_STATUS_INACTIVE,
+			
+			APPS,
+			APPS_STATUS,
+			APPS_STATUS_STOPPED, APPS_STATUS_RUNNING, APPS_STATUS_ERROR,
 			
 			SYNC,
 			SYNC_GET,
