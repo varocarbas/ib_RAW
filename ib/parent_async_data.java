@@ -409,9 +409,9 @@ public abstract class parent_async_data extends parent_static
 		if (field_ib_ == VOLUME_IB) 
 		{
 			output *= MULTIPLIER_VOLUME;
-			output = common.adapt_val(output, VOLUME);
+			output = db_ib.common.adapt_number(output, VOLUME);
 		}
-		else if (field_ib_ == PRICE_IB) output = common.adapt_val(output, PRICE);
+		else if (field_ib_ == PRICE_IB) output = db_ib.common.adapt_number(output, PRICE);
 		
 		return output;
 	}

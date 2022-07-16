@@ -16,11 +16,33 @@ public abstract class basic
 	public static final String MONEY_INI = common.FIELD_MONEY_INI;
 	public static final String CURRENCY = common.FIELD_CURRENCY;
 	
-	public static String get_account_ib() { return common.get_string(SOURCE, ACCOUNT_IB, common.get_where_user(SOURCE)); }
+	public static boolean exists() { return common.exists(SOURCE, USER, get_where_user()); }
 
-	public static boolean update_account_ib(String val_) { return (strings.is_ok(ini_basic.get_account_ib()) ? update_account_ib() : update(ACCOUNT_IB, val_)); }
+	public static String get_user() { return common.get_string(SOURCE, USER, get_where_user()); }
+
+	public static String get_account_ib() { return common.get_string(SOURCE, ACCOUNT_IB, get_where_user()); }
+
+	public static boolean update_user_ini(String val_) { return common.insert_update(SOURCE, USER, val_, get_where_user(val_)); }
+
+	public static boolean update_user(String val_) { return (strings.is_ok(ini_basic.get_user()) ? update_user() : update(USER, val_)); }
+
+	public static boolean update_user() { return update(USER, ini_basic.get_user()); }
 
 	public static boolean update_account_ib() { return update(ACCOUNT_IB, ini_basic.get_account_ib()); }
+	
+	public static boolean update_account_ib(String val_) 
+	{ 
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		
+		if (!exists()) vals.put(USER, ini_basic.get_user());
+		
+		String val0 = ini_basic.get_account_ib(); 
+		String val = (strings.is_ok(val0) ? val0 : val_);
+		
+		vals.put(ACCOUNT_IB, val);
+		
+		return update(vals);
+	}
 	
 	public static boolean update_money_ini(double val_) { return update(MONEY_INI, val_); }
 	
@@ -28,7 +50,7 @@ public abstract class basic
 	
 	public static boolean update_currency(String val_) { return update(CURRENCY, val_); }
 	
-	public static boolean update(HashMap<String, Object> vals_) { return common.insert_update(SOURCE, adapt_vals(vals_), common.get_where_user(SOURCE)); }
+	public static boolean update(HashMap<String, Object> vals_) { return common.insert_update(SOURCE, adapt_vals(vals_), get_where_user()); }
 	
 	private static HashMap<String, Object> adapt_vals(HashMap<String, Object> vals_)
 	{
@@ -42,7 +64,7 @@ public abstract class basic
 			if (!vals.containsKey(field)) continue;
 			
 			double val = (double)vals.get(field);
-			val = ib.common.adapt_val(val, target);
+			val = common.adapt_number(val, target);
 			
 			vals.put(field, val);
 		}
@@ -57,4 +79,8 @@ public abstract class basic
 
 		return update(vals);
 	}
+
+	private static String get_where_user() { return get_where_user(ini_basic.get_user()); }
+
+	private static String get_where_user(String user_) { return common.get_where(SOURCE, USER, user_, false); }
 }

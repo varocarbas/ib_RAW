@@ -56,9 +56,9 @@ public abstract class orders
 
 	public static int get_last_id_sec() { return sync_orders._last_id_sec; }
 	
-	public static String get_type(String input_, boolean is_status_) { return db_ib.orders.status_type_db_to_order(input_, is_status_); }
+	public static String get_type(String input_, boolean is_status_) { return (is_status_ ? db_ib.orders.get_status_from_key(input_) : db_ib.orders.get_type_place_from_key(input_)); }
 
-	public static String get_key(String input_, boolean is_status_) { return db_ib.orders.status_type_order_to_db(input_, is_status_); }
+	public static String get_key(String input_, boolean is_status_) { return (is_status_ ? db_ib.orders.get_key_from_status(input_) : db_ib.orders.get_key_from_type_place(input_)); }
 
 	public static boolean is_status(String type_) { return strings.is_ok(order.check_status(type_)); }
 

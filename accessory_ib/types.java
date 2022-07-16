@@ -2,7 +2,7 @@ package accessory_ib;
 
 public abstract class types
 {
-	public static final String CONFIG_BASIC_MAIN_ID = "config_basic_main_id";
+	public static final String CONFIG_BASIC_ID_MAIN = "config_basic_id_main";
 	
 	public static final String CONFIG_ORDERS = "config_orders";
 	public static final String CONFIG_ORDERS_TIF = "config_orders_tif";
@@ -173,7 +173,7 @@ public abstract class types
 	{		
 		return new String[]
 		{
-			CONFIG_BASIC_MAIN_ID,
+			CONFIG_BASIC_ID_MAIN,
 			
 			CONFIG_ORDERS,
 			CONFIG_ORDERS_TIF, CONFIG_ORDERS_QUANTITIES_INT,

@@ -1,6 +1,5 @@
 package ib;
 
-import accessory._defaults;
 import accessory.db;
 import accessory.strings;
 
@@ -33,17 +32,20 @@ public abstract class ini_apps
 
 		populate_conn_id(conn_id_);
 	}
+	
+	public static String get_app_name_prelimary(String app_name_) { return db_ib.common.adapt_string((strings.is_ok(app_name_) ? app_name_ : apps.DEFAULT_APP_NAME), db_ib.common.MAX_SIZE_APP_NAME); }
 
-	private static void populate_app_name(String app_name_) 
+	private static String populate_app_name(String app_name_preliminary_) 
 	{ 
-		String app_name = app_name_;
+		String app_name = app_name_preliminary_;
 		
-		if (!strings.is_ok(app_name)) app_name = db_ib.apps.get_conn_type();
-		if (!strings.is_ok(app_name)) app_name = _defaults.APP_NAME;
+		if (!strings.is_ok(app_name)) app_name = db_ib.common.adapt_string(db_ib.apps.get_app_name_ini(), db_ib.common.MAX_SIZE_APP_NAME);
 		
 		db_ib.apps.update_app_name(app_name);
 
 		_app_name = app_name;
+		
+		return app_name;
 	}
 	
 	private static void populate_conn_id(int conn_id_) 

@@ -17,8 +17,12 @@ public abstract class apps
 	public static final String COUNT = common.FIELD_COUNT;
 	public static final String STATUS = common.FIELD_STATUS;
 	public static final String ERROR = common.FIELD_ERROR;
+
+	public static final int MIN_COUNT = 1;
 	
 	public static boolean exists() { return common.exists(SOURCE, APP, get_where_app()); }
+
+	public static String get_app_name_ini() { return common.get_string(SOURCE, APP, common.get_where_user(SOURCE)); }
 
 	public static int get_conn_id() { return common.get_int(SOURCE, CONN_ID, get_where_app(), false); }
 
@@ -63,13 +67,22 @@ public abstract class apps
 		
 		return update(vals);
 	}
+
+	public static boolean update_error(String val_) 
+	{
+		String val = common.adapt_string(val_, ERROR);
+		
+		return (strings.is_ok(val) ? update(ERROR, val) : false); 
+	}
+
+	public static boolean update_count(int val_) { return ((val_ >= MIN_COUNT) ? update(COUNT, val_) : false); }
 	
 	public static boolean update(HashMap<String, Object> vals_) { return common.insert_update(SOURCE, vals_, get_where_app()); }
 
-	public static String status_from_db(String input_) { return (strings.is_ok(input_) ? (ib.apps.STATUS + accessory.types.SEPARATOR + input_) : strings.DEFAULT); }
+	public static String get_key_from_status(String status_) { return common.get_key_from_type(status_, ib.apps.STATUS); }
 
-	public static String status_to_db(String input_) { return (strings.is_ok(input_) ? accessory._keys.get_key(input_, ib.apps.STATUS) : strings.DEFAULT); }
-	
+	public static String get_status_from_key(String key_) { return common.get_type_from_key(key_, ib.apps.STATUS); }
+
 	private static boolean update(String field_, Object val_) { return common.insert_update(SOURCE, field_, val_, ((!strings.is_ok(ini_apps.get_app_name()) && field_.equals(APP)) ? get_where_app((String)val_) : get_where_app())); }
 
 	private static String get_where_app() { return get_where_app(ini_apps.get_app_name()); }

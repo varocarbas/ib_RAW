@@ -29,7 +29,7 @@ public class _ini_config extends parent_ini_config
 		String type = accessory.types.CONFIG_BASIC;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(basic.CONFIG_MAIN_ID, basic.DEFAULT_MAIN_ID);
+		vals.put(basic.CONFIG_ID_MAIN, _defaults.ID_MAIN);
 
 		return populate(type, null, vals);
 	}

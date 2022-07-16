@@ -86,17 +86,21 @@ public abstract class common
 	public static final String FIELD_COUNT = types.CONFIG_DB_IB_FIELD_COUNT;
 	public static final String FIELD_ERROR = types.CONFIG_DB_IB_FIELD_ERROR;
 
+	public static final String SEPARATOR = accessory.types.SEPARATOR;
+	
 	public static final int MAX_SIZE_USER = 15;
 	public static final int MAX_SIZE_MONEY = 7;
 	public static final int MAX_SIZE_PRICE = 4;
 	public static final int MAX_SIZE_VOLUME = 4;
 	public static final int MAX_SIZE_POSITION = 3;
 	public static final int MAX_SIZE_ERROR = 30;
+	public static final int MAX_SIZE_APP_NAME = 30;
 	
 	public static final String DEFAULT_DB = types.CONFIG_DB_IB;
 	public static final String DEFAULT_DB_NAME = accessory.db.DEFAULT_DB_NAME;
+	
 	public static final int DEFAULT_SIZE_DECIMAL = MAX_SIZE_MONEY;
-
+	
 	public static boolean exists(String source_, String where_) { return exists(source_, FIELD_SYMBOL, where_); }
 
 	public static boolean exists(String source_, String field_, String where_) { return strings.is_ok(accessory.db.select_one_string(source_, field_, where_, db.DEFAULT_ORDER)); }
@@ -217,18 +221,61 @@ public abstract class common
 
 	public static String[] populate_all_sources_enabled() { return new String[] { SOURCE_MARKET }; }
 	
-	public static HashMap<String, Integer> populate_all_val_max_sizes()
+	public static HashMap<String, Integer> populate_all_max_sizes_numbers()
 	{
 		HashMap<String, Integer> all = new HashMap<String, Integer>();
-		
+
 		all.put(FIELD_MONEY, MAX_SIZE_MONEY);
 		all.put(FIELD_PRICE, MAX_SIZE_PRICE);
 		all.put(FIELD_VOLUME, MAX_SIZE_VOLUME);
+		all.put(FIELD_POSITION, MAX_SIZE_POSITION);
 		
 		return all;
 	}
 	
-	public static HashMap<String, Integer> get_all_val_max_sizes() { return _alls.DB_VAL_MAX_SIZES; }
+	public static HashMap<String, Integer> populate_all_max_sizes_strings()
+	{
+		HashMap<String, Integer> all = new HashMap<String, Integer>();
+
+		all.put(FIELD_USER, MAX_SIZE_USER);
+		all.put(FIELD_ERROR, MAX_SIZE_ERROR);
+		all.put(FIELD_APP, MAX_SIZE_APP_NAME);
+		
+		return all;
+	}
+	
+	public static double adapt_number(double val_, String field_)
+	{
+		HashMap<String, Integer> sizes = get_all_max_sizes_numbers();
+		
+		return (sizes.containsKey(field_) ? adapt_number(val_, sizes.get(field_)) : val_);
+	}
+	
+	public static double adapt_number(double val_, int max_)
+	{
+		double max = Math.pow(10.0, ((double)max_ + 1.0)) - 1.0;
+		
+		return (val_ < max ? val_ : max);
+	}
+
+	public static String adapt_string(String val_, String field_)
+	{
+		HashMap<String, Integer> sizes = get_all_max_sizes_strings();
+		
+		return (sizes.containsKey(field_) ? adapt_string(val_, sizes.get(field_)) : val_);
+	}
+	
+	public static String adapt_string(String val_, int max_) { return (strings.get_length(val_) < max_ ? val_ : strings.truncate(val_, max_)); }
+
+	public static String get_type_from_key(String key_, String root_) { return ((strings.is_ok(key_) && strings.is_ok(root_)) ? (root_ + SEPARATOR + key_) : strings.DEFAULT); }
+
+	public static String get_key_from_type(String type_, String root_) { return get_key(type_, root_); }
+	
+	public static String get_key(String type_, String root_) { return accessory._keys.get_key(type_, root_); }
+	
+	private static HashMap<String, Integer> get_all_max_sizes_numbers() { return _alls.DB_MAX_SIZES_NUMBERS; }
+	
+	private static HashMap<String, Integer> get_all_max_sizes_strings() { return _alls.DB_MAX_SIZES_STRINGS; }
 	
 	private static String[] get_all_sources_user() { return _alls.DB_SOURCES_USER; }
 

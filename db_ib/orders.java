@@ -61,7 +61,7 @@ public abstract class orders
 
 	public static boolean update_status(int id_main_, String status_) 
 	{ 
-		String status = status_type_order_to_db(status_, true);
+		String status = get_key_from_status(status_);
 		if (!strings.is_ok(status)) return false;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
@@ -78,7 +78,7 @@ public abstract class orders
 
 	public static order to_order(HashMap<String, String> db_)
 	{
-		String type_place = status_type_db_to_order((String)arrays.get_value(db_, TYPE_PLACE), false);
+		String type_place = get_type_place_from_key((String)arrays.get_value(db_, TYPE_PLACE));
 		String symbol = (String)arrays.get_value(db_, SYMBOL);
 		
 		double quantity = strings.to_number_decimal((String)arrays.get_value(db_, QUANTITY));
@@ -98,10 +98,10 @@ public abstract class orders
 		if (order_ == null) return db;
 
 		db.put(USER, ib.basic.get_user());
-		db.put(STATUS, status_type_order_to_db(ib.orders.DEFAULT_STATUS, true));
+		db.put(STATUS, get_key_from_status(ib.orders.DEFAULT_STATUS));
 		db.put(ORDER_ID_MAIN, order_.get_id_main());
 		db.put(ORDER_ID_SEC, order_.get_id_sec());
-		db.put(TYPE_PLACE, status_type_order_to_db(order_.get_type_place(), false));
+		db.put(TYPE_PLACE, get_key_from_type_place(order_.get_type_place()));
 		db.put(TYPE_MAIN, order_.get_type_main());
 		db.put(TYPE_SEC, order_.get_type_sec());
 		db.put(SYMBOL, order_.get_symbol());
@@ -113,10 +113,14 @@ public abstract class orders
 		
 		return db;
 	}
+	
+	public static String get_type_place_from_key(String key_) { return common.get_type_from_key(key_, ib.orders.PLACE); }
 
-	public static String status_type_db_to_order(String input_, boolean is_status_) { return (strings.is_ok(input_) ? ((is_status_ ? ib.orders.STATUS : ib.orders.PLACE) + accessory.types.SEPARATOR + input_) : strings.DEFAULT); }
+	public static String get_key_from_type_place(String type_) { return common.get_key_from_type(type_, ib.orders.PLACE); }
+	
+	public static String get_status_from_key(String key_) { return common.get_type_from_key(key_, ib.orders.STATUS); }
 
-	public static String status_type_order_to_db(String input_, boolean is_status_) { return (strings.is_ok(input_) ? accessory._keys.get_key(input_, (is_status_ ? ib.orders.STATUS : ib.orders.PLACE)) : strings.DEFAULT); }
+	public static String get_key_from_status(String status_) { return common.get_key_from_type(status_, ib.orders.STATUS); }
 
 	private static boolean exists_internal(int id_main_, String where_) 
 	{ 

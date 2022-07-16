@@ -13,14 +13,14 @@ import ib.ini_basic;
 
 public class _ini extends parent_ini
 {	
-	//--- Keys for the information which can be included in the info_ args below. Any of these key-value pairs can be omitted.
+	//--- Keys for the information which can be included in the info_ args of the start() methods below. Any of these key-value pairs can be omitted.
 	
 	//-- The values associated with these variables can't be modified at runtime.
 
 	public static final String INFO_INCLUDES_LEGACY = "includes_legacy";
 	public static final String INFO_APP_NAME = "app_name";
 	
-	//INFO_USER isn't just used for overall identification, but also as the default user value (e.g., replacement for a non-existent DBS_USER).
+	//INFO_USER isn't just used for overall identification, but also as the default user value (e.g., replacement for a non-existent DBS_USER, which is expected because username/password weren't provided).
 	public static final String INFO_USER = "user";
 	
 	public static final String INFO_ACCOUNT_IB = "account_ib";
@@ -32,6 +32,8 @@ public class _ini extends parent_ini
 	
 	//---
 
+	//--- Keys for the dbs_setup_ args of the start() methods below, defining the default setup for all the DBs defined in the _ini_db class.
+	
 	public static final String DBS_SETUP = accessory.types.CONFIG_DB_SETUP;
 	public static final String DBS_MAX_POOL = accessory.types.CONFIG_DB_SETUP_MAX_POOL;
 	public static final String DBS_HOST = accessory.types.CONFIG_DB_SETUP_HOST;
@@ -40,8 +42,9 @@ public class _ini extends parent_ini
 	public static final String DBS_PASSWORD = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_PASSWORD;
 	public static final String DBS_USER = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_USER;
 	public static final String DBS_USER_ENCRYPTED = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_ENCRYPTED;
-	public static final String DBS_CREDENTIALS_ENCRYPTED = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_ENCRYPTED;
-
+	
+	//---
+	
 	public static final boolean DEFAULT_INFO_INCLUDES_LEGACY = false;
 	public static final int DEFAULT_INFO_CONN_ID_IB = conn.WRONG_ID;	
 	
@@ -97,8 +100,8 @@ public class _ini extends parent_ini
 		HashMap<String, Object> info = (info_ == null ? new HashMap<String, Object>() : new HashMap<String, Object>(info_));
 		HashMap<String, Object> dbs_setup = (dbs_setup_ == null ? new HashMap<String, Object>() : new HashMap<String, Object>(dbs_setup_));
 
-		String user = ini_basic.adapt_user_ini((info.containsKey(INFO_USER) ? (String)info.get(INFO_USER) : accessory._defaults.USER));
-		String name = (String)_ini.get_info_val(info_, INFO_APP_NAME);
+		String user = ini_basic.get_user_prelimary((String)_ini.get_info_val(info_, INFO_USER));
+		String name = ini_apps.get_app_name_prelimary((String)_ini.get_info_val(info_, INFO_APP_NAME));
 
 		if (!dbs_setup.containsKey(DBS_USER) && !(dbs_setup.containsKey(DBS_USERNAME) && dbs_setup.containsKey(DBS_PASSWORD))) dbs_setup.put(DBS_USER, user);
 		
@@ -106,7 +109,6 @@ public class _ini extends parent_ini
 		
 		_instance.populate_all(name, dbs_setup); 
 
-		ini_basic.update_user_ini(user);
 		info.put(INFO_USER, user);
 		
 		populate_inis(info);
@@ -114,7 +116,7 @@ public class _ini extends parent_ini
 	
 	private static void populate_inis(HashMap<String, Object> info_) 
 	{ 
-		ini_basic.start((String)get_info_val(info_, INFO_ACCOUNT_IB));
+		ini_basic.start((String)get_info_val(info_, INFO_USER), (String)get_info_val(info_, INFO_ACCOUNT_IB));
 		
 		ini_apps.start((String)get_info_val(info_, INFO_APP_NAME), (String)get_info_val(info_, INFO_CONN_TYPE_IB), (int)get_info_val(info_, INFO_CONN_ID_IB));
 	}

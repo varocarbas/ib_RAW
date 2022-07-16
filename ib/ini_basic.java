@@ -12,25 +12,32 @@ public abstract class ini_basic
 	
 	public static String get_user() { return _user; }	
 
-	public static void update_user_ini(String user_) { _user = user_; }	
-
 	public static String get_account_ib() { return _account_ib; }
 	
-	public static String adapt_user_ini(String user_)
-	{
-		String user = user_;
-		if (!strings.is_ok(user)) user = basic.DEFAULT_USER;
-		
-		return strings.truncate(user, db_ib.common.MAX_SIZE_USER);
-	}
-	
-	public static void start(String account_ib_)
+	public static void start(String user_, String account_ib_)
 	{
 		db.create_table(SOURCE, false);
+
+		populate_user(user_);
 		
 		populate_account_ib(account_ib_);
 	}
 	
+	public static String get_user_prelimary(String user_) { return db_ib.common.adapt_string((strings.is_ok(user_) ? user_ : basic.DEFAULT_USER), db_ib.common.MAX_SIZE_USER); }
+	
+	private static String populate_user(String user_preliminary_) 
+	{ 
+		String user = user_preliminary_;
+
+		if (!strings.is_ok(user)) user = db_ib.common.adapt_string(db_ib.basic.get_user(), db_ib.common.MAX_SIZE_USER);
+		
+		db_ib.basic.update_user_ini(user);
+
+		_user = user;
+		
+		return user;
+	}
+
 	private static void populate_account_ib(String account_ib_) 
 	{ 
 		String account_ib = (strings.is_ok(account_ib_) ? account_ib_ : get_account_ib_from_file());

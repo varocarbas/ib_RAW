@@ -1,5 +1,6 @@
 package ib;
 
+import accessory_ib._defaults;
 import accessory_ib.types;
 
 public abstract class apps 
@@ -9,6 +10,7 @@ public abstract class apps
 	public static final String STATUS_RUNNING = types.APPS_STATUS_RUNNING;
 	public static final String STATUS_ERROR = types.APPS_STATUS_ERROR;
 
+	public static final String DEFAULT_APP_NAME = _defaults.APP_NAME;
 	public static final String DEFAULT_STATUS = STATUS_STOPPED;
 	
 	public static void start()

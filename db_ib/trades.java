@@ -34,7 +34,7 @@ public abstract class trades
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		vals.put(ORDER_ID_MAIN, order_id_);
 		vals.put(SYMBOL, symbol_);
-		vals.put(POSITION, ib.trades.get_position(symbol_));
+		vals.put(POSITION, common.adapt_number(ib.trades.get_position(symbol_), POSITION));
 		
 		return common.insert(SOURCE, vals);
 	}

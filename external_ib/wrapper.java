@@ -34,12 +34,13 @@ import com.ib.client.TickAttribLast;
 import accessory.strings;
 import accessory_ib.logs;
 import ib.common_wrapper;
+import ib.order;
 
 //Implementation of the IB's EWrapper interface (https://interactivebrokers.github.io/tws-api/interfaceIBApi_1_1EWrapper.html).
 
 public class wrapper implements EWrapper 
 {
-	protected int currentOrderId = -1;
+	protected int currentOrderId = order.WRONG_ORDER_ID;
 	
 	private EReaderSignal _reader_signal;
 	private EClientSocket _client_socket;

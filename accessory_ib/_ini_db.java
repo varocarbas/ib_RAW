@@ -110,7 +110,7 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
-		info.put(basic.USER, get_user());
+		info.put(basic.USER, get_user(true));
 		info.put(basic.ACCOUNT_IB, get_status_type());
 		info.put(basic.MONEY, get_money());
 		info.put(basic.MONEY_INI, get_money());
@@ -153,7 +153,7 @@ public class _ini_db extends parent_ini_db
 		info.put(orders.ORDER_ID_MAIN, get_order_id(false));
 		info.put(orders.ORDER_ID_SEC, get_order_id(false));
 		info.put(orders.SYMBOL, get_symbol(false));
-		info.put(orders.STATUS, get_status_type(orders.status_type_order_to_db(ib.orders.DEFAULT_STATUS, true)));
+		info.put(orders.STATUS, get_status_type(orders.get_key_from_status(ib.orders.DEFAULT_STATUS)));
 		info.put(orders.START, get_price());
 		info.put(orders.START2, get_price());
 		info.put(orders.STOP, get_price());
@@ -222,12 +222,12 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
-		info.put(apps.APP, get_name(true));
+		info.put(apps.APP, get_name(db_ib.common.MAX_SIZE_APP_NAME, true));
 		info.put(apps.USER, get_user());
 		info.put(apps.CONN_ID, get_tiny());
 		info.put(apps.CONN_TYPE, get_string(conn.get_max_length_type()));
 		info.put(apps.COUNT, get_int());
-		info.put(apps.STATUS, get_status_type(apps.status_to_db(ib.apps.DEFAULT_STATUS)));
+		info.put(apps.STATUS, get_status_type(apps.get_key_from_status(ib.apps.DEFAULT_STATUS)));
 		info.put(apps.ERROR, get_string(common.MAX_SIZE_ERROR));
 		
 		return add_source_common(db_, source, table, info, sources_);		
@@ -286,13 +286,15 @@ public class _ini_db extends parent_ini_db
 		return new db_field(data.STRING, size, 0, def_val, null); 
 	}
 
-	private static db_field get_user() { return get_string(common.MAX_SIZE_USER); }
+	private static db_field get_user() { return get_user(false); }
+
+	private static db_field get_user(boolean is_unique_) { return get_string(common.MAX_SIZE_USER, is_unique_); }
 
 	private static db_field get_status_type() { return get_status_type(null); }
 
 	private static db_field get_status_type(String default_) { return get_string(15, false, default_); }
 
-	private static db_field get_name(boolean is_unique_) { return get_string(30, is_unique_); }
+	private static db_field get_name(int size_, boolean is_unique_) { return get_string(size_, is_unique_); }
 
 	private static db_field get_int() { return new db_field(data.INT); }
 
