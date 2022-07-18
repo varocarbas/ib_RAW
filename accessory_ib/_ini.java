@@ -20,7 +20,7 @@ public class _ini extends parent_ini
 	public static final String INFO_INCLUDES_LEGACY = "includes_legacy";
 	public static final String INFO_APP_NAME = "app_name";
 	
-	//INFO_USER isn't just used for overall identification, but also as the default user value (e.g., replacement for a non-existent DBS_USER, which is expected because username/password weren't provided).
+	//INFO_USER isn't just used for overall identification, but also as the default user value (e.g., replacement for a non-existent DBS_USER which is expected because username/password weren't provided).
 	public static final String INFO_USER = "user";
 	
 	public static final String INFO_ACCOUNT_IB = "account_ib";
@@ -32,16 +32,17 @@ public class _ini extends parent_ini
 	
 	//---
 
-	//--- Keys for the dbs_setup_ args of the start() methods below, defining the default setup for all the DBs defined in the _ini_db class.
+	//--- Keys for the dbs_setup_ args of the start() methods below. They define the default setup for all the DBs and are used in the _ini_db class.
 	
 	public static final String DBS_SETUP = accessory.types.CONFIG_DB_SETUP;
-	public static final String DBS_MAX_POOL = accessory.types.CONFIG_DB_SETUP_MAX_POOL;
-	public static final String DBS_HOST = accessory.types.CONFIG_DB_SETUP_HOST;
-	public static final String DBS_TYPE = accessory.types.CONFIG_DB_SETUP_TYPE;
-	public static final String DBS_USERNAME = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_USERNAME;
-	public static final String DBS_PASSWORD = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_PASSWORD;
-	public static final String DBS_USER = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_USER;
-	public static final String DBS_USER_ENCRYPTED = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_ENCRYPTED;
+	public static final String DBS_SETUP_MAX_POOL = accessory.types.CONFIG_DB_SETUP_MAX_POOL;
+	public static final String DBS_SETUP_HOST = accessory.types.CONFIG_DB_SETUP_HOST;
+	public static final String DBS_SETUP_TYPE = accessory.types.CONFIG_DB_SETUP_TYPE;
+	public static final String DBS_SETUP_CREDENTIALS_USERNAME = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_USERNAME;
+	public static final String DBS_SETUP_CREDENTIALS_PASSWORD = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_PASSWORD;
+	public static final String DBS_SETUP_CREDENTIALS_USER = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_USER;
+	public static final String DBS_SETUP_CREDENTIALS_ENCRYPTED = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_ENCRYPTED;
+	public static final String DBS_SETUP_CREDENTIALS_MEMORY = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_MEMORY;
 	
 	//---
 	
@@ -100,10 +101,17 @@ public class _ini extends parent_ini
 		HashMap<String, Object> info = (info_ == null ? new HashMap<String, Object>() : new HashMap<String, Object>(info_));
 		HashMap<String, Object> dbs_setup = (dbs_setup_ == null ? new HashMap<String, Object>() : new HashMap<String, Object>(dbs_setup_));
 
-		String user = ini_basic.get_user_prelimary((String)_ini.get_info_val(info_, INFO_USER));
-		String name = ini_apps.get_app_name_prelimary((String)_ini.get_info_val(info_, INFO_APP_NAME));
-
-		if (!dbs_setup.containsKey(DBS_USER) && !(dbs_setup.containsKey(DBS_USERNAME) && dbs_setup.containsKey(DBS_PASSWORD))) dbs_setup.put(DBS_USER, user);
+		String user = (String)_ini.get_info_val(info_, INFO_USER);
+		String name = (String)_ini.get_info_val(info_, INFO_APP_NAME);
+		
+		boolean update_dbs_user = false;
+		
+		if (!dbs_setup.containsKey(DBS_SETUP_CREDENTIALS_USER) && !(dbs_setup.containsKey(DBS_SETUP_CREDENTIALS_USERNAME) && dbs_setup.containsKey(DBS_SETUP_CREDENTIALS_PASSWORD))) 
+		{
+			update_dbs_user = true;
+			
+			dbs_setup.put(DBS_SETUP_CREDENTIALS_USER, user);
+		}
 		
 		if (!accessory._ini.is_populated()) accessory._ini.start(name, (boolean)_ini.get_info_val(info, INFO_INCLUDES_LEGACY), dbs_setup);		
 		
@@ -112,6 +120,8 @@ public class _ini extends parent_ini
 		info.put(INFO_USER, user);
 		
 		populate_inis(info);
+		
+		if (update_dbs_user) config.update_db(accessory.types.CONFIG_DB_SETUP_CREDENTIALS_USER, ini_basic.get_user());
 	}
 	
 	private static void populate_inis(HashMap<String, Object> info_) 

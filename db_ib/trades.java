@@ -20,6 +20,7 @@ public abstract class trades
 	public static final String UNREALISED = common.FIELD_UNREALISED;	
 	public static final String IS_ACTIVE = common.FIELD_IS_ACTIVE;
 	public static final String POSITION = common.FIELD_POSITION;
+	public static final String INVESTMENT = common.FIELD_INVESTMENT;
 	
 	public static boolean exists(int order_id_) { return common.exists(SOURCE, common.get_where_order_id(SOURCE, order_id_)); }
 
@@ -32,9 +33,11 @@ public abstract class trades
 	public static boolean insert(int order_id_, String symbol_) 
 	{ 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
+		
 		vals.put(ORDER_ID_MAIN, order_id_);
 		vals.put(SYMBOL, symbol_);
-		vals.put(POSITION, common.adapt_number(ib.trades.get_position(symbol_), POSITION));
+		vals.put(START, adapt_start(get_start(order_id_)));
+		vals.put(POSITION, get_position(symbol_));
 		
 		return common.insert(SOURCE, vals);
 	}
@@ -48,4 +51,17 @@ public abstract class trades
 	}
 	
 	public static String[] get_fields() { return new String[] { USER, ORDER_ID_MAIN, SYMBOL, PRICE, TIME_ELAPSED, START, STOP, HALTED, UNREALISED }; }
+
+	private static double get_position(String symbol_) { return adapt_position(ib.trades.get_position(symbol_)); }
+
+	private static double get_start(int order_id_) 
+	{ 
+		double start = 0.0;
+
+		return start; 
+	}
+
+	private static double adapt_start(double start_) { return common.adapt_number(start_, common.FIELD_PRICE); }
+
+	private static double adapt_position(double position_) { return common.adapt_number(position_, common.FIELD_POSITION); }
 }

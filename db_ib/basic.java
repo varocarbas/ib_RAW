@@ -15,6 +15,7 @@ public abstract class basic
 	public static final String MONEY = common.FIELD_MONEY;
 	public static final String MONEY_INI = common.FIELD_MONEY_INI;
 	public static final String CURRENCY = common.FIELD_CURRENCY;
+	public static final String MONEY_FREE = common.FIELD_MONEY_FREE;
 	
 	public static boolean exists() { return common.exists(SOURCE, USER, get_where_user()); }
 
@@ -33,8 +34,8 @@ public abstract class basic
 	public static boolean update_account_ib(String val_) 
 	{ 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
-		
-		if (!exists()) vals.put(USER, ini_basic.get_user());
+
+		if (!exists()) vals.put(USER, common.adapt_string(ini_basic.get_user(), USER));
 		
 		String val0 = ini_basic.get_account_ib(); 
 		String val = (strings.is_ok(val0) ? val0 : val_);
@@ -44,10 +45,12 @@ public abstract class basic
 		return update(vals);
 	}
 	
-	public static boolean update_money_ini(double val_) { return update(MONEY_INI, val_); }
+	public static boolean update_money_ini(double val_) { return update(MONEY_INI, adapt_money(val_)); }
 	
-	public static boolean update_money(double val_) { return update(MONEY, val_); }
+	public static boolean update_money(double val_) { return update(MONEY, adapt_money(val_)); }
 	
+	public static boolean update_money_free(double val_) { return update(MONEY_FREE, adapt_money(val_)); }
+
 	public static boolean update_currency(String val_) { return update(CURRENCY, val_); }
 	
 	public static boolean update(HashMap<String, Object> vals_) { return common.insert_update(SOURCE, adapt_vals(vals_), get_where_user()); }
@@ -57,7 +60,7 @@ public abstract class basic
 		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
 		
 		String target = MONEY;
-		String[] fields = new String[] { MONEY, MONEY_INI };
+		String[] fields = new String[] { MONEY, MONEY_INI, MONEY_FREE };
 		
 		for (String field: fields) 
 		{ 
@@ -71,6 +74,8 @@ public abstract class basic
 		
 		return vals;
 	}
+
+	private static double adapt_money(double val_) { return common.adapt_number(val_, common.FIELD_MONEY); }
 	
 	private static boolean update(String field_, Object val_)
 	{
@@ -82,5 +87,5 @@ public abstract class basic
 
 	private static String get_where_user() { return get_where_user(ini_basic.get_user()); }
 
-	private static String get_where_user(String user_) { return common.get_where(SOURCE, USER, user_, false); }
+	private static String get_where_user(String val_) { return common.get_where(SOURCE, USER, val_, false); }
 }

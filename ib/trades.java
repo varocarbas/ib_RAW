@@ -37,7 +37,7 @@ public abstract class trades extends parent_static
 		__unlock();
 	}
 	
-	public static void _start(int order_id_, boolean lock_) 
+	public static void _start(int order_id_, double price_, boolean lock_) 
 	{ 
 		if (lock_) __lock();
 		

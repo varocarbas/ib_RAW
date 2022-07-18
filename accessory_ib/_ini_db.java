@@ -115,7 +115,8 @@ public class _ini_db extends parent_ini_db
 		info.put(basic.MONEY, get_money());
 		info.put(basic.MONEY_INI, get_money());
 		info.put(basic.CURRENCY, get_string(contracts.get_max_length_currency()));
-
+		info.put(basic.MONEY_FREE, get_money());
+		
 		return add_source_common(db_, source, table, info, sources_);
 	}
 	
@@ -138,6 +139,9 @@ public class _ini_db extends parent_ini_db
 		info.put(remote.STOP, get_price());
 		info.put(remote.IS_MARKET, get_boolean(false));	
 		info.put(remote.QUANTITY, get_quantity());	
+		info.put(remote.TYPE_PLACE, get_status_type());
+		info.put(remote.INVEST_PERC, get_decimal_tiny());
+		info.put(remote.ERROR, get_error());
 		
 		return add_source_common(db_, source, table, info, sources_);
 	}
@@ -184,6 +188,7 @@ public class _ini_db extends parent_ini_db
 		info.put(trades.UNREALISED, get_money());
 		info.put(trades.IS_ACTIVE, get_boolean(true));
 		info.put(trades.POSITION, get_position());
+		info.put(trades.INVESTMENT, get_money());
 		
 		return add_source_common(db_, source, table, info, sources_);		
 	}
@@ -224,11 +229,11 @@ public class _ini_db extends parent_ini_db
 		
 		info.put(apps.APP, get_name(db_ib.common.MAX_SIZE_APP_NAME, true));
 		info.put(apps.USER, get_user());
-		info.put(apps.CONN_ID, get_tiny());
+		info.put(apps.CONN_ID, get_tiny(true));
 		info.put(apps.CONN_TYPE, get_string(conn.get_max_length_type()));
 		info.put(apps.COUNT, get_int());
 		info.put(apps.STATUS, get_status_type(apps.get_key_from_status(ib.apps.DEFAULT_STATUS)));
-		info.put(apps.ERROR, get_string(common.MAX_SIZE_ERROR));
+		info.put(apps.ERROR, get_error());
 		
 		return add_source_common(db_, source, table, info, sources_);		
 	}
@@ -237,7 +242,7 @@ public class _ini_db extends parent_ini_db
 
 	private static db_field get_symbol(boolean is_unique_) { return get_string(contracts.MAX_LENGTH_SYMBOL_US_ANY, is_unique_); }
 
-	private static db_field get_order_id(boolean is_unique_) { return (is_unique_ ? new db_field(data.INT, 0, order.WRONG_ORDER_ID, null, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.INT)); }
+	private static db_field get_order_id(boolean is_unique_) { return (is_unique_ ? new db_field(data.INT, db_field.DEFAULT_SIZE, db_field.WRONG_DECIMALS, order.WRONG_ORDER_ID, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.INT)); }
 
 	private static db_field get_money() { return get_decimal(common.MAX_SIZE_MONEY); }
 	
@@ -257,12 +262,14 @@ public class _ini_db extends parent_ini_db
 	
 	private static db_field get_halted() { return get_tiny(); }
 
-	private static db_field get_boolean(boolean default_) { return new db_field(data.BOOLEAN, 0, 0, default_, null); }
+	private static db_field get_boolean(boolean default_) { return new db_field(data.BOOLEAN, db_field.DEFAULT_SIZE, db_field.WRONG_DECIMALS, default_, null); }
 
 	private static db_field get_halted_tot() { return get_tiny(); }
 
-	private static db_field get_tiny() { return new db_field(data.TINYINT); }
-
+	private static db_field get_tiny() { return get_tiny(false); }
+	
+	private static db_field get_tiny(boolean is_unique_) { return (is_unique_ ? new db_field(data.TINYINT, db_field.DEFAULT_SIZE, db_field.WRONG_DECIMALS, db_field.WRONG_DEFAULT, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.TINYINT)); }
+	
 	private static db_field get_time() { return get_time(true); }
 	
 	private static db_field get_time_elapsed() { return get_time(false); }
@@ -283,7 +290,7 @@ public class _ini_db extends parent_ini_db
 			def_val = "00:00:00";			
 		}
 		
-		return new db_field(data.STRING, size, 0, def_val, null); 
+		return new db_field(data.STRING, size, db_field.WRONG_DECIMALS, def_val, null); 
 	}
 
 	private static db_field get_user() { return get_user(false); }
@@ -296,11 +303,13 @@ public class _ini_db extends parent_ini_db
 
 	private static db_field get_name(int size_, boolean is_unique_) { return get_string(size_, is_unique_); }
 
+	private static db_field get_error() { return get_string(common.MAX_SIZE_ERROR); }
+
 	private static db_field get_int() { return new db_field(data.INT); }
 
 	private static db_field get_string(int size_) { return get_string(size_, false); }
 	
 	private static db_field get_string(int size_, boolean is_unique_) { return get_string(size_, is_unique_, null); }
 
-	private static db_field get_string(int size_, boolean is_unique_, String default_) { return new db_field(data.STRING, size_, 0, (strings.is_ok(default_) ? default_ : null), (is_unique_ ? new String[] { db_field.KEY_UNIQUE } : null)); }
+	private static db_field get_string(int size_, boolean is_unique_, String default_) { return new db_field(data.STRING, size_, db_field.WRONG_DECIMALS, (strings.is_ok(default_) ? default_ : db_field.WRONG_DEFAULT), (is_unique_ ? new String[] { db_field.KEY_UNIQUE } : null)); }
 }

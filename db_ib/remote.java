@@ -16,4 +16,7 @@ public abstract class remote
 	public static final String STOP = common.FIELD_STOP;
 	public static final String IS_MARKET = common.FIELD_IS_MARKET;
 	public static final String QUANTITY = common.FIELD_QUANTITY;
+	public static final String TYPE_PLACE = common.FIELD_TYPE_PLACE;
+	public static final String INVEST_PERC = common.FIELD_INVEST_PERC;
+	public static final String ERROR = common.FIELD_ERROR;
 }

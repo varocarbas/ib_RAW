@@ -2,6 +2,7 @@ package db_ib;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import accessory.arrays;
 import accessory.db;
@@ -50,6 +51,7 @@ public abstract class common
 	public static final String FIELD_MONEY_INI = types.CONFIG_DB_IB_FIELD_MONEY_INI;
 	public static final String FIELD_ACCOUNT_IB = types.CONFIG_DB_IB_FIELD_ACCOUNT_IB;
 	public static final String FIELD_CURRENCY = types.CONFIG_DB_IB_FIELD_CURRENCY;
+	public static final String FIELD_MONEY_FREE = types.CONFIG_DB_IB_FIELD_MONEY_FREE;
 	
 	public static final String FIELD_START = types.CONFIG_DB_IB_FIELD_START;
 	public static final String FIELD_START2 = types.CONFIG_DB_IB_FIELD_START2;
@@ -59,6 +61,8 @@ public abstract class common
 	public static final String FIELD_STATUS = types.CONFIG_DB_IB_FIELD_STATUS;
 	public static final String FIELD_STATUS2 = types.CONFIG_DB_IB_FIELD_STATUS2;
 	public static final String FIELD_IS_MARKET = types.CONFIG_DB_IB_FIELD_IS_MARKET;
+	public static final String FIELD_INVEST_PERC = types.CONFIG_DB_IB_FIELD_INVEST_PERC;
+	
 	public static final String FIELD_TYPE_PLACE = types.CONFIG_DB_IB_FIELD_TYPE_PLACE;
 	public static final String FIELD_TYPE_MAIN = types.CONFIG_DB_IB_FIELD_TYPE_MAIN;
 	public static final String FIELD_TYPE_SEC = types.CONFIG_DB_IB_FIELD_TYPE_SEC;
@@ -67,6 +71,7 @@ public abstract class common
 	public static final String FIELD_UNREALISED = types.CONFIG_DB_IB_FIELD_UNREALISED;
 	public static final String FIELD_IS_ACTIVE = types.CONFIG_DB_IB_FIELD_IS_ACTIVE;
 	public static final String FIELD_POSITION = types.CONFIG_DB_IB_FIELD_POSITION;
+	public static final String FIELD_INVESTMENT = types.CONFIG_DB_IB_FIELD_INVESTMENT;
 	
 	public static final String FIELD_PRICE_INI = types.CONFIG_DB_IB_FIELD_PRICE_INI;
 	public static final String FIELD_PRICE_MIN = types.CONFIG_DB_IB_FIELD_PRICE_MIN;
@@ -95,6 +100,9 @@ public abstract class common
 	public static final int MAX_SIZE_POSITION = 3;
 	public static final int MAX_SIZE_ERROR = 30;
 	public static final int MAX_SIZE_APP_NAME = 30;
+	
+	public static final int WRONG_MAX_SIZE = 0;
+	public static final double WRONG_MAX_VAL = 0.0;
 	
 	public static final String DEFAULT_DB = types.CONFIG_DB_IB;
 	public static final String DEFAULT_DB_NAME = accessory.db.DEFAULT_DB_NAME;
@@ -128,7 +136,7 @@ public abstract class common
 		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
 		if (!arrays.is_ok(vals)) return false;
 		
-		if (source_includes_user(source_)) vals.put(FIELD_USER, basic.get_user());
+		vals = add_default_vals(source_, vals);
 			
 		accessory.db.insert(source_, vals);
 
@@ -140,7 +148,7 @@ public abstract class common
 		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_);
 		if (!arrays.is_ok(vals)) return false;
 		
-		if (source_includes_user(source_)) vals.put(get_col(source_, FIELD_USER), basic.get_user());
+		vals = add_default_vals_quick(source_, vals);
 		
 		accessory.db.insert_quick(source_, vals);
 
@@ -176,7 +184,7 @@ public abstract class common
 		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
 		if (!arrays.is_ok(vals)) return false;
 		
-		if (source_includes_user(source_)) vals.put(FIELD_USER, basic.get_user());
+		vals = add_default_vals(source_, vals);
 
 		accessory.db.insert_update(source_, vals, where_);
 		
@@ -233,6 +241,15 @@ public abstract class common
 		return all;
 	}
 	
+	public static HashMap<String, Double> populate_all_max_vals()
+	{
+		HashMap<String, Double> vals = new HashMap<String, Double>();
+		
+		for (Entry<String, Integer> item: populate_all_max_sizes_numbers().entrySet()) { vals.put(item.getKey(), common.get_max_val(item.getValue())); }
+		
+		return vals;
+	}
+	
 	public static HashMap<String, Integer> populate_all_max_sizes_strings()
 	{
 		HashMap<String, Integer> all = new HashMap<String, Integer>();
@@ -243,29 +260,46 @@ public abstract class common
 		
 		return all;
 	}
+
+	public static int get_max_size_number(String field_) { return get_max_size(field_, true); }
+
+	public static int get_max_size_string(String field_) { return get_max_size(field_, false); }
 	
 	public static double adapt_number(double val_, String field_)
 	{
-		HashMap<String, Integer> sizes = get_all_max_sizes_numbers();
+		int max = get_max_size_number(field_);
 		
-		return (sizes.containsKey(field_) ? adapt_number(val_, sizes.get(field_)) : val_);
+		return (max == WRONG_MAX_SIZE ? val_ : adapt_number(val_, max));
 	}
 	
 	public static double adapt_number(double val_, int max_)
 	{
-		double max = Math.pow(10.0, ((double)max_ + 1.0)) - 1.0;
+		double max = get_max_val(max_);
 		
 		return (val_ < max ? val_ : max);
 	}
+	
+	public static double get_max_val(String field_) 
+	{
+		HashMap<String, Double> vals = get_all_max_vals();
+		
+		return ((strings.is_ok(field_) && vals.containsKey(field_)) ? vals.get(field_) : WRONG_MAX_VAL);
+	}
+	
+	public static double get_max_val(int max_) { return (max_ <= WRONG_MAX_SIZE ? WRONG_MAX_SIZE : (Math.pow(10.0, ((double)max_ + 1.0)) - 1.0)); }
 
 	public static String adapt_string(String val_, String field_)
 	{
-		HashMap<String, Integer> sizes = get_all_max_sizes_strings();
+		int max = get_max_size_string(field_);
 		
-		return (sizes.containsKey(field_) ? adapt_string(val_, sizes.get(field_)) : val_);
+		return (max == WRONG_MAX_SIZE ? val_ : adapt_string(val_, max));
 	}
 	
-	public static String adapt_string(String val_, int max_) { return (strings.get_length(val_) < max_ ? val_ : strings.truncate(val_, max_)); }
+	public static String adapt_string(String val_, int max_) { return (strings.get_length(val_) < get_max_length(max_) ? val_ : strings.truncate(val_, max_)); }
+	
+	public static int get_max_length(String field_) { return get_max_size_string(field_); }
+
+	public static int get_max_length(int max_) { return (max_ <= WRONG_MAX_SIZE ? WRONG_MAX_SIZE : max_); }
 
 	public static String get_type_from_key(String key_, String root_) { return ((strings.is_ok(key_) && strings.is_ok(root_)) ? (root_ + SEPARATOR + key_) : strings.DEFAULT); }
 
@@ -273,9 +307,52 @@ public abstract class common
 	
 	public static String get_key(String type_, String root_) { return accessory._keys.get_key(type_, root_); }
 	
+	public static HashMap<String, String> populate_cols(String source_, String[] fields_)
+	{
+		HashMap<String, String> output = new HashMap<String, String>();
+		if (!arrays.is_ok(fields_)) return output;
+		
+		for (String field: fields_) { output.put(field, get_col(source_, field)); }
+		
+		return output;
+	}
+	
+	public static String adapt_user(String val_) { return common.adapt_string(val_, FIELD_USER); }
+	
+	private static HashMap<String, Object> add_default_vals(String source_, HashMap<String, Object> vals_)
+	{
+		if (source_includes_user(source_) && !vals_.containsKey(FIELD_USER)) 
+		{
+			String user = basic.get_user();
+			if (strings.is_ok(user)) vals_.put(FIELD_USER, basic.get_user());
+		}
+		
+		return vals_;
+	}
+	
+	private static HashMap<String, String> add_default_vals_quick(String source_, HashMap<String, String> vals_)
+	{
+		if (source_includes_user(source_) && !vals_.containsKey(FIELD_USER)) 
+		{
+			String user = basic.get_user();
+			if (strings.is_ok(user)) vals_.put(get_col(source_, FIELD_USER), basic.get_user());
+		}
+		
+		return vals_;
+	}
+
+	private static int get_max_size(String field_, boolean is_number_)
+	{
+		HashMap<String, Integer> sizes = (is_number_ ? get_all_max_sizes_numbers() : get_all_max_sizes_strings());
+		
+		return (sizes.containsKey(field_) ? sizes.get(field_) : WRONG_MAX_SIZE);
+	}
+
 	private static HashMap<String, Integer> get_all_max_sizes_numbers() { return _alls.DB_MAX_SIZES_NUMBERS; }
 	
 	private static HashMap<String, Integer> get_all_max_sizes_strings() { return _alls.DB_MAX_SIZES_STRINGS; }
+
+	private static HashMap<String, Double> get_all_max_vals() { return _alls.DB_MAX_VALS; }
 	
 	private static String[] get_all_sources_user() { return _alls.DB_SOURCES_USER; }
 

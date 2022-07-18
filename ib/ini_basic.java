@@ -23,20 +23,20 @@ public abstract class ini_basic
 		populate_account_ib(account_ib_);
 	}
 	
-	public static String get_user_prelimary(String user_) { return db_ib.common.adapt_string((strings.is_ok(user_) ? user_ : basic.DEFAULT_USER), db_ib.common.MAX_SIZE_USER); }
-	
-	private static String populate_user(String user_preliminary_) 
+	private static String populate_user(String user_) 
 	{ 
-		String user = user_preliminary_;
+		String user = get_user_prelimary(user_);
 
 		if (!strings.is_ok(user)) user = db_ib.common.adapt_string(db_ib.basic.get_user(), db_ib.common.MAX_SIZE_USER);
-		
+
 		db_ib.basic.update_user_ini(user);
 
 		_user = user;
 		
 		return user;
 	}
+	
+	private static String get_user_prelimary(String user_) { return db_ib.common.adapt_string((strings.is_ok(user_) ? user_ : basic.DEFAULT_USER), db_ib.common.MAX_SIZE_USER); }
 
 	private static void populate_account_ib(String account_ib_) 
 	{ 

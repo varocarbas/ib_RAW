@@ -67,7 +67,11 @@ abstract class sync_basic
 		double money = sync.get_funds();
 		
 		basic.update_money(money);
-		if (ini_too_) basic.update_money_ini(money);
+		if (ini_too_) 
+		{
+			basic.update_money_ini(money);
+			basic.update_money_free(money);
+		}
 		
 		return money;
 	}

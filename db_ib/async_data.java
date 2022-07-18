@@ -2,7 +2,6 @@ package db_ib;
 
 import java.util.HashMap;
 
-import accessory.arrays;
 import external_ib.data;
 
 public abstract class async_data 
@@ -79,15 +78,5 @@ public abstract class async_data
 		vals.put(get_col(source_, SYMBOL), symbol_);
 		
 		return vals;
-	}
-
-	public static HashMap<String, String> populate_cols(String source_, String[] fields_)
-	{
-		HashMap<String, String> output = new HashMap<String, String>();
-		if (!arrays.is_ok(fields_)) return output;
-		
-		for (String field: fields_) { output.put(field, get_col(source_, field)); }
-		
-		return output;
 	}
 }

@@ -21,6 +21,10 @@ public abstract class parent_async_data extends parent_static
 {
 	public static final String CONFIG_SNAPSHOT_QUICK = types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK;
 	public static final String CONFIG_SNAPSHOT_NONSTOP = types.CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP;
+
+	public static final String _ID_MARKET = async_data_market._ID;
+	public static final String _ID_TRADES = async_data_trades._ID;
+	public static final String _ID_WATCHLIST = async_data_watchlist._ID;
 	
 	public static final int PRICE_IB = external_ib.data.TICK_LAST;
 	public static final int OPEN_IB = external_ib.data.TICK_OPEN;
@@ -119,6 +123,8 @@ public abstract class parent_async_data extends parent_static
 		
 	protected void __tick_price_internal(int id_, int field_ib_, double price_)
 	{
+		if (!common.price_is_ok(price_)) return;
+
 		__lock();
 		
 		if (!_is_ok(id_, false)) 
@@ -129,13 +135,26 @@ public abstract class parent_async_data extends parent_static
 		}
 		
 		String field = get_field(get_all_prices(), field_ib_);	
-		if (field != null) update(id_, field, adapt_val(price_, field_ib_));
+		if (field != null) 
+		{
+			double price = adapt_val(price_, field_ib_);
+			
+			update(id_, field, price);
+			tick_price_specific(id_, field_ib_, price);
+		}
 		
 		__unlock();
 	}
 	
+	protected void tick_price_specific(int id_, int field_ib_, double price_)
+	{
+		if (_id.equals(_ID_WATCHLIST)) async_data_watchlist._instance.tick_price_watchlist(id_, field_ib_, price_);	
+	}
+	
 	protected void __tick_size_internal(int id_, int field_ib_, int size_)
 	{
+		if (!common.volume_size_is_ok(size_)) return;
+
 		__lock();
 		
 		if (!_is_ok(id_, false)) 
@@ -330,7 +349,7 @@ public abstract class parent_async_data extends parent_static
 
 	protected void update(int id_, String field_, double val_, boolean is_snapshot_)
 	{
-		if (!strings.is_ok(field_) || val_ <= 0.0) return;  
+		if (!strings.is_ok(field_)) return;  
 		
 		if (is_snapshot_) update_vals(id_, field_, val_);
 		else update_db(id_, _get_symbol(id_, false), field_, val_);
@@ -442,7 +461,7 @@ public abstract class parent_async_data extends parent_static
 		return (_cols.containsKey(field_) ? _cols.get(field_) : strings.DEFAULT);
 	}
 
-	private void populate_cols() { _cols = async_data.populate_cols(_source, get_fields()); }
+	private void populate_cols() { _cols = db_ib.common.populate_cols(_source, get_fields()); }
 	
 	private boolean _is_ok(int id_, boolean lock_) { return _id_exists(id_, lock_); }
 

@@ -2,6 +2,9 @@ package db_ib;
 
 import java.util.HashMap;
 
+import accessory.arrays;
+import accessory.strings;
+
 public abstract class watchlist 
 {
 	public static final String SOURCE = common.SOURCE_WATCHLIST;
@@ -23,17 +26,35 @@ public abstract class watchlist
 	public static final String FLU2_MIN = common.FIELD_FLU2_MIN;
 	public static final String FLU2_MAX = common.FIELD_FLU2_MAX;
 	
+	private static HashMap<String, String> _cols = new HashMap<String, String>();
+	private static String[] _cols2 = null;
+	
 	public static String[] get_fields() { return new String[] { SYMBOL, PRICE, PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME, VOLUME_INI, VOLUME_MIN, VOLUME_MAX, TIME_ELAPSED, HALTED, HALTED_TOT, FLU, FLU2, FLU2_MIN, FLU2_MAX }; }
 
-	public static boolean exists(String symbol_) { return common.exists(SOURCE, common.get_where_symbol(SOURCE, symbol_)); }
-	
-	public static boolean insert(String symbol_) 
+	public static String[] get_cols() 
 	{ 
-		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(SYMBOL, symbol_);
+		if (_cols2 == null) populate_cols();
 		
-		return common.insert(SOURCE, vals);
+		return _cols2; 
 	}
 
+	public static boolean exists(String symbol_) { return common.exists(SOURCE, common.get_where_symbol(SOURCE, symbol_)); }
+
+	public static HashMap<String, String> get_vals(String symbol_, boolean is_quick_) { return (is_quick_ ? common.get_vals_quick(SOURCE, get_cols(), common.get_where_symbol_quick(SOURCE, symbol_)) : common.get_vals(SOURCE, get_fields(), common.get_where_symbol(SOURCE, symbol_))); }
+	
 	public static boolean delete(String symbol_) { return common.delete(SOURCE, common.get_where_symbol(SOURCE, symbol_)); }
+
+	public static String get_col(String field_) 
+	{ 
+		if (_cols.size() == 0) populate_cols();
+		
+		return (_cols.containsKey(field_) ? _cols.get(field_) : strings.DEFAULT);
+	}
+
+	private static void populate_cols() 
+	{ 
+		_cols = db_ib.common.populate_cols(SOURCE, get_fields()); 
+		
+		_cols2 = arrays.to_array(arrays.get_keys_hashmap(_cols));	
+	}
 }

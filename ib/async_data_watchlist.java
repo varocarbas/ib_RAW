@@ -1,7 +1,9 @@
 package ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import accessory.strings;
 import accessory_ib._alls;
 
 class async_data_watchlist extends parent_async_data 
@@ -12,6 +14,12 @@ class async_data_watchlist extends parent_async_data
 	
 	public static final String TYPE = TYPE_SNAPSHOT;
 	public static final int DATA = external_ib.data.DATA_LIVE;
+	
+	private volatile HashMap<String, ArrayList<Double>> _flu = new HashMap<String, ArrayList<Double>>();
+	private volatile HashMap<String, ArrayList<Double>> _flu2_minus = new HashMap<String, ArrayList<Double>>();
+	private volatile HashMap<String, ArrayList<Double>> _flu2_plus = new HashMap<String, ArrayList<Double>>();
+	private volatile HashMap<String, ArrayList<Double>> _flu2 = new HashMap<String, ArrayList<Double>>();
+	private volatile HashMap<String, Boolean> _flu2_remove_plus = new HashMap<String, Boolean>();
 	
 	public static async_data_watchlist _instance = instantiate();
 	
@@ -30,24 +38,41 @@ class async_data_watchlist extends parent_async_data
 	}
 
 	public static boolean _start(String symbol_, boolean lock_) 
-	{ 
-		if (lock_) __lock();
+	{
+		boolean output = false;
+		
+		String symbol = common.normalise_symbol(symbol_);
+		if (!strings.is_ok(symbol)) return output;
 	
-		boolean output = _instance.start(symbol_); 
-
+		if (lock_) __lock();
+		
+		output = _instance.start(symbol);
+		if (output) _instance.add_global(symbol);
+		
 		if (lock_) __unlock();
 		
 		return output;
 	}
 	
 	public static boolean _stop(String symbol_, boolean lock_) 
-	{ 
-		if (lock_) __lock();
-
-		int id = _instance._get_id(symbol_, false);
+	{ 	
+		boolean output = false;
 		
-		boolean output = (id == WRONG_ID ? true : _instance.stop(id)); 
+		String symbol = common.normalise_symbol(symbol_);
+		if (!strings.is_ok(symbol)) return output;
+	
+		if (lock_) __lock();
+		
+		output = true;
+		
+		int id = _instance._get_id(symbol, false);
 
+		if (id != WRONG_ID)
+		{
+			output = _instance.stop(id);
+			if (output) _instance.remove_global(symbol);
+		}
+		
 		if (lock_) __unlock();
 		
 		return output;
@@ -65,6 +90,16 @@ class async_data_watchlist extends parent_async_data
 	}
 	
 	public static void __tick_price(int id_, int field_ib_, double price_) { _instance.__tick_price_internal(id_, field_ib_, price_); }
+
+	void tick_price_watchlist(int id_, int field_ib_, double price_)
+	{
+		if (field_ib_ != PRICE_IB) return;
+		
+		//String symbol = _get_symbol(id_, false);
+		
+		//HashMap<String, String> db = db_ib.watchlist.get_vals(symbol, _is_quick);
+
+	}
 	
 	public static void __tick_size(int id_, int field_ib_, int size_) { _instance.__tick_size_internal(id_, field_ib_, size_); }
 	
@@ -87,4 +122,24 @@ class async_data_watchlist extends parent_async_data
 	private boolean stop(int id_) { return stop_id(id_, false); }
 	
 	private boolean stop_id(int id_, boolean restart_) { return _stop_snapshot_internal(id_, restart_, false); }
+
+	private void add_global(String symbol_)
+	{
+		_flu.put(symbol_, new ArrayList<Double>());
+		_flu2_minus.put(symbol_, new ArrayList<Double>());
+		_flu2_plus.put(symbol_, new ArrayList<Double>());
+		_flu2.put(symbol_, new ArrayList<Double>());
+		_flu2_remove_plus.put(symbol_, true);		
+	}
+
+	private void remove_global(String symbol_)
+	{
+		if (!_flu.containsKey(symbol_)) return;
+		
+		_flu.remove(symbol_);
+		_flu2_minus.remove(symbol_);
+		_flu2_plus.remove(symbol_);
+		_flu2.remove(symbol_);
+		_flu2_remove_plus.remove(symbol_);		
+	}
 }
