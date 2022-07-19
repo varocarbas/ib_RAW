@@ -106,8 +106,6 @@ public class order extends parent
 	}
 	
 	public static String check_status(String type_) { return accessory.types.check_type(type_, STATUS); }
-
-	public static String get_symbol(int id_) { return db_ib.orders.get_symbol(id_); }
 	
 	public order(order input_) { instantiate(input_); }
 	

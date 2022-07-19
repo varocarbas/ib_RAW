@@ -27,24 +27,21 @@ public abstract class orders
 
 	public static final String STATUS_INACTIVE = ib.order.STATUS_INACTIVE;
 	
-	public static boolean exists(int id_main_) { return exists_internal(id_main_, null); }
+	public static boolean exists(int id_, boolean is_main_) { return exists_internal(id_, is_main_, null); }
 
-	public static boolean exists_active(int id_main_) { return exists_internal(id_main_, (new db_where(SOURCE, STATUS, db_where.OPERAND_NOT_EQUAL, STATUS_INACTIVE)).toString()); }
+	public static boolean exists_active(int id_, boolean is_main_) { return exists_internal(id_, is_main_, (new db_where(SOURCE, STATUS, db_where.OPERAND_NOT_EQUAL, STATUS_INACTIVE)).toString()); }
 
-	public static boolean exists_inactive(int id_main_) { return exists_internal(id_main_, (new db_where(SOURCE, STATUS, db_where.OPERAND_EQUAL, STATUS_INACTIVE)).toString()); }
+	public static boolean exists_inactive(int id_, boolean is_main_) { return exists_internal(id_, is_main_, (new db_where(SOURCE, STATUS, db_where.OPERAND_EQUAL, STATUS_INACTIVE)).toString()); }
 
 	public static order get_to_order(int id_main_) { return to_order(get(id_main_)); }
 	
 	public static order get_to_order(String symbol_) { return to_order(get(symbol_)); }
 
-	public static String get_symbol(int id_main_) 
-	{ 
-		HashMap<String, String> vals = get(id_main_);
-		
-		return (arrays.is_ok(vals) ? vals.get(SYMBOL) : strings.DEFAULT); 
-	}
+	public static String get_symbol(int id_main_) { return common.get_string(SOURCE, SYMBOL, get_where_order_id(id_main_)); }
 
-	public static HashMap<String, String> get(int id_main_) { return common.get_vals(SOURCE, common.get_where_order_id(SOURCE, id_main_)); }
+	public static int get_id_sec(int id_main_) { return common.get_int(SOURCE, ORDER_ID_SEC, get_where_order_id(id_main_), false); }
+	
+	public static HashMap<String, String> get(int id_main_) { return common.get_vals(SOURCE, get_where_order_id(id_main_)); }
 
 	public static HashMap<String, String> get(String symbol_) { return common.get_vals(SOURCE, get_where_symbol(symbol_)); }
 
@@ -56,7 +53,7 @@ public abstract class orders
 		
 		HashMap<String, Object> vals = to_hashmap(order_);
 		
-		return common.update(SOURCE, vals, common.get_where_order_id(SOURCE, (int)vals.get(ORDER_ID_MAIN)));
+		return common.update(SOURCE, vals, get_where_order_id((int)vals.get(ORDER_ID_MAIN)));
 	}
 
 	public static boolean update_status(int id_main_, String status_) 
@@ -67,12 +64,12 @@ public abstract class orders
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		vals.put(STATUS, status);
 		
-		return common.update(SOURCE, vals, common.get_where_order_id(SOURCE, id_main_));
+		return common.update(SOURCE, vals, get_where_order_id(id_main_));
 	}
 	
 	public static boolean delete() { return common.delete(SOURCE, get_where_user()); }
 	
-	public static boolean delete(int id_main_) { return common.delete(SOURCE, common.get_where_order_id(SOURCE, id_main_)); }
+	public static boolean delete(int id_main_) { return common.delete(SOURCE, get_where_order_id(id_main_)); }
 	
 	public static boolean delete_except(Integer[] ids_main_) { return (arrays.is_ok(ids_main_) ? common.delete(SOURCE, common.get_where_order_id(SOURCE, ids_main_, false)) : delete()); }
 
@@ -122,9 +119,9 @@ public abstract class orders
 
 	public static String get_key_from_status(String status_) { return common.get_key_from_type(status_, ib.orders.STATUS); }
 
-	private static boolean exists_internal(int id_main_, String where_) 
+	private static boolean exists_internal(int id_, boolean is_main_, String where_) 
 	{ 
-		String where = common.get_where_order_id(SOURCE, id_main_);
+		String where = get_where_order_id(id_, is_main_);
 		
 		if (strings.is_ok(where_)) where = db_where.join(where, where_, db_where.LINK_AND);
 		
@@ -134,4 +131,8 @@ public abstract class orders
 	private static String get_where_user() { return common.get_where_user(SOURCE); }
 
 	private static String get_where_symbol(String symbol_) { return common.get_where_symbol(SOURCE, symbol_); }
+
+	private static String get_where_order_id(int id_main_) { return get_where_order_id(id_main_, false); }
+
+	private static String get_where_order_id(int id_, boolean is_main_) { return common.get_where(SOURCE, (is_main_ ? ORDER_ID_MAIN : ORDER_ID_SEC), Integer.toString(id_), false); }
 }

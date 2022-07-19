@@ -2,6 +2,7 @@ package accessory_ib;
 
 import java.util.HashMap;
 
+import accessory.db;
 import accessory.generic;
 import accessory.numbers;
 import accessory.parent_ini;
@@ -121,7 +122,7 @@ public class _ini extends parent_ini
 		
 		populate_inis(info);
 		
-		if (update_dbs_user) config.update_db(accessory.types.CONFIG_DB_SETUP_CREDENTIALS_USER, ini_basic.get_user());
+		if (update_dbs_user) accessory.config.update(db.get_current_setup(), DBS_SETUP_CREDENTIALS_USER, ini_basic.get_user());
 	}
 	
 	private static void populate_inis(HashMap<String, Object> info_) 

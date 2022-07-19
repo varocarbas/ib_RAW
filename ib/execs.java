@@ -10,8 +10,20 @@ public abstract class execs
 	public static final String SIDE = db_ib.execs.SIDE;
 	public static final String FEES = db_ib.execs.FEES;
 	public static final String EXEC_ID = db_ib.execs.EXEC_ID;
-	
-	public static void enable() { async_execs._enabled = true; }
 
-	public static void disable() { async_execs._enabled = false; }
+	public static boolean is_enabled() { return async_execs._enabled; }
+	
+	public static void enable() 
+	{ 
+		async_execs._enabled = true; 
+	
+		trades.enable();
+	}
+
+	public static void disable() 
+	{ 
+		async_execs._enabled = false; 
+		
+		trades.disable();
+	}
 }

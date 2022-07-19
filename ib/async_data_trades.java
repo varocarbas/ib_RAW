@@ -14,8 +14,6 @@ class async_data_trades extends parent_async_data
 	public static final String TYPE = TYPE_SNAPSHOT;
 	public static final int DATA = external_ib.data.DATA_LIVE;
 	
-	private volatile HashMap<Integer, String> _order_ids = new HashMap<Integer, String>();
-	
 	public static async_data_trades _instance = instantiate();
 	
 	private async_data_trades() { }
@@ -28,46 +26,18 @@ class async_data_trades extends parent_async_data
 		instance._id = _ID;
 		instance._includes_halted = true;
 		instance._includes_halted_tot = false;
+		instance._enabled = false;
 		
 		return instance;
 	}
 
 	public static void update_logs_to_screen(boolean logs_to_screen_) { _instance.update_logs_to_screen_internal(logs_to_screen_); }
 
-	public static boolean _start(int order_id_, String symbol_, boolean lock_) 
-	{ 
-		if (lock_) __lock();
-
-		boolean output = (_instance.order_id_exists(order_id_) ? true : _instance.start(order_id_, symbol_)); 
-
-		if (lock_) __unlock();
-		
-		return output;
-	}
+	public static boolean _start(String symbol_, boolean lock_) { return (_instance._start_snapshot_internal(symbol_, DATA, lock_) != WRONG_ID); }
 	
-	public static boolean _stop(int order_id_, boolean lock_) 
-	{ 
-		if (lock_) __lock();
-		
-		int id = _instance.get_id(order_id_);
-
-		boolean output = (id == WRONG_ID ? true : _instance.stop(order_id_, id)); 
-		
-		if (lock_) __unlock();
-		
-		return output;
-	}
+	public static void _stop(String symbol_, boolean lock_) { if (_instance.symbol_exists(symbol_)) _instance._stop_all_internal(symbol_, lock_); }
 	
-	public static boolean __stop_snapshot(int id_) 
-	{ 
-		__lock();
-
-		boolean output = (_instance.id_is_ok(id_) ? _instance.stop_id(id_, true) : true); 
-
-		__unlock();
-		
-		return output;
-	}
+	public static boolean __stop_snapshot(int id_) { return _instance.__stop_snapshot_internal(id_); }
 
 	public static void __tick_price(int id_, int field_ib_, double price_) { _instance.__tick_price_internal(id_, field_ib_, price_); }
 	
@@ -83,30 +53,5 @@ class async_data_trades extends parent_async_data
 	
 	protected String[] get_fields() { return trades.get_fields(); }
 
-	private boolean order_id_exists(int order_id_) { return _instance._order_ids.containsKey(order_id_); }
-
-	private boolean id_is_ok(int id_) { return (get_id(_get_symbol(id_, false)) == id_); }
-
-	private int get_id(int order_id_) { return (_order_ids.containsKey(order_id_) ? get_id(_order_ids.get(order_id_)) : WRONG_ID); }
-
-	private int get_id(String symbol_) { return _get_id(symbol_, false); }
-	
-	private boolean start(int order_id_, String symbol_) 
-	{ 
-		int id = _start_snapshot_internal(symbol_, DATA, false);
-		if (id == WRONG_ID) return false;
-			
-		_order_ids.put(order_id_, symbol_);
-		
-		return true;
-	}
-		
-	private boolean stop(int order_id_, int id_) 
-	{ 		
-		_order_ids.remove(order_id_);
-		
-		return stop_id(id_, false);
-	}
-	
-	private boolean stop_id(int id_, boolean restart_) { return _stop_snapshot_internal(id_, restart_, false); }
+	private boolean symbol_exists(String symbol_) { return _instance._symbols.containsValue(symbol_); } 
 }

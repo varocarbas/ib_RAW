@@ -105,6 +105,12 @@ public class wrapper implements EWrapper
 	public void positionEnd() { common_wrapper.position_end(); }
 
 	@Override
+	public void updatePortfolio(Contract contract_, double position_, double market_price_, double market_value_, double average_cost_, double unrealized_pnl_, double realized_pnl_, String account_name_) { common_wrapper.update_portfolio(position_, unrealized_pnl_, account_name_); }
+
+	@Override
+	public void accountDownloadEnd(String account_name_) { common_wrapper.account_download_end(account_name_); }
+	
+	@Override
 	public void connectAck() 
 	{
 		if (_client_socket.isAsyncEConnect()) 
@@ -129,12 +135,6 @@ public class wrapper implements EWrapper
 
 	@Override
 	public void updateAccountValue(String key, String value, String currency, String accountName) { }
-
-	@Override
-	public void updatePortfolio(Contract contract, double position, double marketPrice, double marketValue, double averageCost, double unrealizedPNL, double realizedPNL, String accountName) { }
-
-	@Override
-	public void accountDownloadEnd(String accountName) { }
 
 	@Override
 	public void tickOptionComputation(int tickerId, int field, double impliedVol, double delta, double optPrice, double pvDividend, double gamma, double vega, double theta, double undPrice) { }

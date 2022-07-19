@@ -2,6 +2,9 @@ package db_ib;
 
 import java.util.HashMap;
 
+import accessory.db_where;
+import external_ib.orders;
+
 public abstract class execs 
 {
 	public static final String SOURCE = common.SOURCE_EXECS;
@@ -15,9 +18,20 @@ public abstract class execs
 	public static final String QUANTITY = common.FIELD_QUANTITY;
 	public static final String FEES = common.FIELD_FEES;
 	
-	public static boolean exists(String exec_id_) { return common.exists(SOURCE, get_where_exec_id(exec_id_)); }
-
-	public static boolean insert(HashMap<String, Object> vals_) { return common.insert(SOURCE, vals_); }
+	public static final String SIDE_BOUGHT = orders.EXEC_SIDE_BOUGHT;
+	public static final String SIDE_SOLD = orders.EXEC_SIDE_SOLD;
 	
-	public static String get_where_exec_id(String exec_id_) { return common.get_where(SOURCE, EXEC_ID, exec_id_, false); }
+	public static boolean exists(String exec_id_) { return common.exists(SOURCE, get_where(exec_id_)); }
+
+	public static boolean update(String exec_id_, HashMap<String, Object> vals_) { return common.insert_update(SOURCE, vals_, get_where(exec_id_)); }
+	
+	public static double get_start_price(int order_id_buy_) { return common.get_decimal(SOURCE, PRICE, db_where.join(get_where_order_id(order_id_buy_), get_where_side(SIDE_BOUGHT), db_where.LINK_AND)); }
+	
+	public static double get_end_price(int order_id_sell_) { return common.get_decimal(SOURCE, PRICE, db_where.join(get_where_order_id(order_id_sell_), get_where_side(SIDE_SOLD), db_where.LINK_AND)); }
+
+	public static String get_where(String exec_id_) { return common.get_where(SOURCE, EXEC_ID, exec_id_, false); }
+	
+	public static String get_where_order_id(int order_id_) { return common.get_where(SOURCE, ORDER_ID, Integer.toString(order_id_), false); }
+
+	public static String get_where_side(String side_) { return common.get_where(SOURCE, SIDE, side_, false); }
 }

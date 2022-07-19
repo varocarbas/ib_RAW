@@ -34,14 +34,14 @@ abstract class async_execs extends parent_static
 	
 	public static void __exec_details(int id_, Contract contract_, Execution execution_) 
 	{
-		if (!_enabled) return;
+		if (!is_ok()) return;
 		
 		__lock();
 		
 		HashMap<String, Object> vals = new HashMap<String, Object>();		
-		vals.put(SYMBOL, contract_.symbol());
+		vals.put(SYMBOL, contract_.localSymbol());
 		vals.put(ORDER_ID, execution_.orderId());
-		vals.put(PRICE, execution_.price()); 
+		vals.put(PRICE, adapt_price(execution_.price())); 
 		vals.put(QUANTITY, execution_.shares()); 
 		vals.put(SIDE, execution_.side()); 
 
@@ -49,11 +49,11 @@ abstract class async_execs extends parent_static
 		
 		__unlock();
 	}
-
+	
 	public static void __commission_report(CommissionReport report_)
 	{
-		if (!_enabled) return;
-		
+		if (!is_ok()) return;
+
 		__lock();
 		
 		HashMap<String, Object> vals = new HashMap<String, Object>();
@@ -63,34 +63,34 @@ abstract class async_execs extends parent_static
 		
 		__unlock();
 	}
+	
+	private static double adapt_price(double price_) { return db_ib.common.adapt_number(price_, db_ib.common.FIELD_PRICE); }
 
 	@SuppressWarnings("unchecked")
 	private static void update(String exec_id_, HashMap<String, Object> vals_)
 	{
 		HashMap<String, Object> vals = (_all_vals.containsKey(exec_id_) ? (HashMap<String, Object>)arrays.add(_all_vals.get(exec_id_), vals_) : (HashMap<String, Object>)arrays.get_new(vals_));
 		vals.put(EXEC_ID, exec_id_);
-		
+
 		_all_vals.put(exec_id_, vals);
-		
+
 		update_last(exec_id_);
 	}
 	
 	private static void update_last(String exec_id_)
 	{
 		if (_all_vals.get(exec_id_).size() < TARGET_TOT_FIELDS) return;
-		
-		if (!db_ib.execs.exists(exec_id_))
-		{	
-			HashMap<String, Object> vals = new HashMap<String, Object>(_all_vals.get(exec_id_));
-		
-			int order_id = (int)vals.get(ORDER_ID);
-			String side = (String)vals.get(SIDE);
-			
-			if (side.equals(SIDE_BOUGHT)) trades._start(order_id, (double)vals.get(PRICE), false);
-			else if (side.equals(SIDE_SOLD)) trades._end(order_id, false);
 
-			db_ib.execs.insert(vals);			
-		}
+		HashMap<String, Object> vals = new HashMap<String, Object>(_all_vals.get(exec_id_));
+		
+		int order_id = (int)vals.get(ORDER_ID);
+		String side = (String)vals.get(SIDE);
+		double price = (double)vals.get(PRICE);
+		
+		if (side.equals(SIDE_SOLD)) trades._end(order_id, price, false);
+		else trades._start(order_id, price, false);
+
+		db_ib.execs.update(exec_id_, vals);
 		
 		_all_vals.remove(exec_id_);
 	}

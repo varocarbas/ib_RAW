@@ -60,7 +60,9 @@ public abstract class parent_async_data extends parent_static
 	public static final boolean DEFAULT_IS_QUICK = true;
 	public static final int DEFAULT_PAUSE_NONSTOP = 0;
 	public static final int DEFAULT_PAUSE_AFTER_STOP_ALL = 30;
+	public static final boolean DEFAULT_ENABLED = true;
 	
+	protected volatile boolean _enabled = DEFAULT_ENABLED;
 	protected volatile boolean _stop_all = false;
 	protected volatile boolean _logs_to_screen = DEFAULT_LOGS_TO_SCREEN;
 	protected volatile boolean _is_quick = DEFAULT_IS_QUICK;  
@@ -90,6 +92,10 @@ public abstract class parent_async_data extends parent_static
 
 	public static String get_type(boolean is_snapshot_) { return (is_snapshot_ ? TYPE_SNAPSHOT : TYPE_STREAM); }
 
+	public boolean get_enabled() { return _enabled; }
+	
+	public void update_enabled(boolean enabled_) { _enabled = enabled_; }
+	
 	protected boolean get_logs_to_screen_internal() { return _logs_to_screen; }
 
 	protected void update_logs_to_screen_internal() { _logs_to_screen = DEFAULT_LOGS_TO_SCREEN; }
@@ -153,7 +159,7 @@ public abstract class parent_async_data extends parent_static
 	
 	protected void __tick_size_internal(int id_, int field_ib_, int size_)
 	{
-		if (!common.volume_size_is_ok(size_)) return;
+		if (!common.size_is_ok(size_)) return;
 
 		__lock();
 		
@@ -379,11 +385,13 @@ public abstract class parent_async_data extends parent_static
 	
 	protected void to_screen(int id_, String symbol_, String message_) { if (_logs_to_screen) logs.update_screen(id_, symbol_, (_id + misc.SEPARATOR_CONTENT + message_)); }
 
-	protected void __stop_all_internal()
+	protected void __stop_all_internal() { _stop_all_internal(strings.DEFAULT, true); }
+	
+	protected void _stop_all_internal(String symbol_, boolean lock_)
 	{	
 		_stop_all = true;
 
-		__lock();	
+		if (lock_) __lock();	
 		
 		HashMap<Integer, String> ids = new HashMap<Integer, String>(_ids);
 		
@@ -391,20 +399,24 @@ public abstract class parent_async_data extends parent_static
 		{
 			_stop_all = false;
 			
-			__unlock();
+			if (lock_) __unlock();
 			
 			return;
 		}
-				
+		
+		boolean check_symbol = strings.is_ok(symbol_);
+		
 		for (Entry<Integer, String> item: ids.entrySet())
 		{
 			int id = item.getKey();
+			
+			if (check_symbol && !symbol_.equals(_get_symbol(id, false))) continue;
 			
 			if (_is_snapshot(id, false)) _stop_snapshot_internal(id, false, false);
 			else _stop_stream_internal(id, false);	
 		}
 		
-		__unlock();
+		if (lock_) __unlock();
 	}
 	
 	protected boolean remove(int id_) 
@@ -462,8 +474,8 @@ public abstract class parent_async_data extends parent_static
 	}
 
 	private void populate_cols() { _cols = db_ib.common.populate_cols(_source, get_fields()); }
-	
-	private boolean _is_ok(int id_, boolean lock_) { return _id_exists(id_, lock_); }
+
+	private boolean _is_ok(int id_, boolean lock_) { return (_enabled && _id_exists(id_, lock_)); }
 
 	private int _start(String symbol_, int data_type_, boolean is_snapshot_, boolean lock_)
 	{

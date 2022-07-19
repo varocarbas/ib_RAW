@@ -10,7 +10,8 @@ import accessory.strings;
 abstract class sync_trades 
 {	
 	public static final double WRONG_POSITION = trades.WRONG_POSITION;
-	
+	public static final double WRONG_PRICE = common.WRONG_PRICE;
+
 	public static double get_position(String symbol_)
 	{
 		double output = WRONG_POSITION;
@@ -34,6 +35,28 @@ abstract class sync_trades
 		
 		return output;
 	}
+	
+	public static double get_unrealised(double pos_)
+	{
+		double output = WRONG_PRICE;
+		
+		HashMap<Double, Double> all_unrealised = sync.get_unrealised();
+		if (!arrays.is_ok(all_unrealised)) return output;
+	
+		for (Entry<Double, Double> item: all_unrealised.entrySet())
+		{
+			double pos = item.getKey();
+			double unrealised = adapt_money(item.getValue());
+			
+			if (pos == pos_) output = unrealised;
+			
+			db_ib.trades.update_unrealised(unrealised, pos);
+		}
+		
+		return output;
+	}
+	
+	private static double adapt_money(double val_) { return db_ib.common.adapt_number(val_, db_ib.common.FIELD_PRICE); }
 	
 	private static double get_position(String symbol_, ArrayList<Double> positions_)
 	{

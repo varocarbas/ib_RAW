@@ -23,6 +23,7 @@ public abstract class sync extends parent_static
 	public static final String GET_ORDERS = types.SYNC_GET_ORDERS;
 	public static final String GET_FUNDS = types.SYNC_GET_FUNDS;
 	public static final String GET_POSITIONS = types.SYNC_GET_POSITIONS;
+	public static final String GET_UNREALISED = types.SYNC_GET_UNREALISED;
 	public static final String GET_ERROR = types.SYNC_GET_ERROR;
 	
 	public static final String ORDER_PLACE = sync_orders.PLACE;
@@ -35,6 +36,7 @@ public abstract class sync extends parent_static
 	public static final String OUT_STRINGS = types.SYNC_OUT_STRINGS;
 	public static final String OUT_ORDERS = types.SYNC_OUT_ORDERS;
 	public static final String OUT_POSITIONS = types.SYNC_OUT_POSITIONS;
+	public static final String OUT_UNREALISED = types.SYNC_OUT_UNREALISED;
 	
 	public static final String KEY_FUNDS = common_wrapper.KEY_FUNDS;
 	
@@ -55,6 +57,7 @@ public abstract class sync extends parent_static
 	private static volatile ArrayList<Integer> _out_ints = new ArrayList<Integer>();
 	private static volatile ArrayList<String> _out_strings = new ArrayList<String>();
 	private static volatile ArrayList<Double> _out_decimals = new ArrayList<Double>();
+	private static volatile ArrayList<Double> _out_decimals2 = new ArrayList<Double>();
 
 	private static int _req_id = WRONG_REQ_ID;
 	private static int _order_id = WRONG_ORDER_ID;
@@ -77,6 +80,9 @@ public abstract class sync extends parent_static
 	
 	@SuppressWarnings("unchecked")
 	public static HashMap<Double, String> get_positions() { return (HashMap<Double, String>)get(GET_POSITIONS); }
+	
+	@SuppressWarnings("unchecked")
+	public static HashMap<Double, Double> get_unrealised() { return (HashMap<Double, Double>)get(GET_UNREALISED); }
 		
 	public static boolean order_is_submitted(int id_) { return order_is_common(id_, sync_orders.STATUS_SUBMITTED); }
 	
@@ -114,6 +120,7 @@ public abstract class sync extends parent_static
 		all.put(GET_FUNDS, OUT_DECIMAL);
 		all.put(GET_ORDERS, OUT_ORDERS);
 		all.put(GET_POSITIONS, OUT_POSITIONS);
+		all.put(GET_UNREALISED, OUT_UNREALISED);
 		
 		return all;
 	}
@@ -212,6 +219,20 @@ public abstract class sync extends parent_static
 	}
 	
 	static void position_end() { end(); }
+	
+	static void account_download_end(String account_ib_) 
+	{
+		if (!basic.account_ib_is_ok(account_ib_)) return;
+			
+		end(); 
+	}
+	
+	static void update_portfolio(double pos_, double unrealised_, String account_ib_) 
+	{	
+		if (!basic.account_ib_is_ok(account_ib_)) return;
+		
+		sync.update_unrealised(pos_, unrealised_);
+	}
 
 	private static boolean update_position(String symbol_, double pos_) 
 	{	
@@ -219,6 +240,16 @@ public abstract class sync extends parent_static
 		
 		_out_strings.add(symbol_); 
 		_out_decimals.add(pos_);
+		
+		return true;
+	}
+
+	private static boolean update_unrealised(double pos_, double unrealised_) 
+	{	
+		if (!is_ok(GET_UNREALISED)) return false;
+		
+		_out_decimals.add(pos_); 
+		_out_decimals2.add(unrealised_);
 		
 		return true;
 	}
@@ -296,7 +327,19 @@ public abstract class sync extends parent_static
 			if (is_ini_) _out_decimal = numbers.DEFAULT_DECIMAL;
 			else output = _out_decimal;
 		}
-		else if (_out.equals(OUT_ORDERS)) 
+		else output = get_ini_out_hashmaps(is_ini_);
+		
+		return (is_ini_ ? true : output);
+	}
+
+	//Java's peculiar behavior when dealing with HashMaps or similar collections in
+	//multithreading scenarios is the main reason explaining the unusual setups below.
+	//!!!
+	private static Object get_ini_out_hashmaps(boolean is_ini_)
+	{
+		Object output = null;
+		
+		if (_out.equals(OUT_ORDERS)) 
 		{
 			if (is_ini_) 
 			{
@@ -305,9 +348,6 @@ public abstract class sync extends parent_static
 			}
 			else 
 			{
-				//Java's peculiar behavior when dealing with HashMaps or similar collections in
-				//multithreading scenarios is the main reason explaining this unusual setup.
-				//!!!
 				HashMap<Integer, String> orders = new HashMap<Integer, String>();
 
 				for (int i = 0; i < _out_ints.size(); i++)
@@ -330,8 +370,6 @@ public abstract class sync extends parent_static
 			}
 			else 
 			{
-				//See above.
-				//!!!
 				HashMap<Double, String> positions = new HashMap<Double, String>();
 
 				for (int i = 0; i < _out_decimals.size(); i++)
@@ -345,8 +383,30 @@ public abstract class sync extends parent_static
 				output = positions;
 			}
 		}
+		else if (_out.equals(OUT_UNREALISED)) 
+		{
+			if (is_ini_) 
+			{
+				_out_decimals = new ArrayList<Double>();
+				_out_decimals2 = new ArrayList<Double>();
+			}
+			else 
+			{
+				HashMap<Double, Double> all_unrealised = new HashMap<Double, Double>();
+
+				for (int i = 0; i < _out_decimals.size(); i++)
+				{
+					double pos = _out_decimals.get(i);
+					double unrealised = _out_decimals2.get(i);
+					
+					all_unrealised.put(pos, unrealised);
+				}
+
+				output = all_unrealised;
+			}
+		}
 		
-		return (is_ini_ ? true : output);
+		return output;
 	}
 
 	private static boolean ini_is_ok(String get_)
@@ -391,6 +451,14 @@ public abstract class sync extends parent_static
 			//Methods called in external_ib.wrapper: nextValidId.
 			calls.reqIds(); 
 		}
+		else if (_get.equals(GET_UNREALISED))
+		{	
+			String account = basic.get_account_ib();
+			if (!strings.is_ok(account)) return false;
+			
+			//Methods called in external_ib.wrapper: updatePortfolio, accountDownloadEnd.
+			calls.reqAccountUpdates(true, account);
+		}
 		else return false;
 
 		boolean is_ok = wait_get(timeout, cannot_fail);
@@ -404,6 +472,7 @@ public abstract class sync extends parent_static
 	{
 		if (is_ok(GET_FUNDS)) calls.cancelAccountSummary(_req_id);
 		else if (is_ok(GET_POSITIONS)) calls.cancelPositions();
+		else if (is_ok(GET_UNREALISED)) calls.reqAccountUpdates(false, basic.get_account_ib());
 	}
 	
 	private static boolean wait_error()
@@ -460,6 +529,10 @@ public abstract class sync extends parent_static
 					else if (_get.equals(GET_POSITIONS))
 					{
 						if (_out_decimals.size() != _out_strings.size()) exit = false;
+					}
+					else if (_get.equals(GET_UNREALISED))
+					{
+						if (_out_decimals.size() != _out_decimals2.size()) exit = false;
 					}
 					
 					if (exit) break;

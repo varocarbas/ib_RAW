@@ -6,8 +6,6 @@ import accessory.parent_static;
 
 public abstract class trades extends parent_static
 {
-	public static final String SOURCE = db_ib.trades.SOURCE;
-	
 	public static final String PRICE = db_ib.trades.PRICE;
 	public static final String HALTED = db_ib.trades.HALTED;	
 
@@ -15,6 +13,22 @@ public abstract class trades extends parent_static
 	public static final int HALTED_IB = parent_async_data.HALTED_IB;
 	
 	public static final double WRONG_POSITION = 0.0;
+
+	public static boolean is_ok() { return async_data_trades._instance._enabled; }
+	
+	public static void enable() 
+	{ 
+		async_data_trades._instance.update_enabled(true); 
+	
+		execs.enable();
+	}
+	
+	public static void disable() 
+	{ 
+		async_data_trades._instance.update_enabled(false); 
+	
+		execs.disable();
+	}
 	
 	public static void update_logs_to_screen(boolean logs_to_screen_) { async_data_trades._instance.update_logs_to_screen_internal(logs_to_screen_); }
 	
@@ -22,18 +36,8 @@ public abstract class trades extends parent_static
 	{ 
 		__lock();
 		
-		if (async_trades.order_id_is_ok(order_id_))
-		{
-			if (async_trades.status_is_ok(status_ib_, true))
-			{
-				if (!async_trades.order_id_exists(order_id_)) async_trades.start(order_id_);
-			}
-			else if (async_trades.status_is_ok(status_ib_, false))
-			{
-				if (async_trades.order_id_exists(order_id_)) async_trades.end(order_id_);				
-			}
-		}
-		
+		async_trades.start(order_id_, status_ib_);
+
 		__unlock();
 	}
 	
@@ -41,22 +45,26 @@ public abstract class trades extends parent_static
 	{ 
 		if (lock_) __lock();
 		
-		if (async_trades.order_id_is_ok(order_id_) && !async_trades.order_id_exists(order_id_)) async_trades.start(order_id_); 
+		async_trades.start(order_id_, price_); 
 		
 		if (lock_) __unlock();
 	}
-
-	public static void _end(int order_id_, boolean lock_) 
+	
+	public static void _end(int order_id_, double price_, boolean lock_) 
 	{ 
 		if (lock_) __lock();
 		
-		if (async_trades.order_id_exists(order_id_)) async_trades.end(order_id_); 
+		async_trades.end(order_id_, price_); 
 		
 		if (lock_) __unlock();
 	}
 	
-	public static double get_position(String symbol_) { return sync_trades.get_position(symbol_); }
+	public static double get_position_start(String symbol_) { return sync_trades.get_position(symbol_); }
 	
+	public static double get_position(int order_id_main_) { return db_ib.trades.get_position(order_id_main_); }
+
+	public static double get_unrealised(double position_) { return sync_trades.get_unrealised(position_); }
+
 	public static HashMap<Integer, String> populate_all_prices()
 	{		
 		HashMap<Integer, String> all = new HashMap<Integer, String>();
@@ -74,4 +82,6 @@ public abstract class trades extends parent_static
 		
 		return all;
 	}
+
+	static boolean exists(int order_id_main_) { return db_ib.trades.order_id_exists(order_id_main_, true); }
 }

@@ -74,4 +74,8 @@ public abstract class common_wrapper
 	public static void position(String account_, String symbol_, double pos_) { sync.position(account_, symbol_, pos_); }
 
 	public static void position_end() { sync.position_end(); }
+
+	public static void update_portfolio(double pos_, double unrealised_, String account_ib_) { sync.update_portfolio(pos_, unrealised_, account_ib_); }
+
+	public static void account_download_end(String account_ib_) { sync.account_download_end(account_ib_); }
 }

@@ -62,12 +62,13 @@ abstract class sync_basic
 	
 	private static boolean is_ok(int req_id_, String account_id_, String key_, String currency_) { return (sync.is_ok(req_id_, key_) && ib.basic.account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
 
-	private static double get_funds(boolean ini_too_) 
+	private static double get_funds(boolean is_start_) 
 	{ 
 		double money = sync.get_funds();
 		
 		basic.update_money(money);
-		if (ini_too_) 
+		
+		if (is_start_) 
 		{
 			basic.update_money_ini(money);
 			basic.update_money_free(money);

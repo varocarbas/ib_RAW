@@ -178,7 +178,8 @@ public class _ini_db extends parent_ini_db
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
 		info.put(trades.USER, get_user());
-		info.put(orders.ORDER_ID_MAIN, get_order_id(false));
+		info.put(trades.ORDER_ID_MAIN, get_order_id(false));
+		info.put(trades.ORDER_ID_SEC, get_order_id(false));
 		info.put(trades.SYMBOL, get_symbol(false));
 		info.put(trades.PRICE, get_price());
 		info.put(trades.TIME_ELAPSED, get_time_elapsed());
@@ -189,6 +190,7 @@ public class _ini_db extends parent_ini_db
 		info.put(trades.IS_ACTIVE, get_boolean(true));
 		info.put(trades.POSITION, get_position());
 		info.put(trades.INVESTMENT, get_money());
+		info.put(trades.END, get_price());
 		
 		return add_source_common(db_, source, table, info, sources_);		
 	}

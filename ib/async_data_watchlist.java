@@ -33,6 +33,7 @@ class async_data_watchlist extends parent_async_data
 		instance._id = _ID;
 		instance._includes_halted = true;
 		instance._includes_halted_tot = true;
+		instance._enabled = true;
 		
 		return instance;
 	}

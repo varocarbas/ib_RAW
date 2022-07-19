@@ -72,6 +72,7 @@ public abstract class common
 	public static final String FIELD_IS_ACTIVE = types.CONFIG_DB_IB_FIELD_IS_ACTIVE;
 	public static final String FIELD_POSITION = types.CONFIG_DB_IB_FIELD_POSITION;
 	public static final String FIELD_INVESTMENT = types.CONFIG_DB_IB_FIELD_INVESTMENT;
+	public static final String FIELD_END = types.CONFIG_DB_IB_FIELD_END;
 	
 	public static final String FIELD_PRICE_INI = types.CONFIG_DB_IB_FIELD_PRICE_INI;
 	public static final String FIELD_PRICE_MIN = types.CONFIG_DB_IB_FIELD_PRICE_MIN;
@@ -119,6 +120,8 @@ public abstract class common
 
 	public static int get_int(String source_, String col_field_, String where_, boolean is_quick_) { return (is_quick_ ? accessory.db.select_one_int_quick(source_, col_field_, where_, db.DEFAULT_ORDER) : accessory.db.select_one_int(source_, col_field_, where_, db.DEFAULT_ORDER)); }
 
+	public static double get_decimal(String source_, String field_, String where_) { return accessory.db.select_one_decimal(source_, field_, where_, db.DEFAULT_ORDER); }
+
 	public static ArrayList<Double> get_all_decimals(String source_, String field_, String where_) { return accessory.db.select_some_decimals(source_, field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
 
 	public static ArrayList<String> get_all_strings(String source_, String field_, String where_) { return accessory.db.select_some_strings(source_, field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
@@ -136,7 +139,7 @@ public abstract class common
 		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
 		if (!arrays.is_ok(vals)) return false;
 		
-		vals = add_default_vals(source_, vals);
+		vals = get_insert_vals(source_, vals);
 			
 		accessory.db.insert(source_, vals);
 
@@ -148,11 +151,19 @@ public abstract class common
 		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_);
 		if (!arrays.is_ok(vals)) return false;
 		
-		vals = add_default_vals_quick(source_, vals);
+		vals = get_insert_vals_quick(source_, vals);
 		
 		accessory.db.insert_quick(source_, vals);
 
 		return accessory.db.is_ok(source_);
+	}
+	
+	public static boolean update(String source_, String field_, Object val_, String where_) 
+	{ 
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		vals.put(field_, val_);
+		
+		return update(source_, vals, where_); 
 	}
 	
 	public static <x> boolean update(String source_, HashMap<String, x> vals_, String where_)
@@ -160,6 +171,14 @@ public abstract class common
 		accessory.db.update(source_, vals_, where_);
 		
 		return accessory.db.is_ok(source_);
+	}
+	
+	public static boolean update_quick(String source_, String col_, String val_, String where_) 
+	{ 
+		HashMap<String, String> vals = new HashMap<String, String>();
+		vals.put(col_, val_);
+		
+		return update(source_, vals, where_); 
 	}
 
 	public static boolean update_quick(String source_, HashMap<String, String> vals_, String where_)
@@ -184,7 +203,7 @@ public abstract class common
 		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
 		if (!arrays.is_ok(vals)) return false;
 		
-		vals = add_default_vals(source_, vals);
+		vals = get_insert_vals(source_, vals);
 
 		accessory.db.insert_update(source_, vals, where_);
 		
@@ -319,23 +338,25 @@ public abstract class common
 	
 	public static String adapt_user(String val_) { return common.adapt_string(val_, FIELD_USER); }
 	
-	private static HashMap<String, Object> add_default_vals(String source_, HashMap<String, Object> vals_)
+	private static HashMap<String, Object> get_insert_vals(String source_, HashMap<String, Object> vals_)
 	{
 		if (source_includes_user(source_) && !vals_.containsKey(FIELD_USER)) 
 		{
 			String user = basic.get_user();
-			if (strings.is_ok(user)) vals_.put(FIELD_USER, basic.get_user());
+			if (strings.is_ok(user)) vals_.put(FIELD_USER, user);
 		}
 		
 		return vals_;
 	}
 	
-	private static HashMap<String, String> add_default_vals_quick(String source_, HashMap<String, String> vals_)
+	private static HashMap<String, String> get_insert_vals_quick(String source_, HashMap<String, String> vals_)
 	{
-		if (source_includes_user(source_) && !vals_.containsKey(FIELD_USER)) 
+		String col = get_col(source_, FIELD_USER);
+		
+		if (source_includes_user(source_) && !vals_.containsKey(col)) 
 		{
 			String user = basic.get_user();
-			if (strings.is_ok(user)) vals_.put(get_col(source_, FIELD_USER), basic.get_user());
+			if (strings.is_ok(user)) vals_.put(col, user);
 		}
 		
 		return vals_;
