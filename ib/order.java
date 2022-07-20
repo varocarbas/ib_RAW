@@ -27,24 +27,21 @@ public class order extends parent
 	public static final String TYPE_PLACE_STOP = types.ORDERS_PLACE_STOP;
 	public static final String TYPE_PLACE_LIMIT = types.ORDERS_PLACE_LIMIT;
 	public static final String TYPE_PLACE_STOP_LIMIT = types.ORDERS_PLACE_STOP_LIMIT;
-	
-	public static final double WRONG_VALUE = 0.0;
-	public static final int WRONG_ORDER_ID = -1;
 
 	public static final String DEFAULT_TIF = external_ib.orders.TIF_GTC; 
 	public static final boolean DEFAULT_QUANTITIES_INT = true;
 	public static final String DEFAULT_STATUS = STATUS_ACTIVE;
 	
-	private int _id_main = WRONG_ORDER_ID;
-	private int _id_sec = WRONG_ORDER_ID;	
+	private int _id_main = common.WRONG_ORDER_ID;
+	private int _id_sec = common.WRONG_ORDER_ID;	
 	private String _type_place = strings.DEFAULT;
 	private String _type_main = strings.DEFAULT;
 	private String _type_sec = strings.DEFAULT;
 	private String _symbol = strings.DEFAULT;
-	private double _quantity = WRONG_VALUE;
-	private double _stop = WRONG_VALUE;
-	private double _start = WRONG_VALUE;
-	private double _start2 = WRONG_VALUE;
+	private double _quantity = common.WRONG_QUANTITY;
+	private double _stop = common.WRONG_PRICE;
+	private double _start = common.WRONG_PRICE;
+	private double _start2 = common.WRONG_PRICE;
 	
 	private String _temp_type = strings.DEFAULT;
 	private String _temp_symbol = strings.DEFAULT;
@@ -109,7 +106,7 @@ public class order extends parent
 	
 	public order(order input_) { instantiate(input_); }
 	
-	public order(String type_place_, String symbol_, double quantity_, double stop_, double start_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, WRONG_VALUE, sync.get_order_id()); }
+	public order(String type_place_, String symbol_, double quantity_, double stop_, double start_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, common.WRONG_PRICE, sync.get_order_id()); }
 	
 	public order(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, start2_, sync.get_order_id()); }
 	
@@ -161,10 +158,8 @@ public class order extends parent
 	
 	public boolean update_val(double val_, boolean is_main_) 
 	{ 
-		if (val_ < WRONG_VALUE) return false;
-		
-		if (is_main_) _start = val_;
-		else _stop = val_;
+		if (is_main_) _start = db_ib.common.adapt_price(val_);
+		else _stop = db_ib.common.adapt_price(val_);
 		
 		return true;
 	}
@@ -246,7 +241,7 @@ public class order extends parent
 		_temp_type = check_type_place(type_place_);
 		_temp_symbol = check_symbol(symbol_);
 
-		return (strings.are_ok(new String[] { _temp_type, _temp_symbol }) && quantity_ > 0 && (stop_ > WRONG_VALUE) && (start_ > WRONG_VALUE || _temp_type.equals(TYPE_PLACE_MARKET)) && (start2_ > WRONG_VALUE || !_temp_type.equals(TYPE_PLACE_STOP_LIMIT)));
+		return (strings.are_ok(new String[] { _temp_type, _temp_symbol }) && quantity_ > common.WRONG_QUANTITY && (stop_ > common.WRONG_PRICE) && (start_ > common.WRONG_PRICE || _temp_type.equals(TYPE_PLACE_MARKET)) && (start2_ > common.WRONG_PRICE || !_temp_type.equals(TYPE_PLACE_STOP_LIMIT)));
 	}
 
 	private void populate(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_, int id_main_)
@@ -256,9 +251,9 @@ public class order extends parent
 		_type_sec = get_type_from_place(false);
 		_symbol = symbol_;
 		_quantity = quantity_;
-		_stop = stop_;
-		_start = start_;
-		_start2 = start2_;
+		_stop = db_ib.common.adapt_price(stop_);
+		_start = db_ib.common.adapt_price(start_);
+		_start2 = db_ib.common.adapt_price(start2_);
 		_id_main = id_main_;
 		_id_sec = get_id_sec(id_main_);
 	}

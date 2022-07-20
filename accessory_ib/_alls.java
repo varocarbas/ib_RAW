@@ -43,6 +43,7 @@ public class _alls extends parent_ini_first
 	public static HashMap<String, Integer> DB_MAX_SIZES_NUMBERS = null;
 	public static HashMap<String, Integer> DB_MAX_SIZES_STRINGS = null;
 	public static HashMap<String, Double> DB_MAX_VALS = null;
+	public static String[] DB_NEGATIVE_NUMBERS = null;
 	
 	public void populate_internal() 
 	{ 
@@ -78,8 +79,8 @@ public class _alls extends parent_ini_first
 		
 		DB_MAX_SIZES_NUMBERS = db_ib.common.populate_all_max_sizes_numbers();
 		DB_MAX_SIZES_STRINGS = db_ib.common.populate_all_max_sizes_strings();
-		
 		DB_MAX_VALS = db_ib.common.populate_all_max_vals();
+		DB_NEGATIVE_NUMBERS = db_ib.common.populate_all_negative_numbers();
 		
 		_populated = true;
 	}

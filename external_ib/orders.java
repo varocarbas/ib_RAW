@@ -5,13 +5,14 @@ import com.ib.client.Order;
 import accessory.arrays;
 import accessory.strings;
 import accessory_ib._alls;
+import ib.common;
 import ib.order;
 
 public abstract class orders 
 {
 	//--- To be synced with the execution.side values (https://interactivebrokers.github.io/tws-api/classIBApi_1_1Execution.html).
-	public static final String EXEC_SIDE_BOUGHT = "bot";
-	public static final String EXEC_SIDE_SOLD = "sld";
+	public static final String EXEC_SIDE_BOUGHT = "BOT";
+	public static final String EXEC_SIDE_SOLD = "SLD";
 	//---
 
 	//--- To be synced with the order.action values (https://interactivebrokers.github.io/tws-api/classIBApi_1_1Order.html).
@@ -47,7 +48,9 @@ public abstract class orders
 	public static final String STATUS_IB_INACTIVE = "Inactive"; //Indicates that the order was received by the system but is no longer active because it was rejected or canceled.
 	//---
 
-	public static Order get_order_new(order order_, boolean is_main_) { return get_order(order_, is_main_, null, order.WRONG_VALUE, false); }
+	public static int get_max_length_side() { return EXEC_SIDE_BOUGHT.length(); }
+	
+	public static Order get_order_new(order order_, boolean is_main_) { return get_order(order_, is_main_, null, common.WRONG_PRICE, false); }
 	
 	public static Order get_order_update(order order_, String update_type_, double update_val_, boolean is_main_) { return get_order(order_, is_main_, update_type_, update_val_, true); }
 	
@@ -113,7 +116,7 @@ public abstract class orders
 			if (type.equals(TYPE_STOP_LIMIT) && update_type_.equals(ib.orders.UPDATE_START2_VALUE)) val2 = update_val_;
 			else val = update_val_;
 		}
-		if ((val <= order.WRONG_VALUE && !is_market) || (val2 <= order.WRONG_VALUE && type.equals(TYPE_STOP_LIMIT))) return null;
+		if ((val <= common.WRONG_PRICE && !is_market) || (val2 <= common.WRONG_PRICE && type.equals(TYPE_STOP_LIMIT))) return null;
 		
 		output.action((is_main_ ? ACTION_BUY : ACTION_SELL));		
 

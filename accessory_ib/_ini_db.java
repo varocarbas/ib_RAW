@@ -11,7 +11,6 @@ import accessory.parent_ini_db;
 import accessory.strings;
 import external_ib.contracts;
 import ib.conn;
-import ib.order;
 import db_ib.apps;
 import db_ib.basic;
 import db_ib.common;
@@ -95,7 +94,7 @@ public class _ini_db extends parent_ini_db
 		info.put(execs.EXEC_ID, get_string(30));
 		info.put(execs.SYMBOL, get_symbol(false));
 		info.put(execs.ORDER_ID, get_order_id(false));
-		info.put(execs.SIDE, get_string(3)); //Synced with execution.side's max. length as defined in external_ib.orders.
+		info.put(execs.SIDE, get_string(external_ib.orders.get_max_length_side()));
 		info.put(execs.PRICE, get_price());
 		info.put(execs.QUANTITY, get_quantity());
 		info.put(execs.FEES, get_money());
@@ -218,7 +217,8 @@ public class _ini_db extends parent_ini_db
 		info.put(watchlist.FLU2, get_decimal_tiny());
 		info.put(watchlist.FLU2_MIN, get_decimal_tiny());
 		info.put(watchlist.FLU2_MAX, get_decimal_tiny());
-
+		info.put(watchlist.FLU_PRICE, get_price());
+		
 		return add_source_common(db_, source, table, info, sources_);		
 	}
 	
@@ -244,7 +244,7 @@ public class _ini_db extends parent_ini_db
 
 	private static db_field get_symbol(boolean is_unique_) { return get_string(contracts.MAX_LENGTH_SYMBOL_US_ANY, is_unique_); }
 
-	private static db_field get_order_id(boolean is_unique_) { return (is_unique_ ? new db_field(data.INT, db_field.DEFAULT_SIZE, db_field.WRONG_DECIMALS, order.WRONG_ORDER_ID, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.INT)); }
+	private static db_field get_order_id(boolean is_unique_) { return (is_unique_ ? new db_field(data.INT, db_field.DEFAULT_SIZE, db_field.WRONG_DECIMALS, ib.common.WRONG_ORDER_ID, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.INT)); }
 
 	private static db_field get_money() { return get_decimal(common.MAX_SIZE_MONEY); }
 	

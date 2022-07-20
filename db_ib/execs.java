@@ -1,5 +1,6 @@
 package db_ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.db_where;
@@ -29,9 +30,11 @@ public abstract class execs
 	
 	public static double get_end_price(int order_id_sell_) { return common.get_decimal(SOURCE, PRICE, db_where.join(get_where_order_id(order_id_sell_), get_where_side(SIDE_SOLD), db_where.LINK_AND)); }
 
-	public static String get_where(String exec_id_) { return common.get_where(SOURCE, EXEC_ID, exec_id_, false); }
-	
-	public static String get_where_order_id(int order_id_) { return common.get_where(SOURCE, ORDER_ID, Integer.toString(order_id_), false); }
+	public static ArrayList<HashMap<String, String>> get_money_info(int order_id_) { return common.get_all_vals(SOURCE, new String[] { PRICE, QUANTITY, FEES }, get_where_order_id(order_id_)); }
 
-	public static String get_where_side(String side_) { return common.get_where(SOURCE, SIDE, side_, false); }
+	private static String get_where(String exec_id_) { return common.get_where(SOURCE, EXEC_ID, exec_id_, false); }
+	
+	private static String get_where_order_id(int order_id_) { return common.get_where(SOURCE, ORDER_ID, Integer.toString(order_id_), false); }
+
+	private static String get_where_side(String side_) { return common.get_where(SOURCE, SIDE, side_, false); }
 }

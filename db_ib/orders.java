@@ -39,8 +39,12 @@ public abstract class orders
 
 	public static String get_symbol(int id_main_) { return common.get_string(SOURCE, SYMBOL, get_where_order_id(id_main_)); }
 
+	public static int get_id_main(int id_sec_) { return common.get_int(SOURCE, ORDER_ID_MAIN, get_where_order_id(id_sec_, false), false); }
+
 	public static int get_id_sec(int id_main_) { return common.get_int(SOURCE, ORDER_ID_SEC, get_where_order_id(id_main_), false); }
-	
+
+	public static double get_quantity(int id_main_) { return common.get_decimal(SOURCE, QUANTITY, get_where_order_id(id_main_)); }
+
 	public static HashMap<String, String> get(int id_main_) { return common.get_vals(SOURCE, get_where_order_id(id_main_)); }
 
 	public static HashMap<String, String> get(String symbol_) { return common.get_vals(SOURCE, get_where_symbol(symbol_)); }
@@ -132,7 +136,7 @@ public abstract class orders
 
 	private static String get_where_symbol(String symbol_) { return common.get_where_symbol(SOURCE, symbol_); }
 
-	private static String get_where_order_id(int id_main_) { return get_where_order_id(id_main_, false); }
+	private static String get_where_order_id(int id_main_) { return get_where_order_id(id_main_, true); }
 
 	private static String get_where_order_id(int id_, boolean is_main_) { return common.get_where(SOURCE, (is_main_ ? ORDER_ID_MAIN : ORDER_ID_SEC), Integer.toString(id_), false); }
 }

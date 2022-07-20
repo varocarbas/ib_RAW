@@ -9,12 +9,9 @@ import accessory.strings;
 
 abstract class sync_trades 
 {	
-	public static final double WRONG_POSITION = trades.WRONG_POSITION;
-	public static final double WRONG_PRICE = common.WRONG_PRICE;
-
 	public static double get_position(String symbol_)
 	{
-		double output = WRONG_POSITION;
+		double output = common.WRONG_POSITION;
 		
 		HashMap<Double, String> all_positions = sync.get_positions();
 		if (!arrays.is_ok(all_positions)) return output;
@@ -38,7 +35,8 @@ abstract class sync_trades
 	
 	public static double get_unrealised(double pos_)
 	{
-		double output = WRONG_PRICE;
+		double output = common.WRONG_MONEY;
+		if (!ib.common.position_is_ok(pos_)) return output;
 		
 		HashMap<Double, Double> all_unrealised = sync.get_unrealised();
 		if (!arrays.is_ok(all_unrealised)) return output;
@@ -46,7 +44,7 @@ abstract class sync_trades
 		for (Entry<Double, Double> item: all_unrealised.entrySet())
 		{
 			double pos = item.getKey();
-			double unrealised = adapt_money(item.getValue());
+			double unrealised = item.getValue();
 			
 			if (pos == pos_) output = unrealised;
 			
@@ -55,8 +53,6 @@ abstract class sync_trades
 		
 		return output;
 	}
-	
-	private static double adapt_money(double val_) { return db_ib.common.adapt_number(val_, db_ib.common.FIELD_PRICE); }
 	
 	private static double get_position(String symbol_, ArrayList<Double> positions_)
 	{
@@ -68,6 +64,6 @@ abstract class sync_trades
 			if (!positions_db.contains(position)) return position;
 		}
 
-		return WRONG_POSITION;
+		return common.WRONG_POSITION;
 	}
 }

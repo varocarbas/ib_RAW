@@ -30,7 +30,7 @@ public abstract class orders
 
 	public static final String DEFAULT_STATUS = STATUS_ACTIVE;
 
-	public static boolean place_market(String symbol_, double quantity_, double stop_) { return sync_orders.place(PLACE_MARKET, symbol_, quantity_, stop_, order.WRONG_VALUE); }
+	public static boolean place_market(String symbol_, double quantity_, double stop_) { return sync_orders.place(PLACE_MARKET, symbol_, quantity_, stop_, common.WRONG_PRICE); }
 
 	public static boolean place_stop(String symbol_, double quantity_, double stop_, double start_) { return sync_orders.place(PLACE_STOP, symbol_, quantity_, stop_, start_); }
 
@@ -42,11 +42,11 @@ public abstract class orders
 
 	public static boolean update_start(String symbol_, double start_) { return sync_orders.update(symbol_, UPDATE_START_VALUE, start_); }
 
-	public static boolean update_start_market(String symbol_) { return sync_orders.update(symbol_, UPDATE_START_MARKET, order.WRONG_VALUE); }
+	public static boolean update_start_market(String symbol_) { return sync_orders.update(symbol_, UPDATE_START_MARKET, common.WRONG_PRICE); }
 
 	public static boolean update_stop(String symbol_, double stop_) { return sync_orders.update(symbol_, UPDATE_STOP_VALUE, stop_); }
 
-	public static boolean update_stop_market(String symbol_) { return sync_orders.update(symbol_, UPDATE_STOP_MARKET, order.WRONG_VALUE); }
+	public static boolean update_stop_market(String symbol_) { return sync_orders.update(symbol_, UPDATE_STOP_MARKET, common.WRONG_PRICE); }
 
 	public static boolean update_start2(String symbol_, double start2_) { return sync_orders.update(symbol_, UPDATE_START2_VALUE, start2_); }
 

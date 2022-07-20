@@ -41,7 +41,7 @@ public abstract class sync extends parent_static
 	public static final String KEY_FUNDS = common_wrapper.KEY_FUNDS;
 	
 	public static final int WRONG_REQ_ID = common.WRONG_ID;
-	public static final int WRONG_ORDER_ID = sync_orders.WRONG_ORDER_ID;
+	public static final int WRONG_ORDER_ID = common.WRONG_ORDER_ID;
 	
 	public static final long TIMEOUT_ORDERS = 3l;
 	public static final long TIMEOUT_POSITIONS = 3l;
@@ -231,7 +231,7 @@ public abstract class sync extends parent_static
 	{	
 		if (!basic.account_ib_is_ok(account_ib_)) return;
 		
-		sync.update_unrealised(pos_, unrealised_);
+		update_unrealised(pos_, unrealised_);
 	}
 
 	private static boolean update_position(String symbol_, double pos_) 

@@ -11,8 +11,6 @@ public abstract class trades extends parent_static
 
 	public static final int PRICE_IB = parent_async_data.PRICE_IB;
 	public static final int HALTED_IB = parent_async_data.HALTED_IB;
-	
-	public static final double WRONG_POSITION = 0.0;
 
 	public static boolean is_ok() { return async_data_trades._instance._enabled; }
 	
@@ -20,14 +18,14 @@ public abstract class trades extends parent_static
 	{ 
 		async_data_trades._instance.update_enabled(true); 
 	
-		execs.enable();
+		execs.enable(false);
 	}
 	
 	public static void disable() 
 	{ 
 		async_data_trades._instance.update_enabled(false); 
-	
-		execs.disable();
+		
+		execs.disable(false);
 	}
 	
 	public static void update_logs_to_screen(boolean logs_to_screen_) { async_data_trades._instance.update_logs_to_screen_internal(logs_to_screen_); }
@@ -41,23 +39,9 @@ public abstract class trades extends parent_static
 		__unlock();
 	}
 	
-	public static void _start(int order_id_, double price_, boolean lock_) 
-	{ 
-		if (lock_) __lock();
-		
-		async_trades.start(order_id_, price_); 
-		
-		if (lock_) __unlock();
-	}
+	public static void start(int order_id_, double start_) { async_trades.start(order_id_, start_); }
 	
-	public static void _end(int order_id_, double price_, boolean lock_) 
-	{ 
-		if (lock_) __lock();
-		
-		async_trades.end(order_id_, price_); 
-		
-		if (lock_) __unlock();
-	}
+	public static void end(int order_id_, double price_) { async_trades.end(order_id_, price_); }
 	
 	public static double get_position_start(String symbol_) { return sync_trades.get_position(symbol_); }
 	

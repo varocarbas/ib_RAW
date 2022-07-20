@@ -3,6 +3,7 @@ package ib;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import accessory.numbers;
 import accessory.strings;
 import accessory_ib._alls;
 
@@ -11,9 +12,19 @@ class async_data_watchlist extends parent_async_data
 	public static String _ID = "watchlist";
 	
 	public static final String SOURCE = watchlist.SOURCE;
+
+	public static final String PRICE_INI = db_ib.watchlist.PRICE_INI;
+	public static final String PRICE_MIN = db_ib.watchlist.PRICE_MIN;
+	public static final String PRICE_MAX = db_ib.watchlist.PRICE_MAX;
+	public static final String VOLUME_INI = db_ib.watchlist.VOLUME_INI;
+	public static final String VOLUME_MIN = db_ib.watchlist.VOLUME_MIN;
+	public static final String VOLUME_MAX = db_ib.watchlist.VOLUME_MAX;
+	public static final String FLU_PRICE = db_ib.watchlist.FLU_PRICE;
 	
 	public static final String TYPE = TYPE_SNAPSHOT;
 	public static final int DATA = external_ib.data.DATA_LIVE;
+	
+	public static final double MIN_VAR = 0.005;
 	
 	private volatile HashMap<String, ArrayList<Double>> _flu = new HashMap<String, ArrayList<Double>>();
 	private volatile HashMap<String, ArrayList<Double>> _flu2_minus = new HashMap<String, ArrayList<Double>>();
@@ -91,16 +102,6 @@ class async_data_watchlist extends parent_async_data
 	}
 	
 	public static void __tick_price(int id_, int field_ib_, double price_) { _instance.__tick_price_internal(id_, field_ib_, price_); }
-
-	void tick_price_watchlist(int id_, int field_ib_, double price_)
-	{
-		if (field_ib_ != PRICE_IB) return;
-		
-		//String symbol = _get_symbol(id_, false);
-		
-		//HashMap<String, String> db = db_ib.watchlist.get_vals(symbol, _is_quick);
-
-	}
 	
 	public static void __tick_size(int id_, int field_ib_, int size_) { _instance.__tick_size_internal(id_, field_ib_, size_); }
 	
@@ -113,6 +114,57 @@ class async_data_watchlist extends parent_async_data
 	protected HashMap<Integer, String> get_all_generics() { return _alls.WATCHLIST_GENERICS; }
 	
 	protected String[] get_fields() { return db_ib.watchlist.get_fields(); }
+	
+	void tick_price_watchlist(int id_, int field_ib_, double price_)
+	{
+		if (field_ib_ != PRICE_IB || !common.price_is_ok(price_)) return;
+		
+		String symbol = _get_symbol(id_, false);
+		
+		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol, _is_quick);
+		
+		Object vals = (_is_quick ? new HashMap<String, String>() : new HashMap<String, Object>());
+
+		vals = tick_price_basic(price_, db, vals);
+		vals = tick_price_flus(price_, db, vals);
+		
+		db_ib.watchlist.update(vals, symbol, _is_quick);
+	}
+
+	void tick_size_watchlist(int id_, int field_ib_, double volume_)
+	{
+		
+	}
+
+	private Object tick_price_basic(double price_, HashMap<String, String> db_, Object vals_)
+	{
+		Object vals = db_ib.watchlist.assign(vals_, _is_quick);		
+
+		double price_db = db_ib.watchlist.get_number(PRICE_INI, db_, _is_quick);
+		if (!common.price_is_ok(price_db)) vals = db_ib.watchlist.add(PRICE_INI, price_, vals, _is_quick);
+	
+		price_db = db_ib.watchlist.get_number(PRICE_MIN, db_, _is_quick);
+		if (price_ < price_db) vals = db_ib.watchlist.add(PRICE_MIN, price_, vals, _is_quick);
+		
+		price_db = db_ib.watchlist.get_number(PRICE_MAX, db_, _is_quick);
+		if (price_ > price_db) vals = db_ib.watchlist.add(PRICE_MAX, price_, vals, _is_quick);
+	
+		return vals;
+	}
+	
+	private Object tick_price_flus(double price_, HashMap<String, String> db_, Object vals_)
+	{
+		Object vals = db_ib.watchlist.assign(vals_, _is_quick);	
+		
+		double price_db = db_ib.watchlist.get_number(FLU_PRICE, db_, _is_quick);
+
+		vals = db_ib.watchlist.add(FLU_PRICE, price_, vals, _is_quick);
+		
+		double var = numbers.get_perc_hist(price_, price_db);
+		if (Math.abs(var) < MIN_VAR) return vals;
+
+		return vals;
+	}
 
 	private boolean id_is_ok(int id_) { return (get_id(_get_symbol(id_, false)) == id_); }
 

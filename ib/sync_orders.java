@@ -37,9 +37,6 @@ abstract class sync_orders extends parent_static
 	public static final String UPDATE_STOP_VALUE = orders.UPDATE_STOP_VALUE;
 	public static final String UPDATE_STOP_MARKET = orders.UPDATE_STOP_MARKET;
 
-	public static final double WRONG_VALUE = order.WRONG_VALUE;
-	public static final int WRONG_ORDER_ID = order.WRONG_ORDER_ID;
-
 	public static final String DEFAULT_STATUS = orders.DEFAULT_STATUS;
 
 	public static int _last_id_main = 0;
@@ -111,7 +108,7 @@ abstract class sync_orders extends parent_static
 		return db_ib.orders.get_to_order(id_);
 	}
 
-	public static boolean place_update(order order_) { return place_update(order_, null, WRONG_VALUE); }
+	public static boolean place_update(order order_) { return place_update(order_, null, common.WRONG_VALUE); }
 
 	private static order get_order(String symbol_)
 	{
@@ -162,8 +159,8 @@ abstract class sync_orders extends parent_static
 
 			if (!is_ok)
 			{
-				_last_id_main = WRONG_ORDER_ID;
-				_last_id_sec = WRONG_ORDER_ID;
+				_last_id_main = common.WRONG_ORDER_ID;
+				_last_id_sec = common.WRONG_ORDER_ID;
 
 				return false;				
 			}

@@ -85,7 +85,8 @@ public abstract class common
 	public static final String FIELD_FLU2 = types.CONFIG_DB_IB_FIELD_FLU2;
 	public static final String FIELD_FLU2_MIN = types.CONFIG_DB_IB_FIELD_FLU2_MIN;
 	public static final String FIELD_FLU2_MAX = types.CONFIG_DB_IB_FIELD_FLU2_MAX;
-
+	public static final String FIELD_FLU_PRICE = types.CONFIG_DB_IB_FIELD_FLU_PRICE;
+	
 	public static final String FIELD_APP = types.CONFIG_DB_IB_FIELD_APP;
 	public static final String FIELD_CONN_ID = types.CONFIG_DB_IB_FIELD_CONN_ID;
 	public static final String FIELD_CONN_TYPE = types.CONFIG_DB_IB_FIELD_CONN_TYPE;
@@ -279,24 +280,27 @@ public abstract class common
 		
 		return all;
 	}
+	
+	public static String[] populate_all_negative_numbers() { return new String[] { FIELD_MONEY }; }
 
 	public static int get_max_size_number(String field_) { return get_max_size(field_, true); }
 
 	public static int get_max_size_string(String field_) { return get_max_size(field_, false); }
 	
+	public static double adapt_price(double val_) { return adapt_number(val_, FIELD_PRICE); }
+	
+	public static double adapt_money(double val_) { return adapt_number(val_, FIELD_MONEY); }
+
+	public static double adapt_position(double position_) { return adapt_number(position_, FIELD_POSITION); }
+
 	public static double adapt_number(double val_, String field_)
 	{
 		int max = get_max_size_number(field_);
 		
-		return (max == WRONG_MAX_SIZE ? val_ : adapt_number(val_, max));
+		return (max <= WRONG_MAX_SIZE ? val_ : adapt_number(val_, max, arrays.key_exists(get_all_negative_numbers(), field_)));
 	}
 	
-	public static double adapt_number(double val_, int max_)
-	{
-		double max = get_max_val(max_);
-		
-		return (val_ < max ? val_ : max);
-	}
+	public static double adapt_number(double val_, int max_) { return adapt_number(val_, max_, false); }
 	
 	public static double get_max_val(String field_) 
 	{
@@ -311,10 +315,10 @@ public abstract class common
 	{
 		int max = get_max_size_string(field_);
 		
-		return (max == WRONG_MAX_SIZE ? val_ : adapt_string(val_, max));
+		return (max <= WRONG_MAX_SIZE ? val_ : adapt_string(val_, max));
 	}
 	
-	public static String adapt_string(String val_, int max_) { return (strings.get_length(val_) < get_max_length(max_) ? val_ : strings.truncate(val_, max_)); }
+	public static String adapt_string(String val_, int max_) { return (strings.get_length(val_) <= get_max_length(max_) ? val_ : strings.truncate(val_, max_)); }
 	
 	public static int get_max_length(String field_) { return get_max_size_string(field_); }
 
@@ -338,6 +342,27 @@ public abstract class common
 	
 	public static String adapt_user(String val_) { return common.adapt_string(val_, FIELD_USER); }
 	
+	private static double adapt_number(double val_, int max_, boolean is_negative_)
+	{
+		double output = val_;
+		if (max_ <= WRONG_MAX_SIZE) return output;
+		
+		double max = get_max_val(max_);
+		double min = -1 * max;
+		
+		if (is_negative_)
+		{
+			if (output < min) output = min;
+		}
+		else if (output <= 0.0) output = 0.0;
+			
+		if (output > max) output = max;
+		
+		return output;
+	}
+	
+	private static String[] get_all_negative_numbers() { return _alls.DB_NEGATIVE_NUMBERS; }
+
 	private static HashMap<String, Object> get_insert_vals(String source_, HashMap<String, Object> vals_)
 	{
 		if (source_includes_user(source_) && !vals_.containsKey(FIELD_USER)) 

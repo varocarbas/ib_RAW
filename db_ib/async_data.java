@@ -79,4 +79,11 @@ public abstract class async_data
 		
 		return vals;
 	}
+	
+	public static double get_val_number(String source_, String field_, HashMap<String, String> vals_, boolean is_quick_) 
+	{ 
+		String key = (is_quick_ ? get_col(source_, field_) : field_);
+		
+		return (vals_.containsKey(key) ? Double.parseDouble(vals_.get(key)) : ib.common.WRONG_VALUE);
+	}
 }

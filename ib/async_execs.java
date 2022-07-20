@@ -1,13 +1,14 @@
 package ib;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.ib.client.CommissionReport;
 import com.ib.client.Contract;
 import com.ib.client.Execution;
 
-import accessory.arrays;
 import accessory.parent_static;
+import accessory.strings;
 import external_ib.orders;
 
 abstract class async_execs extends parent_static 
@@ -41,7 +42,7 @@ abstract class async_execs extends parent_static
 		HashMap<String, Object> vals = new HashMap<String, Object>();		
 		vals.put(SYMBOL, contract_.localSymbol());
 		vals.put(ORDER_ID, execution_.orderId());
-		vals.put(PRICE, adapt_price(execution_.price())); 
+		vals.put(PRICE, db_ib.common.adapt_price(execution_.price())); 
 		vals.put(QUANTITY, execution_.shares()); 
 		vals.put(SIDE, execution_.side()); 
 
@@ -57,41 +58,40 @@ abstract class async_execs extends parent_static
 		__lock();
 		
 		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(FEES, report_.commission());
+		vals.put(FEES, db_ib.common.adapt_money(report_.commission()));
 		
 		update(report_.execId(), vals);
 		
 		__unlock();
 	}
-	
-	private static double adapt_price(double price_) { return db_ib.common.adapt_number(price_, db_ib.common.FIELD_PRICE); }
 
-	@SuppressWarnings("unchecked")
 	private static void update(String exec_id_, HashMap<String, Object> vals_)
-	{
-		HashMap<String, Object> vals = (_all_vals.containsKey(exec_id_) ? (HashMap<String, Object>)arrays.add(_all_vals.get(exec_id_), vals_) : (HashMap<String, Object>)arrays.get_new(vals_));
+	{		
+		HashMap<String, Object> vals = new HashMap<String, Object>(vals_);
 		vals.put(EXEC_ID, exec_id_);
+		
+		if (_all_vals.containsKey(exec_id_))
+		{
+			for (Entry<String, Object> item: _all_vals.get(exec_id_).entrySet()) { vals.put(item.getKey(), item.getValue()); }
+		}
 
-		_all_vals.put(exec_id_, vals);
-
-		update_last(exec_id_);
+		if (vals.size() == TARGET_TOT_FIELDS) 
+		{
+			update_last(exec_id_, vals);
+			
+			if (_all_vals.containsKey(exec_id_)) _all_vals.remove(exec_id_);
+		}
 	}
 	
-	private static void update_last(String exec_id_)
-	{
-		if (_all_vals.get(exec_id_).size() < TARGET_TOT_FIELDS) return;
+	private static void update_last(String exec_id_, HashMap<String, Object> vals_)
+	{		
+		int order_id = (int)vals_.get(ORDER_ID);
+		String side = (String)vals_.get(SIDE);
+		double price = (double)vals_.get(PRICE);
+		
+		if (strings.are_equivalent(side, SIDE_SOLD)) trades.end(order_id, price);
+		else trades.start(order_id, price);
 
-		HashMap<String, Object> vals = new HashMap<String, Object>(_all_vals.get(exec_id_));
-		
-		int order_id = (int)vals.get(ORDER_ID);
-		String side = (String)vals.get(SIDE);
-		double price = (double)vals.get(PRICE);
-		
-		if (side.equals(SIDE_SOLD)) trades._end(order_id, price, false);
-		else trades._start(order_id, price, false);
-
-		db_ib.execs.update(exec_id_, vals);
-		
-		_all_vals.remove(exec_id_);
+		db_ib.execs.update(exec_id_, vals_);
 	}
 }

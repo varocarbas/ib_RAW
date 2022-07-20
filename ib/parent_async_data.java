@@ -152,11 +152,6 @@ public abstract class parent_async_data extends parent_static
 		__unlock();
 	}
 	
-	protected void tick_price_specific(int id_, int field_ib_, double price_)
-	{
-		if (_id.equals(_ID_WATCHLIST)) async_data_watchlist._instance.tick_price_watchlist(id_, field_ib_, price_);	
-	}
-	
 	protected void __tick_size_internal(int id_, int field_ib_, int size_)
 	{
 		if (!common.size_is_ok(size_)) return;
@@ -173,7 +168,13 @@ public abstract class parent_async_data extends parent_static
 		boolean is_snapshot = _is_snapshot(id_, false);
 		
 		String field = get_field(get_all_sizes(), field_ib_);
-		if (field != null) update(id_, field, adapt_val(size_, field_ib_), is_snapshot);
+		if (field != null) 
+		{
+			double volume = adapt_val(size_, field_ib_);
+			
+			update(id_, field, volume);
+			tick_size_specific(id_, field_ib_, volume);
+		}
 	
 		if (is_snapshot && field_ib_ == VOLUME_IB && snapshot_is_quick()) _stop_snapshot_internal(id_, false);
 		
@@ -391,18 +392,20 @@ public abstract class parent_async_data extends parent_static
 	{	
 		_stop_all = true;
 
+		misc.pause_secs(5);
+		
 		if (lock_) __lock();	
 		
 		HashMap<Integer, String> ids = new HashMap<Integer, String>(_ids);
+		
+		if (lock_) __unlock();
 		
 		if (ids.size() == 0) 
 		{
 			_stop_all = false;
 			
-			if (lock_) __unlock();
-			
 			return;
-		}
+		}	
 		
 		boolean check_symbol = strings.is_ok(symbol_);
 		
@@ -410,13 +413,11 @@ public abstract class parent_async_data extends parent_static
 		{
 			int id = item.getKey();
 			
-			if (check_symbol && !symbol_.equals(_get_symbol(id, false))) continue;
+			if (check_symbol && !symbol_.equals(_get_symbol(id, lock_))) continue;
 			
-			if (_is_snapshot(id, false)) _stop_snapshot_internal(id, false, false);
-			else _stop_stream_internal(id, false);	
+			if (_is_snapshot(id, lock_)) _stop_snapshot_internal(id, false, lock_);
+			else _stop_stream_internal(id, lock_);	
 		}
-		
-		if (lock_) __unlock();
 	}
 	
 	protected boolean remove(int id_) 
@@ -433,6 +434,16 @@ public abstract class parent_async_data extends parent_static
 		return true;
 	}
 	
+	private void tick_price_specific(int id_, int field_ib_, double price_)
+	{
+		if (_id.equals(_ID_WATCHLIST)) async_data_watchlist._instance.tick_price_watchlist(id_, field_ib_, price_);	
+	}
+	
+	private void tick_size_specific(int id_, int field_ib_, double volume_)
+	{
+		if (_id.equals(_ID_WATCHLIST)) async_data_watchlist._instance.tick_size_watchlist(id_, field_ib_, volume_);	
+	}
+
 	private double adapt_val(double val_, int field_ib_)
 	{
 		double output = val_;
