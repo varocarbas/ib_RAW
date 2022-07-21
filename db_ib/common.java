@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import accessory.arrays;
+import accessory.dates;
 import accessory.db;
 import accessory.db_where;
 import accessory.strings;
@@ -68,12 +69,14 @@ public abstract class common
 	public static final String FIELD_TYPE_SEC = types.CONFIG_DB_IB_FIELD_TYPE_SEC;
 
 	public static final String FIELD_TIME_ELAPSED = types.CONFIG_DB_IB_FIELD_TIME_ELAPSED;
+	public static final String FIELD_ELAPSED_INI = types.CONFIG_DB_IB_FIELD_ELAPSED_INI;
 	public static final String FIELD_UNREALISED = types.CONFIG_DB_IB_FIELD_UNREALISED;
 	public static final String FIELD_IS_ACTIVE = types.CONFIG_DB_IB_FIELD_IS_ACTIVE;
 	public static final String FIELD_POSITION = types.CONFIG_DB_IB_FIELD_POSITION;
 	public static final String FIELD_INVESTMENT = types.CONFIG_DB_IB_FIELD_INVESTMENT;
 	public static final String FIELD_END = types.CONFIG_DB_IB_FIELD_END;
-	
+	public static final String FIELD_REALISED = types.CONFIG_DB_IB_FIELD_REALISED;
+
 	public static final String FIELD_PRICE_INI = types.CONFIG_DB_IB_FIELD_PRICE_INI;
 	public static final String FIELD_PRICE_MIN = types.CONFIG_DB_IB_FIELD_PRICE_MIN;
 	public static final String FIELD_PRICE_MAX = types.CONFIG_DB_IB_FIELD_PRICE_MAX;
@@ -103,11 +106,15 @@ public abstract class common
 	public static final int MAX_SIZE_ERROR = 30;
 	public static final int MAX_SIZE_APP_NAME = 30;
 	
+	public static final String FORMAT_TIME_MAIN = dates.FORMAT_TIME_SHORT;
+	public static final String FORMAT_TIME_ELAPSED = dates.FORMAT_TIME_FULL;
+	
 	public static final int WRONG_MAX_SIZE = 0;
 	public static final double WRONG_MAX_VAL = 0.0;
 	
 	public static final String DEFAULT_DB = types.CONFIG_DB_IB;
 	public static final String DEFAULT_DB_NAME = accessory.db.DEFAULT_DB_NAME;
+	public static final String DEFAULT_FORMAT_TIME = FORMAT_TIME_MAIN;
 	
 	public static final int DEFAULT_SIZE_DECIMAL = MAX_SIZE_MONEY;
 	
@@ -123,9 +130,13 @@ public abstract class common
 
 	public static double get_decimal(String source_, String field_, String where_) { return accessory.db.select_one_decimal(source_, field_, where_, db.DEFAULT_ORDER); }
 
+	public static long get_long(String source_, String field_, String where_) { return accessory.db.select_one_long(source_, field_, where_, db.DEFAULT_ORDER); }
+
 	public static ArrayList<Double> get_all_decimals(String source_, String field_, String where_) { return accessory.db.select_some_decimals(source_, field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
 
 	public static ArrayList<String> get_all_strings(String source_, String field_, String where_) { return accessory.db.select_some_strings(source_, field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
+
+	public static ArrayList<Integer> get_all_ints(String source_, String field_, String where_) { return accessory.db.select_some_ints(source_, field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
 
 	public static ArrayList<HashMap<String, String>> get_all_vals(String source_, String[] fields_, String where_) { return accessory.db.select(source_, fields_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
 
@@ -248,7 +259,11 @@ public abstract class common
 	public static String[] populate_all_sources_user() { return new String[] { SOURCE_BASIC, SOURCE_EXECS, SOURCE_ORDERS, SOURCE_REMOTE, SOURCE_TRADES, SOURCE_APPS }; }
 
 	public static String[] populate_all_sources_enabled() { return new String[] { SOURCE_MARKET }; }
-	
+
+	public static String[] populate_all_sources_elapsed() { return new String[] { SOURCE_TRADES, SOURCE_WATCHLIST }; }
+
+	public static String[] get_all_sources_elapsed() { return _alls.DB_SOURCES_ELAPSED; }
+
 	public static HashMap<String, Integer> populate_all_max_sizes_numbers()
 	{
 		HashMap<String, Integer> all = new HashMap<String, Integer>();

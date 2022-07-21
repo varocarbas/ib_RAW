@@ -81,6 +81,7 @@ abstract class async_execs extends parent_static
 			
 			if (_all_vals.containsKey(exec_id_)) _all_vals.remove(exec_id_);
 		}
+		else _all_vals.put(exec_id_, vals);
 	}
 	
 	private static void update_last(String exec_id_, HashMap<String, Object> vals_)

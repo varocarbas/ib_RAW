@@ -43,11 +43,7 @@ public abstract class trades extends parent_static
 	
 	public static void end(int order_id_, double price_) { async_trades.end(order_id_, price_); }
 	
-	public static double get_position_start(String symbol_) { return sync_trades.get_position(symbol_); }
-	
 	public static double get_position(int order_id_main_) { return db_ib.trades.get_position(order_id_main_); }
-
-	public static double get_unrealised(double position_) { return sync_trades.get_unrealised(position_); }
 
 	public static HashMap<Integer, String> populate_all_prices()
 	{		

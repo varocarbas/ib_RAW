@@ -86,11 +86,13 @@ public abstract class types
 	public static final String CONFIG_DB_IB_FIELD_TYPE_SEC = "config_db_ib_field_type_sec";
 	
 	public static final String CONFIG_DB_IB_FIELD_TIME_ELAPSED = "config_db_ib_field_time_elapsed";
+	public static final String CONFIG_DB_IB_FIELD_ELAPSED_INI = "config_db_ib_field_elapsed_ini";
 	public static final String CONFIG_DB_IB_FIELD_UNREALISED = "config_db_ib_field_unrealised";
 	public static final String CONFIG_DB_IB_FIELD_IS_ACTIVE = "config_db_ib_field_is_active";
 	public static final String CONFIG_DB_IB_FIELD_POSITION = "config_db_ib_field_position";
 	public static final String CONFIG_DB_IB_FIELD_INVESTMENT = "config_db_ib_field_investment";
 	public static final String CONFIG_DB_IB_FIELD_END = "config_db_ib_field_end";
+	public static final String CONFIG_DB_IB_FIELD_REALISED = "config_db_ib_field_realised";
 
 	public static final String CONFIG_DB_IB_FIELD_PRICE_INI = "config_db_ib_field_price_ini";
 	public static final String CONFIG_DB_IB_FIELD_PRICE_MIN = "config_db_ib_field_price_min";
@@ -138,6 +140,16 @@ public abstract class types
 	public static final String APPS_STATUS_RUNNING = "apps_status_running";
 	public static final String APPS_STATUS_ERROR = "apps_status_error";
 	
+	public static final String REMOTE = "remote";
+	public static final String REMOTE_STATUS = "remote_status";
+	public static final String REMOTE_STATUS_ACTIVE = "remote_status_active";
+	public static final String REMOTE_STATUS_INACTIVE = "remote_status_inactive";
+	public static final String REMOTE_STATUS_ERROR = "remote_status_error";
+	public static final String REMOTE_STATUS2 = "remote_status2";
+	public static final String REMOTE_STATUS2_PENDING = "remote_status2_pending";
+	public static final String REMOTE_STATUS2_EXECUTED = "remote_status2_executed";
+	public static final String REMOTE_STATUS2_ERROR = "remote_status2_error";
+	
 	public static final String SYNC = "sync";
 	public static final String SYNC_GET = "sync_get";
 	public static final String SYNC_GET_FUNDS = "sync_get_funds";
@@ -153,13 +165,11 @@ public abstract class types
 	public static final String SYNC_OUT_INTS = "sync_out_ints";
 	public static final String SYNC_OUT_STRINGS = "sync_out_strings";
 	public static final String SYNC_OUT_ORDERS = "sync_out_orders";
-	public static final String SYNC_OUT_POSITIONS = "sync_out_positions";
-	public static final String SYNC_OUT_UNREALISED = "sync_out_unrealised";
 	
 	public static final String ASYNC = "async";
-	public static final String ASYNC_MARKET = "async_market";
-	public static final String ASYNC_MARKET_SNAPSHOT = "async_market_snapshot";
-	public static final String ASYNC_MARKET_STREAM = "async_market_stream";
+	public static final String ASYNC_DATA = "async_data";
+	public static final String ASYNC_DATA_SNAPSHOT = "async_data_snapshot";
+	public static final String ASYNC_DATA_STREAM = "async_data_stream";
 
 	public static final String ERROR_IB = "error_ib";
 	public static final String ERROR_IB_GENERIC = "error_ib_generic";
@@ -225,13 +235,13 @@ public abstract class types
 			CONFIG_DB_IB_FIELD_ACCOUNT_IB, CONFIG_DB_IB_FIELD_CURRENCY, CONFIG_DB_IB_FIELD_MONEY_FREE, CONFIG_DB_IB_FIELD_START, 
 			CONFIG_DB_IB_FIELD_START2, CONFIG_DB_IB_FIELD_STOP, CONFIG_DB_IB_FIELD_ORDER_ID_MAIN, CONFIG_DB_IB_FIELD_ORDER_ID_SEC, 
 			CONFIG_DB_IB_FIELD_STATUS, CONFIG_DB_IB_FIELD_STATUS2, CONFIG_DB_IB_FIELD_IS_MARKET, CONFIG_DB_IB_FIELD_INVEST_PERC, 
-			CONFIG_DB_IB_FIELD_TYPE_PLACE, CONFIG_DB_IB_FIELD_TYPE_MAIN, CONFIG_DB_IB_FIELD_TYPE_SEC, CONFIG_DB_IB_FIELD_TIME_ELAPSED, 
-			CONFIG_DB_IB_FIELD_UNREALISED, CONFIG_DB_IB_FIELD_IS_ACTIVE, CONFIG_DB_IB_FIELD_POSITION, CONFIG_DB_IB_FIELD_INVESTMENT, 
-			CONFIG_DB_IB_FIELD_END, CONFIG_DB_IB_FIELD_PRICE_INI, CONFIG_DB_IB_FIELD_PRICE_MIN, CONFIG_DB_IB_FIELD_PRICE_MAX, 
-			CONFIG_DB_IB_FIELD_VOLUME_INI, CONFIG_DB_IB_FIELD_VOLUME_MIN, CONFIG_DB_IB_FIELD_VOLUME_MAX, CONFIG_DB_IB_FIELD_FLU, 
-			CONFIG_DB_IB_FIELD_FLU2, CONFIG_DB_IB_FIELD_FLU2_MIN, CONFIG_DB_IB_FIELD_FLU2_MAX, CONFIG_DB_IB_FIELD_FLU_PRICE, 
-			CONFIG_DB_IB_FIELD_APP, CONFIG_DB_IB_FIELD_CONN_ID, CONFIG_DB_IB_FIELD_CONN_TYPE, CONFIG_DB_IB_FIELD_COUNT, 
-			CONFIG_DB_IB_FIELD_ERROR,
+			CONFIG_DB_IB_FIELD_TYPE_PLACE, CONFIG_DB_IB_FIELD_TYPE_MAIN, CONFIG_DB_IB_FIELD_TYPE_SEC, CONFIG_DB_IB_FIELD_TIME_ELAPSED,
+			CONFIG_DB_IB_FIELD_ELAPSED_INI, CONFIG_DB_IB_FIELD_UNREALISED, CONFIG_DB_IB_FIELD_IS_ACTIVE, CONFIG_DB_IB_FIELD_POSITION, 
+			CONFIG_DB_IB_FIELD_INVESTMENT, CONFIG_DB_IB_FIELD_END, CONFIG_DB_IB_FIELD_REALISED, CONFIG_DB_IB_FIELD_PRICE_INI, 
+			CONFIG_DB_IB_FIELD_PRICE_MIN, CONFIG_DB_IB_FIELD_PRICE_MAX, CONFIG_DB_IB_FIELD_VOLUME_INI, CONFIG_DB_IB_FIELD_VOLUME_MIN, 
+			CONFIG_DB_IB_FIELD_VOLUME_MAX, CONFIG_DB_IB_FIELD_FLU, CONFIG_DB_IB_FIELD_FLU2, CONFIG_DB_IB_FIELD_FLU2_MIN, 
+			CONFIG_DB_IB_FIELD_FLU2_MAX, CONFIG_DB_IB_FIELD_FLU_PRICE, CONFIG_DB_IB_FIELD_APP, CONFIG_DB_IB_FIELD_CONN_ID, 
+			CONFIG_DB_IB_FIELD_CONN_TYPE, CONFIG_DB_IB_FIELD_COUNT, CONFIG_DB_IB_FIELD_ERROR,
 			
 			ORDERS,
 			ORDERS_CANCEL, ORDERS_PLACE, ORDERS_PLACE_MARKET, ORDERS_PLACE_STOP, ORDERS_PLACE_LIMIT, ORDERS_PLACE_STOP_LIMIT, ORDERS_UPDATE,
@@ -243,16 +253,22 @@ public abstract class types
 			APPS_STATUS,
 			APPS_STATUS_STOPPED, APPS_STATUS_RUNNING, APPS_STATUS_ERROR,
 			
+			REMOTE,
+			REMOTE_STATUS,
+			REMOTE_STATUS_ACTIVE, REMOTE_STATUS_INACTIVE, REMOTE_STATUS_ERROR,
+			REMOTE_STATUS2,
+			REMOTE_STATUS2_PENDING, REMOTE_STATUS2_EXECUTED, REMOTE_STATUS2_ERROR,
+			
 			SYNC,
 			SYNC_GET,
 			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_ORDERS, SYNC_GET_POSITIONS, SYNC_GET_UNREALISED, SYNC_GET_ERROR,
 			SYNC_OUT,
-			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_STRINGS, SYNC_OUT_ORDERS, SYNC_OUT_POSITIONS, SYNC_OUT_UNREALISED,
+			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_STRINGS, SYNC_OUT_ORDERS, 
 			SYNC_ORDERS,
 			
 			ASYNC,
-			ASYNC_MARKET,
-			ASYNC_MARKET_SNAPSHOT, ASYNC_MARKET_STREAM,
+			ASYNC_DATA,
+			ASYNC_DATA_SNAPSHOT, ASYNC_DATA_STREAM,
 						
 			ERROR_IB,
 			ERROR_IB_GENERIC,

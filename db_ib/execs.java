@@ -26,6 +26,8 @@ public abstract class execs
 
 	public static boolean update(String exec_id_, HashMap<String, Object> vals_) { return common.insert_update(SOURCE, vals_, get_where(exec_id_)); }
 	
+	public static double get_fees(int order_id_) { return common.get_decimal(SOURCE, FEES, get_where_order_id(order_id_)); }
+
 	public static double get_start_price(int order_id_buy_) { return common.get_decimal(SOURCE, PRICE, db_where.join(get_where_order_id(order_id_buy_), get_where_side(SIDE_BOUGHT), db_where.LINK_AND)); }
 	
 	public static double get_end_price(int order_id_sell_) { return common.get_decimal(SOURCE, PRICE, db_where.join(get_where_order_id(order_id_sell_), get_where_side(SIDE_SOLD), db_where.LINK_AND)); }

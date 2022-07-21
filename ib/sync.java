@@ -35,8 +35,6 @@ public abstract class sync extends parent_static
 	public static final String OUT_INTS = types.SYNC_OUT_INTS;
 	public static final String OUT_STRINGS = types.SYNC_OUT_STRINGS;
 	public static final String OUT_ORDERS = types.SYNC_OUT_ORDERS;
-	public static final String OUT_POSITIONS = types.SYNC_OUT_POSITIONS;
-	public static final String OUT_UNREALISED = types.SYNC_OUT_UNREALISED;
 	
 	public static final String KEY_FUNDS = common_wrapper.KEY_FUNDS;
 	
@@ -44,7 +42,6 @@ public abstract class sync extends parent_static
 	public static final int WRONG_ORDER_ID = common.WRONG_ORDER_ID;
 	
 	public static final long TIMEOUT_ORDERS = 3l;
-	public static final long TIMEOUT_POSITIONS = 3l;
 	public static final long TIMEOUT_ERROR = 3l;
 	public static final long DEFAULT_TIMEOUT = 10l;
 
@@ -57,7 +54,6 @@ public abstract class sync extends parent_static
 	private static volatile ArrayList<Integer> _out_ints = new ArrayList<Integer>();
 	private static volatile ArrayList<String> _out_strings = new ArrayList<String>();
 	private static volatile ArrayList<Double> _out_decimals = new ArrayList<Double>();
-	private static volatile ArrayList<Double> _out_decimals2 = new ArrayList<Double>();
 
 	private static int _req_id = WRONG_REQ_ID;
 	private static int _order_id = WRONG_ORDER_ID;
@@ -77,12 +73,6 @@ public abstract class sync extends parent_static
 		
 		return orders; 
 	}
-	
-	@SuppressWarnings("unchecked")
-	public static HashMap<Double, String> get_positions() { return (HashMap<Double, String>)get(GET_POSITIONS); }
-	
-	@SuppressWarnings("unchecked")
-	public static HashMap<Double, Double> get_unrealised() { return (HashMap<Double, Double>)get(GET_UNREALISED); }
 		
 	public static boolean order_is_submitted(int id_) { return order_is_common(id_, sync_orders.STATUS_SUBMITTED); }
 	
@@ -119,8 +109,6 @@ public abstract class sync extends parent_static
 		all.put(GET_ID, OUT_INT);
 		all.put(GET_FUNDS, OUT_DECIMAL);
 		all.put(GET_ORDERS, OUT_ORDERS);
-		all.put(GET_POSITIONS, OUT_POSITIONS);
-		all.put(GET_UNREALISED, OUT_UNREALISED);
 		
 		return all;
 	}
@@ -210,13 +198,6 @@ public abstract class sync extends parent_static
 
 		return true;
 	}
-
-	static void position(String account_, String symbol_, double pos_) 
-	{	
-		if (!basic.account_ib_is_ok(account_)) return;
-		
-		update_position(symbol_, pos_);
-	}
 	
 	static void position_end() { end(); }
 	
@@ -225,33 +206,6 @@ public abstract class sync extends parent_static
 		if (!basic.account_ib_is_ok(account_ib_)) return;
 			
 		end(); 
-	}
-	
-	static void update_portfolio(double pos_, double unrealised_, String account_ib_) 
-	{	
-		if (!basic.account_ib_is_ok(account_ib_)) return;
-		
-		update_unrealised(pos_, unrealised_);
-	}
-
-	private static boolean update_position(String symbol_, double pos_) 
-	{	
-		if (!is_ok(GET_POSITIONS)) return false;
-		
-		_out_strings.add(symbol_); 
-		_out_decimals.add(pos_);
-		
-		return true;
-	}
-
-	private static boolean update_unrealised(double pos_, double unrealised_) 
-	{	
-		if (!is_ok(GET_UNREALISED)) return false;
-		
-		_out_decimals.add(pos_); 
-		_out_decimals2.add(unrealised_);
-		
-		return true;
 	}
 
 	private static boolean order_is_common(int id_, String target_)
@@ -361,50 +315,6 @@ public abstract class sync extends parent_static
 				output = orders;
 			}
 		}
-		else if (_out.equals(OUT_POSITIONS)) 
-		{
-			if (is_ini_) 
-			{
-				_out_decimals = new ArrayList<Double>();
-				_out_strings = new ArrayList<String>();
-			}
-			else 
-			{
-				HashMap<Double, String> positions = new HashMap<Double, String>();
-
-				for (int i = 0; i < _out_decimals.size(); i++)
-				{
-					double pos = _out_decimals.get(i);
-					String symbol = _out_strings.get(i);
-					
-					positions.put(pos, symbol);
-				}
-
-				output = positions;
-			}
-		}
-		else if (_out.equals(OUT_UNREALISED)) 
-		{
-			if (is_ini_) 
-			{
-				_out_decimals = new ArrayList<Double>();
-				_out_decimals2 = new ArrayList<Double>();
-			}
-			else 
-			{
-				HashMap<Double, Double> all_unrealised = new HashMap<Double, Double>();
-
-				for (int i = 0; i < _out_decimals.size(); i++)
-				{
-					double pos = _out_decimals.get(i);
-					double unrealised = _out_decimals2.get(i);
-					
-					all_unrealised.put(pos, unrealised);
-				}
-
-				output = all_unrealised;
-			}
-		}
 		
 		return output;
 	}
@@ -437,14 +347,6 @@ public abstract class sync extends parent_static
 
 			//Methods called in external_ib.wrapper: openOrder, openOrderEnd, orderStatus.
 			calls.reqAllOpenOrders(); 
-		}
-		else if (_get.equals(GET_POSITIONS))
-		{	
-			timeout = TIMEOUT_POSITIONS;
-			cannot_fail = false;
-
-			//Methods called in external_ib.wrapper: position, positionEnd.
-			calls.reqPositions(); 
 		}
 		else if (_get.equals(GET_ID))
 		{	
@@ -505,7 +407,7 @@ public abstract class sync extends parent_static
 		}
 
 		long start = dates.start_elapsed();
-		
+
 		while (true)
 		{
 			if (_error_triggered) 
@@ -529,10 +431,6 @@ public abstract class sync extends parent_static
 					else if (_get.equals(GET_POSITIONS))
 					{
 						if (_out_decimals.size() != _out_strings.size()) exit = false;
-					}
-					else if (_get.equals(GET_UNREALISED))
-					{
-						if (_out_decimals.size() != _out_decimals2.size()) exit = false;
 					}
 					
 					if (exit) break;

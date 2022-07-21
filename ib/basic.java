@@ -69,6 +69,8 @@ public abstract class basic extends parent_static
 	public static String get_from_file(String id_) { return credentials.get_string_from_file(get_encryption_id(id_), get_user(), true); }
 
 	public static String get_encrypted_file_path(String id_) { return credentials.get_path(get_encryption_id(id_), get_user(), true); }
+
+	public static double get_money() { return sync_basic.get_funds(); }
 	
 	private static String encrypt_internal(String id_, String user_, String plain_) { return credentials.encrypt_string(id_, user_, plain_); }
 }

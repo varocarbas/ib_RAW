@@ -71,11 +71,7 @@ public abstract class common_wrapper
 
 	public static void __commission_report(CommissionReport report_) { async_execs.__commission_report(report_); }
 
-	public static void position(String account_, String symbol_, double pos_) { sync.position(account_, symbol_, pos_); }
+	public static void position(String account_ib_, String symbol_, double pos_) { async_trades.position(account_ib_, symbol_, pos_); }
 
-	public static void position_end() { sync.position_end(); }
-
-	public static void update_portfolio(double pos_, double unrealised_, String account_ib_) { sync.update_portfolio(pos_, unrealised_, account_ib_); }
-
-	public static void account_download_end(String account_ib_) { sync.account_download_end(account_ib_); }
+	public static void update_portfolio(String account_ib_, double pos_, double unrealised_) { async_trades.update_portfolio(account_ib_, pos_, unrealised_); }
 }

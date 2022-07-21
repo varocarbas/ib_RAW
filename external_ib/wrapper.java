@@ -102,13 +102,7 @@ public class wrapper implements EWrapper
 	public void position(String account_, Contract contract_, double pos_, double avg_cost_) { common_wrapper.position(account_, contract_.symbol(), pos_); }
 
 	@Override
-	public void positionEnd() { common_wrapper.position_end(); }
-
-	@Override
-	public void updatePortfolio(Contract contract_, double position_, double market_price_, double market_value_, double average_cost_, double unrealized_pnl_, double realized_pnl_, String account_name_) { common_wrapper.update_portfolio(position_, unrealized_pnl_, account_name_); }
-
-	@Override
-	public void accountDownloadEnd(String account_name_) { common_wrapper.account_download_end(account_name_); }
+	public void updatePortfolio(Contract contract_, double position_, double market_price_, double market_value_, double average_cost_, double unrealized_pnl_, double realized_pnl_, String account_name_) { common_wrapper.update_portfolio(account_name_, position_, unrealized_pnl_); }
 	
 	@Override
 	public void connectAck() 
@@ -132,10 +126,13 @@ public class wrapper implements EWrapper
 
 	//-----------------------------------------------------
 	//-----------------------------------------------------
-
+	
 	@Override
 	public void updateAccountValue(String key, String value, String currency, String accountName) { }
 
+	@Override
+	public void accountDownloadEnd(String account_name_) { }
+	
 	@Override
 	public void tickOptionComputation(int tickerId, int field, double impliedVol, double delta, double optPrice, double pvDividend, double gamma, double vega, double theta, double undPrice) { }
 
@@ -208,6 +205,9 @@ public class wrapper implements EWrapper
 	@Override
 	public void marketDataType(int reqId, int marketDataType) { }
 
+	@Override
+	public void positionEnd() { }
+	
 	@Override
 	public void verifyMessageAPI(String apiData) { }
 

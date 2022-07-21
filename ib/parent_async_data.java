@@ -22,10 +22,6 @@ public abstract class parent_async_data extends parent_static
 	public static final String CONFIG_SNAPSHOT_QUICK = types.CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK;
 	public static final String CONFIG_SNAPSHOT_NONSTOP = types.CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP;
 
-	public static final String _ID_MARKET = async_data_market._ID;
-	public static final String _ID_TRADES = async_data_trades._ID;
-	public static final String _ID_WATCHLIST = async_data_watchlist._ID;
-	
 	public static final int PRICE_IB = external_ib.data.TICK_LAST;
 	public static final int OPEN_IB = external_ib.data.TICK_OPEN;
 	public static final int CLOSE_IB = external_ib.data.TICK_CLOSE;
@@ -44,8 +40,8 @@ public abstract class parent_async_data extends parent_static
 	public static final String HALTED = db_ib.common.FIELD_HALTED;
 	public static final String HALTED_TOT = db_ib.common.FIELD_HALTED_TOT;
 	
-	public static final String TYPE_SNAPSHOT = types.ASYNC_MARKET_SNAPSHOT;
-	public static final String TYPE_STREAM = types.ASYNC_MARKET_STREAM;
+	public static final String TYPE_SNAPSHOT = types.ASYNC_DATA_SNAPSHOT;
+	public static final String TYPE_STREAM = types.ASYNC_DATA_STREAM;
 	
 	public static final double MULTIPLIER_VOLUME = 1.0 / 1000.0;
 	
@@ -170,10 +166,10 @@ public abstract class parent_async_data extends parent_static
 		String field = get_field(get_all_sizes(), field_ib_);
 		if (field != null) 
 		{
-			double volume = adapt_val(size_, field_ib_);
+			double size = adapt_val(size_, field_ib_);
 			
-			update(id_, field, volume);
-			tick_size_specific(id_, field_ib_, volume);
+			update(id_, field, size);
+			tick_size_specific(id_, field_ib_, size);
 		}
 	
 		if (is_snapshot && field_ib_ == VOLUME_IB && snapshot_is_quick()) _stop_snapshot_internal(id_, false);
@@ -433,15 +429,18 @@ public abstract class parent_async_data extends parent_static
 		
 		return true;
 	}
-	
+
+	protected boolean symbol_exists(String symbol_) { return _symbols.containsValue(symbol_); } 
+
 	private void tick_price_specific(int id_, int field_ib_, double price_)
 	{
-		if (_id.equals(_ID_WATCHLIST)) async_data_watchlist._instance.tick_price_watchlist(id_, field_ib_, price_);	
+		if (_id.equals(async_data_watchlist._ID)) async_data_watchlist.tick_price_specific(id_, field_ib_, price_);	
+		else if (_id.equals(async_data_trades._ID)) async_data_trades.tick_price_specific(id_, field_ib_, price_);	
 	}
 	
 	private void tick_size_specific(int id_, int field_ib_, double volume_)
 	{
-		if (_id.equals(_ID_WATCHLIST)) async_data_watchlist._instance.tick_size_watchlist(id_, field_ib_, volume_);	
+		if (_id.equals(async_data_watchlist._ID)) async_data_watchlist.tick_size_specific(id_, field_ib_, volume_);	
 	}
 
 	private double adapt_val(double val_, int field_ib_)

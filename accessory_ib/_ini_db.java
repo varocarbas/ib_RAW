@@ -131,8 +131,8 @@ public class _ini_db extends parent_ini_db
 		info.put(remote.ORDER_ID_SEC, get_order_id(false));
 		info.put(remote.SYMBOL, get_symbol(false));
 		info.put(remote.TIME, get_time());
-		info.put(remote.STATUS, get_status_type());
-		info.put(remote.STATUS2, get_status_type());
+		info.put(remote.STATUS, get_status_type(remote.get_key_from_status(ib.remote.DEFAULT_STATUS)));
+		info.put(remote.STATUS2, get_status_type(remote.get_key_from_status2(ib.remote.DEFAULT_STATUS2)));
 		info.put(remote.START, get_price());
 		info.put(remote.START2, get_price());
 		info.put(remote.STOP, get_price());
@@ -190,6 +190,7 @@ public class _ini_db extends parent_ini_db
 		info.put(trades.POSITION, get_position());
 		info.put(trades.INVESTMENT, get_money());
 		info.put(trades.END, get_price());
+		info.put(trades.ELAPSED_INI, get_elapsed_ini());
 		
 		return add_source_common(db_, source, table, info, sources_);		
 	}
@@ -218,6 +219,7 @@ public class _ini_db extends parent_ini_db
 		info.put(watchlist.FLU2_MIN, get_decimal_tiny());
 		info.put(watchlist.FLU2_MAX, get_decimal_tiny());
 		info.put(watchlist.FLU_PRICE, get_price());
+		info.put(trades.ELAPSED_INI, get_elapsed_ini());
 		
 		return add_source_common(db_, source, table, info, sources_);		
 	}
@@ -275,21 +277,23 @@ public class _ini_db extends parent_ini_db
 	private static db_field get_time() { return get_time(true); }
 	
 	private static db_field get_time_elapsed() { return get_time(false); }
+
+	private static db_field get_elapsed_ini() { return new db_field(data.LONG); }
 	
-	private static db_field get_time(boolean is_short_) 
+	private static db_field get_time(boolean is_elapsed_) 
 	{
 		int size = 0;
 		String def_val = null;
 		
-		if (is_short_)
+		if (is_elapsed_)
 		{
-			size = dates.get_length(dates.FORMAT_TIME_SHORT);
-			def_val = "00:00";
+			size = dates.get_length(db_ib.common.FORMAT_TIME_ELAPSED);
+			def_val = "00:00:00";	
 		}
 		else
 		{
-			size = dates.get_length(dates.FORMAT_TIME_FULL);
-			def_val = "00:00:00";			
+			size = dates.get_length(db_ib.common.FORMAT_TIME_MAIN);
+			def_val = "00:00";
 		}
 		
 		return new db_field(data.STRING, size, db_field.WRONG_DECIMALS, def_val, null); 

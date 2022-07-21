@@ -2,7 +2,6 @@ package db_ib;
 
 import java.util.HashMap;
 
-import accessory.arrays;
 import accessory.strings;
 import ib.ini_basic;
 
@@ -53,27 +52,7 @@ public abstract class basic
 
 	public static boolean update_currency(String val_) { return update(CURRENCY, val_); }
 	
-	public static boolean update(HashMap<String, Object> vals_) { return common.insert_update(SOURCE, adapt_vals(vals_), get_where_user()); }
-	
-	private static HashMap<String, Object> adapt_vals(HashMap<String, Object> vals_)
-	{
-		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
-		
-		String target = MONEY;
-		String[] fields = new String[] { MONEY, MONEY_INI, MONEY_FREE };
-		
-		for (String field: fields) 
-		{ 
-			if (!vals.containsKey(field)) continue;
-			
-			double val = (double)vals.get(field);
-			val = common.adapt_number(val, target);
-			
-			vals.put(field, val);
-		}
-		
-		return vals;
-	}
+	public static boolean update(HashMap<String, Object> vals_) { return common.insert_update(SOURCE, vals_, get_where_user()); }
 
 	private static double adapt_money(double val_) { return common.adapt_number(val_, common.FIELD_MONEY); }
 	

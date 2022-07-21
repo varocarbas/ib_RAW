@@ -44,7 +44,14 @@ class async_data_trades extends parent_async_data
 	public static void __tick_size(int id_, int field_ib_, int size_) { _instance.__tick_size_internal(id_, field_ib_, size_); }
 	
 	public static void __tick_generic(int id_, int tick_, double value_) { _instance.__tick_generic_internal(id_, tick_, value_); }
+	
+	static void tick_price_specific(int id_, int field_ib_, double price_)
+	{
+		if (field_ib_ != PRICE_IB || !common.price_is_ok(price_)) return;
 
+		trades.update_unrealised(_instance._get_symbol(id_, false));
+	}
+	
 	protected HashMap<Integer, String> get_all_prices() { return _alls.TRADES_PRICES; }
 	
 	protected HashMap<Integer, String> get_all_sizes() { return null; }
@@ -52,6 +59,4 @@ class async_data_trades extends parent_async_data
 	protected HashMap<Integer, String> get_all_generics() { return _alls.TRADES_GENERICS; }
 	
 	protected String[] get_fields() { return trades.get_fields(); }
-
-	private boolean symbol_exists(String symbol_) { return _instance._symbols.containsValue(symbol_); } 
 }

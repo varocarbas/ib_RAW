@@ -49,9 +49,8 @@ public abstract class common
 	public static boolean money_is_ok(double val_) 
 	{ 
 		double max = get_max_money();
-		double min = -1.0 * max;
-		
-		return (val_ >= min && val_ <= max); 
+
+		return numbers.is_ok(val_, -1.0 * max, max); 
 	}
 	
 	static boolean id_is_ok(int id_, int min_, int max_) { return numbers.is_ok(id_, min_, max_); }

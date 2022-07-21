@@ -89,21 +89,25 @@ public abstract class conn extends parent_static
 
 			return false;
 		}
-
-		apps.update_conn_type(type_);
 		
 		_id = id_;
-		_port = get_port(type_);
+		
+		update_port(type_);
 		
 		_wrapper = new wrapper();
 		_client = _wrapper.get_client();
 
 		return connect();
 	}
-
+	
 	public static void end() { disconnect(); }
 
-	public static void disconnect() { calls.eDisconnect(); }
+	public static void disconnect() 
+	{ 
+		end_subscriptions();
+		
+		calls.eDisconnect(); 
+	}
 
 	public static boolean connection_is_ok()
 	{
@@ -138,6 +142,17 @@ public abstract class conn extends parent_static
 		
 		return (strings.are_equal(conn_type, TYPE_TWS_REAL) || strings.are_equal(conn_type, TYPE_GATEWAY_REAL));
 	}
+
+	private static void update_port() { update_port(strings.DEFAULT); }
+	
+	private static void update_port(String type_)
+	{
+		String type = (strings.is_ok(type_) ? type_ : get_conn_type());
+	
+		apps.update_conn_type(type);
+		
+		_port = get_port(type_);
+	}
 	
 	private static boolean connect()
 	{	
@@ -169,11 +184,29 @@ public abstract class conn extends parent_static
 		{
 			misc.pause_loop();
 
+			update_port();
+			
 			count++;
-			if (count >= max) break;
-		}	
+			if (count >= max) return;
+		}
+		
+		start_subscriptions();
 	}
 
+	private static void start_subscriptions()
+	{
+		calls.reqPositions();
+		
+		if (strings.is_ok(basic.get_account_ib())) calls.reqAccountUpdates(true, basic.get_account_ib());
+	}
+
+	private static void end_subscriptions()
+	{
+		calls.cancelPositions();;
+		
+		if (strings.is_ok(basic.get_account_ib())) calls.reqAccountUpdates(false, basic.get_account_ib());
+	}
+	
 	private static void connect_reader()
 	{
 		final EReaderSignal signal = _wrapper.get_signal();

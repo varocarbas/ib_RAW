@@ -6,6 +6,22 @@ import db_ib.trades;
 
 abstract class async_trades extends parent_static
 {		
+	public static void position(String account_ib_, String symbol_, double pos_)
+	{
+		if (!basic.account_ib_is_ok(account_ib_) || !ib.common.position_is_ok(pos_)) return; 
+		
+		int order_id_main = db_ib.trades.get_order_id_no_position(common.normalise_symbol(symbol_));
+		
+		if (order_id_main > ib.common.WRONG_ORDER_ID) db_ib.trades.update_position(order_id_main, pos_);
+	}
+	
+	public static void update_portfolio(String account_ib_, double pos_, double unrealised_)
+	{
+		if (!basic.account_ib_is_ok(account_ib_) || !common.position_is_ok(pos_)) return; 
+
+		trades.update_unrealised(pos_, unrealised_);
+	}
+	
 	public static void start(int order_id_, String status_ib_) 
 	{
 		if (!start_is_ok(order_id_, status_ib_)) return;

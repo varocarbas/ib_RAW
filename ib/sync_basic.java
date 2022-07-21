@@ -64,7 +64,8 @@ abstract class sync_basic
 
 	private static double get_funds(boolean is_start_) 
 	{ 
-		double money = sync.get_funds();
+		double money = db_ib.common.adapt_money(sync.get_funds());
+		if (!ib.common.money_is_ok(money)) return ib.common.WRONG_MONEY;
 		
 		basic.update_money(money);
 		
