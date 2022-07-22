@@ -63,6 +63,7 @@ public abstract class common
 	public static final String FIELD_STATUS2 = types.CONFIG_DB_IB_FIELD_STATUS2;
 	public static final String FIELD_IS_MARKET = types.CONFIG_DB_IB_FIELD_IS_MARKET;
 	public static final String FIELD_INVEST_PERC = types.CONFIG_DB_IB_FIELD_INVEST_PERC;
+	public static final String FIELD_REQUEST = types.CONFIG_DB_IB_FIELD_REQUEST;
 	
 	public static final String FIELD_TYPE_PLACE = types.CONFIG_DB_IB_FIELD_TYPE_PLACE;
 	public static final String FIELD_TYPE_MAIN = types.CONFIG_DB_IB_FIELD_TYPE_MAIN;
@@ -95,7 +96,8 @@ public abstract class common
 	public static final String FIELD_CONN_TYPE = types.CONFIG_DB_IB_FIELD_CONN_TYPE;
 	public static final String FIELD_COUNT = types.CONFIG_DB_IB_FIELD_COUNT;
 	public static final String FIELD_ERROR = types.CONFIG_DB_IB_FIELD_ERROR;
-
+	public static final String FIELD_ADDITIONAL = types.CONFIG_DB_IB_FIELD_ADDITIONAL;
+	
 	public static final String SEPARATOR = accessory.types.SEPARATOR;
 	
 	public static final int MAX_SIZE_USER = 15;
@@ -105,6 +107,7 @@ public abstract class common
 	public static final int MAX_SIZE_POSITION = 3;
 	public static final int MAX_SIZE_ERROR = 30;
 	public static final int MAX_SIZE_APP_NAME = 30;
+	public static final int MAX_SIZE_ADDITIONAL = 50;
 	
 	public static final String FORMAT_TIME_MAIN = dates.FORMAT_TIME_SHORT;
 	public static final String FORMAT_TIME_ELAPSED = dates.FORMAT_TIME_FULL;
@@ -126,11 +129,17 @@ public abstract class common
 
 	public static String get_string(String source_, String field_, String where_) { return accessory.db.select_one_string(source_, field_, where_, db.DEFAULT_ORDER); }
 
+	public static int get_int(String source_, String field_, String where_) { return get_int(source_, field_, where_, false); }
+
 	public static int get_int(String source_, String col_field_, String where_, boolean is_quick_) { return (is_quick_ ? accessory.db.select_one_int_quick(source_, col_field_, where_, db.DEFAULT_ORDER) : accessory.db.select_one_int(source_, col_field_, where_, db.DEFAULT_ORDER)); }
 
-	public static double get_decimal(String source_, String field_, String where_) { return accessory.db.select_one_decimal(source_, field_, where_, db.DEFAULT_ORDER); }
+	public static double get_decimal(String source_, String field_, String where_) { return get_decimal(source_, field_, where_, false); }
 
-	public static long get_long(String source_, String field_, String where_) { return accessory.db.select_one_long(source_, field_, where_, db.DEFAULT_ORDER); }
+	public static double get_decimal(String source_, String col_field_, String where_, boolean is_quick_) { return (is_quick_ ? accessory.db.select_one_decimal_quick(source_, col_field_, where_, db.DEFAULT_ORDER) : accessory.db.select_one_decimal(source_, col_field_, where_, db.DEFAULT_ORDER)); }
+
+	public static long get_long(String source_, String field_, String where_) { return get_long(source_, field_, where_, false); }
+
+	public static long get_long(String source_, String col_field_, String where_, boolean is_quick_) { return (is_quick_ ? accessory.db.select_one_long_quick(source_, col_field_, where_, db.DEFAULT_ORDER) : accessory.db.select_one_long(source_, col_field_, where_, db.DEFAULT_ORDER)); }
 
 	public static ArrayList<Double> get_all_decimals(String source_, String field_, String where_) { return accessory.db.select_some_decimals(source_, field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
 
@@ -146,6 +155,13 @@ public abstract class common
 
 	public static HashMap<String, String> get_vals_quick(String source_, String[] cols_, String where_) { return accessory.db.select_one_quick(source_, cols_, where_, db.DEFAULT_ORDER); }
 
+	public static String get_type(String source_, String field_, String root_, String where_) 
+	{
+		String key = get_string(source_, field_, where_);
+		
+		return (strings.is_ok(key) ? common.get_type_from_key(key, root_) : strings.DEFAULT);
+	}
+	
 	public static boolean insert(String source_, HashMap<String, Object> vals_) 
 	{ 
 		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
@@ -201,6 +217,17 @@ public abstract class common
 		
 		return accessory.db.is_ok(source_);
 	}
+
+	public static boolean update_type(String source_, String field_, String type_, String root_, String where_) 
+	{ 
+		String type = get_key_from_type(type_, root_);
+		if (!strings.is_ok(type)) return false;
+
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		vals.put(field_, type);
+
+		return common.update(source_, vals, where_);
+	}
 	
 	public static boolean insert_update(String source_, String field_, Object val_, String where_)
 	{
@@ -241,7 +268,9 @@ public abstract class common
 	
 	public static String get_where(String source_, String field_, String val_, boolean is_quick_) { return get_where_internal(source_, field_, val_, is_quick_, true); }
 
-	public static String get_where_order_id(String source_, int id_) { return get_where_order_id(source_, new Integer[] { id_ }, true); }
+	public static String get_where_order_id(String source_, int order_id_main_) { return get_where_order_id(source_, order_id_main_, true); }
+	
+	public static String get_where_order_id(String source_, int order_id_, boolean is_main_) { return common.get_where(source_, (is_main_ ? FIELD_ORDER_ID_MAIN : FIELD_ORDER_ID_SEC), Integer.toString(order_id_), false); }
 
 	public static String get_where_order_id(String source_, Integer[] ids_, boolean equal_) 
 	{ 
@@ -292,7 +321,8 @@ public abstract class common
 		all.put(FIELD_USER, MAX_SIZE_USER);
 		all.put(FIELD_ERROR, MAX_SIZE_ERROR);
 		all.put(FIELD_APP, MAX_SIZE_APP_NAME);
-		
+		all.put(FIELD_ADDITIONAL, MAX_SIZE_ADDITIONAL);
+
 		return all;
 	}
 	
@@ -356,7 +386,7 @@ public abstract class common
 	}
 	
 	public static String adapt_user(String val_) { return common.adapt_string(val_, FIELD_USER); }
-	
+		
 	private static double adapt_number(double val_, int max_, boolean is_negative_)
 	{
 		double output = val_;

@@ -2,9 +2,9 @@ package ib;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import accessory.arrays;
-import accessory.dates;
 import accessory.numbers;
 import accessory.strings;
 import accessory_ib._alls;
@@ -14,9 +14,6 @@ class async_data_watchlist extends parent_async_data
 	public static String _ID = "watchlist";
 	
 	public static final String SOURCE = watchlist.SOURCE;
-
-	public static final String TIME_ELAPSED = db_ib.watchlist.TIME_ELAPSED;
-	public static final String ELAPSED_INI = db_ib.watchlist.ELAPSED_INI;
 	
 	public static final String PRICE_INI = db_ib.watchlist.PRICE_INI;
 	public static final String PRICE_MIN = db_ib.watchlist.PRICE_MIN;
@@ -44,7 +41,7 @@ class async_data_watchlist extends parent_async_data
 	private volatile HashMap<String, ArrayList<Double>> _flus2 = new HashMap<String, ArrayList<Double>>();
 	private volatile HashMap<String, ArrayList<Double>> _flus2_minus = new HashMap<String, ArrayList<Double>>();
 	private volatile HashMap<String, ArrayList<Double>> _flus2_plus = new HashMap<String, ArrayList<Double>>();
-	private volatile HashMap<String, Boolean> _flus2_remove_plus = new HashMap<String, Boolean>();
+	private volatile HashMap<String, Boolean> _flus2_remove = new HashMap<String, Boolean>();
 	
 	public static async_data_watchlist _instance = instantiate();
 	
@@ -58,7 +55,7 @@ class async_data_watchlist extends parent_async_data
 		instance._id = _ID;
 		instance._includes_halted = true;
 		instance._includes_halted_tot = true;
-		instance._enabled = true;
+		instance._includes_time_elapsed = true;
 		
 		return instance;
 	}
@@ -96,7 +93,8 @@ class async_data_watchlist extends parent_async_data
 	
 	static void tick_price_specific(int id_, int field_ib_, double price_)
 	{
-		if (field_ib_ != PRICE_IB || !common.price_is_ok(price_)) return;
+		if (field_ib_ != PRICE_IB) return;
+		
 		String symbol = _instance._get_symbol(id_, false);
 		
 		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol, _instance._is_quick);
@@ -110,7 +108,7 @@ class async_data_watchlist extends parent_async_data
 
 	static void tick_size_specific(int id_, int field_ib_, double size_)
 	{
-		if (field_ib_ != VOLUME_IB || !common.size_is_ok(size_)) return;
+		if (field_ib_ != VOLUME_IB) return;
 		
 		String symbol = _instance._get_symbol(id_, false);
 		
@@ -139,8 +137,9 @@ class async_data_watchlist extends parent_async_data
 		if (Math.abs(var) < MIN_FLUS_VAR) return vals;
 
 		vals = tick_price_specific_flus_flu(symbol_, db_, vals, var);
+
 		vals = tick_price_specific_flus_flu2(symbol_, vals, var);
-		
+
 		return vals;
 	}
 
@@ -173,7 +172,7 @@ class async_data_watchlist extends parent_async_data
 	{
 		Object vals = tick_price_specific_flus_flu2_main(symbol_, vals_, var_);
 		
-		vals = tick_price_specific_flus_flu2_min_max(symbol_, vals_, var_);
+		vals = tick_price_specific_flus_flu2_min_max(symbol_, vals, var_);
 
 		return vals;
 	}
@@ -189,11 +188,11 @@ class async_data_watchlist extends parent_async_data
 		
 		if (tot >= MIN_FLU2_MAIN)
 		{
-			if (_flus2_remove_plus.get(symbol_))
+			if (_flus2_remove.get(symbol_))
 			{
 				if (tot_plus > 0) 
 				{
-					_flus2_remove_plus.put(symbol_, false);
+					_flus2_remove.put(symbol_, false);
 					_flus2_plus.get(symbol_).remove(0);
 					
 					tot_plus--;
@@ -209,7 +208,7 @@ class async_data_watchlist extends parent_async_data
 			{
 				if (tot_minus > 0) 
 				{
-					_flus2_remove_plus.put(symbol_, true);
+					_flus2_remove.put(symbol_, true);
 					_flus2_minus.get(symbol_).remove(0);
 					
 					tot_minus--;
@@ -245,10 +244,12 @@ class async_data_watchlist extends parent_async_data
 		for (double val: _flus2_minus.get(symbol_)) { flu2_minus += val; }
 		
 		flu2_minus = (tot_minus == 0 ? 0 : flu2_minus / tot_minus);
-		
+
 		double flu2 = (flu2_minus == 0 ? 0.0 : (flu2_plus / Math.abs(flu2_minus)));
 
-		return db_ib.watchlist.add_to_vals(FLU2, flu2, vals, _is_quick);		
+		vals = db_ib.watchlist.add_to_vals(FLU2, flu2, vals, _is_quick);
+		
+		return vals;
 	}
 
 	private Object tick_price_specific_flus_flu2_min_max(String symbol_, Object vals_, double var_)
@@ -277,24 +278,15 @@ class async_data_watchlist extends parent_async_data
 	}
 	
 	private Object tick_size_specific_basic(String symbol_, double size_, HashMap<String, String> db_) { return tick_specific_basic(symbol_, size_, db_, (_is_quick ? new HashMap<String, String>() : new HashMap<String, Object>()), false); }
-
+	
 	private Object tick_specific_basic(String symbol_, double val_, HashMap<String, String> db_, Object vals_, boolean is_price_)
 	{
-		Object vals = arrays.get_new(vals_);		
+		Object vals = tick_specific_basic_start(symbol_, val_, db_, vals_, is_price_);
 
-		String field = (is_price_ ? PRICE_INI : VOLUME_INI);		
-
-		boolean is_ok = tick_specific_val_is_ok(val_, is_price_);
-
+		String field = (is_price_ ? PRICE_MIN : VOLUME_MIN);
 		double val_db = db_ib.watchlist.get_vals_number(field, db_, _is_quick);
-		boolean is_ok_db = tick_specific_val_is_ok(val_db, is_price_);
-
-		if (!is_ok_db && is_ok) vals = db_ib.watchlist.add_to_vals(field, val_, vals, _is_quick);
-
-		field = (is_price_ ? PRICE_MIN : VOLUME_MIN);
-		val_db = db_ib.watchlist.get_vals_number(field, db_, _is_quick);
 		
-		is_ok_db = tick_specific_val_is_ok(val_db, is_price_);
+		boolean is_ok_db = tick_specific_val_is_ok(val_db, is_price_);
 		if (!is_ok_db || val_ < val_db) vals = db_ib.watchlist.add_to_vals(field, val_, vals, _is_quick);
 		
 		field = (is_price_ ? PRICE_MAX : VOLUME_MAX);
@@ -302,13 +294,29 @@ class async_data_watchlist extends parent_async_data
 		
 		is_ok_db = tick_specific_val_is_ok(val_db, is_price_);
 		if (!is_ok_db || val_ > val_db) vals = db_ib.watchlist.add_to_vals(field, val_, vals, _is_quick);
-	
-		long ini = db_ib.watchlist.get_elapsed_ini(symbol_);
 		
-		if (ini <= 0) ini = dates.start_elapsed();
+		return vals;
+	}
+
+	private Object tick_specific_basic_start(String symbol_, double val_, HashMap<String, String> db_, Object vals_, boolean is_price_)
+	{
+		Object vals = arrays.get_new(vals_);		
+				
+		HashMap<String, String> items = new HashMap<String, String>();
 		
-		vals = db_ib.watchlist.add_to_vals(ELAPSED_INI, ini, vals, _is_quick);
+		items.put(PRICE, VOLUME);
+		items.put(PRICE_INI, VOLUME_INI);
+		items.put(FLU_PRICE, strings.DEFAULT);
 		
+		for (Entry<String, String> item: items.entrySet())
+		{
+			String field = (is_price_ ? item.getKey() : item.getValue());
+			if (!strings.is_ok(field)) continue;
+			
+			double val_db = db_ib.watchlist.get_vals_number(field, db_, _is_quick);				
+			if (!tick_specific_val_is_ok(val_db, is_price_)) vals = db_ib.watchlist.add_to_vals(field, val_, vals, _is_quick);
+		}
+
 		return vals;
 	}
 
@@ -320,7 +328,7 @@ class async_data_watchlist extends parent_async_data
 		_flus2.put(symbol_, new ArrayList<Double>());
 		_flus2_minus.put(symbol_, new ArrayList<Double>());
 		_flus2_plus.put(symbol_, new ArrayList<Double>());
-		_flus2_remove_plus.put(symbol_, true);		
+		_flus2_remove.put(symbol_, true);		
 	}
 
 	private void remove_global(String symbol_)
@@ -331,6 +339,6 @@ class async_data_watchlist extends parent_async_data
 		_flus2.remove(symbol_);
 		_flus2_minus.remove(symbol_);
 		_flus2_plus.remove(symbol_);
-		_flus2_remove_plus.remove(symbol_);		
+		_flus2_remove.remove(symbol_);		
 	}
 }

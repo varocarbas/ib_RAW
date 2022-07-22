@@ -17,7 +17,8 @@ public abstract class apps
 	public static final String COUNT = common.FIELD_COUNT;
 	public static final String STATUS = common.FIELD_STATUS;
 	public static final String ERROR = common.FIELD_ERROR;
-
+	public static final String ADDITIONAL = common.FIELD_ADDITIONAL;
+	
 	public static final int MIN_COUNT = 1;
 	
 	public static boolean exists() { return common.exists(SOURCE, APP, get_where_app()); }
@@ -28,9 +29,11 @@ public abstract class apps
 
 	public static String get_conn_type() { return common.get_string(SOURCE, CONN_TYPE, get_where_app()); }
 
-	public static String get_status() { return common.get_string(SOURCE, STATUS, get_where_app()); }
+	public static String get_status() { return common.get_type(SOURCE, STATUS, ib.apps.STATUS, get_where_app()); }
 
 	public static String get_error() { return common.get_string(SOURCE, ERROR, get_where_app()); }
+
+	public static String get_additional() { return common.get_string(SOURCE, ADDITIONAL, get_where_app()); }
 	
 	public static boolean update_app_name() { return update(APP, ini_apps.get_app_name()); }
 
@@ -70,11 +73,22 @@ public abstract class apps
 
 	public static boolean update_error(String val_) 
 	{
+		update_status(ib.apps.STATUS_ERROR);
+		
 		String val = common.adapt_string(val_, ERROR);
 		
 		return (strings.is_ok(val) ? update(ERROR, val) : false); 
 	}
 
+	public static boolean update_additional(String val_) 
+	{
+		String val = common.adapt_string(val_, ADDITIONAL);
+		
+		return (strings.is_ok(val) ? update(ADDITIONAL, val) : false); 
+	}
+
+	public static boolean update_status(String status_) { return common.update_type(SOURCE, STATUS, status_, ib.apps.STATUS, get_where_app()); }
+	
 	public static boolean update_count(int val_) { return ((val_ >= MIN_COUNT) ? update(COUNT, val_) : false); }
 	
 	public static boolean update(HashMap<String, Object> vals_) { return common.insert_update(SOURCE, vals_, get_where_app()); }

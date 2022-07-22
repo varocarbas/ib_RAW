@@ -101,23 +101,16 @@ abstract class sync_orders extends parent_static
 
 	public static boolean place(String type_place_, String symbol_, double quantity_, double stop_, double start_) { return place_update(new order(type_place_, symbol_, quantity_, stop_, start_)); }
 
-	public static order get_order(int id_)
+	public static order get_order(int id_main_)
 	{
 		async_orders.perform_regular_checks();
 
-		return db_ib.orders.get_to_order(id_);
+		return db_ib.orders.get_to_order(id_main_);
 	}
 
 	public static boolean place_update(order order_) { return place_update(order_, null, common.WRONG_VALUE); }
 
-	private static order get_order(String symbol_)
-	{
-		async_orders.perform_regular_checks();
-
-		return db_ib.orders.get_to_order(symbol_);
-	}
-
-	private static boolean place_update(order order_, String update_type_, double update_val_) 
+	static boolean place_update(order order_, String update_type_, double update_val_) 
 	{
 		if (!order.is_ok(order_)) return false;
 
@@ -175,6 +168,13 @@ abstract class sync_orders extends parent_static
 		}
 
 		return true;
+	}
+
+	private static order get_order(String symbol_)
+	{
+		async_orders.perform_regular_checks();
+
+		return db_ib.orders.get_to_order(symbol_);
 	}
 
 	private static void add_order(order order_)

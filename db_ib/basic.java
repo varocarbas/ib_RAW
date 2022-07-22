@@ -22,6 +22,8 @@ public abstract class basic
 
 	public static String get_account_ib() { return common.get_string(SOURCE, ACCOUNT_IB, get_where_user()); }
 
+	public static double get_money_free() { return common.get_decimal(SOURCE, MONEY_FREE, get_where_user()); }
+
 	public static boolean update_user_ini(String val_) { return common.insert_update(SOURCE, USER, val_, get_where_user(val_)); }
 
 	public static boolean update_user(String val_) { return (strings.is_ok(ini_basic.get_user()) ? update_user() : update(USER, val_)); }

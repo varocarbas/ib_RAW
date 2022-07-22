@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import accessory.arrays;
 import accessory.dates;
+import accessory.db;
 import external_ib.data;
 
 public abstract class async_data 
@@ -26,6 +27,8 @@ public abstract class async_data
 	
 	public static int get_halted_tot(String source_, String symbol_, boolean is_quick_) { return common.get_int(source_, (is_quick_ ? get_col(source_, HALTED_TOT) : HALTED_TOT), common.get_where_symbol(source_, symbol_, is_quick_), is_quick_); }
 	
+	public static long get_elapsed_ini(String source_, String symbol_, boolean is_quick_) { return common.get_long(source_, (is_quick_ ? get_col(source_, ELAPSED_INI) : ELAPSED_INI), common.get_where_symbol(source_, symbol_, is_quick_), is_quick_); }
+
 	@SuppressWarnings("unchecked")
 	public static boolean update(String source_, Object vals_, String symbol_, boolean is_quick_) { return (is_quick_ ? update_quick(source_, (HashMap<String, String>)vals_, symbol_) : update(source_, (HashMap<String, Object>)vals_, symbol_)); }
 
@@ -42,16 +45,14 @@ public abstract class async_data
 		if (val < 0) val = 0;
 		val++;
 		
-		if (is_quick_) output = async_data.update_quick(source_, symbol_, get_col(source_, HALTED_TOT), Integer.toString(val));
-		else output = async_data.update(source_, symbol_, HALTED_TOT, val);
+		if (is_quick_) output = update_quick(source_, symbol_, get_col(source_, HALTED_TOT), Integer.toString(val));
+		else output = update(source_, symbol_, HALTED_TOT, val);
 		
 		return output;
 	}
 
-	public static boolean insert(String source_, String symbol_) { return common.insert(source_, get_default_vals(source_, symbol_)); }
+	public static boolean update(String source_, String symbol_, String field_col_, Object val_, boolean is_quick_) { return (is_quick_ ? update_quick(source_, symbol_, field_col_, db.adapt_input(val_)) : update(source_, symbol_, field_col_, val_)); } 
 
-	public static boolean insert_quick(String source_, String symbol_) { return common.insert_quick(source_, get_default_vals_quick(source_, symbol_)); }
-	
 	public static boolean update(String source_, String symbol_, String field_, Object val_) 
 	{ 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
@@ -71,6 +72,10 @@ public abstract class async_data
 	}
 	
 	public static boolean update_quick(String source_, String symbol_, HashMap<String, String> vals_) { return common.update_quick(source_, vals_, common.get_where_symbol_quick(source_, symbol_)); }
+
+	public static boolean insert(String source_, String symbol_) { return common.insert(source_, get_default_vals(source_, symbol_)); }
+
+	public static boolean insert_quick(String source_, String symbol_) { return common.insert_quick(source_, get_default_vals_quick(source_, symbol_)); }
 
 	public static String get_col(String source_, String field_) { return common.get_col(source_, field_); }
 
@@ -107,7 +112,7 @@ public abstract class async_data
 	public static Object add_to_vals(String source_, String field_, Object val_, Object vals_, boolean is_quick_) 
 	{ 
 		Object output = null;
-		
+				
 		if (is_quick_)
 		{
 			HashMap<String, String> vals = (HashMap<String, String>)arrays.get_new_hashmap_xx((HashMap<String, String>)vals_);	

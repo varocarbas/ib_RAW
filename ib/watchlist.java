@@ -24,7 +24,7 @@ public abstract class watchlist extends parent_static
 		__lock();
 		
 		String symbol = common.normalise_symbol(symbol_);
-		if (strings.is_ok(symbol) && !async_watchlist.symbol_exists(symbol)) async_watchlist.add(symbol); 
+		if (strings.is_ok(symbol)) async_watchlist.add(symbol); 
 		
 		__unlock();
 	}
@@ -34,7 +34,7 @@ public abstract class watchlist extends parent_static
 		__lock();
 		
 		String symbol = common.normalise_symbol(symbol_);
-		if (strings.is_ok(symbol) && async_watchlist.symbol_exists(symbol)) async_watchlist.remove(symbol);  
+		if (strings.is_ok(symbol)) async_watchlist.remove(symbol);  
 		
 		__unlock();
 	}

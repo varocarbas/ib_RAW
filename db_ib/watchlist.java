@@ -31,7 +31,7 @@ public abstract class watchlist
 	private static HashMap<String, String> _cols = new HashMap<String, String>();
 	private static String[] _cols2 = null;
 	
-	public static String[] get_fields() { return new String[] { SYMBOL, PRICE, PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME, VOLUME_INI, VOLUME_MIN, VOLUME_MAX, TIME_ELAPSED, HALTED, HALTED_TOT, FLU, FLU2, FLU2_MIN, FLU2_MAX }; }
+	public static String[] get_fields() { return new String[] { SYMBOL, PRICE, PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME, VOLUME_INI, VOLUME_MIN, VOLUME_MAX, TIME_ELAPSED, ELAPSED_INI, HALTED, HALTED_TOT, FLU, FLU_PRICE, FLU2, FLU2_MIN, FLU2_MAX }; }
 
 	public static String[] get_cols() 
 	{ 
@@ -41,8 +41,6 @@ public abstract class watchlist
 	}
 
 	public static boolean exists(String symbol_) { return common.exists(SOURCE, common.get_where_symbol(SOURCE, symbol_)); }
-
-	public static long get_elapsed_ini(String symbol_) { return common.get_long(SOURCE, ELAPSED_INI, common.get_where_symbol(SOURCE, symbol_)); }
 	
 	public static boolean update(Object vals_, String symbol_, boolean is_quick_) { return async_data.update(SOURCE, vals_, symbol_, is_quick_); }
 

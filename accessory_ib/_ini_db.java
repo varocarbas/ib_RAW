@@ -141,6 +141,8 @@ public class _ini_db extends parent_ini_db
 		info.put(remote.TYPE_PLACE, get_status_type());
 		info.put(remote.INVEST_PERC, get_decimal_tiny());
 		info.put(remote.ERROR, get_error());
+		info.put(remote.IS_ACTIVE, get_boolean(true));
+		info.put(remote.REQUEST, get_int(true));
 		
 		return add_source_common(db_, source, table, info, sources_);
 	}
@@ -191,6 +193,7 @@ public class _ini_db extends parent_ini_db
 		info.put(trades.INVESTMENT, get_money());
 		info.put(trades.END, get_price());
 		info.put(trades.ELAPSED_INI, get_elapsed_ini());
+		info.put(trades.REALISED, get_money());
 		
 		return add_source_common(db_, source, table, info, sources_);		
 	}
@@ -219,7 +222,7 @@ public class _ini_db extends parent_ini_db
 		info.put(watchlist.FLU2_MIN, get_decimal_tiny());
 		info.put(watchlist.FLU2_MAX, get_decimal_tiny());
 		info.put(watchlist.FLU_PRICE, get_price());
-		info.put(trades.ELAPSED_INI, get_elapsed_ini());
+		info.put(watchlist.ELAPSED_INI, get_elapsed_ini());
 		
 		return add_source_common(db_, source, table, info, sources_);		
 	}
@@ -238,6 +241,7 @@ public class _ini_db extends parent_ini_db
 		info.put(apps.COUNT, get_int());
 		info.put(apps.STATUS, get_status_type(apps.get_key_from_status(ib.apps.DEFAULT_STATUS)));
 		info.put(apps.ERROR, get_error());
+		info.put(apps.ADDITIONAL, get_string(db_ib.common.MAX_SIZE_ADDITIONAL));
 		
 		return add_source_common(db_, source, table, info, sources_);		
 	}
@@ -274,9 +278,9 @@ public class _ini_db extends parent_ini_db
 	
 	private static db_field get_tiny(boolean is_unique_) { return (is_unique_ ? new db_field(data.TINYINT, db_field.DEFAULT_SIZE, db_field.WRONG_DECIMALS, db_field.WRONG_DEFAULT, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.TINYINT)); }
 	
-	private static db_field get_time() { return get_time(true); }
+	private static db_field get_time() { return get_time(false); }
 	
-	private static db_field get_time_elapsed() { return get_time(false); }
+	private static db_field get_time_elapsed() { return get_time(true); }
 
 	private static db_field get_elapsed_ini() { return new db_field(data.LONG); }
 	
@@ -311,8 +315,10 @@ public class _ini_db extends parent_ini_db
 
 	private static db_field get_error() { return get_string(common.MAX_SIZE_ERROR); }
 
-	private static db_field get_int() { return new db_field(data.INT); }
-
+	private static db_field get_int() { return get_int(false); }
+	
+	private static db_field get_int(boolean is_unique_) { return new db_field(data.INT, db_field.DEFAULT_SIZE, db_field.WRONG_DECIMALS, db_field.DEFAULT_DEFAULT, (is_unique_ ? new String[] { db_field.KEY_UNIQUE } : null)); }
+	
 	private static db_field get_string(int size_) { return get_string(size_, false); }
 	
 	private static db_field get_string(int size_, boolean is_unique_) { return get_string(size_, is_unique_, null); }

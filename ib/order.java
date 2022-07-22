@@ -154,6 +154,13 @@ public class order extends parent
 
 	public boolean update_start(double start_) { return update_val(start_, true); }
 	
+	public boolean update_start2(double start2_) 
+	{ 
+		_start2 = db_ib.common.adapt_price(start2_); 
+		
+		return true;
+	}
+
 	public boolean update_stop(double stop_) { return update_val(stop_, false); }
 	
 	public boolean update_val(double val_, boolean is_main_) 

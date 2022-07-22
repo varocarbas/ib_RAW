@@ -151,12 +151,15 @@ public abstract class conn extends parent_static
 	
 		apps.update_conn_type(type);
 		
-		_port = get_port(type_);
+		_port = get_port(type);
 	}
 	
 	private static boolean connect()
-	{	
+	{
 		_connected = false;
+		
+		int count = 0;
+		int max = 500;
 
 		while (!_connected)
 		{	
@@ -165,7 +168,15 @@ public abstract class conn extends parent_static
 			if (_connected) break;
 			if (!_first_conn) misc.pause_secs(1);
 
-			errors.manage(ERROR_NONE);
+			count++;
+			
+			if (count < max) update_port();
+			else
+			{
+				errors.manage(ERROR_NONE);
+				
+				break;
+			}
 		}
 		
 		return _connected;
@@ -183,8 +194,6 @@ public abstract class conn extends parent_static
 		while (!_started)
 		{
 			misc.pause_loop();
-
-			update_port();
 			
 			count++;
 			if (count >= max) return;
@@ -202,7 +211,7 @@ public abstract class conn extends parent_static
 
 	private static void end_subscriptions()
 	{
-		calls.cancelPositions();;
+		calls.cancelPositions();
 		
 		if (strings.is_ok(basic.get_account_ib())) calls.reqAccountUpdates(false, basic.get_account_ib());
 	}

@@ -46,15 +46,15 @@ public abstract class execs
 	{
 		double price = db_ib.trades.get_price(order_id_main_);
 		
-		return (common.price_is_ok(price) ? get_investment(price, db_ib.orders.get_quantity(order_id_main_), fees_) : common.WRONG_MONEY);		
+		return (price > ib.common.WRONG_PRICE ? get_investment(price, db_ib.orders.get_quantity(order_id_main_), fees_) : common.WRONG_MONEY);		
 	}
 
-	public static double get_investment(double price_, int order_id_main_) { return (common.price_is_ok(price_) ? get_investment(price_, db_ib.orders.get_quantity(order_id_main_), db_ib.execs.get_fees(order_id_main_)) : common.WRONG_MONEY); }
+	public static double get_investment(double price_, int order_id_main_) { return (price_ > ib.common.WRONG_PRICE ? get_investment(price_, db_ib.orders.get_quantity(order_id_main_), db_ib.execs.get_fees(order_id_main_)) : common.WRONG_MONEY); }
 	
 	public static double get_investment(double price_, double quantity_, double fees_)
 	{
 		double output = common.WRONG_MONEY;
-		if (!common.price_is_ok(price_)) return output;
+		if (price_ <= ib.common.WRONG_PRICE) return output;
 		
 		output = quantity_ * price_;
 		if (common.money_is_ok(fees_)) output -= fees_;

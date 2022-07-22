@@ -8,7 +8,7 @@ abstract class async_trades extends parent_static
 {		
 	public static void position(String account_ib_, String symbol_, double pos_)
 	{
-		if (!basic.account_ib_is_ok(account_ib_) || !ib.common.position_is_ok(pos_)) return; 
+		if (!basic.account_ib_is_ok(account_ib_) || pos_ == ib.common.WRONG_POSITION) return; 
 		
 		int order_id_main = db_ib.trades.get_order_id_no_position(common.normalise_symbol(symbol_));
 		
@@ -17,7 +17,7 @@ abstract class async_trades extends parent_static
 	
 	public static void update_portfolio(String account_ib_, double pos_, double unrealised_)
 	{
-		if (!basic.account_ib_is_ok(account_ib_) || !common.position_is_ok(pos_)) return; 
+		if (!basic.account_ib_is_ok(account_ib_) || pos_ == ib.common.WRONG_POSITION) return; 
 
 		trades.update_unrealised(pos_, unrealised_);
 	}

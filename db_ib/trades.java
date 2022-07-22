@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
+import accessory.dates;
 import accessory.db_where;
 
 public abstract class trades 
@@ -55,7 +56,8 @@ public abstract class trades
 			vals.put(ORDER_ID_MAIN, order_id_main_);
 			vals.put(ORDER_ID_SEC, get_order_id_sec(order_id_main_));
 			vals.put(SYMBOL, symbol_);
-
+			vals.put(ELAPSED_INI, dates.start_elapsed());
+			
 			vals = start_internal(order_id_main_, symbol_, start_, vals);
 		}				
 			
@@ -63,26 +65,35 @@ public abstract class trades
 	}
 
 	public static boolean end(int order_id_sec_, double end_) 
-	{
-		orders.update_status(get_order_id_main(order_id_sec_), orders.STATUS_INACTIVE);
-		
-		ib.basic.get_money();
-		
+	{			
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
 		vals.put(IS_ACTIVE, false);
-		vals.put(END, db_ib.common.adapt_price(end_));
 		vals.put(POSITION, 0.0);
 		vals.put(UNREALISED, 0.0);
+		vals.put(INVESTMENT, 0.0);
 		
-		double realised = ib.execs.get_realised(get_order_id_main(order_id_sec_), order_id_sec_);
-	
-		if (ib.common.price_is_ok(realised)) realised = db_ib.common.adapt_money(realised); 
-		else realised = get_decimal(UNREALISED, order_id_sec_, false);
+		if (end_ > ib.common.WRONG_PRICE) vals.put(END, db_ib.common.adapt_price(end_));
+
+		double unrealised = get_decimal(UNREALISED, order_id_sec_, false);
+		double investment = get_decimal(INVESTMENT, order_id_sec_, false);
 		
-		if (ib.common.price_is_ok(realised)) vals.put(REALISED, realised);
+		int order_id_main = get_order_id_main(order_id_sec_);
 		
-		return common.update(SOURCE, vals, get_where_order_id(order_id_sec_, false));
+		double realised = ib.execs.get_realised(order_id_main, order_id_sec_);
+		realised = (realised == 0.0 ? unrealised : db_ib.common.adapt_money(realised));
+		if (realised != 0.0) vals.put(REALISED, realised);
+		
+		boolean output = common.update(SOURCE, vals, get_where_order_id(order_id_sec_, false));
+
+		basic.update_money_free(common.adapt_money(basic.get_money_free() + investment + realised));
+
+		orders.deactivate(order_id_main);
+		remote.deactivate_order_id(order_id_main);
+		
+		ib.basic.get_money();
+
+		return output;
 	}
 	
 	public static String[] get_fields() { return new String[] { USER, ORDER_ID_MAIN, SYMBOL, PRICE, TIME_ELAPSED, START, STOP, HALTED, UNREALISED }; }
@@ -93,7 +104,7 @@ public abstract class trades
 
 	public static double get_position(int order_id_main_) { return get_decimal(POSITION, order_id_main_, true); }
 
-	public static boolean update_position(int order_id_main_, double pos_) { return common.update(SOURCE, POSITION, common.adapt_position(pos_), get_where_order_id(order_id_main_)); }
+	public static boolean update_position(int order_id_main_, double pos_) { return update(POSITION, common.adapt_position(pos_), order_id_main_); }
 
 	public static void update_unrealised(String symbol_) 
 	{
@@ -105,11 +116,13 @@ public abstract class trades
 			double unrealised = ib.execs.get_unrealised(order_id);
 			if (!ib.common.money_is_ok(unrealised)) continue;
 			
-			trades.update(UNREALISED, common.adapt_money(unrealised), order_id, true);
+			trades.update(UNREALISED, common.adapt_money(unrealised), order_id);
 		}
 	}
 
 	public static boolean update_unrealised(double pos_, double unrealised_) { return update(UNREALISED, common.adapt_money(unrealised_), pos_); }
+
+	static boolean update_stop(int order_id_main_, double stop_) { return update(STOP, common.adapt_price(stop_), order_id_main_); }
 
 	private static HashMap<String, Object> start_internal(int order_id_main_, String symbol_, double start_, HashMap<String, Object> vals_) 
 	{
@@ -117,17 +130,20 @@ public abstract class trades
 
 		if (!started(order_id_main_))
 		{
-			double start = (ib.common.price_is_ok(start_) ? start_ : get_start_execs(order_id_main_)); 		
+			double start = (start_ > ib.common.WRONG_PRICE ? start_ : get_start_execs(order_id_main_)); 		
 
-			if (ib.common.price_is_ok(start))
+			if (start > ib.common.WRONG_PRICE)
 			{
 				vals.put(START, common.adapt_price(start));
-				vals.put(INVESTMENT, common.adapt_money(ib.execs.get_investment(start, order_id_main_)));			
+				
+				double investment = ib.execs.get_investment(start, order_id_main_);
+				vals.put(INVESTMENT, common.adapt_money(investment));	
+
+				basic.update_money_free(common.adapt_money(basic.get_money_free() - investment));
 			}			
 		}
-		
-		double unrealised = ib.execs.get_unrealised(order_id_main_);
-		if (ib.common.money_is_ok(unrealised)) vals.put(UNREALISED, common.adapt_money(unrealised));
+
+		vals.put(UNREALISED, common.adapt_money(ib.execs.get_unrealised(order_id_main_)));
 
 		return vals;
 	}
@@ -137,13 +153,13 @@ public abstract class trades
 		boolean exists = true;	
 		double start = get_decimal(START, order_id_main_, true);
 		
-		if (!ib.common.price_is_ok(start)) 
+		if (start <= ib.common.WRONG_PRICE) 
 		{
 			exists = false;		
 			start = get_start_execs(order_id_main_);
 		}
 		
-		if (!exists && update_ && ib.common.price_is_ok(start)) update(START, start, order_id_main_, true);
+		if (!exists && update_ && start > ib.common.WRONG_PRICE) update(START, common.adapt_price(start), order_id_main_);
 	
 		return start;
 	}
@@ -155,13 +171,13 @@ public abstract class trades
 		boolean exists = true;	
 		double end = get_decimal(END, order_id_main_, true);
 		
-		if (!ib.common.price_is_ok(end)) 
+		if (end <= ib.common.WRONG_PRICE) 
 		{
 			exists = false;		
 			end = execs.get_end_price(order_id_main_);
 		}
 		
-		if (!exists && update_ && ib.common.price_is_ok(end)) update(END, end, order_id_main_, true);
+		if (!exists && update_ && end > ib.common.WRONG_PRICE) update(END, common.adapt_price(end), order_id_main_);
 	
 		return end;
 	}
@@ -170,13 +186,15 @@ public abstract class trades
 
 	private static String get_string(String field_, int order_id_, boolean is_main_) { return common.get_string(SOURCE, field_, get_where_order_id(order_id_, is_main_)); }
 
+	private static boolean update(String field_, Object val_, int order_id_) { return update(field_, val_, order_id_, true); }
+
 	private static boolean update(String field_, Object val_, int order_id_, boolean is_main_) { return common.update(SOURCE, field_, val_, get_where_order_id(order_id_, is_main_)); }
 
 	private static boolean update(String field_, Object val_, double pos_) { return common.update(SOURCE, field_, val_, get_where_position(pos_)); }
 
-	private static String get_where_order_id(int order_id_main_) { return get_where_order_id(order_id_main_, true); }
+	private static String get_where_order_id(int order_id_main_) { return common.get_where_order_id(SOURCE, order_id_main_); }
 	
-	private static String get_where_order_id(int order_id_, boolean is_main_) { return common.get_where(SOURCE, (is_main_ ? ORDER_ID_MAIN : ORDER_ID_SEC), Integer.toString(order_id_), false); }
+	private static String get_where_order_id(int order_id_, boolean is_main_) { return common.get_where_order_id(SOURCE, order_id_, is_main_); }
 
 	private static String get_where_position(double pos_) { return common.get_where(SOURCE, POSITION, Double.toString(pos_), false); }
 

@@ -379,8 +379,8 @@ public class tests extends parent_tests
 	{ 
 		HashMap<String, Double> output = new HashMap<String, Double>();
 		
-		output.put("GOOG", 2200.0);
-		output.put("AAPL", 120.0);
+		output.put("GOOG", 110.0);
+		output.put("AAPL", 150.0);
 
 		return output;
 	}

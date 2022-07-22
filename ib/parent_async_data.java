@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import com.ib.client.Contract;
 
 import accessory.arrays;
+import accessory.dates;
 import accessory.misc;
 import accessory.parent_static;
 import accessory.strings;
@@ -39,7 +40,10 @@ public abstract class parent_async_data extends parent_static
 	public static final String VOLUME = db_ib.common.FIELD_VOLUME;
 	public static final String HALTED = db_ib.common.FIELD_HALTED;
 	public static final String HALTED_TOT = db_ib.common.FIELD_HALTED_TOT;
-	
+	public static final String TIME = db_ib.common.FIELD_TIME;
+	public static final String TIME_ELAPSED = db_ib.common.FIELD_TIME_ELAPSED;
+	public static final String ELAPSED_INI = db_ib.common.FIELD_ELAPSED_INI;
+
 	public static final String TYPE_SNAPSHOT = types.ASYNC_DATA_SNAPSHOT;
 	public static final String TYPE_STREAM = types.ASYNC_DATA_STREAM;
 	
@@ -57,12 +61,7 @@ public abstract class parent_async_data extends parent_static
 	public static final int DEFAULT_PAUSE_NONSTOP = 0;
 	public static final int DEFAULT_PAUSE_AFTER_STOP_ALL = 30;
 	public static final boolean DEFAULT_ENABLED = true;
-	
-	protected volatile boolean _enabled = DEFAULT_ENABLED;
-	protected volatile boolean _stop_all = false;
-	protected volatile boolean _logs_to_screen = DEFAULT_LOGS_TO_SCREEN;
-	protected volatile boolean _is_quick = DEFAULT_IS_QUICK;  
-	protected volatile int _nonstop_pause = DEFAULT_PAUSE_NONSTOP;
+	public static final boolean DEFAULT_INCLUDES = false;
 	
 	protected volatile HashMap<Integer, String> _symbols = new HashMap<Integer, String>();
 	protected volatile HashMap<Integer, HashMap<String, Object>> _vals = new HashMap<Integer, HashMap<String, Object>>();
@@ -70,17 +69,25 @@ public abstract class parent_async_data extends parent_static
 	protected volatile HashMap<Integer, String> _ids = new HashMap<Integer, String>();
 	protected volatile HashMap<Integer, Integer> _data_types = new HashMap<Integer, Integer>();
 	
+	protected volatile boolean _enabled = DEFAULT_ENABLED;
+	protected volatile boolean _stop_all = false;
+	protected volatile boolean _logs_to_screen = DEFAULT_LOGS_TO_SCREEN;
+	protected volatile boolean _is_quick = DEFAULT_IS_QUICK;  
+	protected volatile int _nonstop_pause = DEFAULT_PAUSE_NONSTOP;
+
 	protected String _id = strings.DEFAULT; 
 	protected String _source = strings.DEFAULT; 
-	protected boolean _includes_halted = false; 
-	protected boolean _includes_halted_tot = false;
-	
-	private static HashMap<String, String> _cols = new HashMap<String, String>();
+	protected boolean _includes_halted = DEFAULT_INCLUDES; 
+	protected boolean _includes_halted_tot = DEFAULT_INCLUDES;
+	protected boolean _includes_time = DEFAULT_INCLUDES; 
+	protected boolean _includes_time_elapsed = DEFAULT_INCLUDES;
 	
 	protected abstract HashMap<Integer, String> get_all_prices();
 	protected abstract HashMap<Integer, String> get_all_sizes();
 	protected abstract HashMap<Integer, String> get_all_generics();
 	protected abstract String[] get_fields();
+
+	private HashMap<String, String> _cols = new HashMap<String, String>();
 	
 	public static boolean snapshot_is_quick() { return config.get_async_boolean(CONFIG_SNAPSHOT_QUICK); }
 
@@ -125,7 +132,7 @@ public abstract class parent_async_data extends parent_static
 		
 	protected void __tick_price_internal(int id_, int field_ib_, double price_)
 	{
-		if (!common.price_is_ok(price_)) return;
+		if (price_ <= ib.common.WRONG_PRICE) return;
 
 		__lock();
 		
@@ -150,7 +157,7 @@ public abstract class parent_async_data extends parent_static
 	
 	protected void __tick_size_internal(int id_, int field_ib_, int size_)
 	{
-		if (!common.size_is_ok(size_)) return;
+		if (size_ <= ib.common.WRONG_SIZE) return;
 
 		__lock();
 		
@@ -164,10 +171,11 @@ public abstract class parent_async_data extends parent_static
 		boolean is_snapshot = _is_snapshot(id_, false);
 		
 		String field = get_field(get_all_sizes(), field_ib_);
+
 		if (field != null) 
 		{
 			double size = adapt_val(size_, field_ib_);
-			
+	
 			update(id_, field, size);
 			tick_size_specific(id_, field_ib_, size);
 		}
@@ -354,8 +362,12 @@ public abstract class parent_async_data extends parent_static
 	{
 		if (!strings.is_ok(field_)) return;  
 		
+		String symbol = _get_symbol(id_, false);
+		
 		if (is_snapshot_) update_vals(id_, field_, val_);
-		else update_db(id_, _get_symbol(id_, false), field_, val_);
+		else update_db(id_, symbol, field_, val_);
+		
+		update_time(symbol);
 	}
 	
 	protected void update_db(int id_, String symbol_)
@@ -431,6 +443,19 @@ public abstract class parent_async_data extends parent_static
 	}
 
 	protected boolean symbol_exists(String symbol_) { return _symbols.containsValue(symbol_); } 
+
+	private void update_time(String symbol_)
+	{
+		if (_includes_time_elapsed)
+		{
+			long ini = async_data.get_elapsed_ini(_source, symbol_, _is_quick);
+			
+			if (ini <= 0) async_data.update(_source, symbol_, (_is_quick ? get_col(ELAPSED_INI) : ELAPSED_INI), ini, _is_quick);
+			else async_data.update(_source, symbol_, (_is_quick ? get_col(TIME_ELAPSED) : TIME_ELAPSED), dates.seconds_to_time((int)dates.get_elapsed(ini)), _is_quick);	
+		}
+		
+		if (_includes_time) async_data.update(_source, symbol_, (_is_quick ? get_col(TIME) : TIME), dates.get_now_string(db_ib.common.FORMAT_TIME_MAIN), _is_quick);
+	}
 
 	private void tick_price_specific(int id_, int field_ib_, double price_)
 	{

@@ -25,7 +25,7 @@ class async_data_trades extends parent_async_data
 		instance._source = SOURCE;
 		instance._id = _ID;
 		instance._includes_halted = true;
-		instance._includes_halted_tot = false;
+		instance._includes_time_elapsed = true;
 		instance._enabled = false;
 		
 		return instance;
@@ -47,7 +47,7 @@ class async_data_trades extends parent_async_data
 	
 	static void tick_price_specific(int id_, int field_ib_, double price_)
 	{
-		if (field_ib_ != PRICE_IB || !common.price_is_ok(price_)) return;
+		if (field_ib_ != PRICE_IB) return;
 
 		trades.update_unrealised(_instance._get_symbol(id_, false));
 	}
