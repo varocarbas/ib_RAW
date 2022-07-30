@@ -16,7 +16,22 @@ public abstract class basic
 	public static final String CURRENCY = common.FIELD_CURRENCY;
 	public static final String MONEY_FREE = common.FIELD_MONEY_FREE;
 	
-	public static boolean exists() { return common.exists(SOURCE, USER, get_where_user()); }
+	public static void __truncate() { common.__truncate(SOURCE); }
+	
+	public static void __backup() { common.__backup(SOURCE); }	
+
+	public static void __start() 
+	{
+		execs.__truncate(true);
+		
+		orders.__truncate(true);
+		
+		remote.__truncate(true);
+		
+		trades.__truncate(true);
+	}
+	
+	public static boolean exists() { return common.exists(SOURCE, get_where_user()); }
 
 	public static String get_user() { return common.get_string(SOURCE, USER, get_where_user()); }
 

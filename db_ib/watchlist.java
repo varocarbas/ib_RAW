@@ -30,7 +30,11 @@ public abstract class watchlist
 	
 	private static HashMap<String, String> _cols = new HashMap<String, String>();
 	private static String[] _cols2 = null;
+
+	public static void __truncate() { common.__truncate(SOURCE); }
 	
+	public static void __backup() { common.__backup(SOURCE); }	
+
 	public static String[] get_fields() { return new String[] { SYMBOL, PRICE, PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME, VOLUME_INI, VOLUME_MIN, VOLUME_MAX, TIME_ELAPSED, ELAPSED_INI, HALTED, HALTED_TOT, FLU, FLU_PRICE, FLU2, FLU2_MIN, FLU2_MAX }; }
 
 	public static String[] get_cols() 

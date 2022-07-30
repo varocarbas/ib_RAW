@@ -10,12 +10,15 @@ import external_ib.data;
 public abstract class async_data 
 {
 	public static final String SYMBOL = common.FIELD_SYMBOL;
+	public static final String PRICE = common.FIELD_PRICE;
 	public static final String HALTED = common.FIELD_HALTED;
 	public static final String HALTED_TOT = common.FIELD_HALTED_TOT;
 	public static final String ELAPSED_INI = common.FIELD_ELAPSED_INI;
 	
 	public static boolean exists(String source_, String symbol_) { return common.exists(source_, common.get_where_symbol(source_, symbol_)); }
 
+	public static double get_price(String source_, String symbol_) { return common.get_decimal(source_, PRICE, common.get_where_symbol(source_, symbol_)); }
+	
 	public static boolean is_enabled(String source_, String symbol_) { return common.is_enabled(source_, common.get_where_symbol(source_, symbol_)); }
 
 	public static boolean is_halted(String source_, String symbol_, boolean is_quick_)
@@ -116,7 +119,7 @@ public abstract class async_data
 		if (is_quick_)
 		{
 			HashMap<String, String> vals = (HashMap<String, String>)arrays.get_new_hashmap_xx((HashMap<String, String>)vals_);	
-			vals.put(async_data.get_col(source_, field_), accessory.db.adapt_input(val_));
+			vals.put(get_col(source_, field_), accessory.db.adapt_input(val_));
 		
 			output = vals;
 		}

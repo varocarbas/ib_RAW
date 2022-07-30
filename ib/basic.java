@@ -18,7 +18,12 @@ public abstract class basic extends parent_static
 	
 	private static final String ID_ACCOUNT_IB = "account_ib";
 
-	public static void start() { sync_basic.start(); }
+	public static void __start() 
+	{
+		sync_basic.__start(); 
+		
+		db_ib.basic.__start();
+	}
 
 	public static String get_id_main() { return (String)config.get_basic(CONFIG_ID_MAIN); }
 
@@ -70,7 +75,9 @@ public abstract class basic extends parent_static
 
 	public static String get_encrypted_file_path(String id_) { return credentials.get_path(get_encryption_id(id_), get_user(), true); }
 
-	public static double get_money() { return sync_basic.get_funds(); }
+	public static double __get_money() { return sync_basic.__get_funds(); }
+	
+	public static double get_money_free() { return db_ib.basic.get_money_free(); }
 	
 	private static String encrypt_internal(String id_, String user_, String plain_) { return credentials.encrypt_string(id_, user_, plain_); }
 }

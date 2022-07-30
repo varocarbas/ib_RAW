@@ -3,8 +3,10 @@ package db_ib;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import accessory.arrays;
 import accessory.db_where;
 import external_ib.orders;
+import ib._order;
 
 public abstract class execs 
 {
@@ -21,8 +23,35 @@ public abstract class execs
 	
 	public static final String SIDE_BOUGHT = orders.EXEC_SIDE_BOUGHT;
 	public static final String SIDE_SOLD = orders.EXEC_SIDE_SOLD;
+
+	public static void __truncate() { __truncate(false); }
 	
+	public static void __truncate(boolean only_if_not_active_) { if (!only_if_not_active_ || !contains_active()) common.__truncate(SOURCE); }
+	
+	public static void __backup() { common.__backup(SOURCE); }	
+
 	public static boolean exists(String exec_id_) { return common.exists(SOURCE, get_where(exec_id_)); }
+
+	public static boolean trade_completed(int order_id_main_) { return trade_completed(order_id_main_, true); }
+
+	public static boolean trade_completed(int order_id_main_, boolean any_user_) { return common.exists(SOURCE, db_where.join(get_where_order_id(_order.get_id_sec(order_id_main_), any_user_), get_where_side(SIDE_SOLD, any_user_), db_where.LINK_AND)); }
+
+	public static ArrayList<Integer> get_all_order_ids_main() { return get_all_order_ids_main(true); }
+
+	public static ArrayList<Integer> get_all_order_ids_main(boolean any_user_) { return common.get_all_ints(SOURCE, ORDER_ID, get_where_side(SIDE_BOUGHT, any_user_)); }
+
+	public static boolean contains_active() 
+	{
+		ArrayList<Integer> ids_main = get_all_order_ids_main();
+		if (!arrays.is_ok(ids_main)) return false;
+		
+		for (int id_main: ids_main)
+		{
+			if (!trade_completed(id_main)) return true;
+		}	
+		
+		return false; 
+	}
 
 	public static boolean update(String exec_id_, HashMap<String, Object> vals_) { return common.insert_update(SOURCE, vals_, get_where(exec_id_)); }
 	
@@ -36,7 +65,11 @@ public abstract class execs
 
 	private static String get_where(String exec_id_) { return common.get_where(SOURCE, EXEC_ID, exec_id_, false); }
 	
-	private static String get_where_order_id(int order_id_) { return common.get_where(SOURCE, ORDER_ID, Integer.toString(order_id_), false); }
+	private static String get_where_order_id(int order_id_) { return get_where_order_id(order_id_, false); }
 
-	private static String get_where_side(String side_) { return common.get_where(SOURCE, SIDE, side_, false); }
+	private static String get_where_order_id(int order_id_, boolean any_user_) { return common.get_where(SOURCE, ORDER_ID, Integer.toString(order_id_), false, !any_user_); }
+
+	private static String get_where_side(String side_) { return get_where_side(side_, false); }
+
+	private static String get_where_side(String side_, boolean any_user_) { return common.get_where(SOURCE, SIDE, side_, false, !any_user_); }
 }

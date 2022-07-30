@@ -362,12 +362,8 @@ public abstract class parent_async_data extends parent_static
 	{
 		if (!strings.is_ok(field_)) return;  
 		
-		String symbol = _get_symbol(id_, false);
-		
 		if (is_snapshot_) update_vals(id_, field_, val_);
-		else update_db(id_, symbol, field_, val_);
-		
-		update_time(symbol);
+		else update_db(id_, _get_symbol(id_, false), field_, val_); 
 	}
 	
 	protected void update_db(int id_, String symbol_)
@@ -386,9 +382,11 @@ public abstract class parent_async_data extends parent_static
 			
 	protected void update_db(int id_, String symbol_, String field_, double val_)
 	{
-		if (_is_quick) async_data.update_quick(_source, symbol_, get_col(field_), Double.toString(val_));
-		else async_data.update(_source, symbol_, field_, val_);	
-
+		Object vals = async_data.add_to_vals(_source, field_, val_, (_is_quick ? new HashMap<String, String>() : new HashMap<String, Object>()), _is_quick);	
+		vals = add_time(symbol_, vals);
+	
+		async_data.update(_source, vals, symbol_, _is_quick);
+		
 		to_screen_update(id_, symbol_, true);
 	}	
 	
@@ -444,17 +442,21 @@ public abstract class parent_async_data extends parent_static
 
 	protected boolean symbol_exists(String symbol_) { return _symbols.containsValue(symbol_); } 
 
-	private void update_time(String symbol_)
+	private Object add_time(String symbol_, Object vals_)
 	{
+		Object vals = arrays.get_new(vals_); 
+		
 		if (_includes_time_elapsed)
 		{
 			long ini = async_data.get_elapsed_ini(_source, symbol_, _is_quick);
-			
 			if (ini <= 0) async_data.update(_source, symbol_, (_is_quick ? get_col(ELAPSED_INI) : ELAPSED_INI), ini, _is_quick);
-			else async_data.update(_source, symbol_, (_is_quick ? get_col(TIME_ELAPSED) : TIME_ELAPSED), dates.seconds_to_time((int)dates.get_elapsed(ini)), _is_quick);	
+			
+			vals = async_data.add_to_vals(_source, TIME_ELAPSED, dates.seconds_to_time((int)dates.get_elapsed(ini)), vals, _is_quick);
 		}
-		
-		if (_includes_time) async_data.update(_source, symbol_, (_is_quick ? get_col(TIME) : TIME), dates.get_now_string(db_ib.common.FORMAT_TIME_MAIN), _is_quick);
+				
+		if (_includes_time) vals = async_data.add_to_vals(_source, TIME,ib.common.get_current_time(), vals, _is_quick);
+	
+		return vals;
 	}
 
 	private void tick_price_specific(int id_, int field_ib_, double price_)

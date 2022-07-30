@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import accessory.parent_static;
 import accessory.strings;
+import db_ib.async_data;
 
 public abstract class watchlist extends parent_static
 {
@@ -64,5 +65,12 @@ public abstract class watchlist extends parent_static
 		all.put(parent_async_data.HALTED_IB, HALTED);
 		
 		return all;
+	}
+
+	public static double get_price(String symbol_) 
+	{ 
+		String symbol = ib.common.normalise_symbol(symbol_);
+		
+		return (strings.is_ok(symbol) ? async_data.get_price(db_ib.watchlist.SOURCE, symbol) : common.WRONG_PRICE); 
 	}
 }

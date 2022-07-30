@@ -102,7 +102,7 @@ class async_data_watchlist extends parent_async_data
 
 		vals = _instance.tick_price_specific_basic(symbol, price_, db, vals);
 		vals = _instance.tick_price_specific_flus(symbol, price_, db, vals);
-		
+
 		db_ib.watchlist.update(vals, symbol, _instance._is_quick);
 	}
 

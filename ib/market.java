@@ -2,6 +2,9 @@ package ib;
 
 import java.util.HashMap;
 
+import accessory.strings;
+import db_ib.async_data;
+
 public abstract class market 
 {
 	public static final String SOURCE = db_ib.market.SOURCE;
@@ -90,5 +93,12 @@ public abstract class market
 		all.put(HALTED_IB, HALTED);
 		
 		return all;
+	}
+
+	public static double get_price(String symbol_) 
+	{ 
+		String symbol = ib.common.normalise_symbol(symbol_);
+		
+		return (strings.is_ok(symbol) ? async_data.get_price(db_ib.market.SOURCE, symbol) : common.WRONG_PRICE); 
 	}
 }

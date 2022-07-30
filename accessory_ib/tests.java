@@ -50,7 +50,7 @@ public class tests extends parent_tests
 			common.SOURCE_ORDERS, common.SOURCE_TRADES, common.SOURCE_WATCHLIST, common.SOURCE_APPS 
 		};
 		
-		for (String source: sources) { accessory.tests.create_table(source); }
+		for (String source: sources) { create_table(source); }
 		
 		update_screen(name0, false, level);
 		
@@ -77,6 +77,8 @@ public class tests extends parent_tests
 
 		update_screen(name0, false, level);
 		
+		check_wrongs(outputs);
+		
 		return outputs;
 	}
 	
@@ -88,9 +90,9 @@ public class tests extends parent_tests
 		Class<?> class0 = sync.class;
 		String name0 = class0.getName();
 
-		String[] methods = new String[] { "get_order_id", "get_orders", "get_positions" };
+		String[] methods = new String[] { "__get_order_id", "__get_orders" };
 		
-		outputs.put(name0, run_methods(class0, methods));
+		outputs.put(name0, _instance.run_methods(class0, methods));
 		
 		return outputs;	
 	}
@@ -125,9 +127,9 @@ public class tests extends parent_tests
 		
 		double quantity = 1;
 		double price = symbol_info.getValue();
-		double stop = numbers.apply_perc(price, -20, true);
-		double start = numbers.apply_perc(price, 10, true);
-		double start2 = numbers.apply_perc(price, 5, true);
+		double stop = numbers.apply_perc(price, -3, true);
+		double start = numbers.apply_perc(price, 2, true);
+		double start2 = numbers.apply_perc(price, 1, true);
 		
 		ArrayList<Object> args0 = new ArrayList<Object>();
 		args0.add(symbol);
@@ -138,20 +140,20 @@ public class tests extends parent_tests
 		Object target = true;
 		
 		HashMap<String, String> items = new HashMap<String, String>();
-		items.put(orders.PLACE_MARKET, "place_market");
-		items.put(orders.PLACE_STOP, "place_stop");
-		items.put(orders.PLACE_LIMIT, "place_limit");
-		items.put(orders.PLACE_STOP_LIMIT, "place_stop_limit");
+		items.put(orders.PLACE_MARKET, "__place_market");
+		items.put(orders.PLACE_STOP, "__place_stop");
+		items.put(orders.PLACE_LIMIT, "__place_limit");
+		items.put(orders.PLACE_STOP_LIMIT, "__place_stop_limit");
 
 		double stop_new = numbers.apply_perc(stop, -2, true);
 		double start_new = numbers.apply_perc(start, 3, true);
-		double start2_new = numbers.apply_perc(start2, 1, true);
+		double start2_new = numbers.apply_perc(start2, 2, true);
 		
 		HashMap<String, String[]> items2 = new HashMap<String, String[]>();
-		items2.put(orders.PLACE_MARKET, new String[] { "update_stop", "update_stop_market" });
-		items2.put(orders.PLACE_STOP, new String[] { "update_start", "update_start_market" });
-		items2.put(orders.PLACE_LIMIT, new String[] { "update_start", "update_stop_market" });
-		items2.put(orders.PLACE_STOP_LIMIT, new String[] { "update_start", "update_start2" });
+		items2.put(orders.PLACE_MARKET, new String[] { "__update_stop", "__update_stop_market" });
+		items2.put(orders.PLACE_STOP, new String[] { "__update_start", "__update_start_market" });
+		items2.put(orders.PLACE_LIMIT, new String[] { "__update_start", "__update_stop_market" });
+		items2.put(orders.PLACE_STOP_LIMIT, new String[] { "__update_start", "__update_start2" });
 
 		for (Entry<String, String> item: items.entrySet())
 		{
@@ -163,19 +165,19 @@ public class tests extends parent_tests
 				
 			boolean is_ok = false;
 						
-			if (name.equals("place_stop_limit")) 
+			if (name.equals("__place_stop_limit")) 
 			{				
 				args.add(start2);	
 				params = new Class<?>[] { String.class, double.class, double.class, double.class, double.class };
 			}
-			else if (name.equals("place_market")) 
+			else if (name.equals("__place_market")) 
 			{
 				args.remove(3);
 				params = new Class<?>[] { String.class, double.class, double.class };
 			}
 			else params = new Class<?>[] { String.class, double.class, double.class, double.class };
 
-			is_ok = run_method(class0, name, params, args, target);
+			is_ok = _instance.run_method(class0, name, params, args, target);
 			
 			output.put(name, is_ok);			
 			if (!is_ok) continue;
@@ -186,7 +188,7 @@ public class tests extends parent_tests
 			{
 				is_ok = false;
 				
-				if (name2.equals("update_start_market") || name2.equals("update_stop_market")) 
+				if (name2.equals("__update_start_market") || name2.equals("__update_stop_market")) 
 				{	
 					args = new ArrayList<Object>();
 					args.add(symbol);
@@ -196,8 +198,8 @@ public class tests extends parent_tests
 				else 
 				{	
 					double val = 0.0;
-					if (name2.equals("update_start2")) val = start2_new;
-					else val = (name2.equals("update_start") ? start_new : stop_new);
+					if (name2.equals("__update_start2")) val = start2_new;
+					else val = (name2.equals("__update_start") ? start_new : stop_new);
 					
 					args = new ArrayList<Object>();
 					args.add(symbol);
@@ -206,7 +208,7 @@ public class tests extends parent_tests
 					params = new Class<?>[] { String.class, double.class };
 				}
 
-				is_ok = run_method(class0, name2, params, args, target);
+				is_ok = _instance.run_method(class0, name2, params, args, target);
 				
 				String name22 = name2 + "_" + type;
 				output.put(name22, is_ok);
@@ -214,7 +216,7 @@ public class tests extends parent_tests
 				misc.pause_secs(pause);
 			}
 			
-			name = "cancel";
+			name = "__cancel";
 			String name2 = name + "_" + type;
 			
 			int id = orders.get_last_id_main();
@@ -222,7 +224,7 @@ public class tests extends parent_tests
 			args = new ArrayList<Object>();
 			args.add(id);
 			
-			is_ok = run_method(class0, name, new Class<?>[] { int.class }, args, null);
+			is_ok = _instance.run_method(class0, name, new Class<?>[] { int.class }, args, null);
 			output.put(name2, is_ok);			
 		}		
 
@@ -237,19 +239,21 @@ public class tests extends parent_tests
 		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
 
 		ArrayList<Object> args = null;
-		String name = "start";
-		
+		String name = "__start";
+
 		Class<?>[] classes0 = new Class<?>[] { basic.class, apps.class };
 		
 		for (Class<?> class0: classes0)
 		{
+			if (class0.equals(apps.class)) name = "start";
+			
 			String name0 = class0.getName();
 			
 			update_screen(name0, true, 1);
 			
 			HashMap<String, Boolean> output = new HashMap<String, Boolean>();
 
-			boolean is_ok = run_method(class0, name, null, args, null);
+			boolean is_ok = _instance.run_method(class0, name, null, args, null);
 			output.put(name, is_ok);
 			
 			String name2 = name + misc.SEPARATOR_NAME + name0;
@@ -281,7 +285,7 @@ public class tests extends parent_tests
 		ArrayList<Object> args = new ArrayList<Object>();
 		args.add(get_symbol(symbol_i).getKey());
 
-		boolean is_ok = run_method(class0, name, new Class<?>[] { String.class }, args, null);
+		boolean is_ok = _instance.run_method(class0, name, new Class<?>[] { String.class }, args, null);
 		output.put(name, is_ok);
 		
 		misc.pause_secs(pause1);
@@ -293,14 +297,14 @@ public class tests extends parent_tests
 		args = new ArrayList<Object>();
 		args.add(get_symbol(symbol_i).getKey());
 
-		is_ok = run_method(class0, name, new Class<?>[] { String.class }, args, null);
+		is_ok = _instance.run_method(class0, name, new Class<?>[] { String.class }, args, null);
 		output.put(name, is_ok);
 		
 		misc.pause_secs(pause1);
 
 		name = "__stop_all";
 
-		is_ok = run_method(class0, name, null, null, null);
+		is_ok = _instance.run_method(class0, name, null, null, null);
 		output.put(name, is_ok);
 		
 		misc.pause_secs(pause2);
@@ -331,7 +335,7 @@ public class tests extends parent_tests
 		ArrayList<Object> args = new ArrayList<Object>();
 		args.add(symbol);
 
-		boolean is_ok = run_method(class0, name, new Class<?>[] { String.class }, args, null);
+		boolean is_ok = _instance.run_method(class0, name, new Class<?>[] { String.class }, args, null);
 		
 		misc.pause_secs(pause1);
 		output.put(name, is_ok);
@@ -341,7 +345,7 @@ public class tests extends parent_tests
 		args = new ArrayList<Object>();
 		args.add(symbol);
 
-		is_ok = run_method(class0, name, new Class<?>[] { String.class }, args, null);
+		is_ok = _instance.run_method(class0, name, new Class<?>[] { String.class }, args, null);
 		
 		misc.pause_secs(pause1);
 		output.put(name, is_ok);

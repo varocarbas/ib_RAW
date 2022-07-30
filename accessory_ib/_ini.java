@@ -36,6 +36,7 @@ public class _ini extends parent_ini
 	//--- Keys for the dbs_setup_ args of the start() methods below. They define the default setup for all the DBs and are used in the _ini_db class.
 	
 	public static final String DBS_SETUP = accessory.types.CONFIG_DB_SETUP;
+	public static final String DBS_SETUP_NAME = accessory.types.CONFIG_DB_NAME;
 	public static final String DBS_SETUP_MAX_POOL = accessory.types.CONFIG_DB_SETUP_MAX_POOL;
 	public static final String DBS_SETUP_HOST = accessory.types.CONFIG_DB_SETUP_HOST;
 	public static final String DBS_SETUP_TYPE = accessory.types.CONFIG_DB_SETUP_TYPE;

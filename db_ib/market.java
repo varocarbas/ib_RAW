@@ -26,7 +26,11 @@ public abstract class market
 	public static final String HALTED = common.FIELD_HALTED;
 	public static final String HALTED_TOT = common.FIELD_HALTED_TOT;
 	public static final String ENABLED = common.FIELD_ENABLED;
+
+	public static void __truncate() { common.__truncate(SOURCE); }
 	
+	public static void __backup() { common.__backup(SOURCE); }	
+
 	public static ArrayList<String> get_all_symbols() { return common.get_all_strings(SOURCE, SYMBOL, common.get_where(SOURCE, ENABLED, "1", false)); }
 
 	public static boolean insert_all(ArrayList<String> symbols_) 

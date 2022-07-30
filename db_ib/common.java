@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import accessory.arrays;
-import accessory.dates;
 import accessory.db;
 import accessory.db_where;
+import accessory.numbers;
 import accessory.strings;
 import accessory_ib._alls;
 import accessory_ib.types;
@@ -62,8 +62,9 @@ public abstract class common
 	public static final String FIELD_STATUS = types.CONFIG_DB_IB_FIELD_STATUS;
 	public static final String FIELD_STATUS2 = types.CONFIG_DB_IB_FIELD_STATUS2;
 	public static final String FIELD_IS_MARKET = types.CONFIG_DB_IB_FIELD_IS_MARKET;
-	public static final String FIELD_INVEST_PERC = types.CONFIG_DB_IB_FIELD_INVEST_PERC;
+	public static final String FIELD_PERC_MONEY = types.CONFIG_DB_IB_FIELD_PERC_MONEY;
 	public static final String FIELD_REQUEST = types.CONFIG_DB_IB_FIELD_REQUEST;
+	public static final String FIELD_TYPE_ORDER = types.CONFIG_DB_IB_FIELD_TYPE_ORDER;
 	
 	public static final String FIELD_TYPE_PLACE = types.CONFIG_DB_IB_FIELD_TYPE_PLACE;
 	public static final String FIELD_TYPE_MAIN = types.CONFIG_DB_IB_FIELD_TYPE_MAIN;
@@ -94,11 +95,13 @@ public abstract class common
 	public static final String FIELD_APP = types.CONFIG_DB_IB_FIELD_APP;
 	public static final String FIELD_CONN_ID = types.CONFIG_DB_IB_FIELD_CONN_ID;
 	public static final String FIELD_CONN_TYPE = types.CONFIG_DB_IB_FIELD_CONN_TYPE;
-	public static final String FIELD_COUNT = types.CONFIG_DB_IB_FIELD_COUNT;
 	public static final String FIELD_ERROR = types.CONFIG_DB_IB_FIELD_ERROR;
 	public static final String FIELD_ADDITIONAL = types.CONFIG_DB_IB_FIELD_ADDITIONAL;
-	
+	public static final String FIELD_TIME2 = types.CONFIG_DB_IB_FIELD_TIME2;
+
 	public static final String SEPARATOR = accessory.types.SEPARATOR;
+
+	public static final String BACKUP_ENDING = SEPARATOR + "last";
 	
 	public static final int MAX_SIZE_USER = 15;
 	public static final int MAX_SIZE_MONEY = 7;
@@ -108,22 +111,37 @@ public abstract class common
 	public static final int MAX_SIZE_ERROR = 30;
 	public static final int MAX_SIZE_APP_NAME = 30;
 	public static final int MAX_SIZE_ADDITIONAL = 50;
-	
-	public static final String FORMAT_TIME_MAIN = dates.FORMAT_TIME_SHORT;
-	public static final String FORMAT_TIME_ELAPSED = dates.FORMAT_TIME_FULL;
-	
+		
 	public static final int WRONG_MAX_SIZE = 0;
 	public static final double WRONG_MAX_VAL = 0.0;
 	
 	public static final String DEFAULT_DB = types.CONFIG_DB_IB;
 	public static final String DEFAULT_DB_NAME = accessory.db.DEFAULT_DB_NAME;
-	public static final String DEFAULT_FORMAT_TIME = FORMAT_TIME_MAIN;
 	
 	public static final int DEFAULT_SIZE_DECIMAL = MAX_SIZE_MONEY;
-	
-	public static boolean exists(String source_, String where_) { return exists(source_, FIELD_SYMBOL, where_); }
+	public static final int DEFAULT_SIZE_STRING = 30;
 
-	public static boolean exists(String source_, String field_, String where_) { return strings.is_ok(accessory.db.select_one_string(source_, field_, where_, db.DEFAULT_ORDER)); }
+	public static void __truncate(String source_) 
+	{
+		__backup(source_);
+		
+		accessory.db.truncate_table(source_);
+	}
+	
+	public static void __backup(String source_) 
+	{ 
+		if (is_empty(source_)) return;
+		
+		String backup_table = accessory.db.get_table(source_) + BACKUP_ENDING;
+		
+		accessory.db.__backup_table(source_, backup_table); 
+	}	
+
+	public static boolean is_empty(String source_) { return (get_rows(source_) == 0); }
+
+	public static int get_rows(String source_) { return accessory.db.select_count(source_); }
+
+	public static boolean exists(String source_, String where_) { return accessory.db.exists_id(source_, where_); }
 	
 	public static boolean is_enabled(String source_, String where_) { return (!arrays.value_exists(get_all_sources_enabled(), source_) || accessory.db.select_one_boolean(source_, FIELD_ENABLED, where_, db.DEFAULT_ORDER)); }
 
@@ -168,7 +186,6 @@ public abstract class common
 		if (!arrays.is_ok(vals)) return false;
 		
 		vals = get_insert_vals(source_, vals);
-			
 		accessory.db.insert(source_, vals);
 
 		return accessory.db.is_ok(source_);
@@ -266,11 +283,13 @@ public abstract class common
 
 	public static String get_where_symbol_quick(String source_, String symbol_) { return get_where(source_, FIELD_SYMBOL, symbol_, true); }
 	
-	public static String get_where(String source_, String field_, String val_, boolean is_quick_) { return get_where_internal(source_, field_, val_, is_quick_, true); }
+	public static String get_where(String source_, String field_, String val_, boolean is_quick_) { return get_where(source_, field_, val_, is_quick_, true); }
+
+	public static String get_where(String source_, String field_, String val_, boolean is_quick_, boolean add_user_) { return get_where_internal(source_, field_, val_, is_quick_, add_user_); }
 
 	public static String get_where_order_id(String source_, int order_id_main_) { return get_where_order_id(source_, order_id_main_, true); }
 	
-	public static String get_where_order_id(String source_, int order_id_, boolean is_main_) { return common.get_where(source_, (is_main_ ? FIELD_ORDER_ID_MAIN : FIELD_ORDER_ID_SEC), Integer.toString(order_id_), false); }
+	public static String get_where_order_id(String source_, int order_id_, boolean is_main_) { return get_where(source_, (is_main_ ? FIELD_ORDER_ID_MAIN : FIELD_ORDER_ID_SEC), Integer.toString(order_id_), false); }
 
 	public static String get_where_order_id(String source_, Integer[] ids_, boolean equal_) 
 	{ 
@@ -386,10 +405,10 @@ public abstract class common
 	}
 	
 	public static String adapt_user(String val_) { return common.adapt_string(val_, FIELD_USER); }
-		
+	
 	private static double adapt_number(double val_, int max_, boolean is_negative_)
 	{
-		double output = val_;
+		double output = numbers.round(val_, ib.common.DEFAULT_ROUND_DECIMALS);
 		if (max_ <= WRONG_MAX_SIZE) return output;
 		
 		double max = get_max_val(max_);
@@ -449,14 +468,14 @@ public abstract class common
 
 	private static String[] get_all_sources_enabled() { return _alls.DB_SOURCES_ENABLED; }
 
-	private static String get_where_internal(String source_, String field_, String val_, boolean is_quick_, boolean check_user_) 
+	private static String get_where_internal(String source_, String field_, String val_, boolean is_quick_, boolean add_user_) 
 	{
 		String where = null;
 		
 		if (is_quick_) where = accessory.db.get_variable(get_col(source_, field_)) + "=" + accessory.db.get_value(val_);
 		else where = (new db_where(source_, field_, val_)).toString();
 		
-		if (!strings.are_equal(field_, FIELD_USER) && check_user_ && source_includes_user(source_)) where = db_where.join(where, get_where_internal(source_, FIELD_USER, ib.basic.get_user(), is_quick_, false), db_where.LINK_AND);
+		if (!strings.are_equal(field_, FIELD_USER) && add_user_ && source_includes_user(source_)) where = db_where.join(where, get_where_internal(source_, FIELD_USER, ib.basic.get_user(), is_quick_, false), db_where.LINK_AND);
 		
 		return where;		
 	}

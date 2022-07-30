@@ -28,9 +28,19 @@ public abstract class trades
 	public static final String END = common.FIELD_END;
 	public static final String REALISED = common.FIELD_REALISED;
 
+	public static void __truncate() { common.__truncate(SOURCE); }
+	
+	public static void __truncate(boolean only_if_not_active_) { if (!only_if_not_active_ || !contains_active()) common.__truncate(SOURCE); }
+
+	public static void __backup() { common.__backup(SOURCE); }	
+
+	public static boolean exists(String symbol_) { return common.exists(SOURCE, get_where_symbol(symbol_)); }
+
+	public static boolean contains_active() { return common.exists(SOURCE, get_where_is_active(true)); }
+
 	public static boolean started(int order_id_main_) { return common.exists(SOURCE, get_where_started(order_id_main_)); }
 
-	public static boolean order_id_is_ok(int order_id_main_) { return orders.exists_active(order_id_main_, true); }
+	public static boolean order_id_is_ok(int order_id_main_) { return orders.is_active(order_id_main_, true); }
 
 	public static boolean order_id_exists(int order_id_, boolean is_start_) { return common.exists(SOURCE, get_where_order_id(order_id_, is_start_)); }
 	
@@ -64,7 +74,7 @@ public abstract class trades
 		return (arrays.is_ok(vals) ? common.insert_update(SOURCE, vals, get_where_order_id(order_id_main_)) : false);
 	}
 
-	public static boolean end(int order_id_sec_, double end_) 
+	public static boolean __end(int order_id_sec_, double end_) 
 	{			
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
@@ -75,23 +85,20 @@ public abstract class trades
 		
 		if (end_ > ib.common.WRONG_PRICE) vals.put(END, db_ib.common.adapt_price(end_));
 
-		double unrealised = get_decimal(UNREALISED, order_id_sec_, false);
 		double investment = get_decimal(INVESTMENT, order_id_sec_, false);
 		
 		int order_id_main = get_order_id_main(order_id_sec_);
 		
 		double realised = ib.execs.get_realised(order_id_main, order_id_sec_);
-		realised = (realised == 0.0 ? unrealised : db_ib.common.adapt_money(realised));
-		if (realised != 0.0) vals.put(REALISED, realised);
+		if (realised != 0.0) vals.put(REALISED, db_ib.common.adapt_money(realised));
 		
 		boolean output = common.update(SOURCE, vals, get_where_order_id(order_id_sec_, false));
 
-		basic.update_money_free(common.adapt_money(basic.get_money_free() + investment + realised));
-
 		orders.deactivate(order_id_main);
 		remote.deactivate_order_id(order_id_main);
-		
-		ib.basic.get_money();
+
+		basic.update_money_free(common.adapt_money(ib.basic.get_money_free() + investment + realised));
+		ib.basic.__get_money();
 
 		return output;
 	}
@@ -100,7 +107,11 @@ public abstract class trades
 
 	public static double get_start(int order_id_main_) { return get_start(order_id_main_, true); }
 
+	public static double get_start(String symbol_) { return common.get_decimal(SOURCE, START, get_where_symbol(symbol_)); }
+
 	public static double get_end(int order_id_main_) { return get_end(order_id_main_, true); }
+
+	public static double get_end(String symbol_) { return common.get_decimal(SOURCE, END, get_where_symbol(symbol_)); }
 
 	public static double get_position(int order_id_main_) { return get_decimal(POSITION, order_id_main_, true); }
 
@@ -139,7 +150,7 @@ public abstract class trades
 				double investment = ib.execs.get_investment(start, order_id_main_);
 				vals.put(INVESTMENT, common.adapt_money(investment));	
 
-				basic.update_money_free(common.adapt_money(basic.get_money_free() - investment));
+				basic.update_money_free(common.adapt_money(ib.basic.get_money_free() - investment));
 			}			
 		}
 
@@ -192,11 +203,15 @@ public abstract class trades
 
 	private static boolean update(String field_, Object val_, double pos_) { return common.update(SOURCE, field_, val_, get_where_position(pos_)); }
 
+	private static String get_where_is_active(boolean any_user_) { return common.get_where(SOURCE, IS_ACTIVE, accessory.db.adapt_input(true), false, !any_user_); }
+	
 	private static String get_where_order_id(int order_id_main_) { return common.get_where_order_id(SOURCE, order_id_main_); }
 	
 	private static String get_where_order_id(int order_id_, boolean is_main_) { return common.get_where_order_id(SOURCE, order_id_, is_main_); }
 
 	private static String get_where_position(double pos_) { return common.get_where(SOURCE, POSITION, Double.toString(pos_), false); }
+
+	private static String get_where_symbol(String symbol_) { return common.get_where_symbol(SOURCE, symbol_); }
 
 	private static String get_where_started(int order_id_main_) 
 	{ 

@@ -60,25 +60,29 @@ public abstract class sync extends parent_static
 	private static String _get = strings.DEFAULT;
 	private static String _out = strings.DEFAULT;
 
-	public static int get_order_id() { return (int)get(GET_ID); }
-	
-	public static double get_funds() { return (double)get(GET_FUNDS); }
-	
-	@SuppressWarnings("unchecked")
-	public static HashMap<Integer, String> get_orders() 
-	{ 	
-		HashMap<Integer, String> orders = (HashMap<Integer, String>)get(GET_ORDERS); 
-			
-		async_orders.perform_regular_checks(orders);
+	public static int __get_order_id() 
+	{ 
+		__lock();
 		
-		return orders; 
+		int output = (int)get(GET_ID); 
+	
+		__unlock();
+	
+		return output;
 	}
-		
-	public static boolean order_is_submitted(int id_) { return order_is_common(id_, sync_orders.STATUS_SUBMITTED); }
 	
-	public static boolean order_is_filled(int id_) { return order_is_common(id_, sync_orders.STATUS_FILLED); }
-
-	public static boolean order_is_inactive(int id_) { return order_is_common(id_, sync_orders.STATUS_INACTIVE); }
+	public static double __get_funds() 
+	{ 
+		__lock();
+		
+		double output = (double)get(GET_FUNDS); 
+		
+		__unlock();
+		
+		return output;
+	}
+	
+	public static HashMap<Integer, String> __get_orders() { return _get_orders(true); }
 
 	public static int get_req_id() { return _req_id; }
 
@@ -145,11 +149,11 @@ public abstract class sync extends parent_static
 		return is_ok;
 	}
 
-	static boolean cancel_order(int id_) { return execute_order(ORDER_CANCEL, id_, null, null); }
+	static boolean __cancel_order(int id_) { return __execute_order(ORDER_CANCEL, id_, null, null); }
 
-	static boolean place_order(int id_, Contract contract_, Order order_) { return execute_order(ORDER_PLACE, id_, contract_, order_); }
+	static boolean __place_order(int id_, Contract contract_, Order order_) { return __execute_order(ORDER_PLACE, id_, contract_, order_); }
 
-	static boolean update_order(int id_, Contract contract_, Order order_) { return execute_order(ORDER_UPDATE, id_, contract_, order_); }
+	static boolean __update_order(int id_, Contract contract_, Order order_) { return __execute_order(ORDER_UPDATE, id_, contract_, order_); }
 	
 	static boolean update(String val_) 
 	{ 
@@ -207,20 +211,46 @@ public abstract class sync extends parent_static
 			
 		end(); 
 	}
+	
+	@SuppressWarnings("unchecked")
+	private static HashMap<Integer, String> _get_orders(boolean lock_) 
+	{ 	
+		if (lock_) __lock();
+		
+		HashMap<Integer, String> orders = (HashMap<Integer, String>)get(GET_ORDERS); 
+			
+		async_orders.perform_regular_checks();
+		
+		if (lock_) __unlock();
+		
+		return orders; 
+	}
 
-	private static boolean order_is_common(int id_, String target_)
+	private static boolean __order_is_submitted(int order_id_) { return __order_is_common(order_id_, sync_orders.STATUS_SUBMITTED); }
+	
+	private static boolean __order_is_inactive(int order_id_) { return __order_is_common(order_id_, sync_orders.STATUS_INACTIVE); }
+
+	private static boolean __order_is_common(int order_id_, String target_)
 	{
-		HashMap<Integer, String> orders = new HashMap<Integer, String>(get_orders());
+		__lock();
+		
+		HashMap<Integer, String> orders = new HashMap<Integer, String>(_get_orders(false));
 
-		String status = (String)arrays.get_value(orders, id_);
+		String status = (String)arrays.get_value(orders, order_id_);
 
-		return (strings.is_ok(status) ? order.is_status(status, target_) : strings.are_equal(target_, sync_orders.STATUS_INACTIVE));
+		boolean output = (strings.is_ok(status) ? _order.is_status(status, target_) : strings.are_equal(target_, sync_orders.STATUS_INACTIVE));
+	
+		__lock();
+		
+		return output;
 	}
 	
 	private static HashMap<String, String> get_all_get_outs() { return _alls.SYNC_GET_OUTS; }
 
-	private static boolean execute_order(String type_, int id_, Contract contract_, Order order_)
+	private static boolean __execute_order(String type_, int id_, Contract contract_, Order order_)
 	{	
+		__lock();
+		
 		_order_id = id_;
 
 		boolean is_cancel = orders.is_cancel(type_);
@@ -236,7 +266,12 @@ public abstract class sync extends parent_static
 		}
 		else 
 		{
-			if (contract_ == null || order_ == null) return false;
+			if (contract_ == null || order_ == null) 
+			{
+				__unlock();
+				
+				return false;
+			}
 					
 			//For ORDER_PLACE, the waiting occurs in sync_orders.place_update() after all the orders have been placed. 
 			if (type_.equals(ORDER_UPDATE)) wait_error = true;
@@ -248,6 +283,8 @@ public abstract class sync extends parent_static
 		
 		if (wait_default) is_ok = wait_orders(type_);
 		else if (wait_error) is_ok = wait_error();
+		
+		__unlock();
 		
 		return is_ok; 
 	}
@@ -438,7 +475,7 @@ public abstract class sync extends parent_static
 			}
 			else if (is_place || is_cancel)
 			{
-				if ((is_place && order_is_submitted(_order_id)) || (is_cancel && order_is_inactive(_order_id))) break;
+				if ((is_place && __order_is_submitted(_order_id)) || (is_cancel && __order_is_inactive(_order_id))) break;
 			}
 			
 			if (dates.get_elapsed(start) >= timeout_) 
