@@ -12,6 +12,7 @@ import accessory.strings;
 import external_ib.contracts;
 import ib.conn;
 import db_ib.apps;
+import db_ib.temp_async_data;
 import db_ib.basic;
 import db_ib.common;
 import db_ib.execs;
@@ -40,9 +41,7 @@ public class _ini_db extends parent_ini_db
 	public static db_field get_quantity() { return get_decimal(); }
 	
 	public static db_field get_size_volume() { return get_decimal(common.MAX_SIZE_VOLUME); }
-	
-	public static db_field get_position() { return get_decimal(common.MAX_SIZE_POSITION); }
-	
+		
 	public static db_field get_decimal() { return get_decimal(common.DEFAULT_SIZE_DECIMAL); }
 	
 	public static db_field get_decimal_tiny() { return get_decimal(3); }
@@ -114,6 +113,7 @@ public class _ini_db extends parent_ini_db
 		sources = add_source_trades(db, sources);
 		sources = add_source_watchlist(db, sources);
 		sources = add_source_apps(db, sources);
+		sources = add_source_temp_async_data(db, sources);
 		
 		boolean is_ok = populate_db(db, name, sources, setup_vals);
 		
@@ -253,7 +253,6 @@ public class _ini_db extends parent_ini_db
 		info.put(trades.HALTED, get_halted());
 		info.put(trades.UNREALISED, get_money());
 		info.put(trades.IS_ACTIVE, get_boolean(true));
-		info.put(trades.POSITION, get_position());
 		info.put(trades.INVESTMENT, get_money());
 		info.put(trades.END, get_price());
 		info.put(trades.ELAPSED_INI, get_elapsed_ini());
@@ -287,6 +286,7 @@ public class _ini_db extends parent_ini_db
 		info.put(watchlist.FLU2_MAX, get_decimal_tiny());
 		info.put(watchlist.FLU_PRICE, get_price());
 		info.put(watchlist.ELAPSED_INI, get_elapsed_ini());
+		info.put(watchlist.VAR_TOT, get_decimal_tiny());
 		
 		return add_source_common(db_, source, table, info, sources_);		
 	}
@@ -306,6 +306,21 @@ public class _ini_db extends parent_ini_db
 		info.put(apps.ERROR, get_error());
 		info.put(apps.ADDITIONAL, get_string(db_ib.common.MAX_SIZE_ADDITIONAL));
 		info.put(apps.TIME2, get_time2());
+		
+		return add_source_common(db_, source, table, info, sources_);		
+	}
+	
+	private HashMap<String, Object[]> add_source_temp_async_data(String db_, HashMap<String, Object[]> sources_)
+	{
+		String source = temp_async_data.SOURCE;
+		String table = "temp_async_data";
+		
+		HashMap<String, db_field> info = new HashMap<String, db_field>();
+		
+		info.put(temp_async_data.SYMBOL, get_symbol(true));
+		info.put(temp_async_data.ID, get_int(true));
+		info.put(temp_async_data.TYPE, get_status_type());
+		info.put(temp_async_data.DATA_TYPE, get_tiny());
 		
 		return add_source_common(db_, source, table, info, sources_);		
 	}

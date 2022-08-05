@@ -18,9 +18,13 @@ public abstract class basic extends parent_static
 	
 	private static final String ID_ACCOUNT_IB = "account_ib";
 
-	public static void __start() 
+	public static void __start() { __start(trades.DEFAULT_SYNCED_WITH_EXECS); }
+	
+	public static void __start(boolean trades_synced_with_execs_) 
 	{
-		sync_basic.__start(); 
+		trades.synced_with_execs(trades_synced_with_execs_);
+		
+		sync_basic.start(); 
 		
 		db_ib.basic.__start();
 	}
@@ -75,7 +79,7 @@ public abstract class basic extends parent_static
 
 	public static String get_encrypted_file_path(String id_) { return credentials.get_path(get_encryption_id(id_), get_user(), true); }
 
-	public static double __get_money() { return sync_basic.__get_funds(); }
+	public static double get_money() { return sync_basic.get_funds(); }
 	
 	public static double get_money_free() { return db_ib.basic.get_money_free(); }
 	

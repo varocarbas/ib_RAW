@@ -1,5 +1,6 @@
 package db_ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
@@ -27,6 +28,7 @@ public abstract class watchlist
 	public static final String FLU2_MIN = common.FIELD_FLU2_MIN;
 	public static final String FLU2_MAX = common.FIELD_FLU2_MAX;
 	public static final String FLU_PRICE = common.FIELD_FLU_PRICE;
+	public static final String VAR_TOT = common.FIELD_VAR_TOT;
 	
 	private static HashMap<String, String> _cols = new HashMap<String, String>();
 	private static String[] _cols2 = null;
@@ -35,7 +37,7 @@ public abstract class watchlist
 	
 	public static void __backup() { common.__backup(SOURCE); }	
 
-	public static String[] get_fields() { return new String[] { SYMBOL, PRICE, PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME, VOLUME_INI, VOLUME_MIN, VOLUME_MAX, TIME_ELAPSED, ELAPSED_INI, HALTED, HALTED_TOT, FLU, FLU_PRICE, FLU2, FLU2_MIN, FLU2_MAX }; }
+	public static String[] get_fields() { return new String[] { SYMBOL, PRICE, PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME, VOLUME_INI, VOLUME_MIN, VOLUME_MAX, TIME_ELAPSED, ELAPSED_INI, HALTED, HALTED_TOT, FLU, FLU_PRICE, FLU2, FLU2_MIN, FLU2_MAX, VAR_TOT }; }
 
 	public static String[] get_cols() 
 	{ 
@@ -43,15 +45,11 @@ public abstract class watchlist
 		
 		return _cols2; 
 	}
-
-	public static boolean exists(String symbol_) { return common.exists(SOURCE, common.get_where_symbol(SOURCE, symbol_)); }
 	
 	public static boolean update(Object vals_, String symbol_, boolean is_quick_) { return async_data.update(SOURCE, vals_, symbol_, is_quick_); }
 
-	public static boolean update(HashMap<String, Object> vals_, String symbol_) { return async_data.update(SOURCE, vals_, symbol_); }
-
-	public static boolean update_quick(HashMap<String, String> vals_, String symbol_) { return async_data.update_quick(SOURCE, vals_, symbol_); }
-
+	public static ArrayList<HashMap<String, String>> get_all_vals(boolean is_quick_) { return (is_quick_ ? common.get_all_vals_quick(SOURCE, get_cols(), accessory.db.DEFAULT_WHERE) : common.get_all_vals(SOURCE, get_fields(), accessory.db.DEFAULT_WHERE)); }
+	
 	public static HashMap<String, String> get_vals(String symbol_, boolean is_quick_) { return (is_quick_ ? common.get_vals_quick(SOURCE, get_cols(), common.get_where_symbol_quick(SOURCE, symbol_)) : common.get_vals(SOURCE, get_fields(), common.get_where_symbol(SOURCE, symbol_))); }
 	
 	public static boolean delete(String symbol_) { return common.delete(SOURCE, common.get_where_symbol(SOURCE, symbol_)); }

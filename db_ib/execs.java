@@ -6,7 +6,7 @@ import java.util.HashMap;
 import accessory.arrays;
 import accessory.db_where;
 import external_ib.orders;
-import ib._order;
+import ib.order;
 
 public abstract class execs 
 {
@@ -34,7 +34,7 @@ public abstract class execs
 
 	public static boolean trade_completed(int order_id_main_) { return trade_completed(order_id_main_, true); }
 
-	public static boolean trade_completed(int order_id_main_, boolean any_user_) { return common.exists(SOURCE, db_where.join(get_where_order_id(_order.get_id_sec(order_id_main_), any_user_), get_where_side(SIDE_SOLD, any_user_), db_where.LINK_AND)); }
+	public static boolean trade_completed(int order_id_main_, boolean any_user_) { return common.exists(SOURCE, db_where.join(get_where_order_id(order.get_id_sec(order_id_main_), any_user_), get_where_side(SIDE_SOLD, any_user_), db_where.LINK_AND)); }
 
 	public static ArrayList<Integer> get_all_order_ids_main() { return get_all_order_ids_main(true); }
 

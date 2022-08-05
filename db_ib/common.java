@@ -23,6 +23,7 @@ public abstract class common
 	public static final String SOURCE_TRADES = types.CONFIG_DB_IB_TRADES_SOURCE;
 	public static final String SOURCE_WATCHLIST = types.CONFIG_DB_IB_WATCHLIST_SOURCE;
 	public static final String SOURCE_APPS = types.CONFIG_DB_IB_APPS_SOURCE;
+	public static final String SOURCE_TEMP_ASYNC_DATA = types.CONFIG_DB_IB_TEMP_ASYNC_DATA_SOURCE;
 	
 	public static final String FIELD_SYMBOL = types.CONFIG_DB_IB_FIELD_SYMBOL;
 	public static final String FIELD_PRICE = types.CONFIG_DB_IB_FIELD_PRICE;
@@ -74,7 +75,6 @@ public abstract class common
 	public static final String FIELD_ELAPSED_INI = types.CONFIG_DB_IB_FIELD_ELAPSED_INI;
 	public static final String FIELD_UNREALISED = types.CONFIG_DB_IB_FIELD_UNREALISED;
 	public static final String FIELD_IS_ACTIVE = types.CONFIG_DB_IB_FIELD_IS_ACTIVE;
-	public static final String FIELD_POSITION = types.CONFIG_DB_IB_FIELD_POSITION;
 	public static final String FIELD_INVESTMENT = types.CONFIG_DB_IB_FIELD_INVESTMENT;
 	public static final String FIELD_END = types.CONFIG_DB_IB_FIELD_END;
 	public static final String FIELD_REALISED = types.CONFIG_DB_IB_FIELD_REALISED;
@@ -91,6 +91,7 @@ public abstract class common
 	public static final String FIELD_FLU2_MIN = types.CONFIG_DB_IB_FIELD_FLU2_MIN;
 	public static final String FIELD_FLU2_MAX = types.CONFIG_DB_IB_FIELD_FLU2_MAX;
 	public static final String FIELD_FLU_PRICE = types.CONFIG_DB_IB_FIELD_FLU_PRICE;
+	public static final String FIELD_VAR_TOT = types.CONFIG_DB_IB_FIELD_VAR_TOT;
 	
 	public static final String FIELD_APP = types.CONFIG_DB_IB_FIELD_APP;
 	public static final String FIELD_CONN_ID = types.CONFIG_DB_IB_FIELD_CONN_ID;
@@ -99,6 +100,10 @@ public abstract class common
 	public static final String FIELD_ADDITIONAL = types.CONFIG_DB_IB_FIELD_ADDITIONAL;
 	public static final String FIELD_TIME2 = types.CONFIG_DB_IB_FIELD_TIME2;
 
+	public static final String FIELD_ID = types.CONFIG_DB_IB_FIELD_ID;
+	public static final String FIELD_TYPE = types.CONFIG_DB_IB_FIELD_TYPE;
+	public static final String FIELD_DATA_TYPE = types.CONFIG_DB_IB_FIELD_DATA_TYPE;
+	
 	public static final String SEPARATOR = accessory.types.SEPARATOR;
 
 	public static final String BACKUP_ENDING = SEPARATOR + "last";
@@ -107,7 +112,6 @@ public abstract class common
 	public static final int MAX_SIZE_MONEY = 7;
 	public static final int MAX_SIZE_PRICE = 4;
 	public static final int MAX_SIZE_VOLUME = 4;
-	public static final int MAX_SIZE_POSITION = 3;
 	public static final int MAX_SIZE_ERROR = 30;
 	public static final int MAX_SIZE_APP_NAME = 30;
 	public static final int MAX_SIZE_ADDITIONAL = 50;
@@ -128,6 +132,13 @@ public abstract class common
 		accessory.db.truncate_table(source_);
 	}
 	
+	public static void truncate_all_temp() 
+	{
+		String[] sources = new String[] { temp_async_data.SOURCE };
+		
+		for (String source: sources) { accessory.db.truncate_table(source); }
+	}
+	
 	public static void __backup(String source_) 
 	{ 
 		if (is_empty(source_)) return;
@@ -137,15 +148,17 @@ public abstract class common
 		accessory.db.__backup_table(source_, backup_table); 
 	}	
 
-	public static boolean is_empty(String source_) { return (get_rows(source_) == 0); }
+	public static boolean is_empty(String source_) { return (get_count(source_, strings.DEFAULT) == 0); }
 
-	public static int get_rows(String source_) { return accessory.db.select_count(source_); }
+	public static int get_count(String source_, String where_) { return accessory.db.select_count(source_, where_); }
 
 	public static boolean exists(String source_, String where_) { return accessory.db.exists_id(source_, where_); }
 	
 	public static boolean is_enabled(String source_, String where_) { return (!arrays.value_exists(get_all_sources_enabled(), source_) || accessory.db.select_one_boolean(source_, FIELD_ENABLED, where_, db.DEFAULT_ORDER)); }
 
 	public static String get_string(String source_, String field_, String where_) { return accessory.db.select_one_string(source_, field_, where_, db.DEFAULT_ORDER); }
+
+	public static String get_string(String source_, String col_field_, String where_, boolean is_quick_) { return (is_quick_ ? accessory.db.select_one_string_quick(source_, col_field_, where_, db.DEFAULT_ORDER) : accessory.db.select_one_string(source_, col_field_, where_, db.DEFAULT_ORDER)); }
 
 	public static int get_int(String source_, String field_, String where_) { return get_int(source_, field_, where_, false); }
 
@@ -167,6 +180,8 @@ public abstract class common
 
 	public static ArrayList<HashMap<String, String>> get_all_vals(String source_, String[] fields_, String where_) { return accessory.db.select(source_, fields_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
 
+	public static ArrayList<HashMap<String, String>> get_all_vals_quick(String source_, String[] cols_, String where_) { return accessory.db.select_quick(source_, cols_, where_, accessory.db.DEFAULT_MAX_ROWS, accessory.db.DEFAULT_ORDER); }
+
 	public static HashMap<String, String> get_vals(String source_, String where_) { return get_vals(source_, null, where_); }
 
 	public static HashMap<String, String> get_vals(String source_, String[] fields_, String where_) { return accessory.db.select_one(source_, fields_, where_, db.DEFAULT_ORDER); }
@@ -179,7 +194,10 @@ public abstract class common
 		
 		return (strings.is_ok(key) ? common.get_type_from_key(key, root_) : strings.DEFAULT);
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public static boolean insert(String source_, Object vals_, boolean is_quick_) { return (is_quick_ ? insert_quick(source_, (HashMap<String, String>)vals_) : insert(source_, (HashMap<String, Object>)vals_)); }
+
 	public static boolean insert(String source_, HashMap<String, Object> vals_) 
 	{ 
 		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
@@ -203,6 +221,9 @@ public abstract class common
 		return accessory.db.is_ok(source_);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static boolean update(String source_, Object vals_, String symbol_, boolean is_quick_) { return (is_quick_ ? update_quick(source_, (HashMap<String, String>)vals_, common.get_where_symbol_quick(source_, symbol_)) : update(source_, (HashMap<String, Object>)vals_, common.get_where_symbol(source_, symbol_))); }
+
 	public static boolean update(String source_, String field_, Object val_, String where_) 
 	{ 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
@@ -319,7 +340,6 @@ public abstract class common
 		all.put(FIELD_MONEY, MAX_SIZE_MONEY);
 		all.put(FIELD_PRICE, MAX_SIZE_PRICE);
 		all.put(FIELD_VOLUME, MAX_SIZE_VOLUME);
-		all.put(FIELD_POSITION, MAX_SIZE_POSITION);
 		
 		return all;
 	}
@@ -354,8 +374,6 @@ public abstract class common
 	public static double adapt_price(double val_) { return adapt_number(val_, FIELD_PRICE); }
 	
 	public static double adapt_money(double val_) { return adapt_number(val_, FIELD_MONEY); }
-
-	public static double adapt_position(double position_) { return adapt_number(position_, FIELD_POSITION); }
 
 	public static double adapt_number(double val_, String field_)
 	{
@@ -405,6 +423,31 @@ public abstract class common
 	}
 	
 	public static String adapt_user(String val_) { return common.adapt_string(val_, FIELD_USER); }
+
+	@SuppressWarnings("unchecked")
+	public static Object add_to_vals(String source_, String field_, Object val_, Object vals_, boolean is_quick_) 
+	{ 
+		Object output = null;
+				
+		if (is_quick_)
+		{
+			HashMap<String, String> vals = (HashMap<String, String>)arrays.get_new_hashmap_xx((HashMap<String, String>)vals_);	
+			vals.put(get_col(source_, field_), accessory.db.adapt_input(val_));
+		
+			output = vals;
+		}
+		else
+		{
+			HashMap<String, Object> vals = (HashMap<String, Object>)arrays.get_new_hashmap_xy((HashMap<String, Object>)vals_);
+			vals.put(field_, val_);
+			
+			output = vals;
+		}
+		
+		return output;
+	}
+
+	public static String get_where_timestamp(String source_, int before_mins_) { return (before_mins_ > 0 ? (new db_where(source_, accessory.db.FIELD_TIMESTAMP, db_where.OPERAND_GREATER_EQUAL, "CURRENT_TIMESTAMP - INTERVAL " + before_mins_ + " MINUTE", false, db_where.DEFAULT_LINK)).toString() : strings.DEFAULT); }
 	
 	private static double adapt_number(double val_, int max_, boolean is_negative_)
 	{

@@ -36,10 +36,4 @@ public abstract class calls
 	public static void reqAllOpenOrders() { if (conn._client != null) conn._client.reqAllOpenOrders(); }
 
 	public static void reqIds() { if (conn._client != null) conn._client.reqIds(-1); }
-
-	public static void reqPositions() { if (conn._client != null) conn._client.reqPositions(); }
-
-	public static void cancelPositions() { if (conn._client != null) conn._client.cancelPositions(); }
-	
-	public static void reqAccountUpdates(boolean subscribe_, String acct_code_) { if (conn._client != null) conn._client.reqAccountUpdates(subscribe_, acct_code_); }
 }

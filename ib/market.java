@@ -1,5 +1,6 @@
 package ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.strings;
@@ -41,13 +42,13 @@ public abstract class market
 	
 	public static void __stop_all() { async_data_market._instance.__stop_all_internal(); }
 	
-	public static int __start_snapshot(String symbol_) { return async_data_market._instance.__start_snapshot_internal(symbol_, parent_async_data.DEFAULT_DATA_TYPE); }
+	public static int __start_snapshot(String symbol_) { return async_data_market.__start_snapshot(symbol_); }
 
-	public static int __start_snapshot(String symbol_, int data_type_) { return async_data_market._instance.__start_snapshot_internal(symbol_, data_type_); }
+	public static int __start_snapshot(String symbol_, int data_type_) { return async_data_market.__start_snapshot(symbol_, data_type_); }
 
-	public static int __start_stream(String symbol_) { return async_data_market._instance.__start_stream_internal(symbol_, parent_async_data.DEFAULT_DATA_TYPE); }
+	public static int __start_stream(String symbol_) { return async_data_market.__start_stream(symbol_); }
 
-	public static int __start_stream(String symbol_, int data_type_) { return async_data_market._instance.__start_stream_internal(symbol_, data_type_); }
+	public static int __start_stream(String symbol_, int data_type_) { return async_data_market.__start_stream(symbol_, data_type_); }
 
 	public static boolean __stop_snapshot(String symbol_) { return async_data_market._instance.__stop_snapshot_internal(symbol_); }
 
@@ -101,4 +102,6 @@ public abstract class market
 		
 		return (strings.is_ok(symbol) ? async_data.get_price(db_ib.market.SOURCE, symbol) : common.WRONG_PRICE); 
 	}
+	
+	public static ArrayList<String> get_active_symbols() { return async_data_market._instance.get_active_symbols(); }
 }

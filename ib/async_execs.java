@@ -77,22 +77,22 @@ abstract class async_execs extends parent_static
 
 		if (vals.size() == TARGET_TOT_FIELDS) 
 		{
-			__update_last(exec_id_, vals);
+			update_last(exec_id_, vals);
 			
 			if (_all_vals.containsKey(exec_id_)) _all_vals.remove(exec_id_);
 		}
 		else _all_vals.put(exec_id_, vals);
 	}
 	
-	private static void __update_last(String exec_id_, HashMap<String, Object> vals_)
+	private static void update_last(String exec_id_, HashMap<String, Object> vals_)
 	{				
-		if (trades.triggered_automatically())
+		if (trades.synced_with_execs())
 		{
 			int order_id = (int)vals_.get(ORDER_ID);
 			String side = (String)vals_.get(SIDE);
 			double price = (double)vals_.get(PRICE);
 			
-			if (strings.are_equivalent(side, SIDE_SOLD)) trades.__end(order_id, price);
+			if (strings.are_equivalent(side, SIDE_SOLD)) trades.end(order_id, price);
 			else trades.start(order_id, price);	
 		}
 

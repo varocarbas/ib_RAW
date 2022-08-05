@@ -6,13 +6,13 @@ import external_ib.contracts;
 
 abstract class sync_basic 
 {
-	public static void __start()
+	public static void start()
 	{
 		get_account_ib();
 		
 		get_currency();
 		
-		__get_funds(true);
+		get_funds(true);
 	}
 
 	public static String get_account_ib() 
@@ -22,7 +22,7 @@ abstract class sync_basic
 		return get_account_ib_last(ini_basic.get_account_ib(), true);
 	} 
 
-	public static double __get_funds() { return __get_funds(false); } 
+	public static double get_funds() { return get_funds(false); } 
 
 	public static String get_currency() 
 	{
@@ -62,9 +62,9 @@ abstract class sync_basic
 	
 	private static boolean is_ok(int req_id_, String account_id_, String key_, String currency_) { return (sync.is_ok(req_id_, key_) && ib.basic.account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
 
-	private static double __get_funds(boolean is_start_) 
+	private static double get_funds(boolean is_start_) 
 	{ 
-		double money = db_ib.common.adapt_money(sync.__get_funds());
+		double money = db_ib.common.adapt_money(sync.get_funds());
 		if (!ib.common.money_is_ok(money)) return ib.common.WRONG_MONEY;
 		
 		basic.update_money(money);

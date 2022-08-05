@@ -22,22 +22,28 @@ public abstract class common_wrapper
 	public static void __tick_price(int id_, int field_ib_, double price_)
 	{
 		async_data_market.__tick_price(id_, field_ib_, price_);
+
 		async_data_trades.__tick_price(id_, field_ib_, price_);
-		async_data_watchlist.__tick_price(id_, field_ib_, price_);
+		
+		if (async_data_watchlist_new.is_ok()) async_data_watchlist_new.__tick_price(id_, field_ib_, price_);
 	}
 	
 	public static void __tick_size(int id_, int field_ib_, int size_)
 	{
 		async_data_market.__tick_size(id_, field_ib_, size_);
+
 		async_data_trades.__tick_size(id_, field_ib_, size_);
-		async_data_watchlist.__tick_size(id_, field_ib_, size_);
+
+		if (async_data_watchlist_new.is_ok()) async_data_watchlist_new.__tick_size(id_, field_ib_, size_);
 	}
 	
-	public static void __tick_generic(int id_, int tick_, double value_)
+	public static void __tick_generic(int id_, int field_ib_, double value_)
 	{
-		async_data_market.__tick_generic(id_, tick_, value_);
-		async_data_trades.__tick_generic(id_, tick_, value_);
-		async_data_watchlist.__tick_generic(id_, tick_, value_);
+		async_data_market.__tick_generic(id_, field_ib_, value_);
+
+		async_data_trades.__tick_generic(id_, field_ib_, value_);
+
+		if (async_data_watchlist_new.is_ok()) async_data_watchlist_new.__tick_generic(id_, field_ib_, value_);
 	}
 	
 	public static void __tick_snapshot_end(int id_)
@@ -47,8 +53,10 @@ public abstract class common_wrapper
 		//have already been received right after getting certain size value.
 
 		market.__stop_snapshot(id_);
+		
 		async_data_trades.__stop_snapshot(id_);
-		async_data_watchlist.__stop_snapshot(id_);
+		
+		if (async_data_watchlist_new.is_ok()) async_data_watchlist_new.__end_snapshot(id_);
 	}	
 	
 	public static void __error(int id_, int code_, String message_) 
@@ -70,8 +78,4 @@ public abstract class common_wrapper
 	public static void __exec_details(int id_, Contract contract_, Execution execution_) { async_execs.__exec_details(id_, contract_, execution_); }
 
 	public static void __commission_report(CommissionReport report_) { async_execs.__commission_report(report_); }
-
-	public static void position(String account_ib_, String symbol_, double pos_) { async_trades.position(account_ib_, symbol_, pos_); }
-
-	public static void update_portfolio(String account_ib_, double pos_, double unrealised_) { async_trades.update_portfolio(account_ib_, pos_, unrealised_); }
 }

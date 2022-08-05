@@ -102,12 +102,7 @@ public abstract class conn extends parent_static
 	
 	public static void end() { disconnect(); }
 
-	public static void disconnect() 
-	{ 
-		end_subscriptions();
-		
-		calls.eDisconnect(); 
-	}
+	public static void disconnect() { calls.eDisconnect(); }
 
 	public static boolean connection_is_ok()
 	{
@@ -198,22 +193,6 @@ public abstract class conn extends parent_static
 			count++;
 			if (count >= max) return;
 		}
-		
-		start_subscriptions();
-	}
-
-	private static void start_subscriptions()
-	{
-		calls.reqPositions();
-		
-		if (strings.is_ok(basic.get_account_ib())) calls.reqAccountUpdates(true, basic.get_account_ib());
-	}
-
-	private static void end_subscriptions()
-	{
-		calls.cancelPositions();
-		
-		if (strings.is_ok(basic.get_account_ib())) calls.reqAccountUpdates(false, basic.get_account_ib());
 	}
 	
 	private static void connect_reader()

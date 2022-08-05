@@ -11,10 +11,9 @@ import accessory_ib._alls;
 
 class async_data_watchlist extends parent_async_data 
 {
-	public static String _ID = "watchlist";
-	
 	public static final String SOURCE = watchlist.SOURCE;
-	
+	public static final int MAX_MINS_INACTIVE = parent_async_data.DEFAULT_MAX_MINS_INACTIVE;
+
 	public static final String PRICE_INI = db_ib.watchlist.PRICE_INI;
 	public static final String PRICE_MIN = db_ib.watchlist.PRICE_MIN;
 	public static final String PRICE_MAX = db_ib.watchlist.PRICE_MAX;
@@ -27,6 +26,7 @@ class async_data_watchlist extends parent_async_data
 	public static final String FLU2 = db_ib.watchlist.FLU2;
 	public static final String FLU2_MIN = db_ib.watchlist.FLU2_MIN;
 	public static final String FLU2_MAX = db_ib.watchlist.FLU2_MAX;
+	public static final String VAR_TOT = db_ib.watchlist.VAR_TOT;
 	
 	public static final String TYPE = TYPE_SNAPSHOT;
 	public static final int DATA = external_ib.data.DATA_LIVE;
@@ -45,42 +45,26 @@ class async_data_watchlist extends parent_async_data
 	
 	public static async_data_watchlist _instance = instantiate();
 	
-	private async_data_watchlist() { }
- 	
-	private static async_data_watchlist instantiate()
-	{
-		async_data_watchlist instance = new async_data_watchlist();
-		
-		instance._source = SOURCE;
-		instance._id = _ID;
-		instance._includes_halted = true;
-		instance._includes_halted_tot = true;
-		instance._includes_time_elapsed = true;
-		
-		return instance;
-	}
-
+	private static boolean _instantiated = false;
+	
 	public static boolean start(String symbol_) 
 	{
-		boolean output = false;
+		_instance.enable();
 		
-		String symbol = common.normalise_symbol(symbol_);
-		if (!strings.is_ok(symbol)) return output;
+		boolean started = (_instance._start_snapshot_internal(symbol_, DATA, false) != WRONG_ID);
+		if (started) _instance.add_global(symbol_);
 		
-		output = (_instance._start_snapshot_internal(symbol, DATA, false) != WRONG_ID);
-		if (output) _instance.add_global(symbol);
-		
-		return output;
+		return started;
 	}
 	
-	public static void stop(String symbol_) 
+	public static boolean stop(String symbol_) 
 	{ 
-		String symbol = common.normalise_symbol(symbol_);
-		if (!strings.is_ok(symbol)) return;
-
-		if (_instance.symbol_exists(symbol)) _instance._stop_all_internal(symbol, false);		
+		if (_instance.symbol_exists(symbol_)) _instance._stop_all_internal(symbol_, false); 
+		else db_ib.watchlist.delete(symbol_);
 		
-		_instance.remove_global(symbol);
+		_instance.remove_global(symbol_);
+		
+		return true;
 	}
 	
 	public static boolean __stop_snapshot(int id_) { return _instance.__stop_snapshot_internal(id_); }
@@ -91,30 +75,30 @@ class async_data_watchlist extends parent_async_data
 	
 	public static void __tick_generic(int id_, int tick_, double value_) { _instance.__tick_generic_internal(id_, tick_, value_); }
 	
-	static void tick_price_specific(int id_, int field_ib_, double price_)
+	void tick_price_specific(int id_, int field_ib_, double price_)
 	{
 		if (field_ib_ != PRICE_IB) return;
 		
-		String symbol = _instance._get_symbol(id_, false);
+		String symbol = _get_symbol(id_, false);
 		
-		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol, _instance._is_quick);
-		Object vals = (_instance._is_quick ? new HashMap<String, String>() : new HashMap<String, Object>());
+		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol, _is_quick);
+		Object vals = (_is_quick ? new HashMap<String, String>() : new HashMap<String, Object>());
 
-		vals = _instance.tick_price_specific_basic(symbol, price_, db, vals);
-		vals = _instance.tick_price_specific_flus(symbol, price_, db, vals);
+		vals = tick_price_specific_basic(symbol, price_, db, vals);
+		vals = tick_price_specific_flus(symbol, price_, db, vals);
 
 		db_ib.watchlist.update(vals, symbol, _instance._is_quick);
 	}
 
-	static void tick_size_specific(int id_, int field_ib_, double size_)
+	void tick_size_specific(int id_, int field_ib_, double size_)
 	{
 		if (field_ib_ != VOLUME_IB) return;
 		
-		String symbol = _instance._get_symbol(id_, false);
+		String symbol = _get_symbol(id_, false);
 		
-		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol, _instance._is_quick);
+		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol, _is_quick);
 		
-		db_ib.watchlist.update(_instance.tick_size_specific_basic(symbol, size_, db), symbol, _instance._is_quick);
+		db_ib.watchlist.update(tick_size_specific_basic(symbol, size_, db), symbol, _is_quick);
 	}
 	
 	protected HashMap<Integer, String> get_all_prices() { return _alls.WATCHLIST_PRICES; }
@@ -307,16 +291,27 @@ class async_data_watchlist extends parent_async_data
 		items.put(PRICE, VOLUME);
 		items.put(PRICE_INI, VOLUME_INI);
 		items.put(FLU_PRICE, strings.DEFAULT);
+
+		double price_ini = common.WRONG_PRICE;
 		
 		for (Entry<String, String> item: items.entrySet())
 		{
 			String field = (is_price_ ? item.getKey() : item.getValue());
 			if (!strings.is_ok(field)) continue;
 			
-			double val_db = db_ib.watchlist.get_vals_number(field, db_, _is_quick);				
-			if (!tick_specific_val_is_ok(val_db, is_price_)) vals = db_ib.watchlist.add_to_vals(field, val_, vals, _is_quick);
+			boolean is_price_ini = (is_price_ && field.equals(PRICE_INI));			
+			double val_db = db_ib.watchlist.get_vals_number(field, db_, _is_quick);
+			
+			if (!tick_specific_val_is_ok(val_db, is_price_)) 
+			{
+				vals = db_ib.watchlist.add_to_vals(field, val_, vals, _is_quick);
+				if (is_price_ini) price_ini = val_;
+			}
+			else if (is_price_ini) price_ini = val_db;
 		}
 
+		if (is_price_) vals = db_ib.watchlist.add_to_vals(VAR_TOT, numbers.get_perc_hist(val_, price_ini), vals, _is_quick);
+		
 		return vals;
 	}
 
@@ -341,4 +336,15 @@ class async_data_watchlist extends parent_async_data
 		_flus2_plus.remove(symbol_);
 		_flus2_remove.remove(symbol_);		
 	}
+	
+	private static async_data_watchlist instantiate()
+	{
+		if (_instantiated) return _instance;
+		
+		_instantiated = true;
+		
+		return (async_data_watchlist)parent_async_data.instantiate(new async_data_watchlist(), SOURCE, ID_WATCHLIST, MAX_MINS_INACTIVE, true, true, parent_async_data.DEFAULT_INCLUDES, true, true, parent_async_data.DEFAULT_DISABLE_ASAP);		
+	}
+
+	private async_data_watchlist() { }
 }

@@ -7,14 +7,14 @@ import accessory.strings;
 
 abstract class async_orders 
 {
-	public static final String ACTIVE = _order.STATUS_ACTIVE;
-	public static final String INACTIVE = _order.STATUS_INACTIVE;
+	public static final String ACTIVE = order.STATUS_ACTIVE;
+	public static final String INACTIVE = order.STATUS_INACTIVE;
 
 	public static volatile HashMap<Integer, Long> _cancellations = new HashMap<Integer, Long>();
 
 	public static void order_status(int order_id_, String status_ib_) 
 	{ 
-		String status = _order.get_status(status_ib_, true);
+		String status = order.get_status(status_ib_, true);
 		if (!strings.is_ok(status) || status.equals(INACTIVE)) return;
 		
 		db_ib.orders.update_status(order_id_, status);	

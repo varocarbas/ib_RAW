@@ -39,6 +39,8 @@ public abstract class types
 	public static final String CONFIG_DB_IB_WATCHLIST_SOURCE = "config_db_ib_watchlist_source";
 	public static final String CONFIG_DB_IB_APPS = "config_db_ib_apps";
 	public static final String CONFIG_DB_IB_APPS_SOURCE = "config_db_ib_apps_source";
+	public static final String CONFIG_DB_IB_TEMP_ASYNC_DATA = "config_db_ib_temp_async_data";
+	public static final String CONFIG_DB_IB_TEMP_ASYNC_DATA_SOURCE = "config_db_ib_temp_async_data_source";
 
 	public static final String CONFIG_DB_IB_FIELD = "config_db_ib_field";
 	public static final String CONFIG_DB_IB_FIELD_USER = "config_db_ib_field_user";
@@ -91,7 +93,6 @@ public abstract class types
 	public static final String CONFIG_DB_IB_FIELD_ELAPSED_INI = "config_db_ib_field_elapsed_ini";
 	public static final String CONFIG_DB_IB_FIELD_UNREALISED = "config_db_ib_field_unrealised";
 	public static final String CONFIG_DB_IB_FIELD_IS_ACTIVE = "config_db_ib_field_is_active";
-	public static final String CONFIG_DB_IB_FIELD_POSITION = "config_db_ib_field_position";
 	public static final String CONFIG_DB_IB_FIELD_INVESTMENT = "config_db_ib_field_investment";
 	public static final String CONFIG_DB_IB_FIELD_END = "config_db_ib_field_end";
 	public static final String CONFIG_DB_IB_FIELD_REALISED = "config_db_ib_field_realised";
@@ -107,6 +108,7 @@ public abstract class types
 	public static final String CONFIG_DB_IB_FIELD_FLU2_MIN = "config_db_ib_field_flu2_min";
 	public static final String CONFIG_DB_IB_FIELD_FLU2_MAX = "config_db_ib_field_flu2_max";	
 	public static final String CONFIG_DB_IB_FIELD_FLU_PRICE = "config_db_ib_field_flu_price";	
+	public static final String CONFIG_DB_IB_FIELD_VAR_TOT = "config_db_ib_field_var_tot";	
 
 	public static final String CONFIG_DB_IB_FIELD_APP = "config_db_ib_field_app";	
 	public static final String CONFIG_DB_IB_FIELD_CONN_ID = "config_db_ib_field_conn_id";
@@ -116,6 +118,10 @@ public abstract class types
 	public static final String CONFIG_DB_IB_FIELD_ADDITIONAL = "config_db_ib_field_additional";	
 	public static final String CONFIG_DB_IB_FIELD_TIME2 = "config_db_ib_field_time2";	
 
+	public static final String CONFIG_DB_IB_FIELD_ID = "config_db_ib_field_id";
+	public static final String CONFIG_DB_IB_FIELD_TYPE = "config_db_ib_field_type";
+	public static final String CONFIG_DB_IB_FIELD_DATA_TYPE = "config_db_ib_field_data_type";
+	
 	public static final String ORDERS = "orders";
 	public static final String ORDERS_CANCEL = "orders_cancel";
 	public static final String ORDERS_PLACE = "orders_place";
@@ -159,8 +165,6 @@ public abstract class types
 	public static final String SYNC_GET_FUNDS = "sync_get_funds";
 	public static final String SYNC_GET_ID = "sync_get_id";
 	public static final String SYNC_GET_ORDERS = "sync_get_orders";
-	public static final String SYNC_GET_POSITIONS = "sync_get_positions";
-	public static final String SYNC_GET_UNREALISED = "sync_get_unrealised";
 	public static final String SYNC_GET_ERROR = "sync_get_error";
 	public static final String SYNC_ORDERS = ORDERS;
 	public static final String SYNC_OUT = "sync_out";
@@ -228,7 +232,9 @@ public abstract class types
 			CONFIG_DB_IB_WATCHLIST_SOURCE,
 			CONFIG_DB_IB_APPS,
 			CONFIG_DB_IB_APPS_SOURCE,	
-
+			CONFIG_DB_IB_TEMP_ASYNC_DATA,
+			CONFIG_DB_IB_TEMP_ASYNC_DATA_SOURCE,
+			
 			CONFIG_DB_IB_FIELD,
 			CONFIG_DB_IB_FIELD_USER, CONFIG_DB_IB_FIELD_SIZE, CONFIG_DB_IB_FIELD_TIME, CONFIG_DB_IB_FIELD_SYMBOL, 
 			CONFIG_DB_IB_FIELD_PRICE, CONFIG_DB_IB_FIELD_OPEN, CONFIG_DB_IB_FIELD_CLOSE, CONFIG_DB_IB_FIELD_LOW, 
@@ -241,12 +247,13 @@ public abstract class types
 			CONFIG_DB_IB_FIELD_STATUS, CONFIG_DB_IB_FIELD_STATUS2, CONFIG_DB_IB_FIELD_IS_MARKET, CONFIG_DB_IB_FIELD_PERC_MONEY, 
 			CONFIG_DB_IB_FIELD_REQUEST, CONFIG_DB_IB_FIELD_TYPE_ORDER, CONFIG_DB_IB_FIELD_TYPE_PLACE, CONFIG_DB_IB_FIELD_TYPE_MAIN, 
 			CONFIG_DB_IB_FIELD_TYPE_SEC, CONFIG_DB_IB_FIELD_TIME_ELAPSED, CONFIG_DB_IB_FIELD_ELAPSED_INI, CONFIG_DB_IB_FIELD_UNREALISED, 
-			CONFIG_DB_IB_FIELD_IS_ACTIVE, CONFIG_DB_IB_FIELD_POSITION, CONFIG_DB_IB_FIELD_INVESTMENT, CONFIG_DB_IB_FIELD_END, 
-			CONFIG_DB_IB_FIELD_REALISED, CONFIG_DB_IB_FIELD_PRICE_INI, CONFIG_DB_IB_FIELD_PRICE_MIN, CONFIG_DB_IB_FIELD_PRICE_MAX, 
-			CONFIG_DB_IB_FIELD_VOLUME_INI, CONFIG_DB_IB_FIELD_VOLUME_MIN, CONFIG_DB_IB_FIELD_VOLUME_MAX, CONFIG_DB_IB_FIELD_FLU, 
-			CONFIG_DB_IB_FIELD_FLU2, CONFIG_DB_IB_FIELD_FLU2_MIN, CONFIG_DB_IB_FIELD_FLU2_MAX, CONFIG_DB_IB_FIELD_FLU_PRICE, 
+			CONFIG_DB_IB_FIELD_IS_ACTIVE, CONFIG_DB_IB_FIELD_INVESTMENT, CONFIG_DB_IB_FIELD_END, CONFIG_DB_IB_FIELD_REALISED, 
+			CONFIG_DB_IB_FIELD_PRICE_INI, CONFIG_DB_IB_FIELD_PRICE_MIN, CONFIG_DB_IB_FIELD_PRICE_MAX, CONFIG_DB_IB_FIELD_VOLUME_INI, 
+			CONFIG_DB_IB_FIELD_VOLUME_MIN, CONFIG_DB_IB_FIELD_VOLUME_MAX, CONFIG_DB_IB_FIELD_FLU, CONFIG_DB_IB_FIELD_FLU2, 
+			CONFIG_DB_IB_FIELD_FLU2_MIN, CONFIG_DB_IB_FIELD_FLU2_MAX, CONFIG_DB_IB_FIELD_FLU_PRICE, CONFIG_DB_IB_FIELD_VAR_TOT, 
 			CONFIG_DB_IB_FIELD_APP, CONFIG_DB_IB_FIELD_CONN_ID, CONFIG_DB_IB_FIELD_CONN_TYPE, CONFIG_DB_IB_FIELD_COUNT, 
-			CONFIG_DB_IB_FIELD_ERROR, CONFIG_DB_IB_FIELD_ADDITIONAL, CONFIG_DB_IB_FIELD_TIME2,
+			CONFIG_DB_IB_FIELD_ERROR, CONFIG_DB_IB_FIELD_ADDITIONAL, CONFIG_DB_IB_FIELD_TIME2, CONFIG_DB_IB_FIELD_ID, 
+			CONFIG_DB_IB_FIELD_TYPE, CONFIG_DB_IB_FIELD_DATA_TYPE,
 			
 			ORDERS,
 			ORDERS_CANCEL, ORDERS_PLACE, ORDERS_PLACE_MARKET, ORDERS_PLACE_STOP, ORDERS_PLACE_LIMIT, ORDERS_PLACE_STOP_LIMIT, ORDERS_UPDATE,
@@ -266,7 +273,7 @@ public abstract class types
 			
 			SYNC,
 			SYNC_GET,
-			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_ORDERS, SYNC_GET_POSITIONS, SYNC_GET_UNREALISED, SYNC_GET_ERROR,
+			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_ORDERS, SYNC_GET_ERROR,
 			SYNC_OUT,
 			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_STRINGS, SYNC_OUT_ORDERS, 
 			SYNC_ORDERS,

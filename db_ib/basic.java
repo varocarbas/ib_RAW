@@ -29,6 +29,8 @@ public abstract class basic
 		remote.__truncate(true);
 		
 		trades.__truncate(true);
+		
+		common.truncate_all_temp();
 	}
 	
 	public static boolean exists() { return common.exists(SOURCE, get_where_user()); }

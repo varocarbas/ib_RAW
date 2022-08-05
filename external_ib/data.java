@@ -37,6 +37,8 @@ public abstract class data
 	
 	//------
 
+	public static final int MAX_TICK = TICK_HALTED;
+	
 	public static final int WRONG_DATA = 0;
 	public static final int WRONG_HALTED = HALTED_NA - 1;
 	

@@ -9,7 +9,7 @@ import accessory.db_where;
 
 import accessory.strings;
 import accessory_ib.types;
-import ib._order;
+import ib.order;
 
 public abstract class orders 
 {
@@ -58,9 +58,9 @@ public abstract class orders
 
 	public static boolean is_inactive(int order_id_, boolean is_main_) { return exists_internal(order_id_, is_main_, get_where_inactive()); }
 
-	public static _order get_to_order(int order_id_main_) { return to_order(get(order_id_main_)); }
+	public static order get_to_order(int order_id_main_) { return to_order(get(order_id_main_)); }
 	
-	public static _order get_to_order(String symbol_) { return to_order(get(symbol_)); }
+	public static order get_to_order(String symbol_) { return to_order(get(symbol_)); }
 
 	public static String get_symbol(int order_id_main_) { return common.get_string(SOURCE, SYMBOL, get_where_order_id(order_id_main_)); }
 
@@ -93,7 +93,7 @@ public abstract class orders
 	
 	public static String get_status(int order_id_main_) { return get_status_common(get_where_order_id(order_id_main_)); }
 	
-	public static boolean insert_update(_order order_) 
+	public static boolean insert_update(order order_) 
 	{ 
 		boolean output = false;
 		if (order_ == null) return output;
@@ -105,7 +105,7 @@ public abstract class orders
 		return output;
 	}
 
-	public static boolean update(_order order_) 
+	public static boolean update(order order_) 
 	{ 
 		boolean output = false;
 		if (order_ == null) return output;
@@ -127,7 +127,7 @@ public abstract class orders
 	
 	public static boolean delete_except(Integer[] order_ids_main_) { return (arrays.is_ok(order_ids_main_) ? common.delete(SOURCE, common.get_where_order_id(SOURCE, order_ids_main_, false)) : delete()); }
 
-	public static _order to_order(HashMap<String, String> db_)
+	public static order to_order(HashMap<String, String> db_)
 	{
 		String type_place = get_type_place_from_key((String)arrays.get_value(db_, TYPE_PLACE));
 		String symbol = (String)arrays.get_value(db_, SYMBOL);
@@ -140,12 +140,12 @@ public abstract class orders
 		
 		int id_main = strings.to_number_int((String)arrays.get_value(db_, ORDER_ID_MAIN));
 
-		return new _order(type_place, symbol, quantity, stop, start, start2, id_main);
+		return new order(type_place, symbol, quantity, stop, start, start2, id_main);
 	}
 
-	public static HashMap<String, Object> to_hashmap(_order order_) { return to_hashmap(order_, false); }
+	public static HashMap<String, Object> to_hashmap(order order_) { return to_hashmap(order_, false); }
 	
-	public static HashMap<String, Object> to_hashmap(_order order_, boolean only_basic_)
+	public static HashMap<String, Object> to_hashmap(order order_, boolean only_basic_)
 	{
 		HashMap<String, Object> db = new HashMap<String, Object>();
 		if (order_ == null) return db;
@@ -175,7 +175,7 @@ public abstract class orders
 		return db;
 	}
 	
-	public static boolean is_market(_order order_) { return (order_ != null && (order_.is_market(true) || order_.is_market(false))); } 
+	public static boolean is_market(order order_) { return (order_ != null && (order_.is_market(true) || order_.is_market(false))); } 
 	
 	public static String get_type_place_from_key(String key_) { return common.get_type_from_key(key_, ib.orders.PLACE); }
 
@@ -226,13 +226,13 @@ public abstract class orders
 
 	private static String get_status_common(String where_) { return common.get_type(SOURCE, STATUS, ib.orders.STATUS, where_); }
 
-	private static void sync_tables(_order order_)
+	private static void sync_tables(order order_)
 	{
 		sync_tables_remote(order_);
 		sync_tables_trades(order_);		
 	}
 
-	private static void sync_tables_remote(_order order_)
+	private static void sync_tables_remote(order order_)
 	{
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
@@ -245,7 +245,7 @@ public abstract class orders
 		remote.update_order_id(order_.get_id_main(), vals);
 	}
 
-	private static void sync_tables_trades(_order order_)
+	private static void sync_tables_trades(order order_)
 	{
 		if (ib.common.price_is_ok(order_.get_stop())) trades.update_stop(order_.get_id_main(), order_.get_stop());	
 	}

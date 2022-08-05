@@ -18,7 +18,6 @@ public abstract class common
 	public static final double WRONG_SIZE = 0.0;
 	
 	public static final double WRONG_QUANTITY = 0.0;
-	public static final double WRONG_POSITION = 0.0;
 	public static final double WRONG_MONEY = numbers.MIN_DECIMAL;
 	
 	public static final int WRONG_ID = -1;
@@ -38,8 +37,6 @@ public abstract class common
 	
 	public static double adapt_money(double val_) { return db_ib.common.adapt_money(val_); }
 
-	public static double adapt_position(double val_) { return db_ib.common.adapt_position(val_); }
-
 	public static String check_symbol(String symbol_)
 	{
 		String symbol = symbol_;
@@ -53,8 +50,6 @@ public abstract class common
 	public static double get_max_price() { return db_ib.common.get_max_val(db_ib.common.FIELD_PRICE); }
 
 	public static double get_max_size() { return db_ib.common.get_max_val(db_ib.common.FIELD_VOLUME); }
-
-	public static double get_max_position() { return db_ib.common.get_max_val(db_ib.common.FIELD_POSITION); }
 
 	public static double get_max_money() { return db_ib.common.get_max_val(db_ib.common.FIELD_MONEY); }
 
@@ -73,8 +68,6 @@ public abstract class common
 	public static boolean price_is_ok(double val_) { return (val_ > WRONG_PRICE && val_ <= get_max_price()); }
 
 	public static boolean size_is_ok(double val_) { return (val_ > WRONG_SIZE && val_ <= get_max_size()); }
-
-	public static boolean position_is_ok(double val_) { return (val_ > WRONG_POSITION && val_ <= get_max_position()); }
 
 	public static boolean money_is_ok(double val_) 
 	{ 

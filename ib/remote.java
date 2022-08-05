@@ -8,22 +8,6 @@ import accessory_ib.types;
 
 public abstract class remote 
 {
-	public static final String FIELD_SYMBOL = db_ib.remote.SYMBOL;
-	public static final String FIELD_ORDER_ID_MAIN = db_ib.remote.ORDER_ID_MAIN;
-	public static final String FIELD_ORDER_ID_SEC = db_ib.remote.ORDER_ID_SEC;
-	public static final String FIELD_STATUS = db_ib.remote.STATUS;
-	public static final String FIELD_STATUS2 = db_ib.remote.STATUS2;
-	public static final String FIELD_START = db_ib.remote.START;
-	public static final String FIELD_START2 = db_ib.remote.START2;
-	public static final String FIELD_STOP = db_ib.remote.STOP;
-	public static final String FIELD_IS_MARKET = db_ib.remote.IS_MARKET;
-	public static final String FIELD_QUANTITY = db_ib.remote.QUANTITY;
-	public static final String FIELD_PERC_MONEY = db_ib.remote.PERC_MONEY;
-	public static final String FIELD_PRICE = db_ib.remote.PRICE;
-	public static final String FIELD_ERROR = db_ib.remote.ERROR;
-	public static final String FIELD_REQUEST = db_ib.remote.REQUEST;
-	public static final String FIELD_TYPE_ORDER = db_ib.remote.TYPE_ORDER;
-	public static final String FIELD_TIME2 = db_ib.remote.TIME2;
 	
 	public static final String STATUS = types.REMOTE_STATUS;
 	public static final String STATUS_ACTIVE = types.REMOTE_STATUS_ACTIVE;
@@ -51,7 +35,7 @@ public abstract class remote
 	public static final String DEFAULT_STATUS = STATUS_ACTIVE;
 	public static final String DEFAULT_STATUS2 = STATUS2_PENDING;
 	public static final boolean DEFAULT_WAIT_FOR_EXECUTION = true;
-
+	
 	public static int __request_place(String type_place_, String symbol_, double stop_, double start_, double quantity_) { return __request_place(type_place_, symbol_, stop_, start_, quantity_, DEFAULT_WAIT_FOR_EXECUTION); }
 
 	public static int __request_place(String type_place_, String symbol_, double stop_, double start_, double quantity_, boolean wait_for_execution_) { return remote_request.__place(type_place_, symbol_, stop_, start_, quantity_, wait_for_execution_); }
@@ -75,8 +59,10 @@ public abstract class remote
 	public static boolean request_update(int request_, String type_update_, double val_) { return request_update(request_, type_update_, val_, DEFAULT_WAIT_FOR_EXECUTION); }
 
 	public static boolean request_update(int request_, String type_update_, double val_, boolean wait_for_execution_) { return remote_request.update(request_, type_update_, val_, wait_for_execution_); }
-		
-	public static void __execute_all() { remote_execute.__execute_all(); }
+
+	public static void execute_all() { execute_all(true); }
+	
+	public static void execute_all(boolean any_user_) { remote_execute.execute_all(any_user_); }
 
 	public static void wait_for_execution(int request_) { remote_request.wait_for_execution(request_); }
 
@@ -91,36 +77,66 @@ public abstract class remote
 	public static boolean is_active(int request_) { return db_ib.remote.is_active(request_); }
 
 	public static boolean is_active(String symbol_) { return db_ib.remote.is_active(symbol_); }
-	
-	static HashMap<String, String> get_vals(int request_) { return db_ib.remote.get_vals(request_); }
 
-	static int get_request(HashMap<String, String> vals_) { return (int)db_ib.remote.get_val(FIELD_REQUEST, vals_); }
+	public static String get_status2_request() { return STATUS2_PENDING; }
+
+	public static String get_status2_execute(boolean is_ok_) { return (is_ok_ ? remote.STATUS2_EXECUTED : remote.STATUS2_ERROR); }
+	
+	static HashMap<String, String> get_vals(int request_, boolean is_quick_) { return db_ib.remote.get_vals(request_, is_quick_); }
+
+	static int get_request(HashMap<String, String> vals_) { return get_request(vals_, false); }
+
+	static int get_request(HashMap<String, String> vals_, boolean is_quick_) { return (int)db_ib.remote.get_val(db_ib.remote.REQUEST, vals_, is_quick_); }
 
 	static int get_order_id_main(int request_) { return db_ib.remote.get_order_id(request_); }
 
-	static int get_order_id_main(HashMap<String, String> vals_) { return (int)db_ib.remote.get_val(FIELD_ORDER_ID_MAIN, vals_); }
+	static int get_order_id_main(HashMap<String, String> vals_) { return get_order_id_main(vals_, false); }
 
-	static String get_status(HashMap<String, String> vals_) { return (String)db_ib.remote.get_val(FIELD_STATUS, vals_); }
+	static int get_order_id_main(HashMap<String, String> vals_, boolean is_quick_) { return (int)db_ib.remote.get_val(db_ib.remote.ORDER_ID_MAIN, vals_, is_quick_); }
 
-	static String get_status2(HashMap<String, String> vals_) { return (String)db_ib.remote.get_val(FIELD_STATUS2, vals_); }
+	static String get_status(HashMap<String, String> vals_) { return get_status(vals_, false); }
 
-	static String get_type(HashMap<String, String> vals_) { return (String)db_ib.remote.get_val(FIELD_TYPE_ORDER, vals_); }
+	static String get_status(HashMap<String, String> vals_, boolean is_quick_) { return (String)db_ib.remote.get_val(db_ib.remote.STATUS, vals_, is_quick_); }
+	
+	static String get_status2(HashMap<String, String> vals_) { return get_status2(vals_, false); }
+	
+	static String get_status2(HashMap<String, String> vals_, boolean is_quick_) { return (String)db_ib.remote.get_val(db_ib.remote.STATUS2, vals_, is_quick_); }
 
-	static String get_symbol(HashMap<String, String> vals_) { return (String)db_ib.remote.get_val(FIELD_SYMBOL, vals_); }
+	static String get_type(HashMap<String, String> vals_) { return get_type(vals_, false); }
 
-	static boolean get_is_market(HashMap<String, String> vals_) { return (boolean)db_ib.remote.get_val(FIELD_IS_MARKET, vals_); }
+	static String get_type(HashMap<String, String> vals_, boolean is_quick_) { return (String)db_ib.remote.get_val(db_ib.remote.TYPE_ORDER, vals_, is_quick_); }
 
-	static double get_stop(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(FIELD_STOP, vals_); }
+	static String get_symbol(HashMap<String, String> vals_) { return get_symbol(vals_, false); }
 
-	static double get_start(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(FIELD_START, vals_); }
+	static String get_symbol(HashMap<String, String> vals_, boolean is_quick_) { return (String)db_ib.remote.get_val(db_ib.remote.SYMBOL, vals_, is_quick_); }
 
-	static double get_start2(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(FIELD_START2, vals_); }
+	static boolean get_is_market(HashMap<String, String> vals_) { return get_is_market(vals_, false); }
 
-	static double get_quantity(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(FIELD_QUANTITY, vals_); }
+	static boolean get_is_market(HashMap<String, String> vals_, boolean is_quick_) { return (boolean)db_ib.remote.get_val(db_ib.remote.IS_MARKET, vals_, is_quick_); }
 
-	static double get_perc_money(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(FIELD_PERC_MONEY, vals_); }
+	static double get_stop(HashMap<String, String> vals_) { return get_stop(vals_, false); }
 
-	static double get_price(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(FIELD_PRICE, vals_); }
+	static double get_stop(HashMap<String, String> vals_, boolean is_quick_) { return (double)db_ib.remote.get_val(db_ib.remote.STOP, vals_, is_quick_); }
+
+	static double get_start(HashMap<String, String> vals_) { return get_start(vals_, false); }
+
+	static double get_start(HashMap<String, String> vals_, boolean is_quick_) { return (double)db_ib.remote.get_val(db_ib.remote.START, vals_, is_quick_); }
+
+	static double get_start2(HashMap<String, String> vals_) { return get_start2(vals_, false); }
+
+	static double get_start2(HashMap<String, String> vals_, boolean is_quick_) { return (double)db_ib.remote.get_val(db_ib.remote.START2, vals_, is_quick_); }
+
+	static double get_quantity(HashMap<String, String> vals_) { return get_quantity(vals_, false); }
+
+	static double get_quantity(HashMap<String, String> vals_, boolean is_quick_) { return (double)db_ib.remote.get_val(db_ib.remote.QUANTITY, vals_, is_quick_); }
+
+	static double get_perc_money(HashMap<String, String> vals_) { return get_perc_money(vals_, false); }
+
+	static double get_perc_money(HashMap<String, String> vals_, boolean is_quick_) { return (double)db_ib.remote.get_val(db_ib.remote.PERC_MONEY, vals_, is_quick_); }
+
+	static double get_price(HashMap<String, String> vals_) { return get_price(vals_, false); }
+
+	static double get_price(HashMap<String, String> vals_, boolean is_quick_) { return (double)db_ib.remote.get_val(db_ib.remote.PRICE, vals_, is_quick_); }
 	
 	static boolean order_id_is_ok(int order_id_main_, boolean is_cancel_) 
 	{ 
@@ -135,17 +151,17 @@ public abstract class remote
 		return is_ok;
 	}
 	
-	static boolean order_was_updated(HashMap<String, String> vals_)
+	static boolean order_was_updated(HashMap<String, String> vals_, boolean is_quick_)
 	{
 		boolean output = false;
 		if (!arrays.is_ok(vals_)) return output;
 		
-		int order_id = (int)get_order_id_main(vals_);
-		String type = (String)get_type(vals_);
+		int order_id = (int)get_order_id_main(vals_, is_quick_);
+		String type = (String)get_type(vals_, is_quick_);
 		
-		double stop = (double)get_stop(vals_);
-		double start = (double)get_start(vals_);
-		double start2 = (double)get_start2(vals_);
+		double stop = (double)get_stop(vals_, is_quick_);
+		double start = (double)get_start(vals_, is_quick_);
+		double start2 = (double)get_start2(vals_, is_quick_);
 		
 		if (ib.orders.is_update(type)) output = db_ib.orders.order_was_updated(order_id, type, stop, start, start2);
 		else if (ib.orders.is_cancel(type)) output = ib.orders.order_is_inactive(order_id);

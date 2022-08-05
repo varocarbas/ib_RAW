@@ -1,5 +1,6 @@
 package ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.parent_static;
@@ -14,38 +15,43 @@ public abstract class trades extends parent_static
 	public static final int PRICE_IB = parent_async_data.PRICE_IB;
 	public static final int HALTED_IB = parent_async_data.HALTED_IB;
 
-	public static final boolean DEFAULT_TRIGGER_AUTOMATICALLY = true;
+	public static final boolean DEFAULT_SYNCED_WITH_EXECS = true;
 	
-	private static boolean _trigger_automatically = DEFAULT_TRIGGER_AUTOMATICALLY; 
+	private static boolean _synced_with_execs = DEFAULT_SYNCED_WITH_EXECS; 
+	
+	public static boolean is_ok() { return enabled(); }
 
-	public static boolean is_ok() { return async_data_trades._instance._enabled; }
+	public static void enable() { enabled(true); }
+
+	public static void disable() { enabled(false); }
 	
-	public static void enable() 
+	public static boolean enabled() { return async_data_trades._instance._enabled; }
+	
+	public static void enabled(boolean enabled_) 
 	{ 
-		async_data_trades._instance.update_enabled(true); 
+		async_data_trades._instance._enabled = enabled_; 
 	
-		execs.enable(false);
+		if (_synced_with_execs) execs.enabled(enabled_, false);
 	}
 	
-	public static void disable() 
+	public static boolean synced_with_execs() { return _synced_with_execs; }
+	
+	public static void synced_with_execs(boolean synced_with_execs_) 
 	{ 
-		async_data_trades._instance.update_enabled(false); 
-		
-		execs.disable(false);
+		_synced_with_execs = synced_with_execs_; 
+	
+		if (synced_with_execs_) execs.enabled(is_ok(), false);
+		else execs.disable(false);
 	}
-	
-	public static boolean triggered_automatically() { return _trigger_automatically; }
-	
-	public static void trigger_automatically(boolean trigger_automatically_) { _trigger_automatically = trigger_automatically_; }
 	
 	public static void update_logs_to_screen(boolean logs_to_screen_) { async_data_trades._instance.update_logs_to_screen_internal(logs_to_screen_); }
 	
 	public static void __order_status(int order_id_, String status_ib_) 
 	{ 
-		if (!triggered_automatically()) return;
+		if (!synced_with_execs()) return;
 		
 		__lock();
-		
+
 		async_trades.start(order_id_, status_ib_);
 
 		__unlock();
@@ -53,9 +59,7 @@ public abstract class trades extends parent_static
 	
 	public static void start(int order_id_, double start_) { async_trades.start(order_id_, start_); }
 	
-	public static void __end(int order_id_, double end_) { async_trades.__end(order_id_, end_); }
-	
-	public static double get_position(int order_id_main_) { return db_ib.trades.get_position(order_id_main_); }
+	public static void end(int order_id_, double end_) { async_trades.end(order_id_, end_); }
 
 	public static HashMap<Integer, String> populate_all_prices()
 	{		
@@ -103,5 +107,7 @@ public abstract class trades extends parent_static
 		return (strings.is_ok(symbol) ? db_ib.trades.exists(symbol) : false); 
 	}
 	
+	public static ArrayList<String> get_active_symbols() { return async_data_trades._instance.get_active_symbols(); }
+
 	static boolean exists(int order_id_main_) { return db_ib.trades.order_id_exists(order_id_main_, true); }
 }

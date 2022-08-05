@@ -1,5 +1,6 @@
 package ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.parent_static;
@@ -18,16 +19,21 @@ public abstract class watchlist extends parent_static
 	public static final int VOLUME_IB = parent_async_data.VOLUME_IB;
 	public static final int HALTED_IB = parent_async_data.HALTED_IB;
 	
-	public static void update_logs_to_screen(boolean logs_to_screen_) { async_data_watchlist._instance.update_logs_to_screen_internal(logs_to_screen_); }
-
-	public static void __add(String symbol_) 
+	public static void update_logs_to_screen(boolean logs_to_screen_) { async_data_watchlist_new.logs_to_screen(logs_to_screen_); }
+	
+	public static boolean __add(String symbol_) 
 	{ 
 		__lock();
 		
+		boolean added = false;
+		
 		String symbol = common.normalise_symbol(symbol_);
-		if (strings.is_ok(symbol)) async_watchlist.add(symbol); 
+
+		if (strings.is_ok(symbol)) added = async_data_watchlist_new._start(symbol, true); 
 		
 		__unlock();
+		
+		return added;
 	}
 
 	public static void __remove(String symbol_) 
@@ -35,10 +41,20 @@ public abstract class watchlist extends parent_static
 		__lock();
 		
 		String symbol = common.normalise_symbol(symbol_);
-		if (strings.is_ok(symbol)) async_watchlist.remove(symbol);  
+
+		if (strings.is_ok(symbol)) 
+		{
+			async_data_watchlist_new._stop(symbol, false);
+			
+			db_ib.watchlist.delete(symbol_);
+		}
 		
 		__unlock();
 	}
+
+	public static ArrayList<String> get_active_symbols() { return async_data_watchlist_new.get_active_symbols(); }
+
+	public static ArrayList<HashMap<String, String>> get_all_vals(boolean is_quick_) { return db_ib.watchlist.get_all_vals(is_quick_); }
 	
 	public static HashMap<Integer, String> populate_all_prices()
 	{		

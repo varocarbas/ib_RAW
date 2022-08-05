@@ -97,12 +97,6 @@ public class wrapper implements EWrapper
 
 	@Override
 	public void commissionReport(CommissionReport report_) { common_wrapper.__commission_report(report_); }
-
-	@Override
-	public void position(String account_, Contract contract_, double pos_, double avg_cost_) { common_wrapper.position(account_, contract_.symbol(), pos_); }
-
-	@Override
-	public void updatePortfolio(Contract contract_, double position_, double market_price_, double market_value_, double average_cost_, double unrealized_pnl_, double realized_pnl_, String account_name_) { common_wrapper.update_portfolio(account_name_, position_, unrealized_pnl_); }
 	
 	@Override
 	public void connectAck() 
@@ -126,7 +120,13 @@ public class wrapper implements EWrapper
 
 	//-----------------------------------------------------
 	//-----------------------------------------------------
-	
+
+	@Override
+	public void position(String account_, Contract contract_, double pos_, double avg_cost_) { }
+
+	@Override
+	public void updatePortfolio(Contract contract_, double position_, double market_price_, double market_value_, double average_cost_, double unrealized_pnl_, double realized_pnl_, String account_name_) { }
+
 	@Override
 	public void updateAccountValue(String key, String value, String currency, String accountName) { }
 
