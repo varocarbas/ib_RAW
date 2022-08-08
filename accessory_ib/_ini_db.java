@@ -12,7 +12,6 @@ import accessory.strings;
 import external_ib.contracts;
 import ib.conn;
 import db_ib.apps;
-import db_ib.temp_async_data;
 import db_ib.basic;
 import db_ib.common;
 import db_ib.execs;
@@ -113,7 +112,6 @@ public class _ini_db extends parent_ini_db
 		sources = add_source_trades(db, sources);
 		sources = add_source_watchlist(db, sources);
 		sources = add_source_apps(db, sources);
-		sources = add_source_temp_async_data(db, sources);
 		
 		boolean is_ok = populate_db(db, name, sources, setup_vals);
 		
@@ -306,21 +304,6 @@ public class _ini_db extends parent_ini_db
 		info.put(apps.ERROR, get_error());
 		info.put(apps.ADDITIONAL, get_string(db_ib.common.MAX_SIZE_ADDITIONAL));
 		info.put(apps.TIME2, get_time2());
-		
-		return add_source_common(db_, source, table, info, sources_);		
-	}
-	
-	private HashMap<String, Object[]> add_source_temp_async_data(String db_, HashMap<String, Object[]> sources_)
-	{
-		String source = temp_async_data.SOURCE;
-		String table = "temp_async_data";
-		
-		HashMap<String, db_field> info = new HashMap<String, db_field>();
-		
-		info.put(temp_async_data.SYMBOL, get_symbol(true));
-		info.put(temp_async_data.ID, get_int(true));
-		info.put(temp_async_data.TYPE, get_status_type());
-		info.put(temp_async_data.DATA_TYPE, get_tiny());
 		
 		return add_source_common(db_, source, table, info, sources_);		
 	}

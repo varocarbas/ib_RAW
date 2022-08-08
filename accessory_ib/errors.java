@@ -7,9 +7,9 @@ import accessory.arrays;
 import accessory.logs;
 import accessory.misc;
 import accessory.strings;
+import ib.async_data;
 import ib.common_xsync;
 import ib.conn;
-import ib.market;
 import ib.orders;
 import ib.sync;
 
@@ -21,7 +21,7 @@ public abstract class errors
 	
 	public static final String DEFAULT_WARNING = "WARNING";
 
-	public static void __wrapper_error(int id_, int code_, String message_)
+	public static void wrapper_error(int id_, int code_, String message_)
 	{
 		String message = (strings.is_ok(message_) ? message_ : strings.DEFAULT);
 		
@@ -65,7 +65,7 @@ public abstract class errors
 		
 		if (code_ == external_ib.errors.ERROR_200)
 		{
-			String symbol = market.__get_symbol(id_);
+			String symbol = async_data.get_symbol(id_);
 			if (strings.is_ok(symbol)) info.put("symbol", symbol);
 		}
 

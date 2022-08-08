@@ -31,7 +31,7 @@ public abstract class market
 	
 	public static void __backup() { common.__backup(SOURCE); }	
 
-	public static ArrayList<String> get_all_symbols() { return common.get_all_strings(SOURCE, SYMBOL, common.get_where(SOURCE, ENABLED, "1", false)); }
+	public static ArrayList<String> get_all_symbols() { return common.get_all_strings(SOURCE, SYMBOL, get_where_enabled()); }
 
 	public static boolean insert_all(ArrayList<String> symbols_) 
 	{ 
@@ -51,4 +51,6 @@ public abstract class market
 	public static HashMap<String, String> get_val(String symbol_) { return common.get_vals(SOURCE, null, common.get_where_symbol(SOURCE, symbol_)); }
 	
 	public static String[] get_fields() { return new String[] { SYMBOL, PRICE, SIZE, TIME, OPEN, CLOSE, LOW, HIGH, VOLUME, ASK, ASK_SIZE, BID, BID_SIZE, HALTED, HALTED_TOT, ENABLED }; }
+
+	public static String get_where_enabled() { return common.get_where(SOURCE, ENABLED, "1", false); }
 }

@@ -280,7 +280,7 @@ public class tests extends parent_tests
 		int pause2 = 2;
 		
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
-		String name = "__start_snapshot";
+		String name = "start_snapshot";
 		
 		int symbol_i = 0;
 		ArrayList<Object> args = new ArrayList<Object>();
@@ -291,7 +291,7 @@ public class tests extends parent_tests
 		
 		misc.pause_secs(pause1);
 
-		name = "__start_stream";
+		name = "start_stream";
 		
 		symbol_i++;
 		
@@ -303,7 +303,7 @@ public class tests extends parent_tests
 		
 		misc.pause_secs(pause1);
 
-		name = "__stop_all";
+		name = "stop_all";
 
 		is_ok = _instance.run_method(class0, name, null, null, null);
 		output.put(name, is_ok);
@@ -329,7 +329,7 @@ public class tests extends parent_tests
 		int pause2 = 2;
 		
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
-		String name = "__add";
+		String name = "add";
 		
 		String symbol = tests.get_symbol(0).getKey();
 		
@@ -341,7 +341,7 @@ public class tests extends parent_tests
 		misc.pause_secs(pause1);
 		output.put(name, is_ok);
 
-		name = "__remove";
+		name = "remove";
 		
 		args = new ArrayList<Object>();
 		args.add(symbol);
@@ -351,7 +351,7 @@ public class tests extends parent_tests
 		misc.pause_secs(pause1);
 		output.put(name, is_ok);
 		
-		market.__stop_all();
+		watchlist.remove_all();
 		misc.pause_secs(pause2);
 		
 		outputs.put(name0, output);

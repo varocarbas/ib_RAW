@@ -111,7 +111,7 @@ public abstract class common
 	public static final int MAX_SIZE_USER = 15;
 	public static final int MAX_SIZE_MONEY = 7;
 	public static final int MAX_SIZE_PRICE = 4;
-	public static final int MAX_SIZE_VOLUME = 4;
+	public static final int MAX_SIZE_VOLUME = 5;
 	public static final int MAX_SIZE_ERROR = 30;
 	public static final int MAX_SIZE_APP_NAME = 30;
 	public static final int MAX_SIZE_ADDITIONAL = 50;
@@ -130,13 +130,6 @@ public abstract class common
 		__backup(source_);
 		
 		accessory.db.truncate_table(source_);
-	}
-	
-	public static void truncate_all_temp() 
-	{
-		String[] sources = new String[] { temp_async_data.SOURCE };
-		
-		for (String source: sources) { accessory.db.truncate_table(source); }
 	}
 	
 	public static void __backup(String source_) 

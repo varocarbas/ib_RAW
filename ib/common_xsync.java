@@ -10,7 +10,7 @@ public abstract class common_xsync
 	static final int MIN_REQ_ID_SYNC = common.WRONG_ID + 1;
 	static final int MAX_REQ_ID_SYNC = MIN_REQ_ID_SYNC + 10; 
 	static final int MIN_REQ_ID_ASYNC = MAX_REQ_ID_SYNC + 1;
-	static final int MAX_REQ_ID_ASYNC = MIN_REQ_ID_ASYNC + 2500;
+	static final int MAX_REQ_ID_ASYNC = MIN_REQ_ID_ASYNC + 1000;
 	
 	private static final long DEFAULT_WAIT_SECS_SYNC = 60;
 	private static final long DEFAULT_WAIT_SECS_ASYNC = 60;

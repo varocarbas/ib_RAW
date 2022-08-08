@@ -3,10 +3,7 @@ package accessory_ib;
 import java.util.HashMap;
 
 import accessory.parent_ini_first;
-import ib.market;
 import ib.sync;
-import ib.trades;
-import ib.watchlist;
 
 public class _alls extends parent_ini_first
 {
@@ -16,17 +13,6 @@ public class _alls extends parent_ini_first
 	public static void populate() { _instance.populate_internal_common(); }
 	
 	public static HashMap<String, String> SYNC_GET_OUTS = null;
-	
-	public static HashMap<Integer, String> MARKET_PRICES = null;
-	public static HashMap<Integer, String> MARKET_SIZES = null;
-	public static HashMap<Integer, String> MARKET_GENERICS = null;
-	
-	public static HashMap<Integer, String> TRADES_PRICES = null;
-	public static HashMap<Integer, String> TRADES_GENERICS = null;
-	
-	public static HashMap<Integer, String> WATCHLIST_PRICES = null;
-	public static HashMap<Integer, String> WATCHLIST_SIZES = null;
-	public static HashMap<Integer, String> WATCHLIST_GENERICS = null;
 	
 	public static String[] EXTERNAL_CONTRACTS_SECURITIES = null;
 	
@@ -55,18 +41,7 @@ public class _alls extends parent_ini_first
 		accessory._alls.populate_types(types.populate_all_types());
 		
 		SYNC_GET_OUTS = sync.populate_all_get_outs();
-		
-		MARKET_PRICES = market.populate_all_prices();
-		MARKET_SIZES = market.populate_all_sizes();
-		MARKET_GENERICS = market.populate_all_generics();
-		
-		TRADES_PRICES = trades.populate_all_prices();
-		TRADES_GENERICS = trades.populate_all_generics();
-		
-		WATCHLIST_PRICES = watchlist.populate_all_prices();
-		WATCHLIST_SIZES = watchlist.populate_all_sizes();
-		WATCHLIST_GENERICS = watchlist.populate_all_generics();
-		
+				
 		EXTERNAL_CONTRACTS_SECURITIES = external_ib.contracts.populate_all_securities();
 		
 		EXTERNAL_DATA_TICKS = external_ib.data.populate_all_ticks();	

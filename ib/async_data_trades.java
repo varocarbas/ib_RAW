@@ -1,64 +1,89 @@
 package ib;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
-import accessory_ib._alls;
+import accessory.strings;
 import db_ib.trades;
 
-class async_data_trades extends parent_async_data 
+abstract class async_data_trades 
 {
+	public static final String _APP = "trades";
+
 	public static final String SOURCE = trades.SOURCE;
-	public static final int MAX_MINS_INACTIVE = parent_async_data.DEFAULT_MAX_MINS_INACTIVE;
+	public static final int MAX_MINS_INACTIVE = async_data.DEFAULT_MAX_MINS_INACTIVE;
 	
-	public static final String TYPE = TYPE_SNAPSHOT;
-	public static final int DATA = external_ib.data.DATA_LIVE;
+	public static final int MAX_SIMULTANEOUS_SYMBOLS = 50;
+	public static final int SIZE_GLOBALS = 2 * MAX_SIMULTANEOUS_SYMBOLS;
+	public static final int MAX_I = SIZE_GLOBALS - 1;
 	
-	public static async_data_trades _instance = instantiate();
-	
-	private static boolean _instantiated = false;
-	
-	public static void update_logs_to_screen(boolean logs_to_screen_) { _instance.update_logs_to_screen_internal(logs_to_screen_); }
+	public static final String DEFAULT_TYPE = async_data.TYPE_SNAPSHOT;
+	public static final int DEFAULT_DATA_TYPE = external_ib.data.DATA_LIVE;
 
-	public static boolean _start(String symbol_, boolean lock_) 
+	public static volatile String[] _stopping = new String[SIZE_GLOBALS];
+
+	public static volatile int _last_i_stopping = -1;
+	public static volatile boolean _enabled = async_data.DEFAULT_ENABLED;
+	public static volatile boolean _is_quick = async_data.DEFAULT_IS_QUICK;
+	public static volatile boolean _logs_to_screen = async_data.DEFAULT_LOGS_TO_SCREEN;
+	public static volatile int _pause_nonstop = async_data.DEFAULT_PAUSE_NONSTOP;
+
+	public static ArrayList<Integer> _fields = new ArrayList<Integer>();
+
+	public static boolean _includes_time = false;
+	public static boolean _includes_time_elapsed = true;
+	public static boolean _includes_halted = true;
+	public static boolean _includes_halted_tot = false;
+	public static boolean _disable_asap = true;
+
+	public static boolean is_ok() { return _enabled; }
+	
+	public static boolean logs_to_screen() { return _logs_to_screen; }
+
+	public static void logs_to_screen(boolean logs_to_screen_) { _logs_to_screen = logs_to_screen_; }
+
+	public static void stop_all() { async_data.stop_all(_APP, false); }
+	
+	public static void tick_price(int id_, int field_ib_, double price_) { async_data.tick_price(_APP, id_, field_ib_, price_); }
+	
+	public static void tick_size(int id_, int field_ib_, int size_) { async_data.tick_size(_APP, id_, field_ib_, size_); }
+	
+	public static void tick_generic(int id_, int tick_, double value_) { async_data.tick_generic(_APP, id_, tick_, value_); }
+
+	public static void end_snapshot(int id_) { async_data.end_snapshot(_APP, id_); }
+
+	public static void tick_price_specific(int id_, int field_ib_, double price_, String symbol_)
 	{
-		_instance.enable();
-		
-		return (_instance._start_snapshot_internal(symbol_, DATA, lock_) != WRONG_ID); 
+		if (field_ib_ != async_data.PRICE_IB) return;
+
+		trades.update_unrealised(symbol_);
 	}
 	
-	public static void _stop(String symbol_, boolean lock_) { if (_instance.symbol_exists(symbol_)) _instance._stop_all_internal(symbol_, lock_); }
-	
-	public static boolean __stop_snapshot(int id_) { return _instance.__stop_snapshot_internal(id_); }
-
-	public static void __tick_price(int id_, int field_ib_, double price_) { _instance.__tick_price_internal(id_, field_ib_, price_); }
-	
-	public static void __tick_size(int id_, int field_ib_, int size_) { _instance.__tick_size_internal(id_, field_ib_, size_); }
-	
-	public static void __tick_generic(int id_, int tick_, double value_) { _instance.__tick_generic_internal(id_, tick_, value_); }
-	
-	void tick_price_specific(int id_, int field_ib_, double price_)
+	public static void populate_fields()
 	{
-		if (field_ib_ != PRICE_IB) return;
-
-		trades.update_unrealised(_get_symbol(id_, false));
+		if (_fields.size() > 0) return;
+		
+		_fields.add(async_data.PRICE_IB);
+		_fields.add(async_data.HALTED_IB);
 	}
 	
-	protected HashMap<Integer, String> get_all_prices() { return _alls.TRADES_PRICES; }
+	public static ArrayList<String> get_active_symbols() { return async_data.get_active_symbols(_APP); }
 	
-	protected HashMap<Integer, String> get_all_sizes() { return null; }
+	public static boolean start(String symbol_) { return start(symbol_, DEFAULT_TYPE, DEFAULT_DATA_TYPE); }
 	
-	protected HashMap<Integer, String> get_all_generics() { return _alls.TRADES_GENERICS; }
-	
-	protected String[] get_fields() { return trades.get_fields(); }
-		
-	private static async_data_trades instantiate()
+	public static void stop(String symbol_) 
 	{
-		if (_instantiated) return _instance;
+		String symbol = common.normalise_symbol(symbol_);
 		
-		_instantiated = true;
-		
-		return (async_data_trades)parent_async_data.instantiate(new async_data_trades(), SOURCE, ID_TRADES, MAX_MINS_INACTIVE, true, parent_async_data.DEFAULT_INCLUDES, parent_async_data.DEFAULT_INCLUDES, true, true, parent_async_data.DEFAULT_DISABLE_ASAP);		
+		if (strings.is_ok(symbol) && async_data.symbol_is_running(_APP, symbol)) async_data.stop(_APP, symbol, false);
 	}
 	
-	private async_data_trades() { }
+	private static boolean start(String symbol_, String type_, int data_type_) 
+	{
+		boolean started = false;
+		
+		String symbol = common.normalise_symbol(symbol_);
+		if (async_data.symbol_is_running(_APP, symbol)) return started;
+
+		return async_data.start_common(_APP, symbol, type_, data_type_);
+	}
 }

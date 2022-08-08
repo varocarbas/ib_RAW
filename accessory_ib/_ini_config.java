@@ -4,9 +4,9 @@ import java.util.HashMap;
 
 import accessory.parent_ini_config;
 import external_ib.contracts;
+import ib.async_data;
 import ib.basic;
 import ib.order;
-import ib.parent_async_data;
 
 public class _ini_config extends parent_ini_config 
 {
@@ -51,8 +51,7 @@ public class _ini_config extends parent_ini_config
 		String type = types.CONFIG_ASYNC;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(parent_async_data.CONFIG_SNAPSHOT_QUICK, parent_async_data.DEFAULT_SNAPSHOT_QUICK);
-		vals.put(parent_async_data.CONFIG_SNAPSHOT_NONSTOP, parent_async_data.DEFAULT_SNAPSHOT_NONSTOP);
+		vals.put(async_data.CONFIG_SNAPSHOT_NONSTOP, async_data.DEFAULT_SNAPSHOT_NONSTOP);
 		
 		return populate(type, null, vals);
 	}

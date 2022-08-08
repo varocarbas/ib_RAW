@@ -9,10 +9,9 @@ public abstract class types
 	public static final String CONFIG_ORDERS_QUANTITIES_INT = "config_orders_quantities_int";
 	
 	public static final String CONFIG_ASYNC = "config_async";
-	public static final String CONFIG_ASYNC_MARKET = "config_async_market";
-	public static final String CONFIG_ASYNC_MARKET_SNAPSHOT = "config_async_market_snapshot";
-	public static final String CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK = "config_async_market_snapshot_quick";
-	public static final String CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP = "config_async_market_snapshot_nonstop";
+	public static final String CONFIG_ASYNC_DATA = "config_async_data";
+	public static final String CONFIG_ASYNC_DATA_SNAPSHOT = "config_async_data_snapshot";
+	public static final String CONFIG_ASYNC_DATA_SNAPSHOT_NONSTOP = "config_async_data_snapshot_nonstop";
 
 	public static final String CONFIG_CONTRACT = "config_contract";
 	public static final String CONFIG_CONTRACT_SECURITY_TYPE = "config_contract_security_type";
@@ -204,9 +203,9 @@ public abstract class types
 			CONFIG_ORDERS_TIF, CONFIG_ORDERS_QUANTITIES_INT,
 	
 			CONFIG_ASYNC,
-			CONFIG_ASYNC_MARKET,
-			CONFIG_ASYNC_MARKET_SNAPSHOT,
-			CONFIG_ASYNC_MARKET_SNAPSHOT_QUICK, CONFIG_ASYNC_MARKET_SNAPSHOT_NONSTOP, 
+			CONFIG_ASYNC_DATA,
+			CONFIG_ASYNC_DATA_SNAPSHOT,
+			CONFIG_ASYNC_DATA_SNAPSHOT_NONSTOP, 
 			
 			CONFIG_CONTRACT,
 			CONFIG_CONTRACT_SECURITY_TYPE, CONFIG_CONTRACT_CURRENCY, 

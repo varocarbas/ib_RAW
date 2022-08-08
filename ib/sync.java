@@ -438,8 +438,7 @@ public abstract class sync extends parent_static
 
 		_error_triggered = false;
 
-		if (is_get) _getting = false;
-		else _order_id = WRONG_ORDER_ID;
+		if (!is_get) _order_id = WRONG_ORDER_ID;
 		
 		return is_ok;
 	}

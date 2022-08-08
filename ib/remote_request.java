@@ -10,7 +10,7 @@ import accessory.strings;
 
 abstract class remote_request extends parent_static 
 {
-	public static final long TIMEOUT = 5l;
+	public static final long TIMEOUT = 20l;
 
 	public static int __place(String type_place_, String symbol_, double stop_, double start_, double quantity_, boolean wait_for_execution_) 
 	{ 

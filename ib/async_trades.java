@@ -40,10 +40,8 @@ abstract class async_trades extends parent_static
 		if (!strings.is_ok(symbol)) return;
 		
 		trades.start(order_id_main_, symbol, start_);
-		
-		async_data_trades._instance._enabled = true;
-		
-		async_data_trades._start(symbol, false);
+
+		async_data_trades.start(symbol);
 	}
 	
 	private static void end_internal(int order_id_sec_, double end_) 
@@ -52,7 +50,7 @@ abstract class async_trades extends parent_static
 		
 		trades.end(order_id_sec_, end_);
 	
-		if (strings.is_ok(symbol)) async_data_trades._stop(symbol, false);		
+		if (strings.is_ok(symbol)) async_data_trades.stop(symbol);		
 	}	
 
 	private static boolean start_is_ok(int order_id_, String status_ib_) { return (status_is_ok(status_ib_, true) && start_is_ok(order_id_, false)); }

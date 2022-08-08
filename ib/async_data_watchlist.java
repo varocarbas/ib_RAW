@@ -6,30 +6,33 @@ import java.util.Map.Entry;
 
 import accessory.arrays;
 import accessory.numbers;
+import accessory.parent_static;
 import accessory.strings;
-import accessory_ib._alls;
 
-class async_data_watchlist extends parent_async_data 
+abstract class async_data_watchlist extends parent_static
 {
-	public static final String SOURCE = watchlist.SOURCE;
-	public static final int MAX_MINS_INACTIVE = parent_async_data.DEFAULT_MAX_MINS_INACTIVE;
+	public static final String _APP = "watchlist";
 
+	public static final String SOURCE = db_ib.watchlist.SOURCE;
+	public static final int MAX_MINS_INACTIVE = async_data.DEFAULT_MAX_MINS_INACTIVE;
+	
 	public static final String PRICE_INI = db_ib.watchlist.PRICE_INI;
 	public static final String PRICE_MIN = db_ib.watchlist.PRICE_MIN;
 	public static final String PRICE_MAX = db_ib.watchlist.PRICE_MAX;
 	public static final String VOLUME_INI = db_ib.watchlist.VOLUME_INI;
 	public static final String VOLUME_MIN = db_ib.watchlist.VOLUME_MIN;
 	public static final String VOLUME_MAX = db_ib.watchlist.VOLUME_MAX;
-	
+
 	public static final String FLU = db_ib.watchlist.FLU;
 	public static final String FLU_PRICE = db_ib.watchlist.FLU_PRICE;
 	public static final String FLU2 = db_ib.watchlist.FLU2;
 	public static final String FLU2_MIN = db_ib.watchlist.FLU2_MIN;
 	public static final String FLU2_MAX = db_ib.watchlist.FLU2_MAX;
 	public static final String VAR_TOT = db_ib.watchlist.VAR_TOT;
-	
-	public static final String TYPE = TYPE_SNAPSHOT;
-	public static final int DATA = external_ib.data.DATA_LIVE;
+
+	public static final int MAX_SIMULTANEOUS_SYMBOLS = 50;
+	public static final int SIZE_GLOBALS = 2 * MAX_SIMULTANEOUS_SYMBOLS;
+	public static final int MAX_I = SIZE_GLOBALS - 1;
 	
 	public static final double MIN_FLUS_VAR = 0.005;
 	public static final int MAX_FLU = 50;
@@ -37,81 +40,112 @@ class async_data_watchlist extends parent_async_data
 	public static final int MIN_FLU2_MAIN = 50;
 	public static final int MAX_FLU2_MIN_MAX = 100;
 	
-	private volatile HashMap<String, ArrayList<Double>> _flus = new HashMap<String, ArrayList<Double>>();
-	private volatile HashMap<String, ArrayList<Double>> _flus2 = new HashMap<String, ArrayList<Double>>();
-	private volatile HashMap<String, ArrayList<Double>> _flus2_minus = new HashMap<String, ArrayList<Double>>();
-	private volatile HashMap<String, ArrayList<Double>> _flus2_plus = new HashMap<String, ArrayList<Double>>();
-	private volatile HashMap<String, Boolean> _flus2_remove = new HashMap<String, Boolean>();
+	public static final String DEFAULT_TYPE = async_data.TYPE_SNAPSHOT;
+	public static final int DEFAULT_DATA_TYPE = external_ib.data.DATA_LIVE;
+
+	public static volatile String[] _stopping = new String[SIZE_GLOBALS];
+
+	public static volatile int _last_i_stopping = -1;
+	public static volatile boolean _enabled = async_data.DEFAULT_ENABLED;
+	public static volatile boolean _is_quick = async_data.DEFAULT_IS_QUICK;
+	public static volatile boolean _logs_to_screen = async_data.DEFAULT_LOGS_TO_SCREEN;
+	public static volatile int _pause_nonstop = async_data.DEFAULT_PAUSE_NONSTOP;
+
+	public static ArrayList<Integer> _fields = new ArrayList<Integer>();
+
+	public static boolean _includes_time = false;
+	public static boolean _includes_time_elapsed = true;
+	public static boolean _includes_halted = true;
+	public static boolean _includes_halted_tot = true;
+	public static boolean _disable_asap = true;
+
+	private static volatile String[] _symbols = new String[SIZE_GLOBALS];
+	@SuppressWarnings("unchecked")
+	private static volatile ArrayList<Double>[] _flus = new ArrayList[SIZE_GLOBALS];
+	@SuppressWarnings("unchecked")
+	private static volatile ArrayList<Double>[] _flus2 = new ArrayList[SIZE_GLOBALS];
+	@SuppressWarnings("unchecked")
+	private static volatile ArrayList<Double>[] _flus2_minus = new ArrayList[SIZE_GLOBALS];
+	@SuppressWarnings("unchecked")
+	private static volatile ArrayList<Double>[] _flus2_plus = new ArrayList[SIZE_GLOBALS];
+	private static volatile Boolean[] _flus2_remove = new Boolean[SIZE_GLOBALS];
+
+	private static volatile int _last_i = -1;
+
+	public static boolean is_ok() { return _enabled; }
 	
-	public static async_data_watchlist _instance = instantiate();
+	public static boolean logs_to_screen() { return _logs_to_screen; }
+
+	public static void logs_to_screen(boolean logs_to_screen_) { _logs_to_screen = logs_to_screen_; }
+
+	public static void stop_all() { async_data.stop_all(_APP, true); }
 	
-	private static boolean _instantiated = false;
+	public static void tick_price(int id_, int field_ib_, double price_) { async_data.tick_price(_APP, id_, field_ib_, price_); }
 	
-	public static boolean start(String symbol_) 
+	public static void tick_size(int id_, int field_ib_, int size_) { async_data.tick_size(_APP, id_, field_ib_, size_); }
+	
+	public static void tick_generic(int id_, int tick_, double value_) { async_data.tick_generic(_APP, id_, tick_, value_); }
+
+	public static void end_snapshot(int id_) { async_data.end_snapshot(_APP, id_); }
+
+	public static void tick_price_specific(int id_, int field_ib_, double price_, String symbol_)
 	{
-		_instance.enable();
+		if (field_ib_ != async_data.PRICE_IB) return;
 		
-		boolean started = (_instance._start_snapshot_internal(symbol_, DATA, false) != WRONG_ID);
-		if (started) _instance.add_global(symbol_);
+		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol_, _is_quick);
+		Object vals = (_is_quick ? new HashMap<String, String>() : new HashMap<String, Object>());
+
+		vals = tick_price_specific_basic(symbol_, price_, db, vals);
+		vals = tick_price_specific_flus(symbol_, price_, db, vals);
+
+		db_ib.watchlist.update(vals, symbol_, _is_quick);
+	}
+
+	public static void tick_size_specific(int id_, int field_ib_, double size_, String symbol_)
+	{
+		if (field_ib_ != async_data.VOLUME_IB) return;
+		
+		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol_, _is_quick);
+		
+		db_ib.watchlist.update(tick_size_specific_basic(symbol_, size_, db), symbol_, _is_quick);
+	}
+	
+	public static void populate_fields()
+	{
+		if (_fields.size() > 0) return;
+		
+		_fields.add(async_data.PRICE_IB);
+		_fields.add(async_data.VOLUME_IB);
+		_fields.add(async_data.HALTED_IB);
+	}
+
+	public static boolean start(String symbol_) { return start(symbol_, DEFAULT_TYPE, DEFAULT_DATA_TYPE); }
+	
+	public static void stop(String symbol_) 
+	{
+		String symbol = common.normalise_symbol(symbol_);
+		
+		if (strings.is_ok(symbol) && async_data.symbol_is_running(_APP, symbol)) async_data.stop(_APP, symbol, true);
+	}
+	
+	public static ArrayList<String> get_active_symbols() { return async_data.get_active_symbols(_APP); }
+
+	private static boolean start(String symbol_, String type_, int data_type_) 
+	{
+		boolean started = false;
+		
+		String symbol = common.normalise_symbol(symbol_);
+		if (async_data.symbol_is_running(_APP, symbol)) return started;
+
+		started = async_data.start_common(_APP, symbol, type_, data_type_);
+		if (started) start_globals(symbol, type_);
 		
 		return started;
 	}
-	
-	public static boolean stop(String symbol_) 
-	{ 
-		if (_instance.symbol_exists(symbol_)) _instance._stop_all_internal(symbol_, false); 
-		else db_ib.watchlist.delete(symbol_);
-		
-		_instance.remove_global(symbol_);
-		
-		return true;
-	}
-	
-	public static boolean __stop_snapshot(int id_) { return _instance.__stop_snapshot_internal(id_); }
-	
-	public static void __tick_price(int id_, int field_ib_, double price_) { _instance.__tick_price_internal(id_, field_ib_, price_); }
-	
-	public static void __tick_size(int id_, int field_ib_, int size_) { _instance.__tick_size_internal(id_, field_ib_, size_); }
-	
-	public static void __tick_generic(int id_, int tick_, double value_) { _instance.__tick_generic_internal(id_, tick_, value_); }
-	
-	void tick_price_specific(int id_, int field_ib_, double price_)
-	{
-		if (field_ib_ != PRICE_IB) return;
-		
-		String symbol = _get_symbol(id_, false);
-		
-		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol, _is_quick);
-		Object vals = (_is_quick ? new HashMap<String, String>() : new HashMap<String, Object>());
 
-		vals = tick_price_specific_basic(symbol, price_, db, vals);
-		vals = tick_price_specific_flus(symbol, price_, db, vals);
+	private static Object tick_price_specific_basic(String symbol_, double price_, HashMap<String, String> db_, Object vals_) { return tick_specific_basic(symbol_, price_, db_, vals_, true); }
 
-		db_ib.watchlist.update(vals, symbol, _instance._is_quick);
-	}
-
-	void tick_size_specific(int id_, int field_ib_, double size_)
-	{
-		if (field_ib_ != VOLUME_IB) return;
-		
-		String symbol = _get_symbol(id_, false);
-		
-		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol, _is_quick);
-		
-		db_ib.watchlist.update(tick_size_specific_basic(symbol, size_, db), symbol, _is_quick);
-	}
-	
-	protected HashMap<Integer, String> get_all_prices() { return _alls.WATCHLIST_PRICES; }
-	
-	protected HashMap<Integer, String> get_all_sizes() { return _alls.WATCHLIST_SIZES; }
-	
-	protected HashMap<Integer, String> get_all_generics() { return _alls.WATCHLIST_GENERICS; }
-	
-	protected String[] get_fields() { return db_ib.watchlist.get_fields(); }
-
-	private Object tick_price_specific_basic(String symbol_, double price_, HashMap<String, String> db_, Object vals_) { return tick_specific_basic(symbol_, price_, db_, vals_, true); }
-
-	private Object tick_price_specific_flus(String symbol_, double price_, HashMap<String, String> db_, Object vals_)
+	private static Object tick_price_specific_flus(String symbol_, double price_, HashMap<String, String> db_, Object vals_)
 	{
 		Object vals = db_ib.watchlist.add_to_vals(FLU_PRICE, price_, arrays.get_new(vals_), _is_quick);
 		
@@ -127,32 +161,34 @@ class async_data_watchlist extends parent_async_data
 		return vals;
 	}
 
-	private Object tick_price_specific_flus_flu(String symbol_, HashMap<String, String> db_, Object vals_, double var_)
+	private static Object tick_price_specific_flus_flu(String symbol_, HashMap<String, String> db_, Object vals_, double var_)
 	{
 		Object vals = arrays.get_new(vals_);
-		if (!_flus.containsKey(symbol_)) return vals;
+		
+		int i = get_i(symbol_);
+		if (i == async_data.WRONG_I) return vals;
 
 		double var = Math.abs(var_);
 		
-		int tot = _flus.get(symbol_).size();
+		int tot = _flus[i].size();
 		if (tot >= MAX_FLU) 
 		{
-			_flus.get(symbol_).remove(0);
+			_flus[i].remove(0);
 			tot--;
 		}
 		
-		_flus.get(symbol_).add(var);
+		_flus[i].add(var);
 		tot++;
 		
 		double flu = 0.0;
-		for (double val: _flus.get(symbol_)) { flu += val; }
+		for (double val: _flus[i]) { flu += val; }
 
 		flu = (tot < MIN_FLU ? 0.0 : flu / tot);
 
 		return db_ib.watchlist.add_to_vals(FLU, flu, vals, _is_quick);
 	}
 
-	private Object tick_price_specific_flus_flu2(String symbol_, Object vals_, double var_)
+	private static Object tick_price_specific_flus_flu2(String symbol_, Object vals_, double var_)
 	{
 		Object vals = tick_price_specific_flus_flu2_main(symbol_, vals_, var_);
 		
@@ -161,29 +197,31 @@ class async_data_watchlist extends parent_async_data
 		return vals;
 	}
 	
-	private Object tick_price_specific_flus_flu2_main(String symbol_, Object vals_, double var_)
+	private static Object tick_price_specific_flus_flu2_main(String symbol_, Object vals_, double var_)
 	{
 		Object vals = arrays.get_new(vals_);
-		if (!_flus2_minus.containsKey(symbol_)) return vals;
 
-		int tot_minus = _flus2_minus.get(symbol_).size();
-		int tot_plus = _flus2_plus.get(symbol_).size();
+		int i = get_i(symbol_);
+		if (i == async_data.WRONG_I) return vals;
+
+		int tot_minus = _flus2_minus[i].size();
+		int tot_plus = _flus2_plus[i].size();
 		int tot = (tot_minus + tot_plus);
 		
 		if (tot >= MIN_FLU2_MAIN)
 		{
-			if (_flus2_remove.get(symbol_))
+			if (_flus2_remove[i])
 			{
 				if (tot_plus > 0) 
 				{
-					_flus2_remove.put(symbol_, false);
-					_flus2_plus.get(symbol_).remove(0);
+					_flus2_remove[i] = false;
+					_flus2_plus[i].remove(0);
 					
 					tot_plus--;
 				}
 				else if (tot_minus > 0)
 				{
-					_flus2_minus.get(symbol_).remove(0);
+					_flus2_minus[i].remove(0);
 					
 					tot_minus--;
 				}
@@ -192,14 +230,14 @@ class async_data_watchlist extends parent_async_data
 			{
 				if (tot_minus > 0) 
 				{
-					_flus2_remove.put(symbol_, true);
-					_flus2_minus.get(symbol_).remove(0);
+					_flus2_remove[i] = true;
+					_flus2_minus[i].remove(0);
 					
 					tot_minus--;
 				}
 				else if (tot_plus > 0)
 				{
-					_flus2_plus.get(symbol_).remove(0);
+					_flus2_plus[i].remove(0);
 					
 					tot_plus--;
 				}
@@ -208,24 +246,24 @@ class async_data_watchlist extends parent_async_data
 
 		if (var_ > 0) 
 		{
-			_flus2_plus.get(symbol_).add(var_);
+			_flus2_plus[i].add(var_);
 			
 			tot_plus++;
 		}
 		else 
 		{
-			_flus2_minus.get(symbol_).add(var_);
+			_flus2_minus[i].add(var_);
 			
 			tot_minus++;
 		}
 		
 		double flu2_plus = 0.0;
-		for (double val: _flus2_plus.get(symbol_)) { flu2_plus += val; }
+		for (double val: _flus2_plus[i]) { flu2_plus += val; }
 		
 		flu2_plus = (tot_plus == 0 ? 0 : flu2_plus / tot_plus);
 		
 		double flu2_minus = 0.0;
-		for (double val: _flus2_minus.get(symbol_)) { flu2_minus += val; }
+		for (double val: _flus2_minus[i]) { flu2_minus += val; }
 		
 		flu2_minus = (tot_minus == 0 ? 0 : flu2_minus / tot_minus);
 
@@ -236,20 +274,22 @@ class async_data_watchlist extends parent_async_data
 		return vals;
 	}
 
-	private Object tick_price_specific_flus_flu2_min_max(String symbol_, Object vals_, double var_)
+	private static Object tick_price_specific_flus_flu2_min_max(String symbol_, Object vals_, double var_)
 	{
 		Object vals = arrays.get_new(vals_);
-		if (!_flus2.containsKey(symbol_)) return vals;
-		
-		int tot = _flus2.get(symbol_).size();
-		if (tot >= MAX_FLU2_MIN_MAX) _flus2.get(symbol_).remove(0);
 
-		_flus2.get(symbol_).add(var_);
+		int i = get_i(symbol_);
+		if (i == async_data.WRONG_I) return vals;
+		
+		int tot = _flus2[i].size();
+		if (tot >= MAX_FLU2_MIN_MAX) _flus2[i].remove(0);
+
+		_flus2[i].add(var_);
 		
 		double min = 0;
 		double max = 0;
 		
-		for (double val: _flus2.get(symbol_))
+		for (double val: _flus2[i])
 		{
 			if (val < min) min = val;
 			else if (val > max) max = val;
@@ -261,9 +301,9 @@ class async_data_watchlist extends parent_async_data
 		return vals;
 	}
 	
-	private Object tick_size_specific_basic(String symbol_, double size_, HashMap<String, String> db_) { return tick_specific_basic(symbol_, size_, db_, (_is_quick ? new HashMap<String, String>() : new HashMap<String, Object>()), false); }
+	private static Object tick_size_specific_basic(String symbol_, double size_, HashMap<String, String> db_) { return tick_specific_basic(symbol_, size_, db_, (_is_quick ? new HashMap<String, String>() : new HashMap<String, Object>()), false); }
 	
-	private Object tick_specific_basic(String symbol_, double val_, HashMap<String, String> db_, Object vals_, boolean is_price_)
+	private static Object tick_specific_basic(String symbol_, double val_, HashMap<String, String> db_, Object vals_, boolean is_price_)
 	{
 		Object vals = tick_specific_basic_start(symbol_, val_, db_, vals_, is_price_);
 
@@ -282,13 +322,13 @@ class async_data_watchlist extends parent_async_data
 		return vals;
 	}
 
-	private Object tick_specific_basic_start(String symbol_, double val_, HashMap<String, String> db_, Object vals_, boolean is_price_)
+	private static Object tick_specific_basic_start(String symbol_, double val_, HashMap<String, String> db_, Object vals_, boolean is_price_)
 	{
 		Object vals = arrays.get_new(vals_);		
 				
 		HashMap<String, String> items = new HashMap<String, String>();
 		
-		items.put(PRICE, VOLUME);
+		items.put(async_data.PRICE, async_data.VOLUME);
 		items.put(PRICE_INI, VOLUME_INI);
 		items.put(FLU_PRICE, strings.DEFAULT);
 
@@ -315,36 +355,23 @@ class async_data_watchlist extends parent_async_data
 		return vals;
 	}
 
-	private boolean tick_specific_val_is_ok(double val_, boolean is_price_) { return (is_price_ ? ib.common.price_is_ok(val_) : ib.common.size_is_ok(val_)); }
+	private static boolean tick_specific_val_is_ok(double val_, boolean is_price_) { return (is_price_ ? ib.common.price_is_ok(val_) : ib.common.size_is_ok(val_)); }
 
-	private void add_global(String symbol_)
+	private static void start_globals(String symbol_, String type_)
 	{
-		_flus.put(symbol_, new ArrayList<Double>());
-		_flus2.put(symbol_, new ArrayList<Double>());
-		_flus2_minus.put(symbol_, new ArrayList<Double>());
-		_flus2_plus.put(symbol_, new ArrayList<Double>());
-		_flus2_remove.put(symbol_, true);		
-	}
-
-	private void remove_global(String symbol_)
-	{
-		if (!_flus.containsKey(symbol_)) return;
+		int i = _last_i + 1;
+		if (i > MAX_I) i = 0;
 		
-		_flus.remove(symbol_);
-		_flus2.remove(symbol_);
-		_flus2_minus.remove(symbol_);
-		_flus2_plus.remove(symbol_);
-		_flus2_remove.remove(symbol_);		
+		_symbols[i] = symbol_;
+		
+		_flus[i] = new ArrayList<Double>();
+		_flus2[i] = new ArrayList<Double>();
+		_flus2_minus[i] = new ArrayList<Double>();
+		_flus2_plus[i] = new ArrayList<Double>();
+		_flus2_remove[i] = true;		
+	
+		_last_i = i;
 	}
 	
-	private static async_data_watchlist instantiate()
-	{
-		if (_instantiated) return _instance;
-		
-		_instantiated = true;
-		
-		return (async_data_watchlist)parent_async_data.instantiate(new async_data_watchlist(), SOURCE, ID_WATCHLIST, MAX_MINS_INACTIVE, true, true, parent_async_data.DEFAULT_INCLUDES, true, true, parent_async_data.DEFAULT_DISABLE_ASAP);		
-	}
-
-	private async_data_watchlist() { }
+	private static int get_i(String symbol_) { return async_data.get_i(_symbols, _last_i, MAX_I, symbol_); }
 }

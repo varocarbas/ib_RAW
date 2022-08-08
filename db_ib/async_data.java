@@ -6,6 +6,8 @@ import java.util.HashMap;
 import accessory.arrays;
 import accessory.dates;
 import accessory.db;
+import accessory.db_where;
+import accessory.strings;
 import external_ib.data;
 
 public abstract class async_data 
@@ -23,8 +25,14 @@ public abstract class async_data
 	public static double get_price(String source_, String symbol_) { return common.get_decimal(source_, PRICE, common.get_where_symbol(source_, symbol_)); }
 	
 	public static boolean is_enabled(String source_, String symbol_) { return common.is_enabled(source_, common.get_where_symbol(source_, symbol_)); }
-	
-	public static ArrayList<String> get_active_symbols(String source_, int max_mins_inactive_) { return common.get_all_strings(source_, SYMBOL, get_where_active(source_, max_mins_inactive_)); }
+
+	public static ArrayList<String> get_active_symbols(String source_, int max_mins_inactive_, String where_) 
+	{ 
+		String where = get_where_active(source_, max_mins_inactive_);
+		if (strings.is_ok(where_)) where = db_where.join(where, where_, db_where.LINK_AND);
+		
+		return common.get_all_strings(source_, SYMBOL, where); 
+	}
 	
 	public static String get_where_active(String source_, int max_mins_inactive_) { return common.get_where_timestamp(source_, max_mins_inactive_); }
 
@@ -81,6 +89,8 @@ public abstract class async_data
 	public static boolean insert(String source_, String symbol_) { return common.insert(source_, get_default_vals(source_, symbol_)); }
 
 	public static boolean insert_quick(String source_, String symbol_) { return common.insert_quick(source_, get_default_vals_quick(source_, symbol_)); }
+
+	public static boolean delete(String source_, String symbol_) { return common.delete(source_, common.get_where_symbol(source_, symbol_)); }
 
 	public static String get_col(String source_, String field_) { return common.get_col(source_, field_); }
 
