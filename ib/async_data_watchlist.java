@@ -30,8 +30,8 @@ abstract class async_data_watchlist extends parent_static
 	public static final String FLU2_MAX = db_ib.watchlist.FLU2_MAX;
 	public static final String VAR_TOT = db_ib.watchlist.VAR_TOT;
 
-	public static final int MAX_SIMULTANEOUS_SYMBOLS = 50;
-	public static final int SIZE_GLOBALS = 2 * MAX_SIMULTANEOUS_SYMBOLS;
+	public static final int MAX_SIMULTANEOUS_SYMBOLS = 25;
+	public static final int SIZE_GLOBALS = MAX_SIMULTANEOUS_SYMBOLS;
 	public static final int MAX_I = SIZE_GLOBALS - 1;
 	
 	public static final double MIN_FLUS_VAR = 0.005;

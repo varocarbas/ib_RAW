@@ -353,6 +353,7 @@ public abstract class sync extends parent_static
 		if (is_ok) get_after();
 		
 		_get = strings.DEFAULT;
+		_getting = false;
 		
 		return is_ok;
 	}

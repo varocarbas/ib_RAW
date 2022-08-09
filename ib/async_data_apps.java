@@ -34,7 +34,7 @@ abstract class async_data_apps
 
 	public static boolean is_quick(String app_)
 	{
-		boolean output = false;
+		boolean output = async_data.DEFAULT_IS_QUICK;
 		
 		if (app_.equals(async_data_watchlist._APP)) output = async_data_watchlist._is_quick;
 		else if (app_.equals(async_data_trades._APP)) output = async_data_trades._is_quick;
@@ -100,7 +100,7 @@ abstract class async_data_apps
 
 	public static boolean logs_to_screen(String app_) 
 	{
-		boolean output = false;
+		boolean output = async_data.DEFAULT_LOGS_TO_SCREEN;
 		
 		if (app_.equals(async_data_watchlist._APP)) output = async_data_watchlist.logs_to_screen();
 		else if (app_.equals(async_data_trades._APP)) output = async_data_trades.logs_to_screen();
@@ -111,7 +111,7 @@ abstract class async_data_apps
 
 	public static int get_max_mins_inactive(String app_)
 	{
-		int output = 0;
+		int output = async_data.DEFAULT_MAX_MINS_INACTIVE;
 		
 		if (app_.equals(async_data_watchlist._APP)) output = async_data_watchlist.MAX_MINS_INACTIVE;		
 		else if (app_.equals(async_data_trades._APP)) output = async_data_trades.MAX_MINS_INACTIVE;		
@@ -176,42 +176,31 @@ abstract class async_data_apps
 
 	public static void remove_from_stopping(String app_, String symbol_) 
 	{
-		String[] stopping = null;
-		int last_i = async_data.WRONG_I;
-		int max_i = async_data.WRONG_I;		
-		
-		if (app_.equals(async_data_watchlist._APP)) 
-		{
-			stopping = (String[])arrays.get_new(async_data_watchlist._stopping);
-			last_i = async_data_watchlist._last_i_stopping;
-			max_i = async_data_watchlist.MAX_I;			
-		}
-		else if (app_.equals(async_data_trades._APP)) 
-		{
-			stopping = (String[])arrays.get_new(async_data_trades._stopping);
-			last_i = async_data_trades._last_i_stopping;
-			max_i = async_data_trades.MAX_I;			
-		}
-		else if (app_.equals(async_data_market._APP)) 
-		{
-			stopping = (String[])arrays.get_new(async_data_market._stopping);
-			last_i = async_data_market._last_i_stopping;
-			max_i = async_data_market.MAX_I;			
-		}
-		
 		int i = async_data.WRONG_I;
-
+		
 		while (true)
 		{
-			i = async_data.get_i(stopping, last_i, max_i, symbol_);
-			if (i == async_data.WRONG_I) break;
-		
-			if (app_.equals(async_data_watchlist._APP)) async_data_watchlist._stopping[i] = null;
-			else if (app_.equals(async_data_trades._APP)) async_data_trades._stopping[i] = null;
-			else if (app_.equals(async_data_market._APP)) async_data_market._stopping[i] = null;
+			if (app_.equals(async_data_watchlist._APP)) 
+			{
+				i = async_data.get_i(async_data_watchlist._stopping, async_data_watchlist._last_i_stopping, async_data_watchlist.MAX_I, symbol_);
+				if (i <= async_data.WRONG_I) break;
 			
-			last_i = i - 1;
-			if (last_i < 0) break;
+				async_data_watchlist._stopping[i] = null;
+			}
+			else if (app_.equals(async_data_trades._APP)) 
+			{
+				i = async_data.get_i(async_data_trades._stopping, async_data_trades._last_i_stopping, async_data_trades.MAX_I, symbol_);
+				if (i <= async_data.WRONG_I) break;
+			
+				async_data_trades._stopping[i] = null;
+			}
+			else if (app_.equals(async_data_market._APP)) 
+			{
+				i = async_data.get_i(async_data_market._stopping, async_data_market._last_i_stopping, async_data_market.MAX_I, symbol_);
+				if (i <= async_data.WRONG_I) break;
+			
+				async_data_market._stopping[i] = null;
+			}
 		}
 	}
 

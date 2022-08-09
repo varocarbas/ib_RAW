@@ -85,7 +85,8 @@ public abstract class async_data extends parent_static
 	public static final boolean DEFAULT_ENABLED = false;
 	public static final int DEFAULT_MAX_MINS_INACTIVE = 1;
 	public static final boolean DEFAULT_DISABLE_ASAP = true;
-
+	public static final boolean DEFAULT_UPDATE_DB_CONSTANTLY = false;
+	
 	private static volatile int _last_i = -1;
 	
 	private static volatile String[] _symbols = new String[SIZE_GLOBALS];
@@ -109,7 +110,7 @@ public abstract class async_data extends parent_static
 		return start_internal(app_, symbol_, type_, data_type_, false);
 	}
 
-	static void end_snapshot(String app_, int id_) { end_snapshot(app_, id_, get_symbol(id_)); }
+	static void end_snapshot(String app_, int id_) { to_screen(app_, id_, get_symbol(id_), "snapshot completed"); }
 
 	static void stop_all(String app_, boolean delete_from_db_) { for (String symbol: _symbols) { stop(app_, symbol, delete_from_db_); } }
 	
@@ -129,7 +130,8 @@ public abstract class async_data extends parent_static
 	
 	static void tick_price(String app_, int id_, int field_ib_, double price_)
 	{
-		if (!get_app(id_).equals(app_) || !field_is_ok(app_, field_ib_)) return;
+		String app = get_app(id_);
+		if (!app.equals(app_) || (field_ib_ != PRICE_IB && !field_is_ok(app, field_ib_))) return;
 		
 		String symbol = get_symbol(id_);
 		String type = get_type(id_);
@@ -139,14 +141,15 @@ public abstract class async_data extends parent_static
 
 		if (!strings.are_ok(new String[] { symbol, type, field }) || price <= common.WRONG_PRICE) return;
 		
-		update(app_, id_, symbol, field, price, type.equals(TYPE_SNAPSHOT));
+		update(app, id_, symbol, field, price, type.equals(TYPE_SNAPSHOT));
 
-		async_data_apps.tick_price_specific(app_, id_, field_ib_, price, symbol);
+		async_data_apps.tick_price_specific(app, id_, field_ib_, price, symbol);
 	}
 
 	static void tick_size(String app_, int id_, int field_ib_, int size_)
 	{
-		if (!get_app(id_).equals(app_)) return;
+		String app = get_app(id_);
+		if (!app.equals(app_)) return;
 		
 		String symbol = get_symbol(id_);
 		String type = get_type(id_);
@@ -156,19 +159,20 @@ public abstract class async_data extends parent_static
 		double size = adapt_val(size_, field_ib_);
 		String field = get_field(field_ib_);	
 
-		if (size > common.WRONG_SIZE && strings.is_ok(field) && field_is_ok(app_, field_ib_))
+		if (size > common.WRONG_SIZE && strings.is_ok(field) && field_is_ok(app, field_ib_))
 		{
-			update(app_, id_, symbol, field, size, type.equals(TYPE_SNAPSHOT));
+			update(app, id_, symbol, field, size, type.equals(TYPE_SNAPSHOT));
 
-			async_data_apps.tick_size_specific(app_, id_, field_ib_, size, symbol);			
+			async_data_apps.tick_size_specific(app, id_, field_ib_, size, symbol);			
 		}
 		
-		if (field_ib_ == VOLUME_IB) end_snapshot(app_, id_, symbol);
+		if (field_ib_ == VOLUME_IB) precomplete_snapshot(app, id_, symbol);
 	}
 	
 	static void tick_generic(String app_, int id_, int field_ib_, double value_)
 	{
-		if (!get_app(id_).equals(app_) || !field_is_ok(app_, field_ib_)) return;
+		String app = get_app(id_);
+		if (!app.equals(app_) || !field_is_ok(app, field_ib_)) return;
 		
 		String symbol = get_symbol(id_);
 		String type = get_type(id_);
@@ -182,11 +186,11 @@ public abstract class async_data extends parent_static
 		
 		if (field_ib_ == HALTED_IB) 
 		{
-			value = adapt_halted(app_, id_, value, symbol);
+			value = adapt_halted(app, id_, value, symbol);
 			update = (value != WRONG_HALTED);
 		}
 		
-		if (update) update(app_, id_, symbol, field, value, type.equals(TYPE_SNAPSHOT));
+		if (update) update(app, id_, symbol, field, value, type.equals(TYPE_SNAPSHOT));
 	}
 	
 	static void to_screen(String app_, int id_, String symbol_, String message_) 
@@ -217,32 +221,20 @@ public abstract class async_data extends parent_static
 	
 	static ArrayList<String> get_active_symbols(String app_, String where_) { return db_ib.async_data.get_active_symbols(async_data_apps.get_source(app_), async_data_apps.get_max_mins_inactive(app_), where_); }
 	
-	static boolean symbol_is_running(String app_, String symbol_) 
-	{
-		boolean output = false;
-		
-		if (!async_data_apps.is_stopping(app_, symbol_))
-		{
-			ArrayList<String> symbols = async_data.get_active_symbols(app_);
-			
-			output = (arrays.is_ok(symbols) ? symbols.contains(symbol_) : false);			
-		}
-				
-		return output;
-	}
+	static boolean symbol_is_running(String app_, String symbol_) { return (!async_data_apps.is_stopping(app_, symbol_) && db_ib.async_data.symbol_is_active(async_data_apps.get_source(app_), symbol_, async_data_apps.get_max_mins_inactive(app_))); }
 
 	private static int get_i(String[] array_, int last_i_, int max_i_, String target_, String[] array2_, String target2_) 
 	{
 		if (last_i_ < 0) return WRONG_I;
 		
 		int i = last_i_;
-		
+
 		while (true)
 		{
 			if (strings.are_equal(array_[i], target_) && (array2_ == null || strings.are_equal(array2_[i], target2_))) return i;
 			
 			i--;
-			if (i == WRONG_I) i = max_i_;
+			if (i < 0) i = max_i_; 
 			if (i == last_i_) return WRONG_I;
 		}		
 	}
@@ -269,32 +261,21 @@ public abstract class async_data extends parent_static
 		stop_common(app_, id, symbol_, false, true);
 	}
 
-	private static void end_snapshot(String app_, int id_, String symbol_)
-	{
-		boolean restart = false;
-		int data_type = WRONG_DATA;
-		
-		if (snapshot_is_nonstop())
+	private static void precomplete_snapshot(String app_, int id_, String symbol_)
+	{				
+		if (symbol_is_running(app_, symbol_))
 		{
-			if (symbol_is_running(app_, symbol_))
-			{
-				data_type = get_data_type(id_);
-				
-				restart = (data_type > WRONG_DATA);
-			}
-		}
-		
-		if (get_app(id_).equals(app_))
-		{
-			Object vals = get_vals(id_, async_data_apps.is_quick(app_));
-			
+			Object vals = get_vals(id_, async_data_apps.is_quick(app_));	
 			if (arrays.is_ok(vals)) update_db(app_, id_, symbol_, vals);			
 		}
 
 		stop_common(app_, id_, symbol_, true, true);
 		
-		if (restart) 
-		{						
+		if (snapshot_is_nonstop() && symbol_is_running(app_, symbol_)) 
+		{
+			int data_type = get_data_type(id_);
+			if (data_type <= WRONG_DATA) return;
+			
 			int pause = async_data_apps.pause_nonstop(app_);
 			if (pause > 0) misc.pause_secs(pause);
 
@@ -375,6 +356,7 @@ public abstract class async_data extends parent_static
 			else db_ib.async_data.insert(source, symbol_);
 		}
 		else if (!db_ib.async_data.is_enabled(source, symbol_)) return id;
+		else db_ib.async_data.update_timestamp(source, symbol_, is_quick);
 
 		id = async.get_req_id();
 		
@@ -474,10 +456,12 @@ public abstract class async_data extends parent_static
 	private static void update_db_common(String app_, int id_, String symbol_, Object vals_, String source_, boolean is_quick_)
 	{
 		Object vals = add_time(app_, symbol_, vals_, source_, is_quick_);
-
-		if (get_app(id_).equals(app_)) db_ib.async_data.update(source_, vals, symbol_, is_quick_);
 		
-		to_screen_update(app_, id_, symbol_, true);
+		if (symbol_is_running(app_, symbol_)) 
+		{
+			db_ib.async_data.update(source_, vals, symbol_, is_quick_);
+			to_screen_update(app_, id_, symbol_, true);
+		}
 	}
 
 	private static Object add_time(String app_, String symbol_, Object vals_, String source_, boolean is_quick_)
@@ -492,7 +476,7 @@ public abstract class async_data extends parent_static
 			vals = db_ib.async_data.add_to_vals(source_, TIME_ELAPSED, dates.seconds_to_time((int)dates.get_elapsed(ini)), vals, is_quick_);
 		}
 				
-		if (async_data_apps.includes_time(app_)) vals = db_ib.async_data.add_to_vals(source_, TIME,ib.common.get_current_time(), vals, is_quick_);
+		if (async_data_apps.includes_time(app_)) vals = db_ib.async_data.add_to_vals(source_, TIME, ib.common.get_current_time(), vals, is_quick_);
 	
 		return vals;
 	}
@@ -509,7 +493,7 @@ public abstract class async_data extends parent_static
 	{
 		if (async_data_apps.disable_asap(app_) && !db_ib.async_data.contains_active(async_data_apps.get_source(app_), async_data_apps.get_max_mins_inactive(app_))) async_data_apps.disable(app_);
 			
-		if (to_screen_) to_screen(app_, id_, symbol_, (is_snapshot_ ? "snapshot completed" : "stream stopped"));
+		if (to_screen_) to_screen(app_, id_, symbol_, (is_snapshot_ ? "snapshot pre-completed" : "stream stopped"));
 	}
 	
 	private static String get_field(int field_ib_)

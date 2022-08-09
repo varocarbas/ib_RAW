@@ -12,8 +12,8 @@ abstract class async_data_trades
 	public static final String SOURCE = trades.SOURCE;
 	public static final int MAX_MINS_INACTIVE = async_data.DEFAULT_MAX_MINS_INACTIVE;
 	
-	public static final int MAX_SIMULTANEOUS_SYMBOLS = 50;
-	public static final int SIZE_GLOBALS = 2 * MAX_SIMULTANEOUS_SYMBOLS;
+	public static final int MAX_SIMULTANEOUS_SYMBOLS = 25;
+	public static final int SIZE_GLOBALS = MAX_SIMULTANEOUS_SYMBOLS;
 	public static final int MAX_I = SIZE_GLOBALS - 1;
 	
 	public static final String DEFAULT_TYPE = async_data.TYPE_SNAPSHOT;
@@ -34,7 +34,7 @@ abstract class async_data_trades
 	public static boolean _includes_halted = true;
 	public static boolean _includes_halted_tot = false;
 	public static boolean _disable_asap = true;
-
+	
 	public static boolean is_ok() { return _enabled; }
 	
 	public static boolean logs_to_screen() { return _logs_to_screen; }

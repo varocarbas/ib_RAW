@@ -47,11 +47,20 @@ public class tests extends parent_tests
 		String[] sources = new String[] 
 		{ 
 			common.SOURCE_MARKET, common.SOURCE_EXECS, common.SOURCE_BASIC, common.SOURCE_REMOTE, 
-			common.SOURCE_ORDERS, common.SOURCE_TRADES, common.SOURCE_WATCHLIST, common.SOURCE_APPS,
-			common.SOURCE_TEMP_ASYNC_DATA
+			common.SOURCE_ORDERS, common.SOURCE_TRADES, common.SOURCE_WATCHLIST, common.SOURCE_APPS
 		};
+
+
+		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
+		for (String source: sources) 
+		{ 
+			boolean is_ok = create_table(source);
+			String name = name0 + misc.SEPARATOR_NAME + accessory.db.get_table(source);
+			
+			output.put(name, is_ok);
+		}
 		
-		for (String source: sources) { create_table(source); }
+		outputs.put(name0, output);
 		
 		update_screen(name0, false, level);
 		
@@ -229,6 +238,8 @@ public class tests extends parent_tests
 			output.put(name2, is_ok);			
 		}		
 
+		outputs.put(name0, output);
+		
 		update_screen(name0, false, 1);
 		
 		return outputs;
@@ -309,6 +320,8 @@ public class tests extends parent_tests
 		output.put(name, is_ok);
 		
 		misc.pause_secs(pause2);
+
+		outputs.put(name0, output);
 		
 		update_screen(name0, false, 1);		
 		

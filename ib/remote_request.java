@@ -62,7 +62,7 @@ abstract class remote_request extends parent_static
 	
 	public static boolean cancel(int request_, boolean wait_for_execution_) 
 	{ 
-		boolean output = (is_ok(request_, true) ? db_ib.remote.request_update_type_order(request_, remote.CANCEL) : false); 
+		boolean output = (is_ok(request_, true) ? db_ib.remote.request_update_type_order(request_, remote.CANCEL, remote.is_quick()) : false); 
 	
 		if (output && wait_for_execution_) output = wait_for_execution(request_);
 		
@@ -79,7 +79,7 @@ abstract class remote_request extends parent_static
 		String type_update = orders.check_update(type_update_);
 		if (!strings.is_ok(type_update) || !(orders.is_update_market(type_update) || common.price_is_ok(val))) return is_ok;
 
-		is_ok = db_ib.remote.request_update_type_order_values(request_, type_update, db_ib.orders.get_field_update(type_update), val);
+		is_ok = db_ib.remote.request_update_type_order_values(request_, type_update, db_ib.orders.get_field_update(type_update), val, remote.is_quick());
 		if (is_ok && wait_for_execution_) is_ok = wait_for_execution(request_);
 		
 		return is_ok;
@@ -102,38 +102,38 @@ abstract class remote_request extends parent_static
 		
 		order order = new order(type_place_, symbol_, quantity, stop_, start_, start2_);
 
-		return (order.is_ok() ? db_ib.remote.__request_start(order, perc_money, price) : common.WRONG_REQUEST);
+		return (order.is_ok() ? db_ib.remote.__request_start(order, perc_money, price, remote.is_quick()) : common.WRONG_REQUEST);
 	}
 	
 	private static boolean is_ok(int request_, boolean is_cancel_) { return (db_ib.remote.is_active(request_) && remote.order_id_is_ok(remote.get_order_id_main(request_), is_cancel_) && is_executed(request_, true, false)); }
 	
 	private static boolean is_executed(int request_, boolean ignore_error_, boolean inactive_ok_)
 	{
-		boolean is_quick = true;
-		
-		HashMap<String, String> vals = remote.get_vals(request_, is_quick);
+		HashMap<String, String> vals = remote.get_vals(request_);
 		if (!arrays.is_ok(vals)) return inactive_ok_;
 		
-		String status = remote.get_status(vals, is_quick);
+		String status = remote.get_status(vals);
 		if (!strings.are_equal(status, remote.STATUS_ACTIVE)) return inactive_ok_; 
 		
-		String status2 = remote.get_status2(vals, is_quick);
+		String status2 = remote.get_status2(vals);
 		if (strings.are_equal(status2, remote.STATUS2_EXECUTED)) return true;		
 		else if (strings.are_equal(status2, remote.STATUS2_ERROR)) return ignore_error_;
+
+		boolean is_quick = remote.is_quick();
 		
-		int order_id_main = remote.get_order_id_main(vals, is_quick);
+		int order_id_main = remote.get_order_id_main(vals);
 		
 		long start = dates.start_elapsed();
 			
 		while (true)
 		{
-			vals = remote.get_vals(request_, is_quick);
+			vals = remote.get_vals(request_);
 			if (!arrays.is_ok(vals)) return inactive_ok_;
 			
-			status = remote.get_status(vals, is_quick);
+			status = remote.get_status(vals);
 			if (!strings.are_equal(status, remote.STATUS_ACTIVE)) return inactive_ok_; 
 			
-			status2 = remote.get_status2(vals, is_quick);
+			status2 = remote.get_status2(vals);
 			
 			if (strings.are_equal(status2, remote.STATUS2_EXECUTED)) return true;		
 			else if (strings.are_equal(status2, remote.STATUS2_ERROR)) return ignore_error_;
@@ -144,13 +144,12 @@ abstract class remote_request extends parent_static
 				
 				misc.pause_secs(2);
 				
-				if (remote.order_was_updated(vals, is_quick))	
+				if (remote.order_was_updated(vals))	
 				{
-					HashMap<String, Object> temp = new HashMap<String, Object>();
-					temp.put(db_ib.remote.STATUS, db_ib.remote.get_key_from_status(remote.STATUS_ACTIVE));
-					temp.put(db_ib.remote.STATUS2, db_ib.remote.get_status2_key_execute(true));
-					
-					db_ib.remote.update(request_, temp);
+					Object vals2 = db_ib.remote.add_to_vals(db_ib.remote.STATUS, db_ib.remote.get_key_from_status(remote.STATUS_ACTIVE), null, is_quick);
+					vals2 = db_ib.remote.add_to_vals(db_ib.remote.STATUS2, db_ib.remote.get_status2_key_execute(true), vals2, is_quick);
+
+					db_ib.remote.update(request_, vals2, is_quick);
 					
 					return true;
 				}

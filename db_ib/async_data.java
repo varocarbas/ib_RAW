@@ -33,7 +33,9 @@ public abstract class async_data
 		
 		return common.get_all_strings(source_, SYMBOL, where); 
 	}
-	
+
+	public static boolean symbol_is_active(String source_, String symbol_, int max_mins_inactive_) { return common.exists(source_, db_where.join(common.get_where_symbol(source_, symbol_), get_where_active(source_, max_mins_inactive_), db_where.LINK_AND)); } 
+
 	public static String get_where_active(String source_, int max_mins_inactive_) { return common.get_where_timestamp(source_, max_mins_inactive_); }
 
 	public static boolean is_halted(String source_, String symbol_, boolean is_quick_)
@@ -86,6 +88,8 @@ public abstract class async_data
 	
 	public static boolean update_quick(String source_, String symbol_, HashMap<String, String> vals_) { return common.update_quick(source_, vals_, common.get_where_symbol_quick(source_, symbol_)); }
 
+	public static boolean update_timestamp(String source_, String symbol_, boolean is_quick_) { return common.update(source_, (is_quick_ ? common.get_col(source_, accessory.db.FIELD_TIMESTAMP) : accessory.db.FIELD_TIMESTAMP), dates.get_now_string(dates.FORMAT_TIMESTAMP), common.get_where_symbol(source_, symbol_, is_quick_), is_quick_); }
+	
 	public static boolean insert(String source_, String symbol_) { return common.insert(source_, get_default_vals(source_, symbol_)); }
 
 	public static boolean insert_quick(String source_, String symbol_) { return common.insert_quick(source_, get_default_vals_quick(source_, symbol_)); }

@@ -143,33 +143,33 @@ public abstract class orders
 		return new order(type_place, symbol, quantity, stop, start, start2, id_main);
 	}
 
-	public static HashMap<String, Object> to_hashmap(order order_) { return to_hashmap(order_, false); }
+	@SuppressWarnings("unchecked")
+	public static HashMap<String, Object> to_hashmap(order order_) { return (HashMap<String, Object>)to_hashmap(order_, false, false); }
 	
-	public static HashMap<String, Object> to_hashmap(order order_, boolean only_basic_)
+	public static Object to_hashmap(order order_, boolean only_basic_, boolean is_quick_)
 	{
-		HashMap<String, Object> db = new HashMap<String, Object>();
-		if (order_ == null) return db;
+		if (order_ == null) return (is_quick_ ? new HashMap<String, String>() : new HashMap<String, Object>());
 
-		db.put(ORDER_ID_MAIN, order_.get_id_main());
-		db.put(ORDER_ID_SEC, order_.get_id_sec());
-		db.put(TYPE_PLACE, get_key_from_type_place(order_.get_type_place()));
-		db.put(SYMBOL, order_.get_symbol());
-		db.put(QUANTITY, order_.get_quantity());
-		db.put(STOP, order_.get_stop());
+		Object db = common.add_to_vals(SOURCE, ORDER_ID_MAIN, order_.get_id_main(), null, is_quick_);
+		db = common.add_to_vals(SOURCE, ORDER_ID_SEC, order_.get_id_sec(), db, is_quick_);
+		db = common.add_to_vals(SOURCE, TYPE_PLACE, get_key_from_type_place(order_.get_type_place()), db, is_quick_);
+		db = common.add_to_vals(SOURCE, SYMBOL, order_.get_symbol(), db, is_quick_);
+		db = common.add_to_vals(SOURCE, QUANTITY, order_.get_quantity(), db, is_quick_);
+		db = common.add_to_vals(SOURCE, STOP, order_.get_stop(), db, is_quick_);
 		
-		if (is_market(order_)) db.put(IS_MARKET, is_market(order_));
+		if (is_market(order_)) db = common.add_to_vals(SOURCE, IS_MARKET, is_market(order_), db, is_quick_);
 		else 
 		{
-			if (ib.common.price_is_ok(order_.get_start())) db.put(START, order_.get_start());
-			if (ib.common.price_is_ok(order_.get_start2())) db.put(START2, order_.get_start2());
+			if (ib.common.price_is_ok(order_.get_start())) db = common.add_to_vals(SOURCE, START, order_.get_start(), db, is_quick_);
+			if (ib.common.price_is_ok(order_.get_start2())) db = common.add_to_vals(SOURCE, START2, order_.get_start2(), db, is_quick_);
 		}
 
 		if (!only_basic_)
 		{
-			db.put(USER, ib.basic.get_user());
-			db.put(STATUS, get_key_from_status(ib.orders.DEFAULT_STATUS));
-			db.put(TYPE_MAIN, order_.get_type_main());
-			db.put(TYPE_SEC, order_.get_type_sec());			
+			db = common.add_to_vals(SOURCE, USER, ib.basic.get_user(), db, is_quick_);
+			db = common.add_to_vals(SOURCE, STATUS, get_key_from_status(ib.orders.DEFAULT_STATUS), db, is_quick_);
+			db = common.add_to_vals(SOURCE, TYPE_MAIN, order_.get_type_main(), db, is_quick_);
+			db = common.add_to_vals(SOURCE, TYPE_SEC, order_.get_type_sec(), db, is_quick_);
 		}
 		
 		return db;

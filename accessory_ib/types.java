@@ -154,11 +154,13 @@ public abstract class types
 	public static final String REMOTE_STATUS_ACTIVE = "remote_status_active";
 	public static final String REMOTE_STATUS_INACTIVE = "remote_status_inactive";
 	public static final String REMOTE_STATUS_ERROR = "remote_status_error";
+	public static final String REMOTE_STATUS_FIXED = "remote_status_fixed";
 	public static final String REMOTE_STATUS2 = "remote_status2";
 	public static final String REMOTE_STATUS2_PENDING = "remote_status2_pending";
 	public static final String REMOTE_STATUS2_EXECUTED = "remote_status2_executed";
 	public static final String REMOTE_STATUS2_ERROR = "remote_status2_error";
-	
+	public static final String REMOTE_STATUS2_FIXED = "remote_status2_fixed";
+
 	public static final String SYNC = "sync";
 	public static final String SYNC_GET = "sync_get";
 	public static final String SYNC_GET_FUNDS = "sync_get_funds";
@@ -266,9 +268,9 @@ public abstract class types
 			
 			REMOTE,
 			REMOTE_STATUS,
-			REMOTE_STATUS_ACTIVE, REMOTE_STATUS_INACTIVE, REMOTE_STATUS_ERROR,
+			REMOTE_STATUS_ACTIVE, REMOTE_STATUS_INACTIVE, REMOTE_STATUS_ERROR, REMOTE_STATUS_FIXED,
 			REMOTE_STATUS2,
-			REMOTE_STATUS2_PENDING, REMOTE_STATUS2_EXECUTED, REMOTE_STATUS2_ERROR,
+			REMOTE_STATUS2_PENDING, REMOTE_STATUS2_EXECUTED, REMOTE_STATUS2_ERROR, REMOTE_STATUS2_FIXED,
 			
 			SYNC,
 			SYNC_GET,

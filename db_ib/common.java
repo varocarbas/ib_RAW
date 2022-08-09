@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import accessory.arrays;
+import accessory.dates;
 import accessory.db;
 import accessory.db_where;
 import accessory.numbers;
@@ -23,7 +24,6 @@ public abstract class common
 	public static final String SOURCE_TRADES = types.CONFIG_DB_IB_TRADES_SOURCE;
 	public static final String SOURCE_WATCHLIST = types.CONFIG_DB_IB_WATCHLIST_SOURCE;
 	public static final String SOURCE_APPS = types.CONFIG_DB_IB_APPS_SOURCE;
-	public static final String SOURCE_TEMP_ASYNC_DATA = types.CONFIG_DB_IB_TEMP_ASYNC_DATA_SOURCE;
 	
 	public static final String FIELD_SYMBOL = types.CONFIG_DB_IB_FIELD_SYMBOL;
 	public static final String FIELD_PRICE = types.CONFIG_DB_IB_FIELD_PRICE;
@@ -171,6 +171,8 @@ public abstract class common
 
 	public static ArrayList<Integer> get_all_ints(String source_, String field_, String where_) { return accessory.db.select_some_ints(source_, field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
 
+	public static ArrayList<HashMap<String, String>> get_all_vals(String source_, String[] fields_cols_, String where_, boolean is_quick_) { return (is_quick_ ? get_all_vals_quick(source_, fields_cols_, where_) : get_all_vals(source_, fields_cols_, where_)); }
+
 	public static ArrayList<HashMap<String, String>> get_all_vals(String source_, String[] fields_, String where_) { return accessory.db.select(source_, fields_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
 
 	public static ArrayList<HashMap<String, String>> get_all_vals_quick(String source_, String[] cols_, String where_) { return accessory.db.select_quick(source_, cols_, where_, accessory.db.DEFAULT_MAX_ROWS, accessory.db.DEFAULT_ORDER); }
@@ -214,8 +216,12 @@ public abstract class common
 		return accessory.db.is_ok(source_);
 	}
 	
+	public static boolean update(String source_, Object vals_, String symbol_, boolean is_quick_) { return update_where(source_, vals_, get_where_symbol(source_, symbol_, is_quick_), is_quick_); }
+
 	@SuppressWarnings("unchecked")
-	public static boolean update(String source_, Object vals_, String symbol_, boolean is_quick_) { return (is_quick_ ? update_quick(source_, (HashMap<String, String>)vals_, common.get_where_symbol_quick(source_, symbol_)) : update(source_, (HashMap<String, Object>)vals_, common.get_where_symbol(source_, symbol_))); }
+	public static boolean update_where(String source_, Object vals_, String where_, boolean is_quick_) { return (is_quick_ ? update_quick(source_, (HashMap<String, String>)vals_, where_) : update(source_, (HashMap<String, Object>)vals_, where_)); }
+
+	public static boolean update(String source_, String field_col_, Object val_, String where_, boolean is_quick_) { return (is_quick_ ? update_quick(source_, field_col_, (String)val_, where_) : update(source_, field_col_, val_, where_)); }
 
 	public static boolean update(String source_, String field_, Object val_, String where_) 
 	{ 
@@ -237,7 +243,7 @@ public abstract class common
 		HashMap<String, String> vals = new HashMap<String, String>();
 		vals.put(col_, val_);
 		
-		return update(source_, vals, where_); 
+		return update_quick(source_, vals, where_); 
 	}
 
 	public static boolean update_quick(String source_, HashMap<String, String> vals_, String where_)
@@ -441,7 +447,11 @@ public abstract class common
 	}
 
 	public static String get_where_timestamp(String source_, int before_mins_) { return (before_mins_ > 0 ? (new db_where(source_, accessory.db.FIELD_TIMESTAMP, db_where.OPERAND_GREATER_EQUAL, "CURRENT_TIMESTAMP - INTERVAL " + before_mins_ + " MINUTE", false, db_where.DEFAULT_LINK)).toString() : strings.DEFAULT); }
-	
+
+	public static long get_elapsed_secs(String source_, String where_) 
+	{ 
+		return dates.get_diff(get_string(source_, accessory.db.FIELD_TIMESTAMP, where_), dates.FORMAT_TIMESTAMP, dates.get_now_string(dates.FORMAT_TIMESTAMP), dates.FORMAT_TIMESTAMP, dates.SECONDS); }
+
 	private static double adapt_number(double val_, int max_, boolean is_negative_)
 	{
 		double output = numbers.round(val_, ib.common.DEFAULT_ROUND_DECIMALS);

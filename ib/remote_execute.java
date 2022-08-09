@@ -10,7 +10,7 @@ abstract class remote_execute
 {
 	public static void execute_all(boolean any_user_)
 	{
-		ArrayList<HashMap<String, String>> all = db_ib.remote.get_all_pending(any_user_);
+		ArrayList<HashMap<String, String>> all = db_ib.remote.get_all_pending(any_user_, remote.is_quick());
 		if (!arrays.is_ok(all)) return;
 		
 		for (HashMap<String, String> vals: all) { execute(vals); }	
@@ -19,7 +19,7 @@ abstract class remote_execute
 	private static boolean execute(HashMap<String, String> vals_)
 	{
 		boolean executed = false;
-	
+
 		int request = remote.get_request(vals_);
 
 		String type = remote.get_type(vals_);
@@ -95,17 +95,16 @@ abstract class remote_execute
 		if (!order.is_ok()) return false;
 
 		boolean is_ok = sync_orders.place_update(order);
-		
-		HashMap<String, Object> vals = new HashMap<String, Object>();
+		boolean is_quick = remote.is_quick();		
 
-		vals.put(db_ib.remote.ORDER_ID_MAIN, order.get_id_main());
-		vals.put(db_ib.remote.ORDER_ID_SEC, order.get_id_sec());
-		vals.put(db_ib.remote.QUANTITY, quantity_);
-		vals.put(db_ib.remote.STATUS2, db_ib.remote.get_status2_key_execute(is_ok));
-	
-		if (ib.common.price_is_ok(price_)) vals.put(db_ib.remote.PRICE, price_);
+		Object vals = db_ib.remote.add_to_vals(db_ib.remote.ORDER_ID_MAIN, order.get_id_main(), null, is_quick);
+		vals = db_ib.remote.add_to_vals(db_ib.remote.ORDER_ID_SEC, order.get_id_sec(), vals, is_quick);
+		vals = db_ib.remote.add_to_vals(db_ib.remote.QUANTITY, quantity_, vals, is_quick);
+		vals = db_ib.remote.add_to_vals(db_ib.remote.STATUS2, db_ib.remote.get_status2_key_execute(is_ok), vals, is_quick);		
 
-		db_ib.remote.update(request_, vals);
+		if (ib.common.price_is_ok(price_)) vals = db_ib.remote.add_to_vals(db_ib.remote.PRICE, price_, vals, is_quick);;
+
+		db_ib.remote.update(request_, vals, is_quick);
 		
 		return is_ok;
 	}
@@ -131,17 +130,18 @@ abstract class remote_execute
 		else if (type_update.equals(remote.UPDATE_START2_VALUE)) start2 = val_;
 		else if (type_update.equals(remote.UPDATE_STOP_VALUE)) stop = val_;
 
-		HashMap<String, Object> vals = new HashMap<String, Object>();
+		boolean is_quick = remote.is_quick();
 		
-		vals.put(db_ib.remote.IS_MARKET, is_market);
-		if (stop != common.WRONG_PRICE) vals.put(db_ib.remote.STOP, stop);
-		if (start != common.WRONG_PRICE) vals.put(db_ib.remote.START, start);
-		if (start2 != common.WRONG_PRICE) vals.put(db_ib.remote.START2, start2);
+		Object vals = db_ib.remote.add_to_vals(db_ib.remote.IS_MARKET, is_market, null, is_quick);
+
+		if (stop != common.WRONG_PRICE) vals = db_ib.remote.add_to_vals(db_ib.remote.STOP, stop, vals, is_quick);
+		if (start != common.WRONG_PRICE) vals = db_ib.remote.add_to_vals(db_ib.remote.START, start, vals, is_quick);
+		if (start2 != common.WRONG_PRICE) vals = db_ib.remote.add_to_vals(db_ib.remote.START2, start2, vals, is_quick);
 
 		is_ok = sync_orders.place_update(order, type_update, val_);
-		vals = db_ib.remote.get_vals_common(db_ib.remote.get_status2_key_execute(is_ok), vals);
+		vals = db_ib.remote.get_vals_common(db_ib.remote.get_status2_key_execute(is_ok), vals, is_quick);
 		
-		db_ib.remote.update(request_, vals);
+		db_ib.remote.update(request_, vals, is_quick);
 		
 		return is_ok;
 	}

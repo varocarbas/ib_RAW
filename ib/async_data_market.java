@@ -12,7 +12,7 @@ abstract class async_data_market
 	public static final String SOURCE = market.SOURCE;
 	public static final int MAX_MINS_INACTIVE = 30;
 	
-	public static final int MAX_SIMULTANEOUS_SYMBOLS = 15000;
+	public static final int MAX_SIMULTANEOUS_SYMBOLS = 12000;
 	public static final int SIZE_GLOBALS = MAX_SIMULTANEOUS_SYMBOLS;
 	public static final int MAX_I = SIZE_GLOBALS - 1;
 	
@@ -34,7 +34,7 @@ abstract class async_data_market
 	public static boolean _includes_halted = true;
 	public static boolean _includes_halted_tot = true;
 	public static boolean _disable_asap = false;
-
+	
 	public static boolean is_ok() { return _enabled; }
 	
 	public static boolean logs_to_screen() { return _logs_to_screen; }
