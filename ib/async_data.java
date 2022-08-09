@@ -225,7 +225,7 @@ public abstract class async_data extends parent_static
 
 	private static int get_i(String[] array_, int last_i_, int max_i_, String target_, String[] array2_, String target2_) 
 	{
-		if (last_i_ < 0) return WRONG_I;
+		if (last_i_ <= WRONG_I) return WRONG_I;
 		
 		int i = last_i_;
 
@@ -234,7 +234,7 @@ public abstract class async_data extends parent_static
 			if (strings.are_equal(array_[i], target_) && (array2_ == null || strings.are_equal(array2_[i], target2_))) return i;
 			
 			i--;
-			if (i < 0) i = max_i_; 
+			if (i <= WRONG_I) i = max_i_; 
 			if (i == last_i_) return WRONG_I;
 		}		
 	}

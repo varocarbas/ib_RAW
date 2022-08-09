@@ -151,7 +151,8 @@ abstract class async_data_apps
 		if (app_.equals(async_data_watchlist._APP)) 
 		{
 			i += async_data_watchlist._last_i_stopping;
-		
+			if (i > async_data_watchlist.MAX_I) i = 0;
+			
 			async_data_watchlist._stopping[i] = symbol_;
 			
 			async_data_watchlist._last_i_stopping = i;
@@ -159,7 +160,8 @@ abstract class async_data_apps
 		else if (app_.equals(async_data_trades._APP)) 
 		{
 			i += async_data_trades._last_i_stopping;
-		
+			if (i > async_data_trades.MAX_I) i = 0;
+			
 			async_data_trades._stopping[i] = symbol_;
 			
 			async_data_trades._last_i_stopping = i;
@@ -167,7 +169,8 @@ abstract class async_data_apps
 		else if (app_.equals(async_data_market._APP)) 
 		{
 			i += async_data_market._last_i_stopping;
-		
+			if (i > async_data_market.MAX_I) i = 0;
+			
 			async_data_market._stopping[i] = symbol_;
 			
 			async_data_market._last_i_stopping = i;
