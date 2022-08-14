@@ -2,20 +2,23 @@ package ib;
 
 import java.util.ArrayList;
 
-import accessory.arrays;
 import accessory.strings;
 
 abstract class async_data_apps 
 {	
-	public static void tick_price_specific(String app_, int id_, int field_ib_, double price_, String symbol_)
+	public static void tick_price(String app_, int id_, double price_, String symbol_)
 	{
-		if (app_.equals(async_data_watchlist._APP)) async_data_watchlist.tick_price_specific(id_, field_ib_, price_, symbol_);
-		else if (app_.equals(async_data_trades._APP)) async_data_trades.tick_price_specific(id_, field_ib_, price_, symbol_);
+		if (price_ <= ib.common.WRONG_PRICE) return;
+		
+		if (app_.equals(async_data_watchlist._APP)) async_data_watchlist.tick_price(id_, price_, symbol_);
+		else if (app_.equals(async_data_trades._APP)) async_data_trades.tick_price(id_, price_, symbol_);
 	}
 
-	public static void tick_size_specific(String app_, int id_, int field_ib_, double size_, String symbol_)
+	public static void tick_volume(String app_, int id_, double volume_, String symbol_)
 	{
-		if (app_.equals(async_data_watchlist._APP)) async_data_watchlist.tick_size_specific(id_, field_ib_, size_, symbol_);	
+		if (volume_ <= ib.common.WRONG_SIZE) return;
+
+		if (app_.equals(async_data_watchlist._APP)) async_data_watchlist.tick_volume(id_, volume_, symbol_);	
 	}
 	
 	public static void enable(String app_)
@@ -102,9 +105,9 @@ abstract class async_data_apps
 	{
 		boolean output = async_data.DEFAULT_LOGS_TO_SCREEN;
 		
-		if (app_.equals(async_data_watchlist._APP)) output = async_data_watchlist.logs_to_screen();
-		else if (app_.equals(async_data_trades._APP)) output = async_data_trades.logs_to_screen();
-		else if (app_.equals(async_data_market._APP)) output = async_data_market.logs_to_screen();
+		if (app_.equals(async_data_watchlist._APP)) output = async_data_watchlist._logs_to_screen;
+		else if (app_.equals(async_data_trades._APP)) output = async_data_trades._logs_to_screen;
+		else if (app_.equals(async_data_market._APP)) output = async_data_market._logs_to_screen;
 
 		return output;		
 	}
@@ -131,6 +134,17 @@ abstract class async_data_apps
 		return output;
 	}
 
+	public static boolean only_essential(String app_)
+	{
+		boolean output = async_data.DEFAULT_ONLY_ESSENTIAL;
+		
+		if (app_.equals(async_data_watchlist._APP)) output = async_data_watchlist._only_essential;		
+		else if (app_.equals(async_data_trades._APP)) output = async_data_trades._only_essential;		
+		else if (app_.equals(async_data_market._APP)) output = async_data_market._only_essential;		
+	
+		return output;
+	}
+
 	public static int pause_nonstop(String app_)
 	{
 		int output = async_data.DEFAULT_PAUSE_NONSTOP;
@@ -142,10 +156,10 @@ abstract class async_data_apps
 		return output;
 	}
 	
-	public static String[] get_all_sources() { return new String[] { async_data_watchlist.SOURCE, async_data_trades.SOURCE, async_data_market.SOURCE }; }
-
 	public static void add_to_stopping(String app_, String symbol_) 
 	{
+		if (is_stopping(app_, symbol_)) return;
+
 		int i = 1;
 		
 		if (app_.equals(async_data_watchlist._APP)) 
@@ -179,60 +193,34 @@ abstract class async_data_apps
 
 	public static void remove_from_stopping(String app_, String symbol_) 
 	{
-		int i = async_data.WRONG_I;
+		int i = 0;
 		
-		while (true)
+		if (app_.equals(async_data_watchlist._APP)) 
 		{
-			if (app_.equals(async_data_watchlist._APP)) 
-			{
-				i = async_data.get_i(async_data_watchlist._stopping, async_data_watchlist._last_i_stopping, async_data_watchlist.MAX_I, symbol_);
-				if (i <= async_data.WRONG_I) break;
-			
-				async_data_watchlist._stopping[i] = null;
-			}
-			else if (app_.equals(async_data_trades._APP)) 
-			{
-				i = async_data.get_i(async_data_trades._stopping, async_data_trades._last_i_stopping, async_data_trades.MAX_I, symbol_);
-				if (i <= async_data.WRONG_I) break;
-			
-				async_data_trades._stopping[i] = null;
-			}
-			else if (app_.equals(async_data_market._APP)) 
-			{
-				i = async_data.get_i(async_data_market._stopping, async_data_market._last_i_stopping, async_data_market.MAX_I, symbol_);
-				if (i <= async_data.WRONG_I) break;
-			
-				async_data_market._stopping[i] = null;
-			}
+			i = async_data.get_i(async_data_watchlist._stopping, async_data_watchlist._last_i_stopping, async_data_watchlist.MAX_I, symbol_);
+			if (i > async_data.WRONG_I) async_data_watchlist._stopping[i] = null;
+		}
+		else if (app_.equals(async_data_trades._APP)) 
+		{
+			i = async_data.get_i(async_data_trades._stopping, async_data_trades._last_i_stopping, async_data_trades.MAX_I, symbol_);
+			if (i > async_data.WRONG_I) async_data_trades._stopping[i] = null;
+		}
+		else if (app_.equals(async_data_market._APP)) 
+		{
+			i = async_data.get_i(async_data_market._stopping, async_data_market._last_i_stopping, async_data_market.MAX_I, symbol_);
+			if (i > async_data.WRONG_I) async_data_market._stopping[i] = null;
 		}
 	}
 
 	public static boolean is_stopping(String app_, String symbol_) 
 	{
-		String[] stopping = null;
-		int last_i = async_data.WRONG_I;
-		int max_i = async_data.WRONG_I;
+		int i = async_data.WRONG_I;
 
-		if (app_.equals(async_data_watchlist._APP))
-		{
-			stopping = (String[])arrays.get_new(async_data_watchlist._stopping);
-			last_i = async_data_watchlist._last_i_stopping;
-			max_i = async_data_watchlist.MAX_I;			
-		}
-		else if (app_.equals(async_data_trades._APP))
-		{
-			stopping = (String[])arrays.get_new(async_data_trades._stopping);
-			last_i = async_data_trades._last_i_stopping;
-			max_i = async_data_trades.MAX_I;			
-		}
-		else if (app_.equals(async_data_market._APP))
-		{
-			stopping = (String[])arrays.get_new(async_data_market._stopping);
-			last_i = async_data_market._last_i_stopping;
-			max_i = async_data_market.MAX_I;			
-		}
+		if (app_.equals(async_data_watchlist._APP)) i = async_data.get_i(async_data_watchlist._stopping, async_data_watchlist._last_i_stopping, async_data_watchlist.MAX_I, symbol_); 
+		else if (app_.equals(async_data_trades._APP)) i = async_data.get_i(async_data_trades._stopping, async_data_trades._last_i_stopping, async_data_trades.MAX_I, symbol_);
+		else if (app_.equals(async_data_market._APP)) i = async_data.get_i(async_data_market._stopping, async_data_market._last_i_stopping, async_data_market.MAX_I, symbol_);
 		
-		return (async_data.get_i(stopping, last_i, max_i, symbol_) != async_data.WRONG_I); 
+		return (i != async_data.WRONG_I); 
 	}
 
 	public static ArrayList<Integer> populate_fields(String app_)

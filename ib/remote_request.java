@@ -7,18 +7,32 @@ import accessory.dates;
 import accessory.misc;
 import accessory.parent_static;
 import accessory.strings;
+import accessory_ib.types;
 
 abstract class remote_request extends parent_static 
 {
-	public static final long TIMEOUT = 20l;
+	public static final long TIMEOUT = 30l;
 
+	public static final String ERROR = types.ERROR_IB_REMOTE_REQUEST; 
+	public static final String ERROR_REQUEST = types.ERROR_IB_REMOTE_REQUEST_REQUEST; 
+	public static final String ERROR_PLACE = types.ERROR_IB_REMOTE_REQUEST_PLACE; 
+	public static final String ERROR_CANCEL = types.ERROR_IB_REMOTE_REQUEST_CANCEL;
+	public static final String ERROR_UPDATE = types.ERROR_IB_REMOTE_REQUEST_UPDATE;
+	public static final String ERROR_WAIT = types.ERROR_IB_REMOTE_REQUEST_WAIT;
+	
 	public static int __place(String type_place_, String symbol_, double stop_, double start_, double quantity_, boolean wait_for_execution_) 
 	{ 
 		int request = __place(type_place_, symbol_, stop_, start_, common.WRONG_PRICE, quantity_, wait_for_execution_); 
-	
-		if (request != common.WRONG_REQUEST && wait_for_execution_) 
+
+		if (request == common.WRONG_REQUEST) update_error_place(request, type_place_, quantity_, stop_, start_, common.WRONG_PRICE);
+		else if (wait_for_execution_)
 		{
-			if (!wait_for_execution(request)) request = common.WRONG_REQUEST;
+			if (!wait_for_execution(request)) 
+			{
+				remote.update_error(request, ERROR_WAIT, type_place_);
+				
+				request = common.WRONG_REQUEST;
+			}
 		}
 		
 		return request;
@@ -27,10 +41,16 @@ abstract class remote_request extends parent_static
 	public static int __place(String type_place_, String symbol_, double stop_, double start_, double start2_, double quantity_, boolean wait_for_execution_) 
 	{ 
 		int request = __place_common(type_place_, symbol_, stop_, start_, start2_, quantity_, common.WRONG_MONEY, common.WRONG_PRICE); 
-		
-		if (request != common.WRONG_REQUEST && wait_for_execution_) 
+
+		if (request == common.WRONG_REQUEST) update_error_place(request, type_place_, quantity_, stop_, start_, start2_);
+		else if (wait_for_execution_)
 		{
-			if (!wait_for_execution(request)) request = common.WRONG_REQUEST;
+			if (!wait_for_execution(request)) 
+			{
+				remote.update_error(request, ERROR_WAIT, type_place_);
+				
+				request = common.WRONG_REQUEST;
+			}
 		}
 		
 		return request;
@@ -40,9 +60,15 @@ abstract class remote_request extends parent_static
 	{ 
 		int request = __place_perc(type_place_, symbol_, stop_, start_, common.WRONG_PRICE, perc_money_, price_, wait_for_execution_); 
 
-		if (request != common.WRONG_REQUEST && wait_for_execution_) 
+		if (request == common.WRONG_REQUEST) update_error_place(request, type_place_, price_, perc_money_, stop_, start_, common.WRONG_PRICE);
+		else if (wait_for_execution_)
 		{
-			if (!wait_for_execution(request)) request = common.WRONG_REQUEST;
+			if (!wait_for_execution(request)) 
+			{
+				remote.update_error(request, ERROR_WAIT, type_place_);
+				
+				request = common.WRONG_REQUEST;
+			}
 		}
 		
 		return request;
@@ -52,9 +78,15 @@ abstract class remote_request extends parent_static
 	{ 
 		int request = __place_common(type_place_, symbol_, stop_, start_, start2_, common.WRONG_QUANTITY, perc_money_, price_); 
 
-		if (request != common.WRONG_REQUEST && wait_for_execution_) 
+		if (request == common.WRONG_REQUEST) update_error_place(request, type_place_, price_, perc_money_, stop_, start_, start2_);
+		else if (wait_for_execution_)
 		{
-			if (!wait_for_execution(request)) request = common.WRONG_REQUEST;
+			if (!wait_for_execution(request)) 
+			{
+				remote.update_error(request, ERROR_WAIT, type_place_);
+				
+				request = common.WRONG_REQUEST;
+			}
 		}
 		
 		return request;
@@ -62,30 +94,71 @@ abstract class remote_request extends parent_static
 	
 	public static boolean cancel(int request_, boolean wait_for_execution_) 
 	{ 
-		boolean output = (is_ok(request_, true) ? db_ib.remote.request_update_type_order(request_, remote.CANCEL, remote.is_quick()) : false); 
-	
-		if (output && wait_for_execution_) output = wait_for_execution(request_);
+		boolean output = false;
+		
+		if (!is_ok(request_, true))
+		{
+			remote.update_error(request_, ERROR_REQUEST, remote.CANCEL);
+			
+			return output;
+		}
+		
+		output = db_ib.remote.request_update_type_order(request_, remote.CANCEL, remote.is_quick()); 
+		
+		if (!output) remote.update_error(request_, ERROR_CANCEL, null);
+		else if (wait_for_execution_) 
+		{
+			output = wait_for_execution(request_);
+			
+			if (!output) remote.update_error(request_, ERROR_WAIT, remote.CANCEL);
+		}
 		
 		return output;
 	}
 
 	public static boolean update(int request_, String type_update_, double val_, boolean wait_for_execution_)
 	{
-		boolean is_ok = false;
-		if (!is_ok(request_, false)) return is_ok;
+		boolean output = false;
+		
+		if (!is_ok(request_, false))
+		{
+			remote.update_error(request_, ERROR_REQUEST, type_update_);
+			
+			return output;
+		}
 		
 		double val = db_ib.common.adapt_price(val_);
 
 		String type_update = orders.check_update(type_update_);
-		if (!strings.is_ok(type_update) || !(orders.is_update_market(type_update) || common.price_is_ok(val))) return is_ok;
+		if (!strings.is_ok(type_update) || !(orders.is_update_market(type_update) || common.price_is_ok(val))) return output;
 
-		is_ok = db_ib.remote.request_update_type_order_values(request_, type_update, db_ib.orders.get_field_update(type_update), val, remote.is_quick());
-		if (is_ok && wait_for_execution_) is_ok = wait_for_execution(request_);
+		output = db_ib.remote.request_update_type_order_values(request_, type_update, db_ib.orders.get_field_update(type_update), val, remote.is_quick());
 		
-		return is_ok;
+		if (!output) update_error_update(request_, type_update, val_);
+		else if (wait_for_execution_) 
+		{
+			output = wait_for_execution(request_);
+			
+			if (!output) remote.update_error(request_, ERROR_WAIT, type_update);
+		}
+		
+		return output;
 	}
 
 	public static boolean wait_for_execution(int request_) { return is_executed(request_, false, true); }
+
+	static String get_error_message(String type_)
+	{	
+		String message = strings.DEFAULT;
+		
+		if (type_.equals(ERROR_PLACE)) message = "place request failed";
+		else if (type_.equals(ERROR_CANCEL)) message = "cancel request failed";
+		else if (type_.equals(ERROR_UPDATE)) message = "update request failed";
+		else if (type_.equals(ERROR_WAIT)) message = "tired of waiting for request execution";
+		else message = remote.get_error_message_default(type_, true);
+		
+		return message;
+	}
 	
 	private static int __place_common(String type_place_, String symbol_, double stop_, double start_, double start2_, double quantity_, double perc_money_, double price_)
 	{
@@ -139,7 +212,7 @@ abstract class remote_request extends parent_static
 			else if (strings.are_equal(status2, remote.STATUS2_ERROR)) return ignore_error_;
 
 			if (dates.get_elapsed(start) >= remote_request.TIMEOUT) 
-			{
+			{				
 				db_ib.remote.deactivate_order_id(order_id_main);
 				
 				misc.pause_secs(2);
@@ -160,4 +233,10 @@ abstract class remote_request extends parent_static
 
 		return false;
 	}
+
+	private static void update_error_place(int request_, String type_, double quantity_, double stop_, double start_, double start2_) { remote.update_error_place(request_, type_, quantity_, stop_, start_, start2_, true); }
+
+	private static void update_error_place(int request_, String type_, double price_, double perc_, double stop_, double start_, double start2_) { remote.update_error_place(request_, type_, price_, perc_, stop_, start_, start2_, true); }
+
+	private static void update_error_update(int request_, String type_, double val_) { remote.update_error_update(request_, type_, common.WRONG_ORDER_ID, val_, true); }
 }

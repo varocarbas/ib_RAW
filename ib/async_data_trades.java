@@ -12,7 +12,7 @@ abstract class async_data_trades
 	public static final String SOURCE = trades.SOURCE;
 	public static final int MAX_MINS_INACTIVE = async_data.DEFAULT_MAX_MINS_INACTIVE;
 	
-	public static final int MAX_SIMULTANEOUS_SYMBOLS = 25;
+	public static final int MAX_SIMULTANEOUS_SYMBOLS = 10;
 	public static final int SIZE_GLOBALS = MAX_SIMULTANEOUS_SYMBOLS;
 	public static final int MAX_I = SIZE_GLOBALS - 1;
 	
@@ -34,6 +34,7 @@ abstract class async_data_trades
 	public static boolean _includes_halted = true;
 	public static boolean _includes_halted_tot = false;
 	public static boolean _disable_asap = true;
+	public static boolean _only_essential = true;
 	
 	public static boolean is_ok() { return _enabled; }
 	
@@ -49,14 +50,9 @@ abstract class async_data_trades
 	
 	public static void tick_generic(int id_, int tick_, double value_) { async_data.tick_generic(_APP, id_, tick_, value_); }
 
-	public static void end_snapshot(int id_) { async_data.end_snapshot(_APP, id_); }
+	public static void tick_snapshot_end(int id_) { async_data.tick_snapshot_end(_APP, id_); }
 
-	public static void tick_price_specific(int id_, int field_ib_, double price_, String symbol_)
-	{
-		if (field_ib_ != async_data.PRICE_IB) return;
-
-		trades.update_unrealised(symbol_);
-	}
+	public static void tick_price(int id_, double price_, String symbol_) { trades.update_unrealised(symbol_); }
 	
 	public static void populate_fields()
 	{
@@ -65,6 +61,8 @@ abstract class async_data_trades
 		_fields.add(async_data.PRICE_IB);
 		_fields.add(async_data.HALTED_IB);
 	}
+	
+	public static ArrayList<String> get_all_symbols() { return async_data.get_all_symbols(_APP); }
 	
 	public static ArrayList<String> get_active_symbols() { return async_data.get_active_symbols(_APP); }
 	

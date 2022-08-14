@@ -19,7 +19,7 @@ import external_ib.calls;
 
 public abstract class sync extends parent_static 
 {
-	public static final String GET_ID = types.SYNC_GET_ID;
+	public static final String GET_ORDER_ID = types.SYNC_GET_ORDER_ID;
 	public static final String GET_ORDERS = types.SYNC_GET_ORDERS;
 	public static final String GET_FUNDS = types.SYNC_GET_FUNDS;
 	public static final String GET_ERROR = types.SYNC_GET_ERROR;
@@ -38,6 +38,7 @@ public abstract class sync extends parent_static
 	
 	public static final int WRONG_REQ_ID = common.WRONG_ID;
 	public static final int WRONG_ORDER_ID = common.WRONG_ORDER_ID;
+	public static final double WRONG_MONEY = common.WRONG_MONEY;
 	
 	public static final long TIMEOUT_ORDERS = 3l;
 	public static final long TIMEOUT_ERROR = 3l;
@@ -57,9 +58,19 @@ public abstract class sync extends parent_static
 	private static String _get = strings.DEFAULT;
 	private static String _out = strings.DEFAULT;
 
-	public static int get_order_id() { return (int)get(GET_ID); }
+	public static int get_order_id() 
+	{ 
+		Object temp = get(GET_ORDER_ID);
+		
+		return (temp == null ? WRONG_ORDER_ID : (int)temp);
+	}
 	
-	public static double get_funds() { return (double)get(GET_FUNDS); }
+	public static double get_funds() 
+	{
+		Object temp = get(GET_FUNDS);
+		
+		return (temp == null ? WRONG_MONEY : (double)temp);
+	}
 
 	public static int get_req_id() { return _req_id; }
 
@@ -78,16 +89,25 @@ public abstract class sync extends parent_static
 		String type = check_error(type_);
 		if (!strings.is_ok(type)) return message;
 		
-		if (type.equals(ERROR_TIMEOUT)) message = (strings.is_ok(_get) ? _get : "get method") + " timed out";
-		
-		return message;	
+		if (type.equals(ERROR_TIMEOUT)) 
+		{
+			message = "";
+			
+			if (_getting) message = (strings.is_ok(_get) ? _get : "get method");
+			else if (_order_id > WRONG_ORDER_ID) message = "order id (" + _order_id + ")";
+			else message = "request";
+			
+			message += " timed out";
+		}
+
+		return message;
 	}
 
 	public static HashMap<String, String> populate_all_get_outs()
 	{		
 		HashMap<String, String> all = new HashMap<String, String>();
 		
-		all.put(GET_ID, OUT_INT);
+		all.put(GET_ORDER_ID, OUT_INT);
 		all.put(GET_FUNDS, OUT_DECIMAL);
 		all.put(GET_ORDERS, OUT_ORDERS);
 		
@@ -98,13 +118,14 @@ public abstract class sync extends parent_static
 	
 	public static void end() { if (_getting) _getting = false; }
 
-	public static boolean wait_orders(String type_) { return wait(DEFAULT_TIMEOUT, true, type_); }
+	public static boolean wait_orders(String type_) { return wait(DEFAULT_TIMEOUT, true, type_, false); }
 	
 	@SuppressWarnings("unchecked")
 	public static HashMap<Integer, String> get_orders() 
 	{ 	
 		HashMap<Integer, String> orders = (HashMap<Integer, String>)get(GET_ORDERS); 
-			
+		if (orders == null) orders = new HashMap<Integer, String>();
+		
 		async_orders.perform_regular_checks();
 		
 		return orders; 
@@ -220,7 +241,7 @@ public abstract class sync extends parent_static
 
 		boolean wait_default = false;
 		boolean wait_error = false;
-		
+	
 		if (is_cancel) 
 		{
 			wait_default = true;
@@ -238,21 +259,18 @@ public abstract class sync extends parent_static
 		}
 
 		boolean is_ok = true;
-		
+
 		if (wait_default) is_ok = wait_orders(type_);
 		else if (wait_error) is_ok = wait_error();
-		
+
 		return is_ok; 
 	}
 	
 	private static Object get(String type_)
 	{
 		common_xsync.get_req_id(true);
-		if (!get_ini(type_)) return null;
 		
-		get(); 
-
-		return get_out();
+		return ((get_ini(type_) && get()) ? get_out() : null);
 	}
 
 	private static boolean get_ini(String type_) { return (boolean)get_ini_out(type_, true); }
@@ -323,10 +341,10 @@ public abstract class sync extends parent_static
 	
 	private static boolean get()
 	{
+		_getting = true;
+		
 		long timeout = DEFAULT_TIMEOUT;
 		boolean cannot_fail = true;
-
-		_getting = true;
 
 		if (_get.equals(GET_FUNDS))
 		{	
@@ -341,7 +359,7 @@ public abstract class sync extends parent_static
 			//Methods called in external_ib.wrapper: openOrder, openOrderEnd, orderStatus.
 			calls.reqAllOpenOrders(); 
 		}
-		else if (_get.equals(GET_ID))
+		else if (_get.equals(GET_ORDER_ID))
 		{	
 			//Methods called in external_ib.wrapper: nextValidId.
 			calls.reqIds(); 
@@ -354,7 +372,7 @@ public abstract class sync extends parent_static
 		
 		_get = strings.DEFAULT;
 		_getting = false;
-		
+	
 		return is_ok;
 	}
 
@@ -371,26 +389,21 @@ public abstract class sync extends parent_static
 		return wait_get(TIMEOUT_ERROR, false);		
 	}
 
-	private static boolean wait_get(long timeout_, boolean cannot_fail_) { return wait(timeout_, cannot_fail_, null); }	
+	private static boolean wait_get(long timeout_, boolean cannot_fail_) { return wait(timeout_, cannot_fail_, null, true); }	
 	
-	private static boolean wait(long timeout_, boolean cannot_fail_, String type_)
-	{
-		_error_triggered = false;
-		
-		boolean is_ok = true;
-		
-		boolean is_get = false;
+	private static boolean wait(long timeout_, boolean cannot_fail_, String type_, boolean is_getting_)
+	{	
+		boolean is_ok = true;		
 		boolean is_place = false;
 		boolean is_cancel = false;
 		
-		if (orders.is_place(type_)) is_place = true;
-		else if (orders.is_cancel(type_)) is_cancel = true;
-		else 
+		_error_triggered = false;
+	
+		if (!is_getting_)
 		{
-			if (!_getting) return false;
-			
-			is_get = true;
-		}
+			if (orders.is_place(type_)) is_place = true;
+			else if (orders.is_cancel(type_)) is_cancel = true;			
+		}		
 
 		long start = dates.start_elapsed();
 
@@ -404,7 +417,7 @@ public abstract class sync extends parent_static
 				break;
 			}
 
-			if (is_get)
+			if (is_getting_)
 			{
 				if (!_getting) 
 				{
@@ -436,10 +449,6 @@ public abstract class sync extends parent_static
 
 			misc.pause_loop();
 		}
-
-		_error_triggered = false;
-
-		if (!is_get) _order_id = WRONG_ORDER_ID;
 		
 		return is_ok;
 	}

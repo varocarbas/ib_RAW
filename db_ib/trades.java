@@ -11,7 +11,6 @@ public abstract class trades
 {
 	public static final String SOURCE = common.SOURCE_TRADES;
 	
-	public static final String USER = common.FIELD_USER;
 	public static final String ORDER_ID_MAIN = common.FIELD_ORDER_ID_MAIN;
 	public static final String ORDER_ID_SEC = common.FIELD_ORDER_ID_SEC;
 	public static final String SYMBOL = common.FIELD_SYMBOL;
@@ -35,7 +34,7 @@ public abstract class trades
 
 	public static boolean exists(String symbol_) { return common.exists(SOURCE, get_where_symbol(symbol_)); }
 
-	public static boolean contains_active() { return common.exists(SOURCE, get_where_is_active(true)); }
+	public static boolean contains_active() { return (common.contains_active(SOURCE) || common.exists(SOURCE, get_where_is_active())); }
 
 	public static boolean started(int order_id_main_) { return common.exists(SOURCE, get_where_started(order_id_main_)); }
 
@@ -80,8 +79,6 @@ public abstract class trades
 		vals.put(INVESTMENT, 0.0);
 		
 		if (end_ > ib.common.WRONG_PRICE) vals.put(END, db_ib.common.adapt_price(end_));
-
-		double investment = get_decimal(INVESTMENT, order_id_sec_, false);
 		
 		int order_id_main = get_order_id_main(order_id_sec_);
 		
@@ -93,13 +90,12 @@ public abstract class trades
 		orders.deactivate(order_id_main);
 		remote.deactivate_order_id(order_id_main);
 
-		basic.update_money_free(common.adapt_money(ib.basic.get_money_free() + investment + realised));
-		ib.basic.get_money();
+		ib.basic.increase_money(realised);
 
 		return output;
 	}
 	
-	public static String[] get_fields() { return new String[] { USER, ORDER_ID_MAIN, SYMBOL, PRICE, TIME_ELAPSED, START, STOP, HALTED, UNREALISED }; }
+	public static String[] get_fields() { return new String[] { ORDER_ID_MAIN, SYMBOL, PRICE, TIME_ELAPSED, START, STOP, HALTED, UNREALISED }; }
 
 	public static double get_start(int order_id_main_) { return get_start(order_id_main_, true); }
 
@@ -140,7 +136,7 @@ public abstract class trades
 				double investment = ib.execs.get_investment(start, order_id_main_);
 				vals.put(INVESTMENT, common.adapt_money(investment));	
 
-				basic.update_money_free(common.adapt_money(ib.basic.get_money_free() - investment));
+				ib.basic.increase_money(-1 * investment);
 			}			
 		}
 
@@ -191,7 +187,7 @@ public abstract class trades
 
 	private static boolean update(String field_, Object val_, int order_id_, boolean is_main_) { return common.update(SOURCE, field_, val_, get_where_order_id(order_id_, is_main_)); }
 
-	private static String get_where_is_active(boolean any_user_) { return common.get_where(SOURCE, IS_ACTIVE, accessory.db.adapt_input(true), false, !any_user_); }
+	private static String get_where_is_active() { return common.get_where(SOURCE, IS_ACTIVE, accessory.db.adapt_input(true), false); }
 	
 	private static String get_where_order_id(int order_id_main_) { return common.get_where_order_id(SOURCE, order_id_main_); }
 	
@@ -203,7 +199,6 @@ public abstract class trades
 	{ 
 		ArrayList<db_where> wheres = new ArrayList<db_where>();
 
-		wheres.add(new db_where(SOURCE, USER, db_where.OPERAND_EQUAL, basic.get_user(), db_where.LINK_AND));
 		wheres.add(new db_where(SOURCE, ORDER_ID_MAIN, db_where.OPERAND_EQUAL, order_id_main_, db_where.LINK_AND));
 		wheres.add(new db_where(SOURCE, START, db_where.OPERAND_GREATER, ib.common.WRONG_PRICE, db_where.LINK_AND));
 			

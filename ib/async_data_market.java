@@ -34,6 +34,7 @@ abstract class async_data_market
 	public static boolean _includes_halted = true;
 	public static boolean _includes_halted_tot = true;
 	public static boolean _disable_asap = false;
+	public static boolean _only_essential = false;
 	
 	public static boolean is_ok() { return _enabled; }
 	
@@ -51,7 +52,7 @@ abstract class async_data_market
 	
 	public static void tick_generic(int id_, int tick_, double value_) { async_data.tick_generic(_APP, id_, tick_, value_); }
 
-	public static void end_snapshot(int id_) { async_data.end_snapshot(_APP, id_); }
+	public static void tick_snapshot_end(int id_) { async_data.tick_snapshot_end(_APP, id_); }
 	
 	public static void populate_fields()
 	{
@@ -84,6 +85,8 @@ abstract class async_data_market
 		if (strings.is_ok(symbol) && async_data.symbol_is_running(_APP, symbol)) async_data.stop(_APP, symbol, false);
 	}
 		
+	public static ArrayList<String> get_all_symbols() { return async_data.get_all_symbols(_APP, db_ib.market.get_where_enabled()); }
+	
 	public static ArrayList<String> get_active_symbols() { return async_data.get_active_symbols(_APP, db_ib.market.get_where_enabled()); }
 
 	private static boolean start(String symbol_, String type_, int data_type_) 

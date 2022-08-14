@@ -50,7 +50,6 @@ public class tests extends parent_tests
 			common.SOURCE_ORDERS, common.SOURCE_TRADES, common.SOURCE_WATCHLIST, common.SOURCE_APPS
 		};
 
-
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
 		for (String source: sources) 
 		{ 

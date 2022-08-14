@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import accessory.arrays;
 import accessory.strings;
+import accessory_ib.errors;
 import accessory_ib.types;
 
 public abstract class remote 
@@ -32,7 +33,9 @@ public abstract class remote
 	public static final String UPDATE_START2_VALUE = orders.UPDATE_START2_VALUE;
 	public static final String UPDATE_STOP_VALUE = orders.UPDATE_STOP_VALUE;
 	public static final String UPDATE_STOP_MARKET = orders.UPDATE_STOP_MARKET;
-	
+
+	public static final double WRONG_MONEY2 = common.WRONG_MONEY2;
+
 	public static final String DEFAULT_STATUS = STATUS_ACTIVE;
 	public static final String DEFAULT_STATUS2 = STATUS2_PENDING;
 	public static final boolean DEFAULT_WAIT_FOR_EXECUTION = true;
@@ -66,9 +69,7 @@ public abstract class remote
 
 	public static boolean request_update(int request_, String type_update_, double val_, boolean wait_for_execution_) { return remote_request.update(request_, type_update_, val_, wait_for_execution_); }
 
-	public static void execute_all() { execute_all(true); }
-	
-	public static void execute_all(boolean any_user_) { remote_execute.execute_all(any_user_); }
+	public static void execute_all() { remote_execute.execute_all(); }
 
 	public static void wait_for_execution(int request_) { remote_request.wait_for_execution(request_); }
 
@@ -87,6 +88,49 @@ public abstract class remote
 	public static String get_status2_request() { return STATUS2_PENDING; }
 
 	public static String get_status2_execute(boolean is_ok_) { return (is_ok_ ? remote.STATUS2_EXECUTED : remote.STATUS2_ERROR); }
+
+	public static HashMap<String, Object> get_quantity(String symbol_, double quantity_, double perc_money_, double price_)
+	{
+		HashMap<String, Object> output = new HashMap<String, Object>();
+		
+		double quantity = quantity_;
+		double price = price_;
+				
+		if (common.percent_is_ok(perc_money_, false))
+		{
+			if (!common.price_is_ok(price)) price = common.get_price(symbol_);
+			if (!common.price_is_ok(price)) return null;
+			
+			double investment = get_investment(perc_money_);
+			if (investment <= WRONG_MONEY2) return null;
+			
+			quantity = investment / price;
+			quantity = orders.adapt_quantity(quantity);
+		}
+		
+		output.put(db_ib.remote.QUANTITY, quantity);
+		output.put(db_ib.remote.PRICE, price);
+		
+		return output;
+	}
+
+	public static double get_investment(double perc_)
+	{
+		double investment = WRONG_MONEY2;
+		if (!common.percent_is_ok(perc_, false)) return investment;
+		
+		double money = basic.get_money();			
+		if (money <= WRONG_MONEY2) return investment;			
+		
+		investment = perc_ * money / 100.0;
+		
+		double free = basic.get_money_free();
+		if (free > WRONG_MONEY2 && investment > free) investment = free;
+	
+		return investment;
+	}
+
+	public static int get_order_id_main(int request_) { return db_ib.remote.get_order_id(request_, _is_quick); }
 	
 	static HashMap<String, String> get_vals(int request_) { return get_vals(request_, _is_quick); }
 	
@@ -95,8 +139,6 @@ public abstract class remote
 	static int get_request(HashMap<String, String> vals_) { return get_request(vals_, _is_quick); }
 
 	static int get_request(HashMap<String, String> vals_, boolean is_quick_) { return (int)db_ib.remote.get_val(db_ib.remote.REQUEST, vals_, is_quick_); }
-
-	static int get_order_id_main(int request_) { return db_ib.remote.get_order_id(request_, is_quick()); }
 
 	static int get_order_id_main(HashMap<String, String> vals_) { return get_order_id_main(vals_, _is_quick); }
 
@@ -178,5 +220,75 @@ public abstract class remote
 		else if (ib.orders.is_place(type)) output = db_ib.orders.is_active(order_id, stop, start, start2);
 		
 		return output;
+	}
+	
+	static void update_error(int request_, String type_, Object vals_) 
+	{ 
+		String message = get_error_message(type_, vals_);
+		
+		if (request_ > common.WRONG_REQUEST) db_ib.remote.update_error(request_, message, _is_quick); 
+	
+		errors.manage(type_, message);
+	}
+
+	public static void update_error_place(int request_, String type_, double quantity_, double stop_, double start_, double start2_, boolean is_request_)
+	{
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		
+		vals.put(db_ib.remote.get_col(db_ib.remote.TYPE_ORDER), strings.to_string(type_));
+		vals.put(db_ib.remote.get_col(db_ib.remote.QUANTITY), quantity_);
+		vals.put(db_ib.remote.get_col(db_ib.remote.STOP), stop_);
+		vals.put(db_ib.remote.get_col(db_ib.remote.START), start_);
+		vals.put(db_ib.remote.get_col(db_ib.remote.START2), start2_);
+		
+		update_error(request_, (is_request_ ? remote_request.ERROR_PLACE : remote_execute.ERROR_PLACE), vals);		
+	}
+
+	static void update_error_place(int request_, String type_, double price_, double perc_, double stop_, double start_, double start2_, boolean is_request_)
+	{
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		
+		vals.put(db_ib.remote.get_col(db_ib.remote.TYPE_ORDER), strings.to_string(type_));
+		vals.put(db_ib.remote.get_col(db_ib.remote.PRICE), price_);
+		vals.put(db_ib.remote.get_col(db_ib.remote.PERC_MONEY), perc_);
+		vals.put(db_ib.remote.get_col(db_ib.remote.STOP), stop_);
+		vals.put(db_ib.remote.get_col(db_ib.remote.START), start_);
+		vals.put(db_ib.remote.get_col(db_ib.remote.START2), start2_);
+		
+		update_error(request_, (is_request_ ? remote_request.ERROR_PLACE : remote_execute.ERROR_PLACE), vals);		
+	}
+
+	static void update_error_update(int request_, String type_, int order_id_, double val_, boolean is_request_)
+	{
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+
+		vals.put(db_ib.remote.get_col(db_ib.remote.TYPE_ORDER), strings.to_string(type_));
+		vals.put("val", val_);
+
+		if (order_id_ > common.WRONG_ORDER_ID) vals.put(db_ib.remote.get_col(db_ib.remote.ORDER_ID_MAIN), order_id_);
+		
+		update_error(request_, (is_request_ ? remote_request.ERROR_UPDATE : remote_execute.ERROR_UPDATE), vals);		
+	}
+
+	static String get_error_message_default(String type_, boolean is_request_) { return ("wrong " + (is_request_ ? "request" : "execution") + " " + accessory._keys.get_key(type_, (is_request_ ? remote_request.ERROR : remote_execute.ERROR))); }
+	
+	private static String get_error_message(String type_, Object vals_)
+	{	
+		String message = strings.DEFAULT;
+	
+		String type = accessory.types.check_type(type_, remote_execute.ERROR);
+		
+		if (strings.is_ok(type)) message = remote_execute.get_error_message(type);
+		else
+		{
+			type = accessory.types.check_type(type_, remote_request.ERROR);
+
+			if (strings.is_ok(type)) message = remote_request.get_error_message(type);
+			else message = "ERROR";
+		}
+				
+		if (vals_ != null) message += " (" + strings.to_string(vals_) + ")";
+
+		return message;
 	}
 }

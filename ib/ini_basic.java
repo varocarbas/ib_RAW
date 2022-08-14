@@ -57,7 +57,7 @@ public abstract class ini_basic
 
 	private static String encrypt_account_ib(String plain_) { return basic.encrypt(basic.get_account_ib_id(), plain_); }
 
-	private static String get_account_ib(boolean decrypt_) { return sync_basic.get_account_ib_last(db_ib.basic.get_account_ib(), decrypt_); } 
+	private static String get_account_ib(boolean decrypt_) { return basic.get_account_ib_last(db_ib.basic.get_account_ib(), decrypt_); } 
 
 	private static String get_account_ib_from_file() { return basic.get_from_file(basic.get_account_ib_id()); }
 }

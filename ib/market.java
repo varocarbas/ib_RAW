@@ -7,9 +7,11 @@ import db_ib.async_data;
 
 public abstract class market 
 {	
-	public static void pause_nonstop(int pause_nonstop_) { async_data_market.pause_nonstop(pause_nonstop_); }
+	public static boolean logs_to_screen() { return async_data_market.logs_to_screen(); }
 
-	public static void update_logs_to_screen(boolean logs_to_screen_) { async_data_market.logs_to_screen(logs_to_screen_); }
+	public static void logs_to_screen(boolean logs_to_screen_) { async_data_market.logs_to_screen(logs_to_screen_); }
+
+	public static void pause_nonstop(int pause_nonstop_) { async_data_market.pause_nonstop(pause_nonstop_); }
 			
 	public static boolean start(String symbol_) { return async_data_market.start(symbol_); }
 
@@ -29,4 +31,6 @@ public abstract class market
 	}
 	
 	public static ArrayList<String> get_active_symbols() { return async_data_market.get_active_symbols(); }
+	
+	public static ArrayList<String> get_all_symbols() { return async_data_market.get_all_symbols(); }
 }

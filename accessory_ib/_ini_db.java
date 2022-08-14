@@ -152,7 +152,6 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 
-		info.put(execs.USER, get_user());
 		info.put(execs.EXEC_ID, get_string());
 		info.put(execs.SYMBOL, get_symbol(false));
 		info.put(execs.ORDER_ID, get_order_id(false));
@@ -188,7 +187,7 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 
-		info.put(remote.USER, get_user());
+		info.put(remote.REQUEST, get_int(true));
 		info.put(remote.ORDER_ID_MAIN, get_order_id(false));
 		info.put(remote.ORDER_ID_SEC, get_order_id(false));
 		info.put(remote.SYMBOL, get_symbol(false));
@@ -202,7 +201,6 @@ public class _ini_db extends parent_ini_db
 		info.put(remote.PERC_MONEY, get_decimal_tiny());
 		info.put(remote.PRICE, get_price());
 		info.put(remote.ERROR, get_error());
-		info.put(remote.REQUEST, get_int(true));
 		info.put(remote.TYPE_ORDER, get_status_type());	
 		info.put(remote.TIME2, get_time2());
 		
@@ -216,9 +214,8 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
-		info.put(orders.USER, get_user());
-		info.put(orders.ORDER_ID_MAIN, get_order_id(false));
-		info.put(orders.ORDER_ID_SEC, get_order_id(false));
+		info.put(orders.ORDER_ID_MAIN, get_order_id(true));
+		info.put(orders.ORDER_ID_SEC, get_order_id(true));
 		info.put(orders.SYMBOL, get_symbol(false));
 		info.put(orders.STATUS, get_status_type(orders.get_key_from_status(ib.orders.DEFAULT_STATUS)));
 		info.put(orders.START, get_price());
@@ -240,9 +237,8 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
-		info.put(trades.USER, get_user());
-		info.put(trades.ORDER_ID_MAIN, get_order_id(false));
-		info.put(trades.ORDER_ID_SEC, get_order_id(false));
+		info.put(trades.ORDER_ID_MAIN, get_order_id(true));
+		info.put(trades.ORDER_ID_SEC, get_order_id(true));
 		info.put(trades.SYMBOL, get_symbol(false));
 		info.put(trades.PRICE, get_price());
 		info.put(trades.TIME_ELAPSED, get_time_elapsed());

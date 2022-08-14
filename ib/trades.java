@@ -12,6 +12,10 @@ public abstract class trades extends parent_static
 	
 	private static boolean _synced_with_execs = DEFAULT_SYNCED_WITH_EXECS; 
 	
+	public static boolean logs_to_screen() { return async_data_trades.logs_to_screen(); }
+
+	public static void logs_to_screen(boolean logs_to_screen_) { async_data_trades.logs_to_screen(logs_to_screen_); }
+	
 	public static boolean synced_with_execs() { return _synced_with_execs; }
 	
 	public static void synced_with_execs(boolean synced_with_execs_) 

@@ -8,7 +8,9 @@ import accessory.strings;
 
 public abstract class watchlist extends parent_static
 {
-	public static void update_logs_to_screen(boolean logs_to_screen_) { async_data_watchlist.logs_to_screen(logs_to_screen_); }
+	public static boolean logs_to_screen() { return async_data_watchlist.logs_to_screen(); }
+
+	public static void logs_to_screen(boolean logs_to_screen_) { async_data_watchlist.logs_to_screen(logs_to_screen_); }
 	
 	public static boolean add(String symbol_) { return async_data_watchlist.start(symbol_); }
 
@@ -27,6 +29,8 @@ public abstract class watchlist extends parent_static
 	public static ArrayList<String> get_active_symbols() { return async_data_watchlist.get_active_symbols(); }
 
 	public static ArrayList<HashMap<String, String>> get_all_vals(boolean is_quick_) { return db_ib.watchlist.get_all_vals(is_quick_); }	
+
+	public static HashMap<String, String> get_vals(String symbol_, boolean is_quick_) { return db_ib.watchlist.get_vals(symbol_, is_quick_); }	
 
 	public static double get_price(String symbol_) 
 	{ 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
-import accessory.db_where;
+import accessory.db;
 import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
@@ -15,7 +15,6 @@ public abstract class remote extends parent_static
 {
 	public static final String SOURCE = common.SOURCE_REMOTE;
 	
-	public static final String USER = common.FIELD_USER;
 	public static final String SYMBOL = common.FIELD_SYMBOL;
 	public static final String ORDER_ID_MAIN = common.FIELD_ORDER_ID_MAIN;
 	public static final String ORDER_ID_SEC = common.FIELD_ORDER_ID_SEC;
@@ -44,15 +43,15 @@ public abstract class remote extends parent_static
 	
 	public static void __backup() { common.__backup(SOURCE); }	
 	
-	public static ArrayList<HashMap<String, String>> get_all_pending(boolean any_user_, boolean is_quick_) { return common.get_all_vals(SOURCE, (is_quick_ ? get_cols() : get_fields()), get_where_pending(any_user_), is_quick_); }
+	public static ArrayList<HashMap<String, String>> get_all_pending(boolean is_quick_) { return common.get_all_vals(SOURCE, (is_quick_ ? get_cols() : get_fields()), get_where_pending(), is_quick_); }
 
-	public static boolean contains_active() { return common.exists(SOURCE, get_where_active(true)); }
+	public static boolean contains_active() { return (common.contains_active(SOURCE) || common.exists(SOURCE, get_where_active())); }
 
 	public static boolean exists(int request_) { return common.exists(SOURCE, get_where_request(request_)); }
 
-	public static boolean is_active(int request_) { return common.exists(SOURCE, db_where.join(get_where_request(request_), get_where_active(), db_where.LINK_AND)); }
+	public static boolean is_active(int request_) { return common.exists(SOURCE, common.join_wheres(get_where_request(request_), get_where_active())); }
 
-	public static boolean is_active(String symbol_) { return common.exists(SOURCE, db_where.join(get_where_symbol(symbol_), get_where_active(), db_where.LINK_AND)); }
+	public static boolean is_active(String symbol_) { return common.exists(SOURCE, common.join_wheres(get_where_symbol(symbol_), get_where_active())); }
 
 	public static boolean is_pending(int request_) { return common.exists(SOURCE, get_where_pending()); }
 
@@ -74,7 +73,12 @@ public abstract class remote extends parent_static
 
 	public static int get_order_id(int request_, boolean is_quick_) { return get_order_id(request_, true, is_quick_); }
 
-	public static int get_order_id(int request_, boolean is_main_, boolean is_quick_) { return common.get_int(SOURCE, get_field_col((is_main_ ? ORDER_ID_MAIN : ORDER_ID_SEC), is_quick_), get_where_request(request_, is_quick_), is_quick_); }
+	public static int get_order_id(int request_, boolean is_main_, boolean is_quick_) 
+	{ 
+		int output = common.get_int(SOURCE, get_field_col((is_main_ ? ORDER_ID_MAIN : ORDER_ID_SEC), is_quick_), get_where_request(request_, is_quick_), is_quick_); 
+	
+		return (output == db.WRONG_INT ? ib.common.WRONG_ORDER_ID : output);
+	}
 	
 	public static int __request_start(order order_, double perc_money_, double price_, boolean is_quick_)
 	{
@@ -349,7 +353,7 @@ public abstract class remote extends parent_static
 
 	private static boolean update(int request_, String field_, Object val_) { return common.update(SOURCE, field_, val_, get_where_request(request_)); }
 	
-	private static String[] get_fields() { return new String[] { USER, SYMBOL, ORDER_ID_MAIN, ORDER_ID_SEC, STATUS, STATUS2, START, START2, STOP, QUANTITY, PERC_MONEY, PRICE, REQUEST, TYPE_ORDER }; }
+	private static String[] get_fields() { return new String[] { SYMBOL, ORDER_ID_MAIN, ORDER_ID_SEC, STATUS, STATUS2, START, START2, STOP, QUANTITY, PERC_MONEY, PRICE, REQUEST, TYPE_ORDER, ERROR }; }
 
 	private static String get_where_request(int request_) { return get_where_request(request_, false); }
 
@@ -357,17 +361,13 @@ public abstract class remote extends parent_static
 
 	private static String get_where_order_id(int order_id_main_) { return common.get_where_order_id(SOURCE, order_id_main_); }
 
-	private static String get_where_active() { return get_where_active(false); }
+	private static String get_where_active() { return get_where_status(get_key_from_status(ib.remote.STATUS_ACTIVE)); }
 
-	private static String get_where_active(boolean any_user_) { return get_where_status(get_key_from_status(ib.remote.STATUS_ACTIVE), any_user_); }
+	private static String get_where_pending() { return common.join_wheres(get_where_status2(get_key_from_status2(ib.remote.STATUS2_PENDING)), get_where_status(get_key_from_status(ib.remote.STATUS_ACTIVE))); }
 
-	private static String get_where_pending() { return get_where_pending(false); }
+	private static String get_where_status(String status_key_) { return common.get_where(SOURCE, STATUS, status_key_, false); }
 
-	private static String get_where_pending(boolean any_user_) { return db_where.join(get_where_status2(get_key_from_status2(ib.remote.STATUS2_PENDING), any_user_), get_where_status(get_key_from_status(ib.remote.STATUS_ACTIVE), any_user_), db_where.LINK_AND); }
-
-	private static String get_where_status(String status_key_, boolean any_user_) { return common.get_where(SOURCE, STATUS, status_key_, false, !any_user_); }
-
-	private static String get_where_status2(String status2_key_, boolean any_user_) { return common.get_where(SOURCE, STATUS2, status2_key_, false, !any_user_); }
+	private static String get_where_status2(String status2_key_) { return common.get_where(SOURCE, STATUS2, status2_key_, false); }
 
 	private static String get_where_symbol(String symbol_) { return common.get_where_symbol(SOURCE, symbol_); }
 }

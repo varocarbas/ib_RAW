@@ -19,12 +19,14 @@ public abstract class common
 	
 	public static final double WRONG_QUANTITY = 0.0;
 	public static final double WRONG_MONEY = numbers.MIN_DECIMAL;
+	public static final double WRONG_MONEY2 = 0.0;
 	
 	public static final int WRONG_ID = -1;
 	public static final int WRONG_ORDER_ID = WRONG_ID;
 	public static final int WRONG_REQUEST_ID = WRONG_ID; //Request ID required for some interactions with the IB's interface.
 	public static final int WRONG_REQUEST = 0; //Unique identifier used in the remote communication within this library.
-
+	public static final int WRONG_I = -1;
+	
 	public static final String DEFAULT_FORMAT_TIME = FORMAT_TIME;
 	
 	public static String get_current_time() { return get_current_time(true); }

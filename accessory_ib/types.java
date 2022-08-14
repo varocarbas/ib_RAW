@@ -164,7 +164,7 @@ public abstract class types
 	public static final String SYNC = "sync";
 	public static final String SYNC_GET = "sync_get";
 	public static final String SYNC_GET_FUNDS = "sync_get_funds";
-	public static final String SYNC_GET_ID = "sync_get_id";
+	public static final String SYNC_GET_ORDER_ID = "sync_get_order_id";
 	public static final String SYNC_GET_ORDERS = "sync_get_orders";
 	public static final String SYNC_GET_ERROR = "sync_get_error";
 	public static final String SYNC_ORDERS = ORDERS;
@@ -185,15 +185,32 @@ public abstract class types
 	public static final String ERROR_IB_INI = "error_ib_ini";
 	public static final String ERROR_IB_INI_DB = "error_ib_ini_db";
 	public static final String ERROR_IB_INI_DB_DBS = "error_ib_ini_db_dbs";
+
 	public static final String ERROR_IB_CONN = "error_ib_conn";
 	public static final String ERROR_IB_CONN_NONE = "error_ib_conn_none";
 	public static final String ERROR_IB_CONN_ID = "error_ib_conn_id";
 	public static final String ERROR_IB_CONN_TYPE = "error_ib_conn_type";
 	public static final String ERROR_IB_CONN_GENERIC = "error_ib_conn_generic";
+
 	public static final String ERROR_IB_SYNC = "error_ib_sync";
 	public static final String ERROR_IB_SYNC_TIMEOUT = "error_ib_sync_timeout";
 	public static final String ERROR_IB_CONTRACTS = "error_ib_contracts";
 	public static final String ERROR_IB_CONTRACTS_INFO_STOCK_ETF = "error_ib_contracts_info_stock_etf";
+
+	public static final String ERROR_IB_REMOTE = "error_ib_remote";
+	public static final String ERROR_IB_REMOTE_EXECUTE = "error_ib_remote_execute";
+	public static final String ERROR_IB_REMOTE_EXECUTE_TYPE = "error_ib_remote_execute_type";
+	public static final String ERROR_IB_REMOTE_EXECUTE_QUANTITY = "error_ib_remote_execute_quantity";
+	public static final String ERROR_IB_REMOTE_EXECUTE_ORDER_ID = "error_ib_remote_execute_order_id";
+	public static final String ERROR_IB_REMOTE_EXECUTE_PLACE = "error_ib_remote_execute_place";
+	public static final String ERROR_IB_REMOTE_EXECUTE_CANCEL = "error_ib_remote_execute_cancel";
+	public static final String ERROR_IB_REMOTE_EXECUTE_UPDATE = "error_ib_remote_execute_update";
+	public static final String ERROR_IB_REMOTE_REQUEST = "error_ib_remote_request";
+	public static final String ERROR_IB_REMOTE_REQUEST_REQUEST = "error_ib_remote_request_request";
+	public static final String ERROR_IB_REMOTE_REQUEST_PLACE = "error_ib_remote_request_place";
+	public static final String ERROR_IB_REMOTE_REQUEST_CANCEL = "error_ib_remote_request_cancel";
+	public static final String ERROR_IB_REMOTE_REQUEST_UPDATE = "error_ib_remote_request_update";
+	public static final String ERROR_IB_REMOTE_REQUEST_WAIT = "error_ib_remote_request_wait";
 	
 	static String[] populate_all_types()
 	{		
@@ -274,7 +291,7 @@ public abstract class types
 			
 			SYNC,
 			SYNC_GET,
-			SYNC_GET_FUNDS, SYNC_GET_ID, SYNC_GET_ORDERS, SYNC_GET_ERROR,
+			SYNC_GET_FUNDS, SYNC_GET_ORDER_ID, SYNC_GET_ORDERS, SYNC_GET_ERROR,
 			SYNC_OUT,
 			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_STRINGS, SYNC_OUT_ORDERS, 
 			SYNC_ORDERS,
@@ -288,11 +305,20 @@ public abstract class types
 			ERROR_IB_INI,
 			ERROR_IB_INI_DB, 
 			ERROR_IB_INI_DB_DBS,
+			
 			ERROR_IB_CONN,
 			ERROR_IB_CONN_NONE, ERROR_IB_CONN_ID, ERROR_IB_CONN_TYPE, ERROR_IB_CONN_GENERIC,
 			ERROR_IB_SYNC,
 			ERROR_IB_SYNC_TIMEOUT,
-			ERROR_IB_CONTRACTS_INFO_STOCK_ETF
+			ERROR_IB_CONTRACTS_INFO_STOCK_ETF,
+			
+			ERROR_IB_REMOTE,
+			ERROR_IB_REMOTE_EXECUTE,
+			ERROR_IB_REMOTE_EXECUTE_TYPE, ERROR_IB_REMOTE_EXECUTE_QUANTITY, ERROR_IB_REMOTE_EXECUTE_ORDER_ID,
+			ERROR_IB_REMOTE_EXECUTE_PLACE, ERROR_IB_REMOTE_EXECUTE_CANCEL, ERROR_IB_REMOTE_EXECUTE_UPDATE,
+			ERROR_IB_REMOTE_REQUEST,
+			ERROR_IB_REMOTE_REQUEST_REQUEST, ERROR_IB_REMOTE_REQUEST_PLACE, ERROR_IB_REMOTE_REQUEST_CANCEL, 
+			ERROR_IB_REMOTE_REQUEST_UPDATE, ERROR_IB_REMOTE_REQUEST_WAIT
 		};		
 	}
 }

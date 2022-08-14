@@ -4,18 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
+import external_ib.orders;
 
 public abstract class execs 
 {
-	public static final String USER = db_ib.execs.USER;
-	public static final String SYMBOL = db_ib.execs.SYMBOL;
-	public static final String ORDER_ID = db_ib.execs.ORDER_ID;
 	public static final String PRICE = db_ib.execs.PRICE;
 	public static final String QUANTITY = db_ib.execs.QUANTITY;
-	public static final String SIDE = db_ib.execs.SIDE;
 	public static final String FEES = db_ib.execs.FEES;
-	public static final String EXEC_ID = db_ib.execs.EXEC_ID;
-
+	public static final String ORDER_ID = db_ib.execs.ORDER_ID;
+	public static final String SIDE = db_ib.execs.SIDE;
+	
+	public static final String SIDE_BOUGHT = orders.EXEC_SIDE_BOUGHT;
+	public static final String SIDE_SOLD = orders.EXEC_SIDE_SOLD;
+	
 	public static boolean is_ok() { return enabled(); }
 
 	public static void enable() { enable(true); }
@@ -65,6 +66,18 @@ public abstract class execs
 		
 		return output;
 	}
+
+	public static String get_side(boolean is_main_) { return (is_main_ ? SIDE_BOUGHT : SIDE_SOLD); }
+	
+	public static boolean side_is_main(String side_) { return get_side(true).equals(side_); }
+
+	public static boolean is_filled(int order_id_main_) { return db_ib.execs.is_filled(order_id_main_); }
+
+	public static boolean is_completed(int order_id_main_) { return db_ib.execs.is_completed(order_id_main_); }
+
+	public static ArrayList<Integer> get_order_ids_filled(String symbol_) { return db_ib.execs.get_order_ids_filled(symbol_); }
+
+	public static ArrayList<Integer> get_order_ids_completed(String symbol_) { return db_ib.execs.get_order_ids_completed(symbol_); }
 	
 	private static double get_realised_unrealised(int order_id_main_, int order_id_sec_)
 	{
@@ -82,7 +95,7 @@ public abstract class execs
 		
 		return (common.money_is_ok(end) ? (end - start) : common.WRONG_MONEY);
 	}
-
+	
 	private static double get_total(ArrayList<HashMap<String, String>> info_) { return get_total_fees(info_, false); }
 
 	private static double get_fees(ArrayList<HashMap<String, String>> info_) { return get_total_fees(info_, true); }

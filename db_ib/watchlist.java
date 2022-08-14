@@ -60,10 +60,6 @@ public abstract class watchlist
 		
 		return (_cols.containsKey(field_) ? _cols.get(field_) : strings.DEFAULT);
 	}
-
-	public static double get_vals_number(String field_, HashMap<String, String> vals_, boolean is_quick_) { return async_data.get_vals_number(SOURCE, field_, vals_, is_quick_); }
-	
-	public static Object add_to_vals(String field_, Object val_, Object vals_, boolean is_quick_) { return async_data.add_to_vals(SOURCE, field_, val_, vals_, is_quick_); }
 	
 	private static void populate_cols() 
 	{ 

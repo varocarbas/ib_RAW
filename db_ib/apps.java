@@ -35,7 +35,7 @@ public abstract class apps
 
 	public static ArrayList<HashMap<String, String>> get_all_active(boolean errors_too_, boolean any_user_) { return common.get_all_vals(SOURCE, null, get_where_active(errors_too_, any_user_)); }
 
-	public static boolean contains_active() { return common.exists(SOURCE, get_where_active(true, true)); }
+	public static boolean contains_active() { return (common.contains_active(SOURCE) || common.exists(SOURCE, get_where_active(true, true))); }
 	
 	public static String get_app_name_ini() { return common.get_string(SOURCE, APP, common.get_where_user(SOURCE)); }
 
@@ -127,7 +127,7 @@ public abstract class apps
 	{ 
 		String output = get_where_status(ib.apps.STATUS_RUNNING, any_user_);
 		
-		if (errors_too_) output = db_where.join(output, get_where_status(ib.apps.STATUS_ERROR, any_user_), db_where.LINK_OR);
+		if (errors_too_) output = common.join_wheres(output, get_where_status(ib.apps.STATUS_ERROR, any_user_), db_where.LINK_OR);
 		
 		return output; 
 	}

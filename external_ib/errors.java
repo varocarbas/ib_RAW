@@ -13,6 +13,7 @@ public abstract class errors
                                              //For futures that has multiple multipliers for the same expiration, You need to specify the IBApi.Contract.Multiplier attribute to avoid ambiguity. Please refer to a sample futures contract here.
 	public static final int ERROR_202 = 202; //An active order on the IB server was cancelled. See Order Placement Considerations for additional information/considerations for these errors.
 	public static final int ERROR_300 = 300; //An attempt was made to cancel market data for a ticker ID that was not associated with a current subscription. With the DDE API this occurs by clearing the spreadsheet cell.
+	public static final int ERROR_10197 = 10197; //Indicates that the user is logged into the paper account and live account simultaneously trying to request live market data using both the accounts. In such a scenario preference would be given to the live account, for more details please refer: https://ibkr.info/node/1719
 
 	private static final int MIN_WARNING = 2000;
 	private static final int MAX_WARNING = 3000;
@@ -20,5 +21,12 @@ public abstract class errors
 
 	//------
 
-	public static boolean is_warning(int code_) { return numbers.is_ok(code_, MIN_WARNING, MAX_WARNING); }
+	public static boolean is_warning(int code_) 
+	{ 
+		boolean is_warning = numbers.is_ok(code_, MIN_WARNING, MAX_WARNING); 
+	
+		if (!is_warning) is_warning = (code_ == ERROR_10197);
+	
+		return is_warning;
+	}
 }

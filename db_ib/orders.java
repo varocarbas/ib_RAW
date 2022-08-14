@@ -15,7 +15,6 @@ public abstract class orders
 {
 	public static final String SOURCE = common.SOURCE_ORDERS;
 	
-	public static final String USER = common.FIELD_USER;
 	public static final String SYMBOL = common.FIELD_SYMBOL;
 	public static final String ORDER_ID_MAIN = common.FIELD_ORDER_ID_MAIN;
 	public static final String ORDER_ID_SEC = common.FIELD_ORDER_ID_SEC;
@@ -39,7 +38,7 @@ public abstract class orders
 	
 	public static boolean exists(int order_id_, boolean is_main_) { return exists_internal(order_id_, is_main_, null); }
 
-	public static boolean contains_active() { return common.exists(SOURCE, get_where_active(true)); }
+	public static boolean contains_active() { return (common.contains_active(SOURCE) || common.exists(SOURCE, get_where_active())); }
 	
 	public static boolean is_active(int order_id_, boolean is_main_) { return exists_internal(order_id_, is_main_, get_where_active()); }
 
@@ -49,9 +48,9 @@ public abstract class orders
 	{
 		String where = orders.get_where_active();
 		
-		if (ib.common.price_is_ok(stop_)) where = db_where.join(where, common.get_where(SOURCE, STOP, Double.toString(ib.common.adapt_price(stop_)), false), db_where.LINK_AND);
-		if (ib.common.price_is_ok(start_)) where = db_where.join(where, common.get_where(SOURCE, START, Double.toString(ib.common.adapt_price(start_)), false), db_where.LINK_AND);
-		if (ib.common.price_is_ok(start2_)) where = db_where.join(where, common.get_where(SOURCE, START2, Double.toString(ib.common.adapt_price(start2_)), false), db_where.LINK_AND);
+		if (ib.common.price_is_ok(stop_)) where = common.join_wheres(where, common.get_where(SOURCE, STOP, Double.toString(ib.common.adapt_price(stop_)), false));
+		if (ib.common.price_is_ok(start_)) where = common.join_wheres(where, common.get_where(SOURCE, START, Double.toString(ib.common.adapt_price(start_)), false));
+		if (ib.common.price_is_ok(start2_)) where = common.join_wheres(where, common.get_where(SOURCE, START2, Double.toString(ib.common.adapt_price(start2_)), false));
 			
 		return common.exists(SOURCE, where);
 	}
@@ -64,9 +63,19 @@ public abstract class orders
 
 	public static String get_symbol(int order_id_main_) { return common.get_string(SOURCE, SYMBOL, get_where_order_id(order_id_main_)); }
 
-	public static int get_id_main(int order_id_sec_) { return common.get_int(SOURCE, ORDER_ID_MAIN, get_where_order_id(order_id_sec_, false), false); }
+	public static int get_id_main(int order_id_sec_) 
+	{ 
+		int id_main = common.get_int(SOURCE, ORDER_ID_MAIN, get_where_order_id(order_id_sec_, false), false); 
+	
+		return (id_main == db.WRONG_INT ? ib.common.WRONG_ORDER_ID : id_main);
+	}
 
-	public static int get_id_sec(int order_id_main_) { return common.get_int(SOURCE, ORDER_ID_SEC, get_where_order_id(order_id_main_), false); }
+	public static int get_id_sec(int order_id_main_) 
+	{
+		int id_sec = common.get_int(SOURCE, ORDER_ID_SEC, get_where_order_id(order_id_main_), false); 
+		
+		return (id_sec == db.WRONG_INT ? ib.common.WRONG_ORDER_ID : id_sec);
+	}
 
 	public static double get_quantity(int order_id_main_) { return common.get_decimal(SOURCE, QUANTITY, get_where_order_id(order_id_main_)); }
 
@@ -120,12 +129,8 @@ public abstract class orders
 	public static boolean update_status(int order_id_main_, String status_) { return common.update_type(SOURCE, STATUS, status_, ib.orders.STATUS, get_where_order_id(order_id_main_)); }
 	
 	public static boolean deactivate(int order_id_main_) { return update_status(order_id_main_, ib.orders.STATUS_INACTIVE); }
-
-	public static boolean delete() { return common.delete(SOURCE, get_where_user()); }
 	
 	public static boolean delete(int order_id_main_) { return common.delete(SOURCE, get_where_order_id(order_id_main_)); }
-	
-	public static boolean delete_except(Integer[] order_ids_main_) { return (arrays.is_ok(order_ids_main_) ? common.delete(SOURCE, common.get_where_order_id(SOURCE, order_ids_main_, false)) : delete()); }
 
 	public static order to_order(HashMap<String, String> db_)
 	{
@@ -166,7 +171,6 @@ public abstract class orders
 
 		if (!only_basic_)
 		{
-			db = common.add_to_vals(SOURCE, USER, ib.basic.get_user(), db, is_quick_);
 			db = common.add_to_vals(SOURCE, STATUS, get_key_from_status(ib.orders.DEFAULT_STATUS), db, is_quick_);
 			db = common.add_to_vals(SOURCE, TYPE_MAIN, order_.get_type_main(), db, is_quick_);
 			db = common.add_to_vals(SOURCE, TYPE_SEC, order_.get_type_sec(), db, is_quick_);
@@ -254,12 +258,10 @@ public abstract class orders
 	{ 
 		String where = get_where_order_id(order_id_, is_main_);
 		
-		if (strings.is_ok(where_)) where = db_where.join(where, where_, db_where.LINK_AND);
+		if (strings.is_ok(where_)) where = common.join_wheres(where, where_);
 		
 		return common.exists(SOURCE, where_); 
 	}
-	
-	private static String get_where_user() { return common.get_where_user(SOURCE); }
 
 	private static String get_where_symbol(String symbol_) { return common.get_where_symbol(SOURCE, symbol_); }
 
@@ -267,16 +269,7 @@ public abstract class orders
 
 	private static String get_where_order_id(int order_id_, boolean is_main_) { return common.get_where(SOURCE, (is_main_ ? ORDER_ID_MAIN : ORDER_ID_SEC), Integer.toString(order_id_), false); }
 
-	private static String get_where_active() { return get_where_active(false); }
-
-	private static String get_where_active(boolean any_user_) 
-	{ 		
-		String output = (new db_where(SOURCE, STATUS, db_where.OPERAND_NOT_EQUAL, orders.get_key_from_status(ib.orders.STATUS_INACTIVE))).toString();
-			
-		if (!any_user_) output = db_where.join(output, get_where_user(), db_where.LINK_AND);
-				
-		return output; 
-	}
+	private static String get_where_active() { return (new db_where(SOURCE, STATUS, db_where.OPERAND_NOT_EQUAL, orders.get_key_from_status(ib.orders.STATUS_INACTIVE))).toString(); }
 
 	private static String get_where_inactive() { return common.get_where(SOURCE, STATUS, orders.get_key_from_status(ib.orders.STATUS_INACTIVE), false); }
 }

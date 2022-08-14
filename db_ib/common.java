@@ -107,15 +107,17 @@ public abstract class common
 	public static final String SEPARATOR = accessory.types.SEPARATOR;
 
 	public static final String BACKUP_ENDING = SEPARATOR + "last";
-	
+
 	public static final int MAX_SIZE_USER = 15;
 	public static final int MAX_SIZE_MONEY = 7;
 	public static final int MAX_SIZE_PRICE = 4;
 	public static final int MAX_SIZE_VOLUME = 5;
-	public static final int MAX_SIZE_ERROR = 30;
+	public static final int MAX_SIZE_ERROR = 150;
 	public static final int MAX_SIZE_APP_NAME = 30;
 	public static final int MAX_SIZE_ADDITIONAL = 50;
-		
+
+	public static final int MAX_HOURS_ACTIVE = 12;
+	
 	public static final int WRONG_MAX_SIZE = 0;
 	public static final double WRONG_MAX_VAL = 0.0;
 	
@@ -140,7 +142,9 @@ public abstract class common
 		
 		accessory.db.__backup_table(source_, backup_table); 
 	}	
-
+	
+	public static boolean contains_active(String source_) { return (!is_empty(source_) && timestamp_is_today(source_, null)); }
+	
 	public static boolean is_empty(String source_) { return (get_count(source_, strings.DEFAULT) == 0); }
 
 	public static int get_count(String source_, String where_) { return accessory.db.select_count(source_, where_); }
@@ -187,7 +191,7 @@ public abstract class common
 	{
 		String key = get_string(source_, field_, where_);
 		
-		return (strings.is_ok(key) ? common.get_type_from_key(key, root_) : strings.DEFAULT);
+		return (strings.is_ok(key) ? get_type_from_key(key, root_) : strings.DEFAULT);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -263,7 +267,7 @@ public abstract class common
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		vals.put(field_, type);
 
-		return common.update(source_, vals, where_);
+		return update(source_, vals, where_);
 	}
 	
 	public static boolean insert_update(String source_, String field_, Object val_, String where_)
@@ -295,6 +299,10 @@ public abstract class common
 		return accessory.db.is_ok(source_);
 	}
 
+	public static String join_wheres(String where1_, String where2_) { return join_wheres(where1_, where2_, db_where.LINK_AND); }
+
+	public static String join_wheres(String where1_, String where2_, String link_) { return db_where.join(where1_, where2_, link_); }
+	
 	public static String get_where_user(String source_) { return get_where(source_, FIELD_USER, ib.basic.get_user(), false); }
 
 	public static String get_where_symbol(String source_, String symbol_, boolean quick_) { return (quick_ ? get_where_symbol_quick(source_, symbol_) : get_where_symbol(source_, symbol_)); }
@@ -324,7 +332,7 @@ public abstract class common
 	
 	public static boolean source_includes_user(String source_) { return arrays.value_exists(get_all_sources_user(), source_); }
 
-	public static String[] populate_all_sources_user() { return new String[] { SOURCE_BASIC, SOURCE_EXECS, SOURCE_ORDERS, SOURCE_REMOTE, SOURCE_TRADES, SOURCE_APPS }; }
+	public static String[] populate_all_sources_user() { return new String[] { SOURCE_BASIC, SOURCE_APPS }; }
 
 	public static String[] populate_all_sources_enabled() { return new String[] { SOURCE_MARKET }; }
 
@@ -347,7 +355,7 @@ public abstract class common
 	{
 		HashMap<String, Double> vals = new HashMap<String, Double>();
 		
-		for (Entry<String, Integer> item: populate_all_max_sizes_numbers().entrySet()) { vals.put(item.getKey(), common.get_max_val(item.getValue())); }
+		for (Entry<String, Integer> item: populate_all_max_sizes_numbers().entrySet()) { vals.put(item.getKey(), get_max_val(item.getValue())); }
 		
 		return vals;
 	}
@@ -421,7 +429,7 @@ public abstract class common
 		return output;
 	}
 	
-	public static String adapt_user(String val_) { return common.adapt_string(val_, FIELD_USER); }
+	public static String adapt_user(String val_) { return adapt_string(val_, FIELD_USER); }
 
 	@SuppressWarnings("unchecked")
 	public static Object add_to_vals(String source_, String field_, Object val_, Object vals_, boolean is_quick_) 
@@ -446,11 +454,38 @@ public abstract class common
 		return output;
 	}
 
-	public static String get_where_timestamp(String source_, int before_mins_) { return (before_mins_ > 0 ? (new db_where(source_, accessory.db.FIELD_TIMESTAMP, db_where.OPERAND_GREATER_EQUAL, "CURRENT_TIMESTAMP - INTERVAL " + before_mins_ + " MINUTE", false, db_where.DEFAULT_LINK)).toString() : strings.DEFAULT); }
-
-	public static long get_elapsed_secs(String source_, String where_) 
+	public static boolean timestamp_is_today(String source_, String where_) 
 	{ 
-		return dates.get_diff(get_string(source_, accessory.db.FIELD_TIMESTAMP, where_), dates.FORMAT_TIMESTAMP, dates.get_now_string(dates.FORMAT_TIMESTAMP), dates.FORMAT_TIMESTAMP, dates.SECONDS); }
+		String timestamp = get_string(source_, db.FIELD_TIMESTAMP, where_);
+		
+		return (db.WRONG_STRING.equals(timestamp) ? false : dates.is_today(timestamp, dates.FORMAT_TIMESTAMP)); 
+	}
+
+	public static String get_where_timestamp_today(String source_, String where_) 
+	{ 
+		String where = "DATE(" + db.get_variable(source_, db.get_col(source_, db.FIELD_TIMESTAMP)) + ") = CURDATE()"; 
+	
+		if (strings.is_ok(where_)) where = join_wheres(where_, where);
+	
+		return where;
+	}
+	
+	public static String get_where_timestamp(String source_, int before_mins_) { return (before_mins_ > 0 ? (new db_where(source_, db.FIELD_TIMESTAMP, db_where.OPERAND_GREATER_EQUAL, "CURRENT_TIMESTAMP - INTERVAL " + before_mins_ + " MINUTE", false, db_where.DEFAULT_LINK)).toString() : strings.DEFAULT); }
+
+	public static long get_timestamp_elapsed_secs(String source_, String where_) { return get_timestamp_elapsed(source_, where_, dates.UNIT_SECONDS); }
+
+	public static long get_timestamp_elapsed_hours(String source_, String where_) { return get_timestamp_elapsed(source_, where_, dates.UNIT_HOURS); }
+
+	public static String get_where_user(String source_, String where_, boolean is_quick_) 
+	{
+		String output = get_where_internal(source_, FIELD_USER, ib.basic.get_user(), is_quick_, false);
+		
+		if (strings.is_ok(where_)) output = join_wheres(output, where_);
+		
+		return output;
+	}
+
+	private static long get_timestamp_elapsed(String source_, String where_, String unit_) { return dates.get_diff(get_string(source_, accessory.db.FIELD_TIMESTAMP, where_), dates.FORMAT_TIMESTAMP, dates.get_now_string(dates.FORMAT_TIMESTAMP), dates.FORMAT_TIMESTAMP, unit_); }
 
 	private static double adapt_number(double val_, int max_, boolean is_negative_)
 	{
@@ -513,7 +548,7 @@ public abstract class common
 	private static String[] get_all_sources_user() { return _alls.DB_SOURCES_USER; }
 
 	private static String[] get_all_sources_enabled() { return _alls.DB_SOURCES_ENABLED; }
-
+	
 	private static String get_where_internal(String source_, String field_, String val_, boolean is_quick_, boolean add_user_) 
 	{
 		String where = null;
@@ -521,8 +556,8 @@ public abstract class common
 		if (is_quick_) where = accessory.db.get_variable(get_col(source_, field_)) + "=" + accessory.db.get_value(val_);
 		else where = (new db_where(source_, field_, val_)).toString();
 		
-		if (!strings.are_equal(field_, FIELD_USER) && add_user_ && source_includes_user(source_)) where = db_where.join(where, get_where_internal(source_, FIELD_USER, ib.basic.get_user(), is_quick_, false), db_where.LINK_AND);
-		
+		if (!strings.are_equal(field_, FIELD_USER) && add_user_ && source_includes_user(source_)) where = get_where_user(source_, where, is_quick_);
+	
 		return where;		
 	}
 }

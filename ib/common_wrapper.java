@@ -52,11 +52,11 @@ public abstract class common_wrapper
 		//appreciably speed everything up. That is, all the relevant information is assumed to 
 		//have already been received right after getting certain size value.
 		
-		if (async_data_market.is_ok()) async_data_market.end_snapshot(id_);
+		if (async_data_market.is_ok()) async_data_market.tick_snapshot_end(id_);
 		
-		if (async_data_trades.is_ok()) async_data_trades.end_snapshot(id_);
+		if (async_data_trades.is_ok()) async_data_trades.tick_snapshot_end(id_);
 		
-		if (async_data_watchlist.is_ok()) async_data_watchlist.end_snapshot(id_);
+		if (async_data_watchlist.is_ok()) async_data_watchlist.tick_snapshot_end(id_);
 	}	
 	
 	public static void error(int id_, int code_, String message_) 
