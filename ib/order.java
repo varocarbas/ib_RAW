@@ -28,6 +28,8 @@ public class order extends parent
 	public static final String TYPE_PLACE_LIMIT = types.ORDERS_PLACE_LIMIT;
 	public static final String TYPE_PLACE_STOP_LIMIT = types.ORDERS_PLACE_STOP_LIMIT;
 
+	public static final int INC_ID_SEC = 1;
+	
 	public static final String DEFAULT_TIF = external_ib.orders.TIF_GTC; 
 	public static final boolean DEFAULT_QUANTITIES_INT = true;
 	public static final String DEFAULT_STATUS = STATUS_ACTIVE;
@@ -48,8 +50,10 @@ public class order extends parent
 		
 	public static boolean are_equal(order order1_, order order2_) { return are_equal_common(order1_, order2_); }
 
-	public static int get_id_sec(int id_main_) { return (id_main_ + 1); }
+	public static int get_id_sec(int id_main_) { return (id_main_ + INC_ID_SEC ); }
 
+	public static int get_id_main(int id_sec_) { return (id_sec_ - INC_ID_SEC ); }
+	
 	public static String get_tif() 
 	{ 
 		String tif = (String)config.get_order(CONFIG_TIF);

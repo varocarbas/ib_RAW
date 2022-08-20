@@ -23,6 +23,8 @@ abstract class async_data_watchlist extends parent_static
 	public static final int MIN_FLUS_TOT = 3;
 	public static final int MAX_FLUS_TOT = 10;
 	public static final int MAX_FLU2_MIN_MAX_TOT = 50;
+
+	public static final double FACTOR_FLU2_ZERO = 1.5;
 	
 	public static final String DEFAULT_TYPE = async_data.TYPE_SNAPSHOT;
 	public static final int DEFAULT_DATA_TYPE = external_ib.data.DATA_LIVE;
@@ -255,10 +257,13 @@ abstract class async_data_watchlist extends parent_static
 		if (tot_plus > 0 && tot_minus > 0) flu2 = flu2_plus / Math.abs(flu2_minus);
 		else
 		{
-			if (tot_minus == 0) flu2 = (double)tot_plus;
-			else if (tot_plus == 0) flu2 = -1.0 * (double)tot_minus;
-
-			if (Math.abs(flu2) > 1.0) flu2 /= 1.5;
+			if (tot_minus == 0) 
+			{
+				flu2 = (double)tot_plus;
+				
+				if (Math.abs(flu2) > 1.0) flu2 /= FACTOR_FLU2_ZERO;
+			}
+			else if (tot_plus == 0) flu2 = Math.pow(FACTOR_FLU2_ZERO, -1.0 * (double)tot_minus);
 		}
 		
 		return db_ib.async_data.add_to_vals(db_ib.async_data.FLU2, flu2, vals, _is_quick);

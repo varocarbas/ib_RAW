@@ -3,6 +3,7 @@ package ib;
 import accessory.strings;
 import accessory.arrays;
 import accessory.dates;
+import accessory.misc;
 import accessory.numbers;
 
 public abstract class common
@@ -99,6 +100,19 @@ public abstract class common
 		}
 				
 		return price;
+	}
+	
+	static String get_log_file_id(String id_) 
+	{
+		String output = apps.get_app_name();	
+		
+		if (strings.is_ok(output))
+		{
+			if (strings.is_ok(id_)) output += misc.SEPARATOR_NAME + id_;
+		}
+		else output = strings.to_string(id_);
+		
+		return output;
 	}
 	
 	static boolean id_is_ok(int id_, int min_, int max_) { return numbers.is_ok(id_, min_, max_); }

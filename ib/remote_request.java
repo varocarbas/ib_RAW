@@ -11,7 +11,7 @@ import accessory_ib.types;
 
 abstract class remote_request extends parent_static 
 {
-	public static final long TIMEOUT = 30l;
+	public static final long TIMEOUT = 15l;
 
 	public static final String ERROR = types.ERROR_IB_REMOTE_REQUEST; 
 	public static final String ERROR_REQUEST = types.ERROR_IB_REMOTE_REQUEST_REQUEST; 
@@ -104,6 +104,8 @@ abstract class remote_request extends parent_static
 		}
 		
 		output = db_ib.remote.request_update_type_order(request_, remote.CANCEL, remote.is_quick()); 
+
+		if (output) remote.log(Integer.toString(request_) + " (cancel) requested successfully");
 		
 		if (!output) remote.update_error(request_, ERROR_CANCEL, null);
 		else if (wait_for_execution_) 
@@ -119,7 +121,7 @@ abstract class remote_request extends parent_static
 	public static boolean update(int request_, String type_update_, double val_, boolean wait_for_execution_)
 	{
 		boolean output = false;
-		
+
 		if (!is_ok(request_, false))
 		{
 			remote.update_error(request_, ERROR_REQUEST, type_update_);
@@ -133,6 +135,8 @@ abstract class remote_request extends parent_static
 		if (!strings.is_ok(type_update) || !(orders.is_update_market(type_update) || common.price_is_ok(val))) return output;
 
 		output = db_ib.remote.request_update_type_order_values(request_, type_update, db_ib.orders.get_field_update(type_update), val, remote.is_quick());
+
+		if (output) remote.log(Integer.toString(request_) + " (" + type_update + ") requested successfully");
 		
 		if (!output) update_error_update(request_, type_update, val_);
 		else if (wait_for_execution_) 
@@ -175,7 +179,12 @@ abstract class remote_request extends parent_static
 		
 		order order = new order(type_place_, symbol_, quantity, stop_, start_, start2_);
 
-		return (order.is_ok() ? db_ib.remote.__request_start(order, perc_money, price, remote.is_quick()) : common.WRONG_REQUEST);
+		int output = common.WRONG_REQUEST;
+		if (order.is_ok()) output = db_ib.remote.__request_start(order, perc_money, price, remote.is_quick());
+	
+		if (output != common.WRONG_REQUEST) remote.log(Integer.toString(output) + " (" + type_place_ + ") requested successfully");
+	
+		return output;
 	}
 	
 	private static boolean is_ok(int request_, boolean is_cancel_) { return (db_ib.remote.is_active(request_) && remote.order_id_is_ok(remote.get_order_id_main(request_), is_cancel_) && is_executed(request_, true, false)); }

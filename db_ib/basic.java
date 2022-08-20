@@ -1,6 +1,7 @@
 package db_ib;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import accessory.arrays;
 import accessory.strings;
@@ -82,19 +83,21 @@ public abstract class basic
 		return update(vals);
 	}
 
-	public static boolean update_money_common(String field_, double val_) 
+	public static boolean update_money_common(HashMap<String, Double> vals_) 
 	{ 
-		double money = adapt_money(val_);
-		if (!ib.common.money_is_ok(val_)) money = WRONG_MONEY2;
+		if (!arrays.is_ok(vals_)) return false;
+	
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		for (Entry<String, Double> item: vals_.entrySet()) { vals.put(item.getKey(), adapt_money(item.getValue())); }
 		
-		return update(field_, money); 
+		return basic.update(vals);
 	}
-
+	
+	public static boolean update_money_common(String field_, double val_) { return update(field_, adapt_money(val_)); }
+	
 	public static boolean update_currency(String val_) { return update(CURRENCY, val_); }
 	
 	public static boolean update(HashMap<String, Object> vals_) { return common.insert_update(SOURCE, vals_, get_where_user()); }
-
-	private static double adapt_money(double val_) { return common.adapt_number(val_, common.FIELD_MONEY); }
 	
 	private static boolean update(String field_, Object val_)
 	{
@@ -103,7 +106,14 @@ public abstract class basic
 
 		return update(vals);
 	}
-
+	
+	private static double adapt_money(double val_)
+	{
+		double val = common.adapt_number(val_, common.FIELD_MONEY);
+		
+		return (ib.common.money_is_ok(val) ? val : WRONG_MONEY2);
+	}
+	
 	private static String get_where_user() { return get_where_user(ini_basic.get_user()); }
 
 	private static String get_where_user(String val_) { return common.get_where(SOURCE, USER, val_, false); }

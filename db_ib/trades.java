@@ -6,6 +6,7 @@ import java.util.HashMap;
 import accessory.arrays;
 import accessory.dates;
 import accessory.db_where;
+import ib.order;
 
 public abstract class trades 
 {
@@ -42,29 +43,25 @@ public abstract class trades
 
 	public static boolean order_id_exists(int order_id_, boolean is_start_) { return common.exists(SOURCE, get_where_order_id(order_id_, is_start_)); }
 	
-	public static String get_symbol(int order_id_, boolean is_start_) { return (is_start_ ? orders.get_symbol(order_id_) : get_string(SYMBOL, order_id_, false)); }
+	public static String get_symbol(int order_id_, boolean is_start_) { return (is_start_ ? ib.orders.get_symbol(order_id_) : get_string(SYMBOL, order_id_, false)); }
 	
 	public static double get_price(int order_id_main_) { return get_price(order_id_main_, true); }
 	
 	public static double get_price(int order_id_, boolean is_main_) { return common.get_decimal(SOURCE, PRICE, get_where_order_id(order_id_, is_main_)); }
-
-	public static int get_order_id_main(int order_id_sec_) { return orders.get_id_main(order_id_sec_); }
-
-	public static int get_order_id_sec(int order_id_main_) { return orders.get_id_sec(order_id_main_); }
 	
-	public static boolean start(int order_id_main_, String symbol_, double start_) 
+	public static boolean start(String symbol_, int order_id_main_, double start_) 
 	{ 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 
-		if (order_id_exists(order_id_main_, true)) vals = start_internal(order_id_main_, symbol_, start_, vals);
+		if (order_id_exists(order_id_main_, true)) vals = start_internal(symbol_, order_id_main_, start_, vals);
 		else
 		{
-			vals.put(ORDER_ID_MAIN, order_id_main_);
-			vals.put(ORDER_ID_SEC, get_order_id_sec(order_id_main_));
 			vals.put(SYMBOL, symbol_);
+			vals.put(ORDER_ID_MAIN, order_id_main_);
+			vals.put(ORDER_ID_SEC, order.get_id_sec(order_id_main_));
 			vals.put(ELAPSED_INI, dates.start_elapsed());
 			
-			vals = start_internal(order_id_main_, symbol_, start_, vals);
+			vals = start_internal(symbol_, order_id_main_, start_, vals);
 		}				
 			
 		return (arrays.is_ok(vals) ? common.insert_update(SOURCE, vals, get_where_order_id(order_id_main_)) : false);
@@ -80,17 +77,14 @@ public abstract class trades
 		
 		if (end_ > ib.common.WRONG_PRICE) vals.put(END, db_ib.common.adapt_price(end_));
 		
-		int order_id_main = get_order_id_main(order_id_sec_);
-		
-		double realised = ib.execs.get_realised(order_id_main, order_id_sec_);
-		if (realised != 0.0) vals.put(REALISED, db_ib.common.adapt_money(realised));
+		int order_id_main = order.get_id_main(order_id_sec_);
+
+		double realised = ib.execs.get_realised(order_id_sec_);
+		if (realised != ib.execs.WRONG_MONEY && realised != 0.0) vals.put(REALISED, db_ib.common.adapt_money(realised));
 		
 		boolean output = common.update(SOURCE, vals, get_where_order_id(order_id_sec_, false));
 
-		orders.deactivate(order_id_main);
-		remote.deactivate_order_id(order_id_main);
-
-		ib.basic.increase_money(realised);
+		ib.orders.deactivate(order_id_main);
 
 		return output;
 	}
@@ -113,15 +107,17 @@ public abstract class trades
 		for (int order_id: order_ids)
 		{
 			double unrealised = ib.execs.get_unrealised(order_id);
-			if (!ib.common.money_is_ok(unrealised)) continue;
+			if (unrealised == ib.execs.WRONG_MONEY) continue;
 			
 			trades.update(UNREALISED, common.adapt_money(unrealised), order_id);
 		}
 	}
 
+	public static void update_realised(int order_id_main_, double realised_) { update(REALISED, common.adapt_money(realised_), order_id_main_); }
+
 	static boolean update_stop(int order_id_main_, double stop_) { return update(STOP, common.adapt_price(stop_), order_id_main_); }
 
-	private static HashMap<String, Object> start_internal(int order_id_main_, String symbol_, double start_, HashMap<String, Object> vals_) 
+	private static HashMap<String, Object> start_internal(String symbol_, int order_id_main_, double start_, HashMap<String, Object> vals_) 
 	{
 		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
 
@@ -133,14 +129,13 @@ public abstract class trades
 			{
 				vals.put(START, common.adapt_price(start));
 				
-				double investment = ib.execs.get_investment(start, order_id_main_);
-				vals.put(INVESTMENT, common.adapt_money(investment));	
-
-				ib.basic.increase_money(-1 * investment);
+				double investment = common.adapt_money(ib.execs.get_investment(order_id_main_, true));
+				if (ib.common.money_is_ok(investment)) vals.put(INVESTMENT, investment);	
 			}			
 		}
 
-		vals.put(UNREALISED, common.adapt_money(ib.execs.get_unrealised(order_id_main_)));
+		double unrealised = ib.execs.get_unrealised(order_id_main_);
+		if (unrealised != ib.execs.WRONG_MONEY) vals.put(UNREALISED, common.adapt_money(unrealised));
 
 		return vals;
 	}

@@ -1,5 +1,7 @@
 package ib;
 
+import java.util.HashMap;
+
 import external_ib.contracts;
 
 abstract class sync_basic 
@@ -10,17 +12,17 @@ abstract class sync_basic
 	{
 		if (!is_ok(id_, account_, tag_, currency_)) return;
 
-		sync.update(value_);
+		sync.update_funds(tag_, value_);
 	}
 	
 	public static void account_summary_end(int id_) 
 	{
 		if (!sync.is_ok(id_)) return;
 
-		sync.end();
+		sync.end_get();
 	}
 
-	static double get_money() { return sync.get_funds(); }
+	static HashMap<String, Double> get_money() { return sync.get_funds(); }
 	
 	private static boolean is_ok(int req_id_, String account_id_, String key_, String currency_) { return (sync.is_ok(req_id_, key_) && ib.basic.account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
 }

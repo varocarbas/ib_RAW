@@ -169,11 +169,17 @@ public abstract class common
 
 	public static long get_long(String source_, String col_field_, String where_, boolean is_quick_) { return (is_quick_ ? accessory.db.select_one_long_quick(source_, col_field_, where_, db.DEFAULT_ORDER) : accessory.db.select_one_long(source_, col_field_, where_, db.DEFAULT_ORDER)); }
 
-	public static ArrayList<Double> get_all_decimals(String source_, String field_, String where_) { return accessory.db.select_some_decimals(source_, field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
+	public static ArrayList<Double> get_all_decimals(String source_, String field_, String where_) { return get_all_decimals(source_, field_, where_, false); }
 
-	public static ArrayList<String> get_all_strings(String source_, String field_, String where_) { return accessory.db.select_some_strings(source_, field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
+	public static ArrayList<Double> get_all_decimals(String source_, String field_col_, String where_, boolean is_quick_) { return (is_quick_ ? accessory.db.select_some_decimals_quick(source_, field_col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER) : accessory.db.select_some_decimals(source_, field_col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
 
-	public static ArrayList<Integer> get_all_ints(String source_, String field_, String where_) { return accessory.db.select_some_ints(source_, field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER); }
+	public static ArrayList<String> get_all_strings(String source_, String field_, String where_) { return get_all_strings(source_, field_, where_, false); }
+
+	public static ArrayList<String> get_all_strings(String source_, String field_col_, String where_, boolean is_quick_) { return (is_quick_ ? accessory.db.select_some_strings_quick(source_, field_col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER) : accessory.db.select_some_strings(source_, field_col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
+
+	public static ArrayList<Integer> get_all_ints(String source_, String field_, String where_) { return get_all_ints(source_, field_, where_, false); }
+
+	public static ArrayList<Integer> get_all_ints(String source_, String field_col_, String where_, boolean is_quick_) { return (is_quick_ ? accessory.db.select_some_ints_quick(source_, field_col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER) : accessory.db.select_some_ints(source_, field_col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
 
 	public static ArrayList<HashMap<String, String>> get_all_vals(String source_, String[] fields_cols_, String where_, boolean is_quick_) { return (is_quick_ ? get_all_vals_quick(source_, fields_cols_, where_) : get_all_vals(source_, fields_cols_, where_)); }
 
@@ -182,6 +188,8 @@ public abstract class common
 	public static ArrayList<HashMap<String, String>> get_all_vals_quick(String source_, String[] cols_, String where_) { return accessory.db.select_quick(source_, cols_, where_, accessory.db.DEFAULT_MAX_ROWS, accessory.db.DEFAULT_ORDER); }
 
 	public static HashMap<String, String> get_vals(String source_, String where_) { return get_vals(source_, null, where_); }
+
+	public static HashMap<String, String> get_vals(String source_, String[] fields_cols_, String where_, boolean is_quick_) { return (is_quick_ ? get_vals_quick(source_, fields_cols_, where_) : get_vals(source_, fields_cols_, where_)); }
 
 	public static HashMap<String, String> get_vals(String source_, String[] fields_, String where_) { return accessory.db.select_one(source_, fields_, where_, db.DEFAULT_ORDER); }
 
@@ -277,19 +285,24 @@ public abstract class common
 
 		return insert_update(source_, vals, where_);
 	}
-	
-	public static boolean insert_update(String source_, HashMap<String, Object> vals_, String where_)
-	{	
-		HashMap<String, Object> vals = arrays.get_new_hashmap_xy(vals_);
-		if (!arrays.is_ok(vals)) return false;
-		
-		vals = get_insert_vals(source_, vals);
 
-		accessory.db.insert_update(source_, vals, where_);
+	public static boolean insert_update(String source_, HashMap<String, Object> vals_, String where_) { return insert_update(source_, vals_, where_, false); }
+
+	@SuppressWarnings("unchecked")
+	public static boolean insert_update(String source_, Object vals_, String where_, boolean is_quick_)
+	{	
+		if (!arrays.is_ok(vals_)) return false;
+		
+		Object vals = (is_quick_ ? get_insert_vals_quick(source_, (HashMap<String, String>)vals_) : get_insert_vals(source_, (HashMap<String, Object>)vals_));
+
+		if (is_quick_) accessory.db.insert_update_quick(source_, (HashMap<String, String>)vals, where_);
+		else accessory.db.insert_update(source_, (HashMap<String, Object>)vals, where_);
 		
 		return accessory.db.is_ok(source_);
 	}
 	
+	public static String get_field_col(String source_, String field_, boolean is_quick_) { return (is_quick_ ? get_col(source_, field_) : field_); }
+
 	public static String get_col(String source_, String field_) { return accessory.db.get_col(source_, field_); }
 
 	public static boolean delete(String source_, String where_)

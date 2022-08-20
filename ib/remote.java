@@ -3,12 +3,15 @@ package ib;
 import java.util.HashMap;
 
 import accessory.arrays;
+import accessory.logs;
 import accessory.strings;
 import accessory_ib.errors;
 import accessory_ib.types;
 
 public abstract class remote 
 {
+	public static final String _ID = "remote";
+	
 	public static final String STATUS = types.REMOTE_STATUS;
 	public static final String STATUS_ACTIVE = types.REMOTE_STATUS_ACTIVE;
 	public static final String STATUS_INACTIVE = types.REMOTE_STATUS_INACTIVE;
@@ -40,10 +43,16 @@ public abstract class remote
 	public static final String DEFAULT_STATUS2 = STATUS2_PENDING;
 	public static final boolean DEFAULT_WAIT_FOR_EXECUTION = true;
 	public static final boolean DEFAULT_IS_QUICK = true;
+	public static final boolean DEFAULT_LOGS_TO_FILE = false;
 	
 	private static boolean _is_quick = DEFAULT_IS_QUICK;
+	private static boolean _logs_to_file = DEFAULT_LOGS_TO_FILE;
 	
 	public static boolean is_quick() { return _is_quick; }
+
+	public static boolean logs_to_file() { return _logs_to_file; }
+
+	public static void logs_to_file(boolean logs_to_file_) { _logs_to_file = logs_to_file_; }
 	
 	public static int __request_place(String type_place_, String symbol_, double stop_, double start_, double quantity_) { return __request_place(type_place_, symbol_, stop_, start_, quantity_, DEFAULT_WAIT_FOR_EXECUTION); }
 
@@ -69,7 +78,7 @@ public abstract class remote
 
 	public static boolean request_update(int request_, String type_update_, double val_, boolean wait_for_execution_) { return remote_request.update(request_, type_update_, val_, wait_for_execution_); }
 
-	public static void execute_all() { remote_execute.execute_all(); }
+	public static void __execute_all() { remote_execute.__execute_all(); }
 
 	public static void wait_for_execution(int request_) { remote_request.wait_for_execution(request_); }
 
@@ -190,13 +199,10 @@ public abstract class remote
 	
 	static boolean order_id_is_ok(int order_id_main_, boolean is_cancel_) 
 	{ 
-		boolean is_ok = ((order_id_main_ > common.WRONG_ORDER_ID) && !orders.order_is_inactive(order_id_main_));
+		boolean is_ok = ((order_id_main_ > common.WRONG_ORDER_ID) && orders.is_active(order_id_main_));
 		
-		if (is_ok) 
-		{
-			if (is_cancel_) is_ok = (ib.orders.order_is_active(order_id_main_) && !ib.orders.order_is_filled(order_id_main_));
-		}
-		else db_ib.remote.deactivate_order_id(order_id_main_);
+		if (is_ok) is_ok = (orders.is_filled(order_id_main_) || is_cancel_);
+		else if (order_id_main_ > common.WRONG_ORDER_ID) db_ib.remote.deactivate_order_id(order_id_main_);
 		
 		return is_ok;
 	}
@@ -215,9 +221,9 @@ public abstract class remote
 		double start = (double)get_start(vals_, is_quick_);
 		double start2 = (double)get_start2(vals_, is_quick_);
 		
-		if (ib.orders.is_update(type)) output = db_ib.orders.order_was_updated(order_id, type, stop, start, start2);
-		else if (ib.orders.is_cancel(type)) output = ib.orders.order_is_inactive(order_id);
-		else if (ib.orders.is_place(type)) output = db_ib.orders.is_active(order_id, stop, start, start2);
+		if (orders.is_update(type)) output = orders.order_was_updated(order_id, type, stop, start, start2);
+		else if (orders.is_cancel(type)) output = orders.is_inactive(order_id);
+		else if (orders.is_place(type)) output = db_ib.orders.is_active(order_id, stop, start, start2);
 		
 		return output;
 	}
@@ -270,7 +276,24 @@ public abstract class remote
 		update_error(request_, (is_request_ ? remote_request.ERROR_UPDATE : remote_execute.ERROR_UPDATE), vals);		
 	}
 
-	static String get_error_message_default(String type_, boolean is_request_) { return ("wrong " + (is_request_ ? "request" : "execution") + " " + accessory._keys.get_key(type_, (is_request_ ? remote_request.ERROR : remote_execute.ERROR))); }
+	static String get_error_message_default(String type_, boolean is_request_) 
+	{ 
+		String message = "";
+		
+		if (is_request_) message = (strings.are_equal(type_, remote_request.ERROR_REQUEST) ? "" : "request ");
+		else message = "execution ";
+		
+		message = "wrong " + message + accessory._keys.get_key(type_, (is_request_ ? remote_request.ERROR : remote_execute.ERROR));
+			
+		return message; 
+	}
+	
+	static void log(String message_)
+	{
+		logs.update_screen(message_, true);
+		
+		if (_logs_to_file) logs.update_file(message_, common.get_log_file_id(_ID), false, true); 
+	}
 	
 	private static String get_error_message(String type_, Object vals_)
 	{	

@@ -21,7 +21,7 @@ public abstract class errors
 	
 	public static final String DEFAULT_WARNING = "WARNING";
 
-	public static void wrapper_error(int id_, int code_, String message_)
+	public static void __wrapper_error(int id_, int code_, String message_)
 	{
 		String message = (strings.is_ok(message_) ? message_ : strings.DEFAULT);
 		
@@ -31,7 +31,7 @@ public abstract class errors
 			if (!message.contains(id)) message += misc.SEPARATOR_CONTENT + "id: " + id;			
 		}
 		
-		if (is_warning(code_) || treat_as_warning(id_, code_)) manage_warning(message);
+		if (is_warning(code_) || __treat_as_warning(id_, code_)) manage_warning(message);
 		else manage_internal(ERROR_GENERIC, __wrapper_error_info(id_, code_, message_));
 	}	
 
@@ -72,11 +72,11 @@ public abstract class errors
 		return info;
 	}
 		
-	private static boolean treat_as_warning(int id_, int code_)
+	private static boolean __treat_as_warning(int id_, int code_)
 	{
 		return 
 		(
-			(code_ == external_ib.errors.ERROR_202 && orders.is_cancelling(id_)) ||
+			(code_ == external_ib.errors.ERROR_202 && orders.__is_cancelling(id_)) ||
 			code_ == external_ib.errors.ERROR_300
 		);
 	}

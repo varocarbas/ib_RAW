@@ -174,6 +174,7 @@ public abstract class types
 	public static final String SYNC_OUT_INTS = "sync_out_ints";
 	public static final String SYNC_OUT_STRINGS = "sync_out_strings";
 	public static final String SYNC_OUT_ORDERS = "sync_out_orders";
+	public static final String SYNC_OUT_FUNDS = "sync_out_funds";
 	
 	public static final String ASYNC = "async";
 	public static final String ASYNC_DATA = "async_data";
@@ -293,7 +294,7 @@ public abstract class types
 			SYNC_GET,
 			SYNC_GET_FUNDS, SYNC_GET_ORDER_ID, SYNC_GET_ORDERS, SYNC_GET_ERROR,
 			SYNC_OUT,
-			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_STRINGS, SYNC_OUT_ORDERS, 
+			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_STRINGS, SYNC_OUT_ORDERS, SYNC_OUT_FUNDS, 
 			SYNC_ORDERS,
 			
 			ASYNC,

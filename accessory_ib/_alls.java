@@ -3,6 +3,7 @@ package accessory_ib;
 import java.util.HashMap;
 
 import accessory.parent_ini_first;
+import external_ib.calls;
 import ib.sync;
 
 public class _alls extends parent_ini_first
@@ -13,6 +14,8 @@ public class _alls extends parent_ini_first
 	public static void populate() { _instance.populate_internal_common(); }
 	
 	public static HashMap<String, String> SYNC_GET_OUTS = null;
+
+	public static HashMap<String, String> CALLS_KEYS_FUNDS = null;
 	
 	public static String[] EXTERNAL_CONTRACTS_SECURITIES = null;
 	
@@ -41,6 +44,8 @@ public class _alls extends parent_ini_first
 		accessory._alls.populate_types(types.populate_all_types());
 		
 		SYNC_GET_OUTS = sync.populate_all_get_outs();
+		
+		CALLS_KEYS_FUNDS = calls.populate_all_keys_funds();
 				
 		EXTERNAL_CONTRACTS_SECURITIES = external_ib.contracts.populate_all_securities();
 		

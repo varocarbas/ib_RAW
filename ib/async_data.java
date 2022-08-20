@@ -34,7 +34,7 @@ public abstract class async_data extends parent_static
 	public static final String TYPE_SNAPSHOT = types.ASYNC_DATA_SNAPSHOT;
 	public static final String TYPE_STREAM = types.ASYNC_DATA_STREAM;
 
-	public static final double MULTIPLIER_VOLUME = 1.0 / 1000.0;
+	public static final double FACTOR_VOLUME = 1.0 / 1000.0;
 
 	public static final int SIZE_GLOBALS = common_xsync.MAX_REQ_ID_ASYNC - common_xsync.MIN_REQ_ID_ASYNC + 1;
 	public static final int MAX_I = SIZE_GLOBALS - 1;
@@ -378,7 +378,7 @@ public abstract class async_data extends parent_static
 
 		if (field_ib_ == VOLUME_IB) 
 		{
-			output *= MULTIPLIER_VOLUME;
+			output *= FACTOR_VOLUME;
 			output = db_ib.common.adapt_number(output, db_ib.async_data.VOLUME);
 		}
 		else if (field_ib_ == PRICE_IB) output = db_ib.common.adapt_number(output, db_ib.async_data.PRICE);

@@ -59,11 +59,11 @@ public abstract class common_wrapper
 		if (async_data_watchlist.is_ok()) async_data_watchlist.tick_snapshot_end(id_);
 	}	
 	
-	public static void error(int id_, int code_, String message_) 
+	public static void __error(int id_, int code_, String message_) 
 	{
 		sync.update_error_triggered(true);
 		
-		errors.wrapper_error(id_, code_, message_); 
+		errors.__wrapper_error(id_, code_, message_); 
 	}
 	
 	public static void order_status(int order_id_, String status_ib_) 

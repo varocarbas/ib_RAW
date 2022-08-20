@@ -33,18 +33,18 @@ public abstract class sync extends parent_static
 	public static final String OUT_INTS = types.SYNC_OUT_INTS;
 	public static final String OUT_STRINGS = types.SYNC_OUT_STRINGS;
 	public static final String OUT_ORDERS = types.SYNC_OUT_ORDERS;
-	
-	public static final String KEY_FUNDS = common_wrapper.KEY_FUNDS;
+	public static final String OUT_FUNDS = types.SYNC_OUT_FUNDS;
+		
+	public static final long TIMEOUT_GET_ORDERS = 3l;
+	public static final long TIMEOUT_GET_ERROR = 3l;
+
+	public static final String ERROR_TIMEOUT = types.ERROR_IB_SYNC_TIMEOUT;
 	
 	public static final int WRONG_REQ_ID = common.WRONG_ID;
 	public static final int WRONG_ORDER_ID = common.WRONG_ORDER_ID;
 	public static final double WRONG_MONEY = common.WRONG_MONEY;
-	
-	public static final long TIMEOUT_ORDERS = 3l;
-	public static final long TIMEOUT_ERROR = 3l;
-	public static final long DEFAULT_TIMEOUT = 10l;
 
-	public static final String ERROR_TIMEOUT = types.ERROR_IB_SYNC_TIMEOUT;
+	public static final long DEFAULT_TIMEOUT = 10l;
 	
 	private static volatile boolean _getting = false;
 	private static volatile double _out_decimal = numbers.DEFAULT_DECIMAL;
@@ -52,6 +52,7 @@ public abstract class sync extends parent_static
 	private static volatile boolean _error_triggered = false;
 	private static volatile ArrayList<Integer> _out_ints = new ArrayList<Integer>();
 	private static volatile ArrayList<String> _out_strings = new ArrayList<String>();
+	private static volatile ArrayList<Double> _out_decimals = new ArrayList<Double>();
 
 	private static int _req_id = WRONG_REQ_ID;
 	private static int _order_id = WRONG_ORDER_ID;
@@ -62,14 +63,27 @@ public abstract class sync extends parent_static
 	{ 
 		Object temp = get(GET_ORDER_ID);
 		
-		return (temp == null ? WRONG_ORDER_ID : (int)temp);
+		int output = (temp == null ? WRONG_ORDER_ID : (int)temp);
+		
+		return output;
 	}
 	
-	public static double get_funds() 
+	@SuppressWarnings("unchecked")
+	public static HashMap<String, Double> get_funds() 
 	{
-		Object temp = get(GET_FUNDS);
+		HashMap<String, Double> funds = (HashMap<String, Double>)get(GET_FUNDS);
+		if (funds == null) funds = new HashMap<String, Double>();
+	
+		return funds;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static HashMap<Integer, String> get_orders() 
+	{ 	
+		HashMap<Integer, String> orders = (HashMap<Integer, String>)get(GET_ORDERS); 
+		if (orders == null) orders = new HashMap<Integer, String>();
 		
-		return (temp == null ? WRONG_MONEY : (double)temp);
+		return orders; 
 	}
 
 	public static int get_req_id() { return _req_id; }
@@ -108,7 +122,7 @@ public abstract class sync extends parent_static
 		HashMap<String, String> all = new HashMap<String, String>();
 		
 		all.put(GET_ORDER_ID, OUT_INT);
-		all.put(GET_FUNDS, OUT_DECIMAL);
+		all.put(GET_FUNDS, OUT_FUNDS);
 		all.put(GET_ORDERS, OUT_ORDERS);
 		
 		return all;
@@ -116,20 +130,9 @@ public abstract class sync extends parent_static
 	
 	public static boolean is_ok() { return (_getting || _order_id > WRONG_ORDER_ID); }
 	
-	public static void end() { if (_getting) _getting = false; }
+	public static void end_get() { if (_getting) _getting = false; }
 
 	public static boolean wait_orders(String type_) { return wait(DEFAULT_TIMEOUT, true, type_, false); }
-	
-	@SuppressWarnings("unchecked")
-	public static HashMap<Integer, String> get_orders() 
-	{ 	
-		HashMap<Integer, String> orders = (HashMap<Integer, String>)get(GET_ORDERS); 
-		if (orders == null) orders = new HashMap<Integer, String>();
-		
-		async_orders.perform_regular_checks();
-		
-		return orders; 
-	}
 	
 	static boolean next_valid_id(int id_) 
 	{
@@ -137,7 +140,7 @@ public abstract class sync extends parent_static
 		
 		update(id_);
 
-		end();
+		end_get();
 		
 		return true;
 	}
@@ -152,11 +155,11 @@ public abstract class sync extends parent_static
 	
 		boolean is_ok = true;
 		
-		if (is_ok(GET_FUNDS)) is_ok = strings.are_equal(key_, KEY_FUNDS); 
+		if (is_ok(GET_FUNDS)) is_ok = calls.get_all_keys_funds().containsKey(key_); 
 		
 		return is_ok;
 	}
-
+		
 	static boolean cancel_order(int id_) { return execute_order(ORDER_CANCEL, id_, null, null); }
 
 	static boolean place_order(int id_, Contract contract_, Order order_) { return execute_order(ORDER_PLACE, id_, contract_, order_); }
@@ -201,7 +204,17 @@ public abstract class sync extends parent_static
 		
 		return true;
 	}
+	
+	static boolean update_funds(String key_, String value_) 
+	{	
+		if (!is_ok(GET_FUNDS) || !strings.is_number(value_)) return false;
 		
+		_out_strings.add(key_);
+		_out_decimals.add(Double.parseDouble(value_));
+		
+		return true;
+	}
+	
 	static boolean update_error_triggered(boolean triggered_)
 	{ 
 		if (!is_ok()) return false;
@@ -215,7 +228,7 @@ public abstract class sync extends parent_static
 	{
 		if (!basic.account_ib_is_ok(account_ib_)) return;
 			
-		end(); 
+		end_get(); 
 	}
 
 	private static boolean order_is_submitted(int order_id_) { return order_is_common(order_id_, sync_orders.STATUS_SUBMITTED); }
@@ -232,7 +245,7 @@ public abstract class sync extends parent_static
 	}
 	
 	private static HashMap<String, String> get_all_get_outs() { return _alls.SYNC_GET_OUTS; }
-
+	
 	private static boolean execute_order(String type_, int id_, Contract contract_, Order order_)
 	{	
 		_order_id = id_;
@@ -326,6 +339,33 @@ public abstract class sync extends parent_static
 				output = orders;
 			}
 		}
+		else if (_out.equals(OUT_FUNDS)) 
+		{
+			if (is_ini_) 
+			{
+				_out_strings = new ArrayList<String>();
+				_out_decimals = new ArrayList<Double>();
+			}
+			else 
+			{
+				HashMap<String, Double> funds = new HashMap<String, Double>();
+
+				HashMap<String, String> keys = calls.get_all_keys_funds();
+				
+				for (int i = 0; i < _out_strings.size(); i++)
+				{
+					String key = _out_strings.get(i);
+					if (!keys.containsKey(key)) continue;
+					
+					String field = keys.get(key);
+					double val = _out_decimals.get(i);
+					
+					funds.put(field, val);
+				}
+
+				output = funds;
+			}
+		}
 		
 		return output;
 	}
@@ -348,12 +388,12 @@ public abstract class sync extends parent_static
 
 		if (_get.equals(GET_FUNDS))
 		{	
-			//Methods called in external_ib.wrapper: accountSummary, accountSummaryEnd.
+			//Methods called in external_ib.wrapper: accountSummary, accountSummaryEnd.		
 			calls.reqAccountSummary(_req_id); 
 		}
 		else if (_get.equals(GET_ORDERS))
 		{	
-			timeout = TIMEOUT_ORDERS;
+			timeout = TIMEOUT_GET_ORDERS;
 			cannot_fail = false;
 
 			//Methods called in external_ib.wrapper: openOrder, openOrderEnd, orderStatus.
@@ -386,7 +426,7 @@ public abstract class sync extends parent_static
 		_getting = true;
 		_get = GET_ERROR;
 		
-		return wait_get(TIMEOUT_ERROR, false);		
+		return wait_get(TIMEOUT_GET_ERROR, false);		
 	}
 
 	private static boolean wait_get(long timeout_, boolean cannot_fail_) { return wait(timeout_, cannot_fail_, null, true); }	
@@ -399,11 +439,8 @@ public abstract class sync extends parent_static
 		
 		_error_triggered = false;
 	
-		if (!is_getting_)
-		{
-			if (orders.is_place(type_)) is_place = true;
-			else if (orders.is_cancel(type_)) is_cancel = true;			
-		}		
+		if (orders.is_place(type_)) is_place = true;
+		else if (orders.is_cancel(type_)) is_cancel = true;			
 
 		long start = dates.start_elapsed();
 
@@ -416,8 +453,12 @@ public abstract class sync extends parent_static
 				
 				break;
 			}
-
-			if (is_getting_)
+			
+			if (is_place || is_cancel)
+			{
+				if ((is_place && order_is_submitted(_order_id)) || (is_cancel && order_is_inactive(_order_id))) break;
+			}
+			else if (is_getting_)
 			{
 				if (!_getting) 
 				{
@@ -427,13 +468,13 @@ public abstract class sync extends parent_static
 					{
 						if (_out_ints.size() != _out_strings.size()) exit = false;
 					}
+					else if (_get.equals(GET_FUNDS))
+					{
+						if (_out_strings.size() != _out_decimals.size()) exit = false;
+					}
 					
 					if (exit) break;
 				}
-			}
-			else if (is_place || is_cancel)
-			{
-				if ((is_place && order_is_submitted(_order_id)) || (is_cancel && order_is_inactive(_order_id))) break;
 			}
 			
 			if (dates.get_elapsed(start) >= timeout_) 

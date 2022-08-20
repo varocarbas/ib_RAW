@@ -39,7 +39,7 @@ import ib.common_wrapper;
 //Implementation of the IB's EWrapper interface (https://interactivebrokers.github.io/tws-api/interfaceIBApi_1_1EWrapper.html).
 
 public class wrapper implements EWrapper 
-{
+{	
 	protected int currentOrderId = common.WRONG_ORDER_ID;
 	
 	private EReaderSignal _reader_signal;
@@ -84,7 +84,7 @@ public class wrapper implements EWrapper
 	public void tickSnapshotEnd(int id_) { common_wrapper.tick_snapshot_end(id_); }
 
 	@Override
-	public void error(int id_, int code_, String message_) { common_wrapper.error(id_, code_, message_); }
+	public void error(int id_, int code_, String message_) { common_wrapper.__error(id_, code_, message_); }
 
 	@Override
 	public void orderStatus(int order_id_, String status_ib_, double filled_, double remaining_, double avg_fill_price_, int perm_id_, int parent_id_, double last_fill_price_, int client_id_, String why_held_, double mkt_cap_price_) { common_wrapper.order_status(order_id_, status_ib_); }

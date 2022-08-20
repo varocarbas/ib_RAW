@@ -35,9 +35,9 @@ public abstract class trades extends parent_static
 		async_trades.start(order_id_, status_ib_);
 	}
 	
-	public static void start(int order_id_, double start_) { async_trades.start(order_id_, start_); }
+	public static void start(String symbol_, int order_id_, double start_) { async_trades.start(symbol_, order_id_, start_); }
 	
-	public static void end(int order_id_, double end_) { async_trades.end(order_id_, end_); }
+	public static void end(String symbol_, int order_id_, double end_) { async_trades.end(symbol_, order_id_, end_); }
 
 	public static double get_price(String symbol_) 
 	{ 

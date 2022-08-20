@@ -26,7 +26,7 @@ public abstract class common_xsync
 		HashMap<Integer, Long> output = arrays.get_new_hashmap_xy(all_);
 		
 		if (!output.containsKey(id_)) output.put(id_, dates.start_elapsed());
-		else output = null;
+		else output = new HashMap<Integer, Long>();
 		
 		return output;
 	}
