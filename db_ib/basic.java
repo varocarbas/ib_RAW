@@ -10,6 +10,7 @@ import ib.ini_basic;
 public abstract class basic 
 {
 	public static final String SOURCE = common.SOURCE_BASIC;
+	public static final String SOURCE_OLD = common.SOURCE_BASIC_OLD;
 	
 	public static final String USER = common.FIELD_USER;
 	public static final String ACCOUNT_IB = common.FIELD_ACCOUNT_IB;

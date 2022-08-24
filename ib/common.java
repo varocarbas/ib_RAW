@@ -13,6 +13,7 @@ public abstract class common
 	public static final String FORMAT_TIME = dates.FORMAT_TIME_SHORT;
 	public static final String FORMAT_TIME2 = dates.FORMAT_TIME_FULL;
 	public static final String FORMAT_TIME_ELAPSED = dates.FORMAT_TIME_FULL;
+	public static final String FORMAT_DATE = dates.FORMAT_DATE;
 	
 	public static final double WRONG_VALUE = 0.0;
 	public static final double WRONG_PRICE = 0.0;
@@ -23,8 +24,8 @@ public abstract class common
 	public static final double WRONG_MONEY2 = 0.0;
 	
 	public static final int WRONG_ID = -1;
-	public static final int WRONG_ORDER_ID = WRONG_ID;
-	public static final int WRONG_REQUEST_ID = WRONG_ID; //Request ID required for some interactions with the IB's interface.
+	public static final int WRONG_ORDER_ID = orders.MIN_ORDER_ID - 1;
+	public static final int WRONG_REQUEST_ID = common_xsync.MIN_REQ_ID_SYNC - 1; //Request ID required for some interactions with the IB's interface.
 	public static final int WRONG_REQUEST = 0; //Unique identifier used in the remote communication within this library.
 	public static final int WRONG_I = -1;
 	

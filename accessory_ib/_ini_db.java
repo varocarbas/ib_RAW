@@ -6,6 +6,7 @@ import accessory.arrays;
 import accessory.data;
 import accessory.dates;
 import accessory.db_field;
+import accessory.misc;
 import accessory.numbers;
 import accessory.parent_ini_db;
 import accessory.strings;
@@ -160,7 +161,11 @@ public class _ini_db extends parent_ini_db
 		info.put(execs.QUANTITY, get_quantity());
 		info.put(execs.FEES, get_money());
 
-		return add_source_common(db_, source, table, info, sources_);
+		HashMap<String, Object[]> sources = add_source_common(db_, source, table, info, sources_);		
+
+		sources = add_source_common(db_, execs.SOURCE_OLD, get_table_old(table), info, sources, true);
+		
+		return sources;
 	}
 	
 	private HashMap<String, Object[]> add_source_basic(String db_, HashMap<String, Object[]> sources_)
@@ -170,14 +175,23 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
-		info.put(basic.USER, get_user(true));
 		info.put(basic.ACCOUNT_IB, get_status_type());
 		info.put(basic.MONEY, get_money());
 		info.put(basic.MONEY_INI, get_money());
 		info.put(basic.CURRENCY, get_string(contracts.get_max_length_currency()));
 		info.put(basic.MONEY_FREE, get_money());
 		
-		return add_source_common(db_, source, table, info, sources_);
+		HashMap<String, db_field> info2 = new HashMap<String, db_field>(info);	
+		info2.put(basic.USER, get_user(true));
+
+		HashMap<String, Object[]> sources = add_source_common(db_, source, table, info2, sources_);		
+
+		info2 = new HashMap<String, db_field>(info);	
+		info2.put(basic.USER, get_user(false));
+
+		sources = add_source_common(db_, basic.SOURCE_OLD, get_table_old(table), info2, sources, true);
+		
+		return sources;
 	}
 	
 	private HashMap<String, Object[]> add_source_remote(String db_, HashMap<String, Object[]> sources_)
@@ -187,7 +201,6 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 
-		info.put(remote.REQUEST, get_int(true));
 		info.put(remote.ORDER_ID_MAIN, get_order_id(false));
 		info.put(remote.ORDER_ID_SEC, get_order_id(false));
 		info.put(remote.SYMBOL, get_symbol(false));
@@ -204,7 +217,17 @@ public class _ini_db extends parent_ini_db
 		info.put(remote.TYPE_ORDER, get_status_type());	
 		info.put(remote.TIME2, get_time2());
 		
-		return add_source_common(db_, source, table, info, sources_);
+		HashMap<String, db_field> info2 = new HashMap<String, db_field>(info);	
+		info2.put(remote.REQUEST, get_int(true));
+
+		HashMap<String, Object[]> sources = add_source_common(db_, source, table, info2, sources_);		
+
+		info2 = new HashMap<String, db_field>(info);	
+		info2.put(remote.REQUEST, get_int(false));
+
+		sources = add_source_common(db_, remote.SOURCE_OLD, get_table_old(table), info2, sources, true);
+		
+		return sources;
 	}
 	
 	private HashMap<String, Object[]> add_source_orders(String db_, HashMap<String, Object[]> sources_)
@@ -214,8 +237,6 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
-		info.put(orders.ORDER_ID_MAIN, get_order_id(true));
-		info.put(orders.ORDER_ID_SEC, get_order_id(true));
 		info.put(orders.SYMBOL, get_symbol(false));
 		info.put(orders.STATUS, get_status_type(orders.get_key_from_status(ib.orders.DEFAULT_STATUS)));
 		info.put(orders.START, get_price());
@@ -227,7 +248,19 @@ public class _ini_db extends parent_ini_db
 		info.put(orders.TYPE_SEC, get_status_type());
 		info.put(orders.QUANTITY, get_quantity());
 		
-		return add_source_common(db_, source, table, info, sources_);
+		HashMap<String, db_field> info2 = new HashMap<String, db_field>(info);	
+		info2.put(orders.ORDER_ID_MAIN, get_order_id(true));
+		info2.put(orders.ORDER_ID_SEC, get_order_id(true));
+		
+		HashMap<String, Object[]> sources = add_source_common(db_, source, table, info2, sources_);		
+
+		info2 = new HashMap<String, db_field>(info);	
+		info2.put(orders.ORDER_ID_MAIN, get_order_id(false));
+		info2.put(orders.ORDER_ID_SEC, get_order_id(false));
+
+		sources = add_source_common(db_, orders.SOURCE_OLD, get_table_old(table), info2, sources, true);
+		
+		return sources;
 	}
 	
 	private HashMap<String, Object[]> add_source_trades(String db_, HashMap<String, Object[]> sources_)
@@ -237,8 +270,6 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
-		info.put(trades.ORDER_ID_MAIN, get_order_id(true));
-		info.put(trades.ORDER_ID_SEC, get_order_id(true));
 		info.put(trades.SYMBOL, get_symbol(false));
 		info.put(trades.PRICE, get_price());
 		info.put(trades.TIME_ELAPSED, get_time_elapsed());
@@ -252,7 +283,19 @@ public class _ini_db extends parent_ini_db
 		info.put(trades.ELAPSED_INI, get_elapsed_ini());
 		info.put(trades.REALISED, get_money());
 		
-		return add_source_common(db_, source, table, info, sources_);		
+		HashMap<String, db_field> info2 = new HashMap<String, db_field>(info);	
+		info2.put(trades.ORDER_ID_MAIN, get_order_id(true));
+		info2.put(trades.ORDER_ID_SEC, get_order_id(true));
+		
+		HashMap<String, Object[]> sources = add_source_common(db_, source, table, info2, sources_);		
+
+		info2 = new HashMap<String, db_field>(info);	
+		info2.put(trades.ORDER_ID_MAIN, get_order_id(false));
+		info2.put(trades.ORDER_ID_SEC, get_order_id(false));
+
+		sources = add_source_common(db_, trades.SOURCE_OLD, get_table_old(table), info2, sources, true);
+		
+		return sources;
 	}
 	
 	private HashMap<String, Object[]> add_source_watchlist(String db_, HashMap<String, Object[]> sources_)
@@ -292,7 +335,6 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
-		info.put(apps.APP, get_name(db_ib.common.MAX_SIZE_APP_NAME, true));
 		info.put(apps.USER, get_user());
 		info.put(apps.CONN_ID, get_tiny(false));
 		info.put(apps.CONN_TYPE, get_string(conn.get_max_length_type()));
@@ -301,16 +343,33 @@ public class _ini_db extends parent_ini_db
 		info.put(apps.ADDITIONAL, get_string(db_ib.common.MAX_SIZE_ADDITIONAL));
 		info.put(apps.TIME2, get_time2());
 		
-		return add_source_common(db_, source, table, info, sources_);		
-	}
-	
-	private HashMap<String, Object[]> add_source_common(String db_, String source_, String table_, HashMap<String, db_field> info_, HashMap<String, Object[]> sources_) { return add_source(source_, table_, db_, info_, true, sources_); }
-	
-	private static db_field get_time(String format_) 
-	{
-		int size = dates.get_length(format_);
-		String def_val = (format_.equals(dates.FORMAT_TIME_FULL) ? "00:00:00" : "00:00");
+		HashMap<String, db_field> info2 = new HashMap<String, db_field>(info);	
+		info2.put(apps.APP, get_name(db_ib.common.MAX_SIZE_APP_NAME, true));
 		
-		return new db_field(data.STRING, size, db_field.WRONG_DECIMALS, def_val, null); 
+		HashMap<String, Object[]> sources = add_source_common(db_, source, table, info2, sources_);		
+
+		info2 = new HashMap<String, db_field>(info);	
+		info2.put(apps.APP, get_name(db_ib.common.MAX_SIZE_APP_NAME, false));
+
+		sources = add_source_common(db_, apps.SOURCE_OLD, get_table_old(table), info2, sources, true);
+		
+		return sources;
 	}
+
+	private static String get_table_old(String table_) { return (table_ + misc.SEPARATOR_NAME + "old"); }
+	
+	private HashMap<String, Object[]> add_source_common(String db_, String source_, String table_, HashMap<String, db_field> info_, HashMap<String, Object[]> sources_) { return add_source_common(db_, source_, table_, info_, sources_, false); }
+	
+	private HashMap<String, Object[]> add_source_common(String db_, String source_, String table_, HashMap<String, db_field> info_, HashMap<String, Object[]> sources_, boolean is_old_) 
+	{ 
+		HashMap<String, db_field> info = new HashMap<String, db_field>(info_);
+	
+		if (is_old_) info.put(common.FIELD_DATE, get_date());
+		
+		return add_source(source_, table_, db_, info, true, sources_); 
+	}
+	
+	private static db_field get_time(String format_) { return new db_field(data.STRING, dates.get_length(format_), db_field.WRONG_DECIMALS, dates.get_default(format_), null); }
+	
+	private static db_field get_date() { return new db_field(data.STRING, dates.get_length(ib.common.FORMAT_DATE), db_field.WRONG_DECIMALS, dates.get_default(ib.common.FORMAT_DATE), null); }
 }

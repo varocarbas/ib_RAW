@@ -11,7 +11,8 @@ import ib.order;
 public abstract class trades 
 {
 	public static final String SOURCE = common.SOURCE_TRADES;
-	
+	public static final String SOURCE_OLD = common.SOURCE_TRADES_OLD;
+
 	public static final String ORDER_ID_MAIN = common.FIELD_ORDER_ID_MAIN;
 	public static final String ORDER_ID_SEC = common.FIELD_ORDER_ID_SEC;
 	public static final String SYMBOL = common.FIELD_SYMBOL;

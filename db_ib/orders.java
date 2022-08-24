@@ -14,6 +14,7 @@ import ib.order;
 public abstract class orders 
 {
 	public static final String SOURCE = common.SOURCE_ORDERS;
+	public static final String SOURCE_OLD = common.SOURCE_ORDERS_OLD;
 	
 	public static final String SYMBOL = common.FIELD_SYMBOL;
 	public static final String ORDER_ID_MAIN = common.FIELD_ORDER_ID_MAIN;
@@ -289,6 +290,32 @@ public abstract class orders
 
 	public static ArrayList<HashMap<String, String>> get_all_active(String[] fields_) { return common.get_all_vals(SOURCE, fields_, get_where_active()); }
 
+	public static int get_highest_order_id(boolean is_quick_)
+	{
+		int output = ib.orders.MIN_ORDER_ID;
+		
+		String[] field_cols = new String[] { ORDER_ID_MAIN, ORDER_ID_SEC };
+		
+		if (is_quick_)
+		{
+			for (int i = 0; i < field_cols.length; i++) { field_cols[i] = get_col(field_cols[i]); }
+		}
+			
+		ArrayList<HashMap<String, String>> all = common.get_all_vals(SOURCE, field_cols, null, is_quick_);
+		if (!arrays.is_ok(all)) return output;
+		
+		for (HashMap<String, String> item: all)
+		{
+			for (String field_col: field_cols) 
+			{ 
+				int order_id = Integer.parseInt(item.get(field_col));
+				if (order_id > output) output = order_id; 
+			}
+		}
+		
+		return output;
+	}
+	
 	private static void populate_type_places()
 	{
 		_type_places = new HashMap<String, String>();
@@ -437,7 +464,7 @@ public abstract class orders
 
 	private static String get_where_order_id(int order_id_, boolean is_main_, boolean is_quick_) { return common.get_where(SOURCE, (is_main_ ? ORDER_ID_MAIN : ORDER_ID_SEC), Integer.toString(order_id_), is_quick_); }
 
-	private static String get_where_active() { return (new db_where(SOURCE, STATUS, db_where.OPERAND_NOT_EQUAL, orders.get_key_from_status(ib.orders.STATUS_INACTIVE))).toString(); }
+	private static String get_where_active() { return (new db_where(SOURCE, STATUS, db_where.OPERAND_NOT_EQUAL, get_key_from_status(ib.orders.STATUS_INACTIVE))).toString(); }
 
 	private static String get_where_inactive() { return common.get_where(SOURCE, STATUS, orders.get_key_from_status(ib.orders.STATUS_INACTIVE), false); }
 }

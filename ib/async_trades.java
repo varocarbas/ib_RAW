@@ -2,7 +2,6 @@ package ib;
 
 import accessory.parent_static;
 import accessory.strings;
-import db_ib.trades;
 
 abstract class async_trades extends parent_static
 {		
@@ -35,7 +34,9 @@ abstract class async_trades extends parent_static
 	}
 	
 	private static void start_internal(String symbol_, int order_id_main_, double start_) 
-	{	
+	{			
+		if (!trades.synced_with_execs()) basic.update_money();
+
 		trades.start(symbol_, order_id_main_, start_);
 
 		async_data_trades.start(symbol_);
@@ -43,14 +44,16 @@ abstract class async_trades extends parent_static
 	
 	private static void end_internal(String symbol_, int order_id_sec_, double end_) 
 	{
-		trades.end(order_id_sec_, end_);
+		if (!trades.synced_with_execs()) basic.update_money();
+
+		db_ib.trades.end(order_id_sec_, end_);
 	
 		if (strings.is_ok(symbol_)) async_data_trades.stop(symbol_);		
 	}	
 
 	private static boolean start_is_ok(int order_id_, String status_ib_) { return (status_is_ok(status_ib_, true) && start_is_ok(order_id_, false)); }
 
-	private static boolean start_is_ok(int order_id_, boolean from_execs_) { return (order_id_is_ok(order_id_) && (!order_id_exists(order_id_, true) || (from_execs_ && !trades.started(order_id_)))); }
+	private static boolean start_is_ok(int order_id_, boolean from_execs_) { return (order_id_is_ok(order_id_) && (!order_id_exists(order_id_, true) || (from_execs_ && !db_ib.trades.started(order_id_)))); }
 
 	private static boolean end_is_ok(int order_id_, String status_ib_) { return (status_is_ok(status_ib_, false) && end_is_ok(order_id_)); }
 

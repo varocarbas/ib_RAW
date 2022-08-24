@@ -109,6 +109,8 @@ public abstract class basic extends parent_static
 
 	public static double get_money_free() { return db_ib.basic.get_money_free(); }	
 
+	public static void update_money() { update_money(false); }
+
 	public static String get_currency() 
 	{
 		String currency = contracts.get_currency();
@@ -139,8 +141,6 @@ public abstract class basic extends parent_static
 		
 		update_money(true);
 	}
-
-	public static void update_money() { update_money(false); }
 	
 	private static boolean update_money(boolean ini_too_)
 	{

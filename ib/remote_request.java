@@ -4,14 +4,14 @@ import java.util.HashMap;
 
 import accessory.arrays;
 import accessory.dates;
-import accessory.misc;
+import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
 import accessory_ib.types;
 
 abstract class remote_request extends parent_static 
 {
-	public static final long TIMEOUT = 15l;
+	public static final long TIMEOUT = 10l;
 
 	public static final String ERROR = types.ERROR_IB_REMOTE_REQUEST; 
 	public static final String ERROR_REQUEST = types.ERROR_IB_REMOTE_REQUEST_REQUEST; 
@@ -24,12 +24,12 @@ abstract class remote_request extends parent_static
 	{ 
 		int request = __place(type_place_, symbol_, stop_, start_, common.WRONG_PRICE, quantity_, wait_for_execution_); 
 
-		if (request == common.WRONG_REQUEST) update_error_place(request, type_place_, quantity_, stop_, start_, common.WRONG_PRICE);
+		if (request == common.WRONG_REQUEST) update_error_place(request, symbol_, type_place_, quantity_, stop_, start_, common.WRONG_PRICE);
 		else if (wait_for_execution_)
 		{
 			if (!wait_for_execution(request)) 
 			{
-				remote.update_error(request, ERROR_WAIT, type_place_);
+				remote.update_error(request, ERROR_WAIT, type_place_, type_place_);
 				
 				request = common.WRONG_REQUEST;
 			}
@@ -42,12 +42,12 @@ abstract class remote_request extends parent_static
 	{ 
 		int request = __place_common(type_place_, symbol_, stop_, start_, start2_, quantity_, common.WRONG_MONEY, common.WRONG_PRICE); 
 
-		if (request == common.WRONG_REQUEST) update_error_place(request, type_place_, quantity_, stop_, start_, start2_);
+		if (request == common.WRONG_REQUEST) update_error_place(request, symbol_, type_place_, quantity_, stop_, start_, start2_);
 		else if (wait_for_execution_)
 		{
 			if (!wait_for_execution(request)) 
 			{
-				remote.update_error(request, ERROR_WAIT, type_place_);
+				remote.update_error(request, ERROR_WAIT, type_place_, type_place_);
 				
 				request = common.WRONG_REQUEST;
 			}
@@ -60,12 +60,12 @@ abstract class remote_request extends parent_static
 	{ 
 		int request = __place_perc(type_place_, symbol_, stop_, start_, common.WRONG_PRICE, perc_money_, price_, wait_for_execution_); 
 
-		if (request == common.WRONG_REQUEST) update_error_place(request, type_place_, price_, perc_money_, stop_, start_, common.WRONG_PRICE);
+		if (request == common.WRONG_REQUEST) update_error_place(request, symbol_, type_place_, price_, perc_money_, stop_, start_, common.WRONG_PRICE);
 		else if (wait_for_execution_)
 		{
 			if (!wait_for_execution(request)) 
 			{
-				remote.update_error(request, ERROR_WAIT, type_place_);
+				remote.update_error(request, ERROR_WAIT, type_place_, type_place_);
 				
 				request = common.WRONG_REQUEST;
 			}
@@ -78,12 +78,12 @@ abstract class remote_request extends parent_static
 	{ 
 		int request = __place_common(type_place_, symbol_, stop_, start_, start2_, common.WRONG_QUANTITY, perc_money_, price_); 
 
-		if (request == common.WRONG_REQUEST) update_error_place(request, type_place_, price_, perc_money_, stop_, start_, start2_);
+		if (request == common.WRONG_REQUEST) update_error_place(request, symbol_, type_place_, price_, perc_money_, stop_, start_, start2_);
 		else if (wait_for_execution_)
 		{
 			if (!wait_for_execution(request)) 
 			{
-				remote.update_error(request, ERROR_WAIT, type_place_);
+				remote.update_error(request, ERROR_WAIT, type_place_, type_place_);
 				
 				request = common.WRONG_REQUEST;
 			}
@@ -96,9 +96,9 @@ abstract class remote_request extends parent_static
 	{ 
 		boolean output = false;
 		
-		if (!is_ok(request_, true))
+		if (!is_ok(request_))
 		{
-			remote.update_error(request_, ERROR_REQUEST, remote.CANCEL);
+			remote.update_error(request_, ERROR_REQUEST, remote.CANCEL, remote.CANCEL);
 			
 			return output;
 		}
@@ -107,12 +107,12 @@ abstract class remote_request extends parent_static
 
 		if (output) remote.log(Integer.toString(request_) + " (cancel) requested successfully");
 		
-		if (!output) remote.update_error(request_, ERROR_CANCEL, null);
+		if (!output) remote.update_error(request_, ERROR_CANCEL, null, remote.CANCEL);
 		else if (wait_for_execution_) 
 		{
-			output = wait_for_execution(request_);
+			output = wait_for_execution(request_, true);
 			
-			if (!output) remote.update_error(request_, ERROR_WAIT, remote.CANCEL);
+			if (!output) remote.update_error(request_, ERROR_WAIT, remote.CANCEL, remote.CANCEL);
 		}
 		
 		return output;
@@ -122,9 +122,9 @@ abstract class remote_request extends parent_static
 	{
 		boolean output = false;
 
-		if (!is_ok(request_, false))
+		if (!is_ok(request_))
 		{
-			remote.update_error(request_, ERROR_REQUEST, type_update_);
+			remote.update_error(request_, ERROR_REQUEST, type_update_, type_update_);
 			
 			return output;
 		}
@@ -138,18 +138,20 @@ abstract class remote_request extends parent_static
 
 		if (output) remote.log(Integer.toString(request_) + " (" + type_update + ") requested successfully");
 		
-		if (!output) update_error_update(request_, type_update, val_);
+		if (!output) update_error_update(request_, db_ib.remote.get_symbol(request_, remote.is_quick()), type_update, val_);
 		else if (wait_for_execution_) 
 		{
 			output = wait_for_execution(request_);
 			
-			if (!output) remote.update_error(request_, ERROR_WAIT, type_update);
+			if (!output) remote.update_error(request_, ERROR_WAIT, type_update, type_update);
 		}
 		
 		return output;
 	}
 
-	public static boolean wait_for_execution(int request_) { return is_executed(request_, false, true); }
+	public static boolean wait_for_execution(int request_) { return wait_for_execution(request_, false); }
+
+	public static boolean wait_for_execution(int request_, boolean is_cancel_) { return is_executed(request_, false, is_cancel_); }
 
 	static String get_error_message(String type_)
 	{	
@@ -187,65 +189,44 @@ abstract class remote_request extends parent_static
 		return output;
 	}
 	
-	private static boolean is_ok(int request_, boolean is_cancel_) { return (db_ib.remote.is_active(request_) && remote.order_id_is_ok(remote.get_order_id_main(request_), is_cancel_) && is_executed(request_, true, false)); }
+	private static boolean is_ok(int request_) { return (db_ib.remote.is_active(request_) && remote.order_id_is_ok(remote.get_order_id_main(request_)) && is_executed(request_, true, false)); }
 	
 	private static boolean is_executed(int request_, boolean ignore_error_, boolean inactive_ok_)
 	{
-		HashMap<String, String> vals = remote.get_vals(request_);
-		if (!arrays.is_ok(vals)) return inactive_ok_;
-		
-		String status = remote.get_status(vals);
-		if (!strings.are_equal(status, remote.STATUS_ACTIVE)) return inactive_ok_; 
-		
-		String status2 = remote.get_status2(vals);
-		if (strings.are_equal(status2, remote.STATUS2_EXECUTED)) return true;		
-		else if (strings.are_equal(status2, remote.STATUS2_ERROR)) return ignore_error_;
+		int temp = is_executed_internal(request_, ignore_error_, inactive_ok_);
+		if (temp != -1) return numbers.to_boolean(temp);
 
-		boolean is_quick = remote.is_quick();
-		
-		int order_id_main = remote.get_order_id_main(vals);
-		
 		long start = dates.start_elapsed();
 			
-		while (true)
+		while (dates.get_elapsed(start) < remote_request.TIMEOUT)
 		{
-			vals = remote.get_vals(request_);
-			if (!arrays.is_ok(vals)) return inactive_ok_;
-			
-			status = remote.get_status(vals);
-			if (!strings.are_equal(status, remote.STATUS_ACTIVE)) return inactive_ok_; 
-			
-			status2 = remote.get_status2(vals);
-			
-			if (strings.are_equal(status2, remote.STATUS2_EXECUTED)) return true;		
-			else if (strings.are_equal(status2, remote.STATUS2_ERROR)) return ignore_error_;
-
-			if (dates.get_elapsed(start) >= remote_request.TIMEOUT) 
-			{				
-				db_ib.remote.deactivate_order_id(order_id_main);
-				
-				misc.pause_secs(2);
-				
-				if (remote.order_was_updated(vals))	
-				{
-					Object vals2 = db_ib.remote.add_to_vals(db_ib.remote.STATUS, db_ib.remote.get_key_from_status(remote.STATUS_ACTIVE), null, is_quick);
-					vals2 = db_ib.remote.add_to_vals(db_ib.remote.STATUS2, db_ib.remote.get_status2_key_execute(true), vals2, is_quick);
-
-					db_ib.remote.update(request_, vals2, is_quick);
-					
-					return true;
-				}
-				
-				break;
-			}
+			temp = is_executed_internal(request_, ignore_error_, inactive_ok_);
+			if (temp != -1) return numbers.to_boolean(temp);
 		}
 
 		return false;
 	}
 
-	private static void update_error_place(int request_, String type_, double quantity_, double stop_, double start_, double start2_) { remote.update_error_place(request_, type_, quantity_, stop_, start_, start2_, true); }
+	private static int is_executed_internal(int request_, boolean ignore_error_, boolean inactive_ok_)
+	{
+		HashMap<String, String> vals = remote.get_vals(request_);
+		if (!arrays.is_ok(vals)) return numbers.from_boolean(false);
+		
+		int output = -1;
+				
+		String status = remote.get_status(vals);
+		String status2 = remote.get_status2(vals);
 
-	private static void update_error_place(int request_, String type_, double price_, double perc_, double stop_, double start_, double start2_) { remote.update_error_place(request_, type_, price_, perc_, stop_, start_, start2_, true); }
+		if (strings.are_equal(status, remote.STATUS_ERROR) || strings.are_equal(status2, remote.STATUS2_ERROR)) output = numbers.from_boolean(ignore_error_);
+		else if (strings.are_equal(status, remote.STATUS_INACTIVE)) output = numbers.from_boolean(inactive_ok_); 
+		else if (strings.are_equal(status2, remote.STATUS2_EXECUTED)) output = numbers.from_boolean(true);		
 
-	private static void update_error_update(int request_, String type_, double val_) { remote.update_error_update(request_, type_, common.WRONG_ORDER_ID, val_, true); }
+		return output;
+	}
+	
+	private static void update_error_place(int request_, String symbol_, String type_, double quantity_, double stop_, double start_, double start2_) { remote.update_error_place(request_, symbol_, type_, quantity_, stop_, start_, start2_, true); }
+
+	private static void update_error_place(int request_, String symbol_, String type_, double price_, double perc_, double stop_, double start_, double start2_) { remote.update_error_place(request_, symbol_, type_, price_, perc_, stop_, start_, start2_, true); }
+
+	private static void update_error_update(int request_, String symbol_, String type_, double val_) { remote.update_error_update(request_, symbol_, type_, common.WRONG_ORDER_ID, val_, true); }
 }

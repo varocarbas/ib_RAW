@@ -13,6 +13,7 @@ import ib.order;
 public abstract class execs 
 {
 	public static final String SOURCE = common.SOURCE_EXECS;
+	public static final String SOURCE_OLD = common.SOURCE_EXECS_OLD;
 	
 	public static final String SYMBOL = common.FIELD_SYMBOL;
 	public static final String EXEC_ID = common.FIELD_EXEC_ID;
@@ -70,9 +71,13 @@ public abstract class execs
 		return false; 
 	}
 
-	public static ArrayList<HashMap<String, String>> get_all_filled(boolean is_quick_) { return get_all_common(true, is_quick_); }
+	public static ArrayList<HashMap<String, String>> get_all_filled(boolean is_quick_) { return get_all_filled(null, is_quick_); }
 
-	public static ArrayList<HashMap<String, String>> get_all_completed(boolean is_quick_) { return get_all_common(false, is_quick_); }
+	public static ArrayList<HashMap<String, String>> get_all_filled(String symbol_, boolean is_quick_) { return get_all_common(symbol_, true, is_quick_); }
+
+	public static ArrayList<HashMap<String, String>> get_all_completed(boolean is_quick_) { return get_all_completed(null, is_quick_); }
+
+	public static ArrayList<HashMap<String, String>> get_all_completed(String symbol_, boolean is_quick_) { return get_all_common(symbol_, false, is_quick_); }
 	
 	public static boolean update(String exec_id_, HashMap<String, Object> vals_, boolean is_quick_) 
 	{
@@ -106,11 +111,11 @@ public abstract class execs
 	
 	private static ArrayList<Integer> get_all_order_ids_main() { return get_all_order_ids_main(false); }
 
-	private static ArrayList<HashMap<String, String>> get_all_common(boolean is_filled_, boolean is_quick_)
+	private static ArrayList<HashMap<String, String>> get_all_common(String symbol_, boolean is_filled_, boolean is_quick_)
 	{
 		ArrayList<HashMap<String, String>> output = new ArrayList<HashMap<String, String>>();
 		
-		ArrayList<Integer> ids_main = get_all_order_ids_main(is_quick_);
+		ArrayList<Integer> ids_main = get_all_order_ids_main(symbol_, is_quick_);
 		if (!arrays.is_ok(ids_main)) return output;
 		
 		String[] fields = new String[] { SYMBOL, ORDER_ID };

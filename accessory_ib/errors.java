@@ -10,7 +10,6 @@ import accessory.strings;
 import ib.async_data;
 import ib.common_xsync;
 import ib.conn;
-import ib.orders;
 import ib.sync;
 
 public abstract class errors
@@ -21,7 +20,7 @@ public abstract class errors
 	
 	public static final String DEFAULT_WARNING = "WARNING";
 
-	public static void __wrapper_error(int id_, int code_, String message_)
+	public static void wrapper_error(int id_, int code_, String message_)
 	{
 		String message = (strings.is_ok(message_) ? message_ : strings.DEFAULT);
 		
@@ -31,8 +30,8 @@ public abstract class errors
 			if (!message.contains(id)) message += misc.SEPARATOR_CONTENT + "id: " + id;			
 		}
 		
-		if (is_warning(code_) || __treat_as_warning(id_, code_)) manage_warning(message);
-		else manage_internal(ERROR_GENERIC, __wrapper_error_info(id_, code_, message_));
+		if (is_warning(code_)) manage_warning(message);
+		else manage_internal(ERROR_GENERIC, wrapper_error_info(id_, code_, message_));
 	}	
 
 	public static boolean is_warning(int code_) { return external_ib.errors.is_warning(code_); }
@@ -54,8 +53,8 @@ public abstract class errors
 	}
 
 	public static String check(String type_) { return accessory.types.check_type(type_, types.ERROR_IB); }
-
-	private static HashMap<String, Object> __wrapper_error_info(int id_, int code_, String message_)
+	
+	private static HashMap<String, Object> wrapper_error_info(int id_, int code_, String message_)
 	{
 		HashMap<String, Object> info = new HashMap<String, Object>();
 
@@ -70,15 +69,6 @@ public abstract class errors
 		}
 
 		return info;
-	}
-		
-	private static boolean __treat_as_warning(int id_, int code_)
-	{
-		return 
-		(
-			(code_ == external_ib.errors.ERROR_202 && orders.__is_cancelling(id_)) ||
-			code_ == external_ib.errors.ERROR_300
-		);
 	}
 	
 	private static void manage_internal(String type_, HashMap<String, Object> info_) { manage_internal(type_, get_message_common((String)arrays.get_value(info_, MESSAGE)), info_); }

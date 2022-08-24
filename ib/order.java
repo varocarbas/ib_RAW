@@ -112,9 +112,9 @@ public class order extends parent
 	
 	public order(order input_) { instantiate(input_); }
 	
-	public order(String type_place_, String symbol_, double quantity_, double stop_, double start_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, common.WRONG_PRICE, sync.get_order_id()); }
+	public order(String type_place_, String symbol_, double quantity_, double stop_, double start_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, common.WRONG_PRICE, get_new_order_id()); }
 	
-	public order(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, start2_, sync.get_order_id()); }
+	public order(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, start2_, get_new_order_id()); }
 	
 	public order(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_, int id_main_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, start2_, id_main_); }
 
@@ -217,6 +217,15 @@ public class order extends parent
 		);		
 	}
 
+	private static int get_new_order_id()
+	{
+		int order_id = sync.get_order_id();
+		
+		if (order_id <= common.WRONG_ORDER_ID) order_id = orders.get_highest_order_id() + 1;
+		
+		return order_id;
+	}
+	
 	private static boolean status_is_generic(String status_) 
 	{ 
 		String status = check_status(status_);
@@ -248,7 +257,7 @@ public class order extends parent
 		_temp_type = check_type_place(type_place_);
 		_temp_symbol = check_symbol(symbol_);
 
-		return (strings.are_ok(new String[] { _temp_type, _temp_symbol }) && quantity_ > common.WRONG_QUANTITY && (stop_ > common.WRONG_PRICE) && (start_ > common.WRONG_PRICE || _temp_type.equals(TYPE_PLACE_MARKET)) && (start2_ > common.WRONG_PRICE || !_temp_type.equals(TYPE_PLACE_STOP_LIMIT)));
+		return (strings.are_ok(new String[] { _temp_type, _temp_symbol }) && quantity_ > common.WRONG_QUANTITY && (stop_ > common.WRONG_PRICE) && (start_ > common.WRONG_PRICE || _temp_type.equals(TYPE_PLACE_MARKET)) && (start2_ > common.WRONG_PRICE || !_temp_type.equals(TYPE_PLACE_STOP_LIMIT)) && id_main_ > common.WRONG_ORDER_ID);
 	}
 
 	private void populate(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_, int id_main_)

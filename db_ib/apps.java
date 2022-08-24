@@ -11,6 +11,7 @@ import ib.ini_apps;
 public abstract class apps 
 {
 	public static final String SOURCE = common.SOURCE_APPS;
+	public static final String SOURCE_OLD = common.SOURCE_APPS_OLD;
 	
 	public static final String USER = common.FIELD_USER;
 	public static final String APP = common.FIELD_APP;

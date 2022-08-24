@@ -8,6 +8,7 @@ import accessory.arrays;
 import accessory.dates;
 import accessory.db;
 import accessory.db_where;
+import accessory.generic;
 import accessory.numbers;
 import accessory.strings;
 import accessory_ib._alls;
@@ -24,6 +25,13 @@ public abstract class common
 	public static final String SOURCE_TRADES = types.CONFIG_DB_IB_TRADES_SOURCE;
 	public static final String SOURCE_WATCHLIST = types.CONFIG_DB_IB_WATCHLIST_SOURCE;
 	public static final String SOURCE_APPS = types.CONFIG_DB_IB_APPS_SOURCE;
+	
+	public static final String SOURCE_EXECS_OLD = types.CONFIG_DB_IB_EXECS_OLD_SOURCE;
+	public static final String SOURCE_BASIC_OLD = types.CONFIG_DB_IB_BASIC_OLD_SOURCE;
+	public static final String SOURCE_REMOTE_OLD = types.CONFIG_DB_IB_REMOTE_OLD_SOURCE;
+	public static final String SOURCE_ORDERS_OLD = types.CONFIG_DB_IB_ORDERS_OLD_SOURCE;
+	public static final String SOURCE_TRADES_OLD = types.CONFIG_DB_IB_TRADES_OLD_SOURCE;
+	public static final String SOURCE_APPS_OLD = types.CONFIG_DB_IB_APPS_OLD_SOURCE;
 	
 	public static final String FIELD_SYMBOL = types.CONFIG_DB_IB_FIELD_SYMBOL;
 	public static final String FIELD_PRICE = types.CONFIG_DB_IB_FIELD_PRICE;
@@ -103,7 +111,9 @@ public abstract class common
 	public static final String FIELD_ID = types.CONFIG_DB_IB_FIELD_ID;
 	public static final String FIELD_TYPE = types.CONFIG_DB_IB_FIELD_TYPE;
 	public static final String FIELD_DATA_TYPE = types.CONFIG_DB_IB_FIELD_DATA_TYPE;
-	
+
+	public static final String FIELD_DATE = types.CONFIG_DB_IB_FIELD_DATE;
+
 	public static final String SEPARATOR = accessory.types.SEPARATOR;
 
 	public static final String BACKUP_ENDING = SEPARATOR + "last";
@@ -300,6 +310,26 @@ public abstract class common
 		
 		return accessory.db.is_ok(source_);
 	}
+
+	public static boolean update_all_old_quick()
+	{
+		boolean is_ok = true;
+		
+		for (Entry<String, String> item: get_all_sources_old().entrySet()) 
+		{
+			String source = item.getKey();
+			String source_old = item.getValue();
+			
+			boolean temp = update_old_quick(source, source_old);
+			if (!temp) is_ok = false;
+			
+			generic.to_screen(db.get_table(source_old) + " updated (" + (temp ? "ok" : "error") + ")");
+		}
+	
+		return is_ok;
+	}
+
+	public static boolean update_old_quick(String source_) { return update_old_quick(source_, (String)arrays.get_value(get_all_sources_old(), source_)); }
 	
 	public static String get_field_col(String source_, String field_, boolean is_quick_) { return (is_quick_ ? get_col(source_, field_) : field_); }
 
@@ -350,6 +380,20 @@ public abstract class common
 	public static String[] populate_all_sources_enabled() { return new String[] { SOURCE_MARKET }; }
 
 	public static String[] populate_all_sources_elapsed() { return new String[] { SOURCE_TRADES, SOURCE_WATCHLIST }; }
+
+	public static HashMap<String, String> populate_all_sources_old() 
+	{ 
+		HashMap<String, String> all = new HashMap<String, String>();
+		
+		all.put(SOURCE_EXECS, SOURCE_EXECS_OLD);
+		all.put(SOURCE_BASIC, SOURCE_BASIC_OLD);
+		all.put(SOURCE_REMOTE, SOURCE_REMOTE_OLD);
+		all.put(SOURCE_ORDERS, SOURCE_ORDERS_OLD);
+		all.put(SOURCE_TRADES, SOURCE_TRADES_OLD);
+		all.put(SOURCE_APPS, SOURCE_APPS_OLD);
+
+		return all; 
+	}
 
 	public static String[] get_all_sources_elapsed() { return _alls.DB_SOURCES_ELAPSED; }
 
@@ -496,6 +540,34 @@ public abstract class common
 		if (strings.is_ok(where_)) output = join_wheres(output, where_);
 		
 		return output;
+	}
+
+	public static HashMap<String, String> get_all_sources_old() { return _alls.DB_SOURCES_OLD; }
+
+	private static boolean update_old_quick(String source_, String source_old_)
+	{	
+		boolean output = true;
+		
+		ArrayList<HashMap<String, String>> all_vals = common.get_all_vals(source_, null, null, true);
+		if (!arrays.is_ok(all_vals)) return output;
+
+		String date = dates.get_now_string(ib.common.FORMAT_DATE);
+
+		String col_date = common.get_col(source_old_, FIELD_DATE);
+		String col_id = common.get_col(source_, db.FIELD_ID);
+
+		for (HashMap<String, String> vals: all_vals)
+		{
+			HashMap<String, String> vals2 = new HashMap<String, String>(vals);
+			
+			if (vals2.containsKey(col_id)) vals2.remove(col_id);
+			vals2.put(col_date, date);
+			
+			boolean temp = common.insert(source_old_, vals2, true);
+			if (!temp) output = false;
+		}
+		
+		return output;	
 	}
 
 	private static long get_timestamp_elapsed(String source_, String where_, String unit_) { return dates.get_diff(get_string(source_, accessory.db.FIELD_TIMESTAMP, where_), dates.FORMAT_TIMESTAMP, dates.get_now_string(dates.FORMAT_TIMESTAMP), dates.FORMAT_TIMESTAMP, unit_); }

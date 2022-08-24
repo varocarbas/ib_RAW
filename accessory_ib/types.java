@@ -26,20 +26,30 @@ public abstract class types
 	public static final String CONFIG_DB_IB_MARKET_SOURCE = "config_db_ib_market_source";
 	public static final String CONFIG_DB_IB_EXECS = "config_db_ib_execs";
 	public static final String CONFIG_DB_IB_EXECS_SOURCE = "config_db_ib_execs_source";
+	public static final String CONFIG_DB_IB_EXECS_OLD = "config_db_ib_execs_old";
+	public static final String CONFIG_DB_IB_EXECS_OLD_SOURCE = "config_db_ib_execs_old_source";
 	public static final String CONFIG_DB_IB_BASIC = "config_db_ib_basic";
 	public static final String CONFIG_DB_IB_BASIC_SOURCE = "config_db_ib_basic_source";
+	public static final String CONFIG_DB_IB_BASIC_OLD = "config_db_ib_basic_old";
+	public static final String CONFIG_DB_IB_BASIC_OLD_SOURCE = "config_db_ib_basic_old_source";
 	public static final String CONFIG_DB_IB_REMOTE = "config_db_ib_remote";
 	public static final String CONFIG_DB_IB_REMOTE_SOURCE = "config_db_ib_remote_source";
+	public static final String CONFIG_DB_IB_REMOTE_OLD = "config_db_ib_remote_old";
+	public static final String CONFIG_DB_IB_REMOTE_OLD_SOURCE = "config_db_ib_remote_old_source";
 	public static final String CONFIG_DB_IB_ORDERS = "config_db_ib_orders";
 	public static final String CONFIG_DB_IB_ORDERS_SOURCE = "config_db_ib_orders_source";
+	public static final String CONFIG_DB_IB_ORDERS_OLD = "config_db_ib_orders_old";
+	public static final String CONFIG_DB_IB_ORDERS_OLD_SOURCE = "config_db_ib_orders_old_source";
 	public static final String CONFIG_DB_IB_TRADES = "config_db_ib_trades";
 	public static final String CONFIG_DB_IB_TRADES_SOURCE = "config_db_ib_trades_source";
+	public static final String CONFIG_DB_IB_TRADES_OLD = "config_db_ib_trades_old";
+	public static final String CONFIG_DB_IB_TRADES_OLD_SOURCE = "config_db_ib_trades_old_source";
 	public static final String CONFIG_DB_IB_WATCHLIST = "config_db_ib_watchlist";
 	public static final String CONFIG_DB_IB_WATCHLIST_SOURCE = "config_db_ib_watchlist_source";
 	public static final String CONFIG_DB_IB_APPS = "config_db_ib_apps";
 	public static final String CONFIG_DB_IB_APPS_SOURCE = "config_db_ib_apps_source";
-	public static final String CONFIG_DB_IB_TEMP_ASYNC_DATA = "config_db_ib_temp_async_data";
-	public static final String CONFIG_DB_IB_TEMP_ASYNC_DATA_SOURCE = "config_db_ib_temp_async_data_source";
+	public static final String CONFIG_DB_IB_APPS_OLD = "config_db_ib_apps_old";
+	public static final String CONFIG_DB_IB_APPS_OLD_SOURCE = "config_db_ib_apps_old_source";
 
 	public static final String CONFIG_DB_IB_FIELD = "config_db_ib_field";
 	public static final String CONFIG_DB_IB_FIELD_USER = "config_db_ib_field_user";
@@ -120,7 +130,9 @@ public abstract class types
 	public static final String CONFIG_DB_IB_FIELD_ID = "config_db_ib_field_id";
 	public static final String CONFIG_DB_IB_FIELD_TYPE = "config_db_ib_field_type";
 	public static final String CONFIG_DB_IB_FIELD_DATA_TYPE = "config_db_ib_field_data_type";
-	
+
+	public static final String CONFIG_DB_IB_FIELD_DATE = "config_db_ib_field_date";
+
 	public static final String ORDERS = "orders";
 	public static final String ORDERS_CANCEL = "orders_cancel";
 	public static final String ORDERS_PLACE = "orders_place";
@@ -170,9 +182,6 @@ public abstract class types
 	public static final String SYNC_ORDERS = ORDERS;
 	public static final String SYNC_OUT = "sync_out";
 	public static final String SYNC_OUT_INT = "sync_out_int";
-	public static final String SYNC_OUT_DECIMAL = "sync_out_decimal";
-	public static final String SYNC_OUT_INTS = "sync_out_ints";
-	public static final String SYNC_OUT_STRINGS = "sync_out_strings";
 	public static final String SYNC_OUT_ORDERS = "sync_out_orders";
 	public static final String SYNC_OUT_FUNDS = "sync_out_funds";
 	
@@ -239,20 +248,30 @@ public abstract class types
 			CONFIG_DB_IB_MARKET_SOURCE,
 			CONFIG_DB_IB_EXECS,
 			CONFIG_DB_IB_EXECS_SOURCE,
+			CONFIG_DB_IB_EXECS_OLD,
+			CONFIG_DB_IB_EXECS_OLD_SOURCE,
 			CONFIG_DB_IB_BASIC,
 			CONFIG_DB_IB_BASIC_SOURCE,
+			CONFIG_DB_IB_BASIC_OLD,
+			CONFIG_DB_IB_BASIC_OLD_SOURCE,
 			CONFIG_DB_IB_REMOTE,
 			CONFIG_DB_IB_REMOTE_SOURCE,
+			CONFIG_DB_IB_REMOTE_OLD,
+			CONFIG_DB_IB_REMOTE_OLD_SOURCE,
 			CONFIG_DB_IB_ORDERS,
 			CONFIG_DB_IB_ORDERS_SOURCE,
+			CONFIG_DB_IB_ORDERS_OLD,
+			CONFIG_DB_IB_ORDERS_OLD_SOURCE,
 			CONFIG_DB_IB_TRADES,
 			CONFIG_DB_IB_TRADES_SOURCE,
+			CONFIG_DB_IB_TRADES_OLD,
+			CONFIG_DB_IB_TRADES_OLD_SOURCE,
 			CONFIG_DB_IB_WATCHLIST,
 			CONFIG_DB_IB_WATCHLIST_SOURCE,
 			CONFIG_DB_IB_APPS,
 			CONFIG_DB_IB_APPS_SOURCE,	
-			CONFIG_DB_IB_TEMP_ASYNC_DATA,
-			CONFIG_DB_IB_TEMP_ASYNC_DATA_SOURCE,
+			CONFIG_DB_IB_APPS_OLD,
+			CONFIG_DB_IB_APPS_OLD_SOURCE,	
 			
 			CONFIG_DB_IB_FIELD,
 			CONFIG_DB_IB_FIELD_USER, CONFIG_DB_IB_FIELD_SIZE, CONFIG_DB_IB_FIELD_TIME, CONFIG_DB_IB_FIELD_SYMBOL, 
@@ -272,7 +291,7 @@ public abstract class types
 			CONFIG_DB_IB_FIELD_FLU2_MIN, CONFIG_DB_IB_FIELD_FLU2_MAX, CONFIG_DB_IB_FIELD_FLU_PRICE, CONFIG_DB_IB_FIELD_VAR_TOT, 
 			CONFIG_DB_IB_FIELD_APP, CONFIG_DB_IB_FIELD_CONN_ID, CONFIG_DB_IB_FIELD_CONN_TYPE, CONFIG_DB_IB_FIELD_COUNT, 
 			CONFIG_DB_IB_FIELD_ERROR, CONFIG_DB_IB_FIELD_ADDITIONAL, CONFIG_DB_IB_FIELD_TIME2, CONFIG_DB_IB_FIELD_ID, 
-			CONFIG_DB_IB_FIELD_TYPE, CONFIG_DB_IB_FIELD_DATA_TYPE,
+			CONFIG_DB_IB_FIELD_TYPE, CONFIG_DB_IB_FIELD_DATA_TYPE, CONFIG_DB_IB_FIELD_DATE,
 			
 			ORDERS,
 			ORDERS_CANCEL, ORDERS_PLACE, ORDERS_PLACE_MARKET, ORDERS_PLACE_STOP, ORDERS_PLACE_LIMIT, ORDERS_PLACE_STOP_LIMIT, ORDERS_UPDATE,
@@ -294,7 +313,7 @@ public abstract class types
 			SYNC_GET,
 			SYNC_GET_FUNDS, SYNC_GET_ORDER_ID, SYNC_GET_ORDERS, SYNC_GET_ERROR,
 			SYNC_OUT,
-			SYNC_OUT_INT, SYNC_OUT_DECIMAL, SYNC_OUT_INTS, SYNC_OUT_STRINGS, SYNC_OUT_ORDERS, SYNC_OUT_FUNDS, 
+			SYNC_OUT_INT, SYNC_OUT_ORDERS, SYNC_OUT_FUNDS, 
 			SYNC_ORDERS,
 			
 			ASYNC,
