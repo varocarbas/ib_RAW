@@ -88,7 +88,7 @@ public abstract class sync extends parent_static
 		return funds;
 	}
 	
-	public static HashMap<Integer, String> _get_orders() { return _get_orders(false); }
+	public static HashMap<Integer, String> get_orders() { return _get_orders(false); }
 	
 	@SuppressWarnings("unchecked")
 	public static HashMap<Integer, String> _get_orders(boolean lock_) 
