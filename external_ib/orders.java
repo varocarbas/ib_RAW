@@ -6,7 +6,7 @@ import accessory.arrays;
 import accessory.strings;
 import accessory_ib._alls;
 import ib.common;
-import ib.order;
+import ib._order;
 
 public abstract class orders 
 {
@@ -50,9 +50,9 @@ public abstract class orders
 
 	public static int get_max_length_side() { return EXEC_SIDE_BOUGHT.length(); }
 	
-	public static Order get_order_new(order order_, boolean is_main_) { return get_order(order_, is_main_, null, common.WRONG_PRICE, false); }
+	public static Order get_order_new(_order order_, boolean is_main_) { return get_order(order_, is_main_, null, common.WRONG_PRICE, false); }
 	
-	public static Order get_order_update(order order_, String update_type_, double update_val_, boolean is_main_) { return get_order(order_, is_main_, update_type_, update_val_, true); }
+	public static Order get_order_update(_order order_, String update_type_, double update_val_, boolean is_main_) { return get_order(order_, is_main_, update_type_, update_val_, true); }
 	
 	public static boolean exec_side_is_ok(String side_) { return arrays.value_exists(get_all_exec_sides(), side_); }
 
@@ -84,9 +84,9 @@ public abstract class orders
 	
 	private static String[] get_all_statuses() { return _alls.EXTERNAL_ORDERS_STATUSES; }
 	
-	private static Order get_order(order order_, boolean is_main_, String update_type_, double update_val_, boolean is_update_)
+	private static Order get_order(_order order_, boolean is_main_, String update_type_, double update_val_, boolean is_update_)
 	{
-		if (!order.is_ok(order_)) return null;
+		if (!_order.is_ok(order_)) return null;
 
 		String type = get_type(order_, is_main_, update_type_, is_update_);
 		if (!strings.is_ok(type)) return null;
@@ -94,7 +94,7 @@ public abstract class orders
 		boolean is_market = type.equals(TYPE_MARKET);
 		int id = order_.get_id(is_main_);
 		
-		String tif = order.get_tif();
+		String tif = _order.get_tif();
 		if (!strings.is_ok(tif)) return null;
 
 		double quantity = order_.get_quantity();
@@ -134,7 +134,7 @@ public abstract class orders
 		return output;
 	}
 	
-	private static String get_type(order order_, boolean is_main_, String update_type_, boolean is_update_) 
+	private static String get_type(_order order_, boolean is_main_, String update_type_, boolean is_update_) 
 	{ 
 		String type = null;
 		

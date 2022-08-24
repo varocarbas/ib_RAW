@@ -87,7 +87,7 @@ public class wrapper implements EWrapper
 	public void error(int id_, int code_, String message_) { common_wrapper.error(id_, code_, message_); }
 
 	@Override
-	public void orderStatus(int order_id_, String status_ib_, double filled_, double remaining_, double avg_fill_price_, int perm_id_, int parent_id_, double last_fill_price_, int client_id_, String why_held_, double mkt_cap_price_) { common_wrapper.order_status(order_id_, status_ib_); }
+	public void orderStatus(int order_id_, String status_ib_, double filled_, double remaining_, double avg_fill_price_, int perm_id_, int parent_id_, double last_fill_price_, int client_id_, String why_held_, double mkt_cap_price_) { common_wrapper.__order_status(order_id_, status_ib_); }
 
 	@Override
 	public void openOrderEnd() { common_wrapper.open_order_end(); }

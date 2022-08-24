@@ -179,7 +179,7 @@ abstract class remote_request extends parent_static
 			quantity = 1;
 		}
 		
-		order order = new order(type_place_, symbol_, quantity, stop_, start_, start2_);
+		_order order = new _order(type_place_, symbol_, quantity, stop_, start_, start2_);
 
 		int output = common.WRONG_REQUEST;
 		if (order.is_ok()) output = db_ib.remote.__request_start(order, perc_money, price, remote.is_quick());

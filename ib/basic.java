@@ -33,7 +33,7 @@ public abstract class basic extends parent_static
 	{
 		trades.synced_with_execs(trades_synced_with_execs_);
 		
-		start_internal(); 
+		__start_internal(); 
 		
 		db_ib.basic.__start();
 	}
@@ -93,13 +93,13 @@ public abstract class basic extends parent_static
 
 	public static String get_encrypted_file_path(String id_) { return credentials.get_path(get_encryption_id(id_), get_user(), true); }
 
-	public static double get_money() 
+	public static double __get_money() 
 	{
 		double money = db_ib.basic.get_money();
 		
 		if (money <= db_ib.basic.WRONG_MONEY2)
 		{
-			update_money();
+			__update_money();
 			
 			money = db_ib.basic.get_money();
 		}
@@ -109,7 +109,7 @@ public abstract class basic extends parent_static
 
 	public static double get_money_free() { return db_ib.basic.get_money_free(); }	
 
-	public static void update_money() { update_money(false); }
+	public static void __update_money() { __update_money(false); }
 
 	public static String get_currency() 
 	{
@@ -133,18 +133,18 @@ public abstract class basic extends parent_static
 		return account_ib;
 	} 
 		
-	private static void start_internal()
+	private static void __start_internal()
 	{
 		get_account_ib();
 		
 		get_currency();
 		
-		update_money(true);
+		__update_money(true);
 	}
 	
-	private static boolean update_money(boolean ini_too_)
+	private static boolean __update_money(boolean ini_too_)
 	{
-		HashMap<String, Double> ib = sync_basic.get_money();
+		HashMap<String, Double> ib = sync_basic._get_money(true);
 
 		if (ib == null || !ib.containsKey(MONEY) || !ib.containsKey(MONEY_FREE)) return false;
 		

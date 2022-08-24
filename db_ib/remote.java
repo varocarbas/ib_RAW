@@ -10,7 +10,7 @@ import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
 import accessory.types;
-import ib.order;
+import ib._order;
 
 public abstract class remote extends parent_static
 {
@@ -93,7 +93,7 @@ public abstract class remote extends parent_static
 
 	public static String get_symbol(int request_, boolean is_quick_) { return common.get_string(SOURCE, remote.get_field_col(SYMBOL, is_quick_), get_where_request(request_, is_quick_), is_quick_); }
 	
-	public static int __request_start(order order_, double perc_money_, double price_, boolean is_quick_)
+	public static int __request_start(_order order_, double perc_money_, double price_, boolean is_quick_)
 	{
 		__lock();
 
@@ -261,7 +261,7 @@ public abstract class remote extends parent_static
 
 	public static void update_status2_execute(int request_, boolean is_ok_) { update_status2(request_, get_status2_key_execute(is_ok_)); }
 
-	public static Object to_hashmap(order order_, boolean is_quick_)
+	public static Object to_hashmap(_order order_, boolean is_quick_)
 	{
 		Object vals = orders.to_hashmap(order_, true, false, is_quick_);
 		

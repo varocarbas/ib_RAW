@@ -162,20 +162,20 @@ public class tests extends parent_tests
 		Object target = true;
 		
 		HashMap<String, String> items = new HashMap<String, String>();
-		items.put(orders.PLACE_MARKET, "place_market");
-		items.put(orders.PLACE_STOP, "place_stop");
-		items.put(orders.PLACE_LIMIT, "place_limit");
-		items.put(orders.PLACE_STOP_LIMIT, "place_stop_limit");
+		items.put(orders.PLACE_MARKET, "__place_market");
+		items.put(orders.PLACE_STOP, "__place_stop");
+		items.put(orders.PLACE_LIMIT, "__place_limit");
+		items.put(orders.PLACE_STOP_LIMIT, "__place_stop_limit");
 
 		double stop_new = numbers.apply_perc(stop, -2, true);
 		double start_new = numbers.apply_perc(start, 3, true);
 		double start2_new = numbers.apply_perc(start2, 2, true);
 		
 		HashMap<String, String[]> items2 = new HashMap<String, String[]>();
-		items2.put(orders.PLACE_MARKET, new String[] { "update_stop", "update_stop_market" });
-		items2.put(orders.PLACE_STOP, new String[] { "update_start", "update_start_market" });
-		items2.put(orders.PLACE_LIMIT, new String[] { "update_start", "update_stop_market" });
-		items2.put(orders.PLACE_STOP_LIMIT, new String[] { "update_start", "update_start2" });
+		items2.put(orders.PLACE_MARKET, new String[] { "__update_stop", "__update_stop_market" });
+		items2.put(orders.PLACE_STOP, new String[] { "__update_start", "__update_start_market" });
+		items2.put(orders.PLACE_LIMIT, new String[] { "__update_start", "__update_stop_market" });
+		items2.put(orders.PLACE_STOP_LIMIT, new String[] { "__update_start", "__update_start2" });
 
 		for (Entry<String, String> item: items.entrySet())
 		{
@@ -187,12 +187,12 @@ public class tests extends parent_tests
 				
 			boolean is_ok = false;
 						
-			if (name.equals("place_stop_limit")) 
+			if (name.equals("__place_stop_limit")) 
 			{				
 				args.add(start2);	
 				params = new Class<?>[] { String.class, double.class, double.class, double.class, double.class };
 			}
-			else if (name.equals("place_market")) 
+			else if (name.equals("__place_market")) 
 			{
 				args.remove(3);
 				params = new Class<?>[] { String.class, double.class, double.class };
@@ -210,7 +210,7 @@ public class tests extends parent_tests
 			{
 				is_ok = false;
 				
-				if (name2.equals("update_start_market") || name2.equals("update_stop_market")) 
+				if (name2.equals("__update_start_market") || name2.equals("__update_stop_market")) 
 				{	
 					args = new ArrayList<Object>();
 					args.add(symbol);
@@ -220,8 +220,8 @@ public class tests extends parent_tests
 				else 
 				{	
 					double val = 0.0;
-					if (name2.equals("update_start2")) val = start2_new;
-					else val = (name2.equals("update_start") ? start_new : stop_new);
+					if (name2.equals("__update_start2")) val = start2_new;
+					else val = (name2.equals("__update_start") ? start_new : stop_new);
 					
 					args = new ArrayList<Object>();
 					args.add(symbol);
@@ -238,7 +238,7 @@ public class tests extends parent_tests
 				misc.pause_secs(pause);
 			}
 			
-			name = "cancel";
+			name = "__cancel";
 			String name2 = name + "_" + type;
 			
 			int id = orders.get_last_id_main();

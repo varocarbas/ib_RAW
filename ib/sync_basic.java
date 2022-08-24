@@ -15,5 +15,5 @@ abstract class sync_basic
 		sync.end_get();
 	}
 
-	static HashMap<String, Double> get_money() { return sync.get_funds(); }
+	static HashMap<String, Double> _get_money(boolean lock_) { return sync._get_funds(lock_); }
 }

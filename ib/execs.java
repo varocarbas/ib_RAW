@@ -103,7 +103,7 @@ public abstract class execs
 
 	public static double get_realised(int order_id_sec_) 
 	{
-		int order_id_main = order.get_id_main(order_id_sec_);
+		int order_id_main = _order.get_id_main(order_id_sec_);
 		
 		double start = get_investment(order_id_main, true);
 		double end = get_investment(order_id_sec_, false);

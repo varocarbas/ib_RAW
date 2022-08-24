@@ -8,7 +8,7 @@ import accessory.strings;
 import accessory_ib.config;
 import accessory_ib.types;
 
-public class order extends parent
+public class _order extends parent
 {
 	public static final String CONFIG_TIF = types.CONFIG_ORDERS_TIF;
 	public static final String CONFIG_QUANTITIES_INT = types.CONFIG_ORDERS_QUANTITIES_INT;
@@ -48,7 +48,7 @@ public class order extends parent
 	private String _temp_type = strings.DEFAULT;
 	private String _temp_symbol = strings.DEFAULT;
 		
-	public static boolean are_equal(order order1_, order order2_) { return are_equal_common(order1_, order2_); }
+	public static boolean are_equal(_order order1_, _order order2_) { return are_equal_common(order1_, order2_); }
 
 	public static int get_id_sec(int id_main_) { return (id_main_ + INC_ID_SEC ); }
 
@@ -105,18 +105,18 @@ public class order extends parent
 		String status = check_status(status_);
 		if (!strings.is_ok(status)) return false;
 		
-		return strings.are_equal(status, order.get_status(status_ib_, !status_is_generic(status)));
+		return strings.are_equal(status, _order.get_status(status_ib_, !status_is_generic(status)));
 	}
 	
 	public static String check_status(String type_) { return accessory.types.check_type(type_, STATUS); }
 	
-	public order(order input_) { instantiate(input_); }
+	public _order(_order input_) { instantiate(input_); }
 	
-	public order(String type_place_, String symbol_, double quantity_, double stop_, double start_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, common.WRONG_PRICE, get_new_order_id()); }
+	public _order(String type_place_, String symbol_, double quantity_, double stop_, double start_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, common.WRONG_PRICE, __get_new_order_id()); }
 	
-	public order(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, start2_, get_new_order_id()); }
+	public _order(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, start2_, __get_new_order_id()); }
 	
-	public order(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_, int id_main_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, start2_, id_main_); }
+	public _order(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_, int id_main_) { instantiate(type_place_, symbol_, quantity_, stop_, start_, start2_, id_main_); }
 
 	public String get_type_place() { return _type_place; }
 
@@ -205,7 +205,7 @@ public class order extends parent
 		return strings.to_string(vals);
 	}
 
-	public boolean equals(order order2_)
+	public boolean equals(_order order2_)
 	{
 		if (!is_ok(order2_)) return false;
 
@@ -217,9 +217,9 @@ public class order extends parent
 		);		
 	}
 
-	private static int get_new_order_id()
+	private static int __get_new_order_id()
 	{
-		int order_id = sync.get_order_id();
+		int order_id = sync._get_order_id(true);
 		
 		if (order_id <= common.WRONG_ORDER_ID) order_id = orders.get_highest_order_id() + 1;
 		
@@ -234,7 +234,7 @@ public class order extends parent
 		return (status.equals(STATUS_ACTIVE) || status.equals(STATUS_INACTIVE)); 
 	}
 	
-	private void instantiate(order input_)
+	private void instantiate(_order input_)
 	{
 		instantiate_common();
 		if (input_ == null || !input_.is_ok()) return;

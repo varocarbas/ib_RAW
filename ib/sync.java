@@ -45,7 +45,7 @@ public abstract class sync extends parent_static
 	public static final int WRONG_ORDER_ID = common.WRONG_ORDER_ID;
 	public static final double WRONG_MONEY = common.WRONG_MONEY;
 
-	public static final long DEFAULT_TIMEOUT = 10l;
+	public static final long DEFAULT_TIMEOUT = 5l;
 	
 	private static volatile boolean _getting = false;
 	private static volatile int _out_int = numbers.DEFAULT_INT;
@@ -57,30 +57,50 @@ public abstract class sync extends parent_static
 	private static int _req_id = WRONG_REQ_ID;
 	private static int _order_id = WRONG_ORDER_ID;
 	private static String _get = strings.DEFAULT;
-	
-	public static int get_order_id() 
+
+	public static int _get_order_id() { return _get_order_id(false); } 
+
+	public static int _get_order_id(boolean lock_) 
 	{ 
+		if (lock_) __lock();
+		
 		Object temp = get(GET_ORDER_ID);
 		
 		int output = (temp == null ? WRONG_ORDER_ID : (int)temp);
 		
+		if (lock_) __unlock();
+		
 		return output;
 	}
-	
+
+	public static HashMap<String, Double> get_funds(boolean lock_) { return _get_funds(false); }
+
 	@SuppressWarnings("unchecked")
-	public static HashMap<String, Double> get_funds() 
+	public static HashMap<String, Double> _get_funds(boolean lock_) 
 	{
+		if (lock_) __lock();
+		
 		HashMap<String, Double> funds = (HashMap<String, Double>)get(GET_FUNDS);
+		if (funds == null) funds = new HashMap<String, Double>();
 	
-		return (funds != null ? funds : new HashMap<String, Double>());
+		if (lock_) __unlock();
+		
+		return funds;
 	}
 	
+	public static HashMap<Integer, String> _get_orders() { return _get_orders(false); }
+	
 	@SuppressWarnings("unchecked")
-	public static HashMap<Integer, String> get_orders() 
-	{ 	
-		HashMap<Integer, String> orders = (HashMap<Integer, String>)get(GET_ORDERS); 
+	public static HashMap<Integer, String> _get_orders(boolean lock_) 
+	{
+		if (lock_) __lock();
 		
-		return (orders != null ? orders : new HashMap<Integer, String>()); 
+		HashMap<Integer, String> orders = (HashMap<Integer, String>)get(GET_ORDERS); 
+		if (orders == null) orders = new HashMap<Integer, String>();
+
+		if (lock_) __unlock();
+		
+		return orders;
 	}
 
 	public static int get_req_id() { return _req_id; }
@@ -189,33 +209,35 @@ public abstract class sync extends parent_static
 		end_get(); 
 	}
 
-	static boolean order_is_filled(int order_id_, HashMap<Integer, String> orders_, boolean get_orders_) { return order_is_common(order_id_, ORDER_STATUS_FILLED, orders_, get_orders_); }
+	static boolean _order_is_filled(int order_id_, HashMap<Integer, String> orders_, boolean get_orders_, boolean lock_) { return _order_is_common(order_id_, ORDER_STATUS_FILLED, orders_, get_orders_, lock_); }
 	
 	private static boolean is_ok_get_funds(int id_, String account_id_, String key_, String value_, String currency_) { return (is_ok(id_) && calls.get_all_keys_funds().containsKey(key_) && strings.is_number(value_) && ib.basic.account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
 
-	private static boolean order_is_submitted(int order_id_) { return order_is_common(order_id_, ORDER_STATUS_SUBMITTED, null, true); }
+	private static boolean order_is_submitted(int order_id_) { return _order_is_common(order_id_, ORDER_STATUS_SUBMITTED, null, true, false); }
 	
-	private static boolean order_is_inactive(int order_id_) { return order_is_common(order_id_, ORDER_STATUS_INACTIVE, null, true); }
+	private static boolean order_is_inactive(int order_id_) { return _order_is_common(order_id_, ORDER_STATUS_INACTIVE, null, true, false); }
 
-	private static boolean order_is_common(int order_id_, String target_, HashMap<Integer, String> orders_, boolean get_orders_)
+	private static boolean _order_is_common(int order_id_, String target_, HashMap<Integer, String> orders_, boolean get_orders_, boolean lock_)
 	{
-		HashMap<Integer, String> orders = arrays.get_new_hashmap_xy((get_orders_ ? get_orders() : orders_));
+		if (lock_) __lock();
+		
+		HashMap<Integer, String> orders = arrays.get_new_hashmap_xy((get_orders_ ? _get_orders(false) : orders_));
 
 		String status_ib = (String)arrays.get_value(orders, order_id_);
 
-		boolean output = order.is_status(status_ib, target_);
+		boolean output = _order.is_status(status_ib, target_);
 		boolean is_filled = (output && strings.are_equal(target_, ORDER_STATUS_FILLED));
 				
 		if (!output && strings.matches_any(target_, new String[] { ORDER_STATUS_INACTIVE, ORDER_STATUS_FILLED }, false))
 		{
-			is_filled = order.is_status(status_ib, ORDER_STATUS_FILLED);
+			is_filled = _order.is_status(status_ib, ORDER_STATUS_FILLED);
 			
 			if (!is_filled)
 			{
-				int order_id_sec = order.get_id_sec(order_id_);
+				int order_id_sec = _order.get_id_sec(order_id_);
 				String status_ib_sec = (String)arrays.get_value(orders, order_id_sec);
 				
-				is_filled = (strings.is_ok(status_ib_sec) && !order.is_status(status_ib_sec, ORDER_STATUS_FILLED));
+				is_filled = (strings.is_ok(status_ib_sec) && !_order.is_status(status_ib_sec, ORDER_STATUS_FILLED));
 			}
 			
 			output = is_filled;			
@@ -223,6 +245,8 @@ public abstract class sync extends parent_static
 		}
 
 		if (is_filled) ib.orders.update_status(order_id_, ORDER_STATUS_FILLED);
+		
+		if (lock_) __unlock();
 		
 		return output;
 	}
@@ -347,6 +371,8 @@ public abstract class sync extends parent_static
 
 		if (get_.equals(GET_FUNDS))
 		{	
+			cannot_fail = false;
+			
 			//Methods called in external_ib.wrapper: accountSummary, accountSummaryEnd.		
 			calls.reqAccountSummary(_req_id); 
 		}
@@ -409,11 +435,11 @@ public abstract class sync extends parent_static
 				break;
 			}
 			
-			if (is_place || is_cancel)
+			if (is_get && wait_exit_get(type_)) break;
+			else if (is_place || is_cancel)
 			{
 				if ((is_place && order_is_submitted(_order_id)) || (is_cancel && order_is_inactive(_order_id))) break;
 			}
-			else if (is_get && wait_exit_get(type_)) break;
 			
 			if (dates.get_elapsed(start) >= timeout_) 
 			{

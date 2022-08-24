@@ -49,9 +49,9 @@ abstract class async_execs extends parent_static
 		vals.put(QUANTITY, execution_.shares()); 
 		vals.put(SIDE, execution_.side()); 
 
-		update(execution_.execId(), vals);
-		
 		__unlock();
+		
+		__update(execution_.execId(), vals);		
 	}
 	
 	public static void __commission_report(CommissionReport report_)
@@ -68,13 +68,15 @@ abstract class async_execs extends parent_static
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		vals.put(FEES, db_ib.common.adapt_money(report_.commission()));
 		
-		update(report_.execId(), vals);
-		
 		__unlock();
+		
+		__update(report_.execId(), vals);
 	}	
 	
-	private static void update(String exec_id_, HashMap<String, Object> vals_)
+	private static void __update(String exec_id_, HashMap<String, Object> vals_)
 	{
+		__lock();
+		
 		HashMap<String, Object> vals = new HashMap<String, Object>(vals_);
 		vals.put(EXEC_ID, exec_id_);
 		
@@ -94,19 +96,23 @@ abstract class async_execs extends parent_static
 			db_ib.execs.update(exec_id_, vals, ib.execs.is_ok());
 		} 
 		else _all_vals.put(exec_id_, vals);
+
+		__unlock();
 		
-		update_others(vals);
+		__update_others(vals);
 		
 		if (delete)
 		{
+			__lock();
+			
 			if (_all_vals.containsKey(exec_id_)) _all_vals.remove(exec_id_);
+			
+			__unlock();
 		}
 	}
 	
-	private static void update_others(HashMap<String, Object> vals_)
-	{
-		basic.update_money();
-		
+	private static void __update_others(HashMap<String, Object> vals_)
+	{		
 		String symbol = (String)vals_.get(SYMBOL);	
 		int order_id = (int)vals_.get(ORDER_ID);
 		double price = (double)vals_.get(PRICE);
@@ -120,20 +126,22 @@ abstract class async_execs extends parent_static
 				double temp = execs.get_start_price(order_id);
 				if (common.price_is_ok(temp)) price = temp;
 				
-				async_trades.start(symbol, order_id, price);
+				async_trades.__start(symbol, order_id, price);
 			}
 		}
 		else 
 		{
-			ib.orders.deactivate(order.get_id_main(order_id));
+			ib.orders.deactivate(_order.get_id_main(order_id));
 			
 			if (trades.synced_with_execs()) 
 			{
 				double temp = execs.get_end_price(order_id);
 				if (common.price_is_ok(temp)) price = temp;
 				
-				async_trades.end(symbol, order_id, price);
+				async_trades.__end(symbol, order_id, price);
 			}
 		}
+		
+		basic.__update_money();
 	}
 }

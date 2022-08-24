@@ -78,7 +78,7 @@ public abstract class remote
 
 	public static boolean request_update(int request_, String type_update_, double val_, boolean wait_for_execution_) { return remote_request.update(request_, type_update_, val_, wait_for_execution_); }
 
-	public static void execute_all() { remote_execute.execute_all(); }
+	public static void __execute_all() { remote_execute.__execute_all(); }
 
 	public static void wait_for_execution(int request_, boolean is_cancel_) { remote_request.wait_for_execution(request_, is_cancel_); }
 
@@ -98,7 +98,7 @@ public abstract class remote
 
 	public static String get_status2_execute(boolean is_ok_) { return (is_ok_ ? remote.STATUS2_EXECUTED : remote.STATUS2_ERROR); }
 
-	public static HashMap<String, Object> get_quantity(String symbol_, double quantity_, double perc_money_, double price_)
+	public static HashMap<String, Object> __get_quantity(String symbol_, double quantity_, double perc_money_, double price_)
 	{
 		HashMap<String, Object> output = new HashMap<String, Object>();
 		
@@ -110,7 +110,7 @@ public abstract class remote
 			if (!common.price_is_ok(price)) price = common.get_price(symbol_);
 			if (!common.price_is_ok(price)) return null;
 			
-			double investment = get_investment(perc_money_);
+			double investment = __get_investment(perc_money_);
 			if (investment <= WRONG_MONEY2) return null;
 			
 			quantity = investment / price;
@@ -123,12 +123,12 @@ public abstract class remote
 		return output;
 	}
 
-	public static double get_investment(double perc_)
+	public static double __get_investment(double perc_)
 	{
 		double investment = WRONG_MONEY2;
 		if (!common.percent_is_ok(perc_, false)) return investment;
 		
-		double money = basic.get_money();			
+		double money = basic.__get_money();			
 		if (money <= WRONG_MONEY2) return investment;			
 		
 		investment = perc_ * money / 100.0;

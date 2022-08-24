@@ -6,7 +6,7 @@ import accessory.parent_ini_config;
 import external_ib.contracts;
 import ib.async_data;
 import ib.basic;
-import ib.order;
+import ib._order;
 
 public class _ini_config extends parent_ini_config 
 {
@@ -40,8 +40,8 @@ public class _ini_config extends parent_ini_config
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
-		vals.put(order.CONFIG_TIF, order.DEFAULT_TIF);
-		vals.put(order.CONFIG_QUANTITIES_INT, order.DEFAULT_QUANTITIES_INT);
+		vals.put(_order.CONFIG_TIF, _order.DEFAULT_TIF);
+		vals.put(_order.CONFIG_QUANTITIES_INT, _order.DEFAULT_QUANTITIES_INT);
 
 		return populate(type, null, vals);
 	}

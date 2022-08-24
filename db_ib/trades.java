@@ -6,7 +6,7 @@ import java.util.HashMap;
 import accessory.arrays;
 import accessory.dates;
 import accessory.db_where;
-import ib.order;
+import ib._order;
 
 public abstract class trades 
 {
@@ -59,7 +59,7 @@ public abstract class trades
 		{
 			vals.put(SYMBOL, symbol_);
 			vals.put(ORDER_ID_MAIN, order_id_main_);
-			vals.put(ORDER_ID_SEC, order.get_id_sec(order_id_main_));
+			vals.put(ORDER_ID_SEC, _order.get_id_sec(order_id_main_));
 			vals.put(ELAPSED_INI, dates.start_elapsed());
 			
 			vals = start_internal(symbol_, order_id_main_, start_, vals);
@@ -78,7 +78,7 @@ public abstract class trades
 		
 		if (end_ > ib.common.WRONG_PRICE) vals.put(END, db_ib.common.adapt_price(end_));
 		
-		int order_id_main = order.get_id_main(order_id_sec_);
+		int order_id_main = _order.get_id_main(order_id_sec_);
 
 		double realised = ib.execs.get_realised(order_id_sec_);
 		if (realised != ib.execs.WRONG_MONEY && realised != 0.0) vals.put(REALISED, db_ib.common.adapt_money(realised));

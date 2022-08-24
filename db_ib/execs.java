@@ -8,7 +8,7 @@ import accessory.arrays;
 import accessory.db;
 import accessory.db_where;
 import accessory.strings;
-import ib.order;
+import ib._order;
 
 public abstract class execs 
 {
@@ -186,7 +186,7 @@ public abstract class execs
 	{ 
 		if (check_exists_ && !order_id_exists(order_id_main_, true)) return false;
 		
-		boolean exists = order_id_exists(order.get_id_sec(order_id_main_), false);
+		boolean exists = order_id_exists(_order.get_id_sec(order_id_main_), false);
 		
 		return ((is_filled_ && !exists) || (!is_filled_ && exists));
 	}
@@ -200,7 +200,7 @@ public abstract class execs
 		
 		for (int id_main: all)
 		{
-			boolean sec_exists = order_id_exists(order.get_id_sec(id_main), false); 
+			boolean sec_exists = order_id_exists(_order.get_id_sec(id_main), false); 
 			if ((is_filled_ && !sec_exists) || (!is_filled_ && sec_exists)) output.add(id_main);
 		}
 		
