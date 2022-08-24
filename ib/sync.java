@@ -169,7 +169,7 @@ public abstract class sync extends parent_static
 	
 	static void update_funds(int id_, String account_id_, String key_, String value_, String currency_) 
 	{	
-		if (is_ok_get_funds(id_, account_id_, key_, value_, currency_)) return;
+		if (!is_ok_get_funds(id_, account_id_, key_, value_, currency_)) return;
 		
 		_out_strings.add(key_);
 		_out_decimals.add(Double.parseDouble(value_));
@@ -406,24 +406,7 @@ public abstract class sync extends parent_static
 			{
 				if ((is_place && order_is_submitted(_order_id)) || (is_cancel && order_is_inactive(_order_id))) break;
 			}
-			else if (is_get)
-			{
-				if (!_getting) 
-				{
-					boolean exit = true;
-					
-					if (type_.equals(GET_ORDERS))
-					{
-						if (_out_ints.size() != _out_strings.size()) exit = false;
-					}
-					else if (type_.equals(GET_FUNDS))
-					{
-						if (_out_strings.size() != _out_decimals.size()) exit = false;
-					}
-					
-					if (exit) break;
-				}
-			}
+			else if (is_get && wait_exit_get(type_)) break;
 			
 			if (dates.get_elapsed(start) >= timeout_) 
 			{
@@ -438,5 +421,23 @@ public abstract class sync extends parent_static
 		}
 		
 		return is_ok;
+	}
+	
+	private static boolean wait_exit_get(String type_)
+	{
+		if (_getting) return false;
+		
+		boolean exit = true;
+		
+		if (type_.equals(GET_ORDERS))
+		{
+			if (_out_ints.size() != _out_strings.size()) exit = false;
+		}
+		else if (type_.equals(GET_FUNDS))
+		{
+			if (_out_strings.size() != _out_decimals.size()) exit = false;
+		}
+		
+		return exit;
 	}
 }

@@ -288,7 +288,7 @@ public abstract class orders
 		return output;
 	}
 
-	public static ArrayList<HashMap<String, String>> get_all_active(String[] fields_) { return common.get_all_vals(SOURCE, fields_, get_where_active()); }
+	public static ArrayList<HashMap<String, String>> get_all_active(String[] fields_cols_, boolean is_quick_) { return common.get_all_vals(SOURCE, fields_cols_, get_where_active(), is_quick_); }
 
 	public static int get_highest_order_id(boolean is_quick_)
 	{
@@ -407,7 +407,7 @@ public abstract class orders
 		return output;
 	}
 
-	private static String get_field_col(String field_, boolean is_quick_) { return (is_quick_ ? get_col(field_) : field_); }
+	public static String get_field_col(String field_, boolean is_quick_) { return (is_quick_ ? get_col(field_) : field_); }
 	
 	private static void populate_cols()
 	{

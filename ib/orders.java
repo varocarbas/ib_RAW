@@ -1,5 +1,9 @@
 package ib;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import accessory.arrays;
 import accessory.strings;
 import accessory_ib.types;
 
@@ -118,6 +122,23 @@ public abstract class orders
 		return val; 
 	}
 
+	public static ArrayList<HashMap<String, String>> get_all_active(String[] fields_) 
+	{ 
+		String[] fields_cols = null;
+		
+		if (arrays.is_ok(fields_))
+		{
+			int tot = fields_.length;
+			fields_cols = new String[tot];
+			
+			for (int i = 0; i < tot; i++) fields_cols[i] = get_field_col(fields_[i]);
+		}
+		
+		return db_ib.orders.get_all_active(fields_cols, _is_quick); 
+	}
+
+	public static String get_field_col(String field_) { return db_ib.orders.get_field_col(field_, _is_quick); }
+	
 	public static boolean is_place(String type_) { return strings.is_ok(check_place(type_)); }
 
 	public static boolean is_update(String type_) { return strings.is_ok(check_update(type_)); }
