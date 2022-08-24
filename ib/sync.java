@@ -45,7 +45,7 @@ public abstract class sync extends parent_static
 	public static final int WRONG_ORDER_ID = common.WRONG_ORDER_ID;
 	public static final double WRONG_MONEY = common.WRONG_MONEY;
 
-	public static final long DEFAULT_TIMEOUT = 5l;
+	public static final long DEFAULT_TIMEOUT = 10l;
 	
 	private static volatile boolean _getting = false;
 	private static volatile int _out_int = numbers.DEFAULT_INT;
@@ -56,7 +56,8 @@ public abstract class sync extends parent_static
 	
 	private static int _req_id = WRONG_REQ_ID;
 	private static int _order_id = WRONG_ORDER_ID;
-
+	private static String _get = strings.DEFAULT;
+	
 	public static int get_order_id() 
 	{ 
 		Object temp = get(GET_ORDER_ID);
@@ -105,7 +106,11 @@ public abstract class sync extends parent_static
 		{
 			message = "";
 			
-			if (_getting) message = "get method";
+			if (_getting) 
+			{
+				message = "get method"; 
+				if (strings.is_ok(_get)) message += " (" + _get + ")";
+			}
 			else if (_order_id > WRONG_ORDER_ID) message = "order id (" + _order_id + ")";
 			else message = "request";
 			
@@ -335,6 +340,7 @@ public abstract class sync extends parent_static
 	private static boolean get_call(String get_)
 	{
 		_getting = true;
+		_get = get_;
 		
 		long timeout = DEFAULT_TIMEOUT;
 		boolean cannot_fail = true;
@@ -361,10 +367,11 @@ public abstract class sync extends parent_static
 
 		boolean is_ok = wait_get(timeout, cannot_fail, get_);
 
-		if (is_ok) get_after(get_);
+		get_after(get_);
 
 		_getting = false;
-	
+		_get = strings.DEFAULT;
+		
 		return is_ok;
 	}
 
