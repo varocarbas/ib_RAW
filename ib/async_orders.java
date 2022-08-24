@@ -30,11 +30,17 @@ abstract class async_orders
 			int order_id = Integer.parseInt(item.get(ib.orders.get_field_col(db_ib.orders.ORDER_ID_MAIN)));
 			String status = db_ib.orders.get_status_from_key(item.get(ib.orders.get_field_col(db_ib.orders.STATUS)));
 			
+			boolean is_filled = (sync.order_is_filled(order_id, orders, false) || execs.is_filled(order_id));
+			
 			if (strings.are_equal(status, ib.orders.STATUS_FILLED))
 			{
-				if (!sync.order_is_filled(order_id, orders, false) && !execs.is_filled(order_id)) ib.orders.deactivate(order_id);
+				if (!is_filled) ib.orders.deactivate(order_id);
 			}
-			else if (orders.containsKey(order_id))
+			else if (is_filled) ib.orders.update_status(order_id, ib.orders.STATUS_FILLED);
+			
+			if (is_filled) continue;
+			
+			if (orders.containsKey(order_id))
 			{
 				String status_ib = orders.get(order_id);
 				
