@@ -112,7 +112,7 @@ public class tests extends parent_tests
 		Class<?> class0 = sync.class;
 		String name0 = class0.getName();
 
-		String[] methods = new String[] { "get_order_id", "get_orders", "__get_funds" };
+		String[] methods = new String[] { "__get_order_id", "__get_orders", "__get_funds" };
 		
 		outputs.put(name0, _instance.run_methods(class0, methods));
 		
