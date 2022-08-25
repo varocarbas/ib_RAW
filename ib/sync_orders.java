@@ -64,7 +64,7 @@ abstract class sync_orders extends parent_static
 		if (!strings.is_ok(status)) return ids;
 
 		HashMap<Integer, String> orders = arrays.get_new_hashmap_xy(orders_);
-		if (!arrays.is_ok(orders) && retrieve_) orders = sync._get_orders(true);
+		if (!arrays.is_ok(orders) && retrieve_) orders = sync.__get_orders();
 		if (!arrays.is_ok(orders)) return ids;
 
 		for (Entry<Integer, String> order: orders.entrySet())

@@ -142,6 +142,6 @@ abstract class async_execs extends parent_static
 			}
 		}
 		
-		basic.__update_money();
+		basic.update_money();
 	}
 }

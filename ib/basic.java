@@ -9,6 +9,7 @@ import accessory.parent_static;
 import accessory.strings;
 import accessory_ib._defaults;
 import accessory_ib.types;
+import external_ib.calls;
 import external_ib.contracts;
 
 public abstract class basic extends parent_static 
@@ -109,6 +110,8 @@ public abstract class basic extends parent_static
 
 	public static double get_money_free() { return db_ib.basic.get_money_free(); }	
 
+	public static void update_money() { async_basic.get_funds(); }
+	
 	public static void __update_money() { __update_money(false); }
 
 	public static String get_currency() 
@@ -118,7 +121,9 @@ public abstract class basic extends parent_static
 		db_ib.basic.update_currency(currency); 
 		
 		return currency;
-	} 
+	}
+	
+	static boolean update_funds_is_ok(String account_id_, String key_, String value_, String currency_) { return (calls.get_all_keys_funds().containsKey(key_) && strings.is_number(value_) && ib.basic.account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
 
 	static String get_account_ib_last(String account_ib_, boolean decrypt_) 
 	{
@@ -144,7 +149,7 @@ public abstract class basic extends parent_static
 	
 	private static boolean __update_money(boolean ini_too_)
 	{
-		HashMap<String, Double> ib = sync_basic._get_money(true);
+		HashMap<String, Double> ib = sync_basic.__get_money();
 
 		if (ib == null || !ib.containsKey(MONEY) || !ib.containsKey(MONEY_FREE)) return false;
 		

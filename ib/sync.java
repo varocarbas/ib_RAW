@@ -16,7 +16,6 @@ import accessory_ib._alls;
 import accessory_ib.errors;
 import accessory_ib.types;
 import external_ib.calls;
-import external_ib.contracts;
 
 public abstract class sync extends parent_static 
 {
@@ -58,50 +57,33 @@ public abstract class sync extends parent_static
 	private static int _order_id = WRONG_ORDER_ID;
 	private static String _get = strings.DEFAULT;
 
-	public static int _get_order_id() { return _get_order_id(false); } 
-
-	public static int _get_order_id(boolean lock_) 
+	public static int __get_order_id() 
 	{ 
-		if (lock_) __lock();
+		__lock();
 		
 		Object temp = get(GET_ORDER_ID);
 		
 		int output = (temp == null ? WRONG_ORDER_ID : (int)temp);
 		
-		if (lock_) __unlock();
+		__unlock();
 		
 		return output;
 	}
 
-	public static HashMap<String, Double> get_funds(boolean lock_) { return _get_funds(false); }
-
 	@SuppressWarnings("unchecked")
-	public static HashMap<String, Double> _get_funds(boolean lock_) 
+	public static HashMap<String, Double> __get_funds() 
 	{
-		if (lock_) __lock();
-		
+		__lock();
+
 		HashMap<String, Double> funds = (HashMap<String, Double>)get(GET_FUNDS);
 		if (funds == null) funds = new HashMap<String, Double>();
-	
-		if (lock_) __unlock();
+
+		__unlock();
 		
 		return funds;
 	}
 	
-	public static HashMap<Integer, String> get_orders() { return _get_orders(false); }
-	
-	@SuppressWarnings("unchecked")
-	public static HashMap<Integer, String> _get_orders(boolean lock_) 
-	{
-		if (lock_) __lock();
-		
-		HashMap<Integer, String> orders = (HashMap<Integer, String>)get(GET_ORDERS); 
-		if (orders == null) orders = new HashMap<Integer, String>();
-
-		if (lock_) __unlock();
-		
-		return orders;
-	}
+	public static HashMap<Integer, String> __get_orders() { return _get_orders(true); } 
 
 	public static int get_req_id() { return _req_id; }
 
@@ -192,10 +174,8 @@ public abstract class sync extends parent_static
 		_out_strings.add(status_ib_);
 	}
 	
-	static void update_funds(int id_, String account_id_, String key_, String value_, String currency_) 
-	{	
-		if (!is_ok_get_funds(id_, account_id_, key_, value_, currency_)) return;
-		
+	static void update_funds(String key_, String value_) 
+	{			
 		_out_strings.add(key_);
 		_out_decimals.add(Double.parseDouble(value_));
 	}
@@ -209,9 +189,20 @@ public abstract class sync extends parent_static
 		end_get(); 
 	}
 
-	static boolean _order_is_filled(int order_id_, HashMap<Integer, String> orders_, boolean get_orders_, boolean lock_) { return _order_is_common(order_id_, ORDER_STATUS_FILLED, orders_, get_orders_, lock_); }
+	static boolean order_is_filled(int order_id_, HashMap<Integer, String> orders_) { return _order_is_common(order_id_, ORDER_STATUS_FILLED, orders_, false, false); }	
 	
-	private static boolean is_ok_get_funds(int id_, String account_id_, String key_, String value_, String currency_) { return (is_ok(id_) && calls.get_all_keys_funds().containsKey(key_) && strings.is_number(value_) && ib.basic.account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
+	@SuppressWarnings("unchecked")
+	private static HashMap<Integer, String> _get_orders(boolean lock_) 
+	{
+		if (lock_) __lock();
+		
+		HashMap<Integer, String> orders = (HashMap<Integer, String>)get(GET_ORDERS); 
+		if (orders == null) orders = new HashMap<Integer, String>();
+		
+		if (lock_) __unlock();
+		
+		return orders;
+	}
 
 	private static boolean order_is_submitted(int order_id_) { return _order_is_common(order_id_, ORDER_STATUS_SUBMITTED, null, true, false); }
 	
@@ -219,9 +210,7 @@ public abstract class sync extends parent_static
 
 	private static boolean _order_is_common(int order_id_, String target_, HashMap<Integer, String> orders_, boolean get_orders_, boolean lock_)
 	{
-		if (lock_) __lock();
-		
-		HashMap<Integer, String> orders = arrays.get_new_hashmap_xy((get_orders_ ? _get_orders(false) : orders_));
+		HashMap<Integer, String> orders = arrays.get_new_hashmap_xy((get_orders_ ? _get_orders(lock_) : orders_));
 
 		String status_ib = (String)arrays.get_value(orders, order_id_);
 
@@ -232,7 +221,7 @@ public abstract class sync extends parent_static
 		{
 			is_filled = _order.is_status(status_ib, ORDER_STATUS_FILLED);
 			
-			if (!is_filled)
+			if (!is_filled && !strings.is_ok(status_ib))
 			{
 				int order_id_sec = _order.get_id_sec(order_id_);
 				String status_ib_sec = (String)arrays.get_value(orders, order_id_sec);
@@ -245,8 +234,6 @@ public abstract class sync extends parent_static
 		}
 
 		if (is_filled) ib.orders.update_status(order_id_, ORDER_STATUS_FILLED);
-		
-		if (lock_) __unlock();
 		
 		return output;
 	}

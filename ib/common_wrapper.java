@@ -8,11 +8,19 @@ import accessory_ib.errors;
 
 public abstract class common_wrapper
 {
-	public static final String KEY_FUNDS = "AvailableFunds";
-	
-	public static void account_summary(int id_, String account_, String tag_, String value_, String currency_) { sync_basic.account_summary(id_, account_, tag_, value_, currency_); }
-	
-	public static void account_summary_end(int id_) { sync_basic.account_summary_end(id_); }
+	public static void account_summary(int id_, String account_, String tag_, String value_, String currency_) 
+	{ 
+		if (!basic.update_funds_is_ok(account_, tag_, value_, currency_)) return;
+		
+		if (sync_basic.is_ok(id_)) sync_basic.update_funds(tag_, value_); 
+		else if (async_basic.is_ok(id_)) async_basic.update_funds(tag_, value_);
+	}
+
+	public static void account_summary_end(int id_) 
+	{
+		if (sync_basic.is_ok(id_)) sync_basic.account_summary_end(); 
+		else if (async_basic.is_ok(id_)) async_basic.account_summary_end();
+	}
 	
 	public static void next_valid_id(int id_) 
 	{

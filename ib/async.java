@@ -13,4 +13,6 @@ abstract class async extends parent_static
 	public static void update_last_id(int id_) { _last_id = id_; }
 
 	public static int get_req_id() { return common_xsync.get_req_id(false); }
+	
+	public static boolean req_id_is_ok(int id_) { return common_xsync.req_id_is_ok_async(id_); }
 }

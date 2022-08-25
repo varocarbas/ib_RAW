@@ -219,7 +219,7 @@ public class _order extends parent
 
 	private static int __get_new_order_id()
 	{
-		int order_id = sync._get_order_id(true);
+		int order_id = sync.__get_order_id();
 		
 		if (order_id <= common.WRONG_ORDER_ID) order_id = orders.get_highest_order_id() + 1;
 		
