@@ -28,16 +28,16 @@ public abstract class trades extends parent_static
 	
 	public static void update_logs_to_screen(boolean logs_to_screen_) { async_data_trades.logs_to_screen(logs_to_screen_); }
 	
-	public static void __order_status(int order_id_, String status_ib_) 
+	public static void order_status(int order_id_, String status_ib_) 
 	{ 
 		if (!synced_with_execs()) return;
 		
-		async_trades.__start(order_id_, status_ib_);
+		async_trades.start(order_id_, status_ib_);
 	}
 	
-	public static void __start(String symbol_, int order_id_, double start_) { async_trades.__start(symbol_, order_id_, start_); }
+	public static void start(String symbol_, int order_id_, double start_) { async_trades.start(symbol_, order_id_, start_); }
 	
-	public static void __end(String symbol_, int order_id_, double end_) { async_trades.__end(symbol_, order_id_, end_); }
+	public static void end(String symbol_, int order_id_, double end_) { async_trades.end(symbol_, order_id_, end_); }
 
 	public static double get_price(String symbol_) 
 	{ 

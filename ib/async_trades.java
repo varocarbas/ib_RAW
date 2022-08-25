@@ -5,44 +5,44 @@ import accessory.strings;
 
 abstract class async_trades extends parent_static
 {		
-	public static void __start(int order_id_, String status_ib_) 
+	public static void start(int order_id_, String status_ib_) 
 	{
 		if (!start_is_ok(order_id_, status_ib_)) return;
 		
-		__start_internal(db_ib.trades.get_symbol(order_id_, true), order_id_, common.WRONG_PRICE);
+		start_internal(db_ib.trades.get_symbol(order_id_, true), order_id_, common.WRONG_PRICE);
 	}
 	
-	public static void __start(String symbol_, int order_id_, double start_) 
+	public static void start(String symbol_, int order_id_, double start_) 
 	{
 		if (!start_is_ok(order_id_, true)) return;
 
-		__start_internal(symbol_, order_id_, start_);
+		start_internal(symbol_, order_id_, start_);
 	}
 
-	public static void __end(int order_id_, String status_ib_) 
+	public static void end(int order_id_, String status_ib_) 
 	{
 		if (!end_is_ok(order_id_, status_ib_)) return;
 		
-		__end_internal(db_ib.trades.get_symbol(order_id_, false), order_id_, common.WRONG_PRICE);
+		end_internal(db_ib.trades.get_symbol(order_id_, false), order_id_, common.WRONG_PRICE);
 	}
 
-	public static void __end(String symbol_, int order_id_, double end_) 
+	public static void end(String symbol_, int order_id_, double end_) 
 	{
 		if (!end_is_ok(order_id_)) return;
 
-		__end_internal(symbol_, order_id_, end_);
+		end_internal(symbol_, order_id_, end_);
 	}
 	
-	private static void __start_internal(String symbol_, int order_id_main_, double start_) 
+	private static void start_internal(String symbol_, int order_id_main_, double start_) 
 	{			
 		if (!trades.synced_with_execs()) basic.update_money();
 
-		trades.__start(symbol_, order_id_main_, start_);
+		db_ib.trades.start(symbol_, order_id_main_, start_);
 
 		async_data_trades.start(symbol_);
 	}
 	
-	private static void __end_internal(String symbol_, int order_id_sec_, double end_) 
+	private static void end_internal(String symbol_, int order_id_sec_, double end_) 
 	{
 		if (!trades.synced_with_execs()) basic.update_money();
 
