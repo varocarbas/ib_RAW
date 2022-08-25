@@ -18,8 +18,8 @@ public abstract class common_wrapper
 
 	public static void account_summary_end(int id_) 
 	{
-		if (sync_basic.is_ok(id_)) sync_basic.account_summary_end(); 
-		else if (async_basic.is_ok(id_)) async_basic.account_summary_end();
+		if (sync_basic.is_ok(id_)) sync_basic.account_summary_end(id_); 
+		else if (async_basic.is_ok(id_)) async_basic.account_summary_end(id_);
 	}
 	
 	public static void next_valid_id(int id_) 

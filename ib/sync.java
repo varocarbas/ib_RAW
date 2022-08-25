@@ -380,17 +380,10 @@ public abstract class sync extends parent_static
 
 		boolean is_ok = wait_get(timeout, cannot_fail, get_);
 
-		get_after(get_);
-
 		_getting = false;
 		_get = strings.DEFAULT;
 		
 		return is_ok;
-	}
-
-	private static void get_after(String get_)
-	{
-		if (get_.equals(GET_FUNDS)) calls.cancelAccountSummary(_req_id);
 	}
 
 	private static boolean wait_get(long timeout_, boolean cannot_fail_, String get_) { return wait(timeout_, cannot_fail_, get_); }	
