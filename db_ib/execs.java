@@ -97,13 +97,40 @@ public abstract class execs
 		return common.insert_update(SOURCE, vals, get_where(exec_id_, is_quick_), is_quick_); 
 	}
 	
-	public static double get_fees(int order_id_) { return common.get_decimal(SOURCE, FEES, get_where_order_id_any(order_id_)); }
-
-	public static double get_quantity(int order_id_) { return common.get_decimal(SOURCE, QUANTITY, get_where_order_id_any(order_id_)); }
-
-	public static double get_start_price(int order_id_buy_) { return common.get_decimal(SOURCE, PRICE, db_where.join(get_where_order_id_any(order_id_buy_), get_where_side(true), db_where.LINK_AND)); }
+	public static double get_fees(int order_id_) 
+	{ 
+		double output = common.get_decimal(SOURCE, FEES, get_where_order_id_any(order_id_)); 
 	
-	public static double get_end_price(int order_id_sell_) { return common.get_decimal(SOURCE, PRICE, db_where.join(get_where_order_id_any(order_id_sell_), get_where_side(false), db_where.LINK_AND)); }
+		return (output == db.WRONG_DECIMAL ? 0.0 : output);
+	}
+
+	public static double get_quantity(int order_id_) 
+	{ 
+		double output = common.get_decimal(SOURCE, QUANTITY, get_where_order_id_any(order_id_)); 
+	
+		return (output == db.WRONG_DECIMAL ? 0.0 : output);
+	}
+
+	public static double get_start_price(int order_id_buy_) 
+	{ 
+		double output = common.get_decimal(SOURCE, PRICE, db_where.join(get_where_order_id_any(order_id_buy_), get_where_side(true), db_where.LINK_AND)); 
+	
+		return (output == db.WRONG_DECIMAL ? ib.common.WRONG_PRICE : output);
+	}
+	
+	public static double get_end_price(int order_id_sell_) 
+	{ 
+		double output = common.get_decimal(SOURCE, PRICE, db_where.join(get_where_order_id_any(order_id_sell_), get_where_side(false), db_where.LINK_AND)); 
+	
+		return (output == db.WRONG_DECIMAL ? ib.common.WRONG_PRICE : output);
+	}
+	
+	public static String get_symbol(int order_id_) 
+	{ 
+		String output = common.get_string(SOURCE, SYMBOL, get_where_order_id_any(order_id_)); 
+	
+		return (strings.are_equal(output, db.WRONG_STRING) ? strings.DEFAULT : output);
+	}
 	
 	public static ArrayList<HashMap<String, String>> get_basic_info(int order_id_) { return common.get_all_vals(SOURCE, get_fields_basic_info(), get_where_order_id_any(order_id_)); }
 
@@ -209,7 +236,7 @@ public abstract class execs
 
 	private static String get_where(String exec_id_) { return get_where(exec_id_, false); }
 
-	private static String get_where(String exec_id_, boolean is_quick_) { return common.get_where(SOURCE, EXEC_ID, exec_id_, is_quick_); }
+	private static String get_where(String exec_id_, boolean is_quick_) { return common.get_where(SOURCE, EXEC_ID, exec_id_); }
 
 	private static String get_where_order_id(int order_id_, boolean is_main_) { return get_where_order_id(order_id_, is_main_, false); }
 
@@ -217,15 +244,15 @@ public abstract class execs
 	
 	private static String get_where_order_id_any(int order_id_) { return get_where_order_id_any(order_id_, false); }
 	
-	private static String get_where_order_id_any(int order_id_, boolean is_quick_) { return common.get_where(SOURCE, ORDER_ID, Integer.toString(order_id_), is_quick_); }
+	private static String get_where_order_id_any(int order_id_, boolean is_quick_) { return common.get_where(SOURCE, ORDER_ID, Integer.toString(order_id_)); }
 	
 	private static String get_where_side(boolean is_main_) { return get_where_side(is_main_, false); }
 	
 	private static String get_where_side(boolean is_main_, boolean is_quick_) { return get_where_side(ib.execs.get_side(is_main_), is_quick_); }
 	
-	private static String get_where_side(String side_, boolean is_quick_) { return common.get_where(SOURCE, SIDE, side_, is_quick_); }
+	private static String get_where_side(String side_, boolean is_quick_) { return common.get_where(SOURCE, SIDE, side_); }
 
 	private static String get_where_symbol(String symbol_) { return get_where_symbol(symbol_, false); }
 
-	private static String get_where_symbol(String symbol_, boolean is_quick_) { return common.get_where_symbol(SOURCE, symbol_, is_quick_); }
+	private static String get_where_symbol(String symbol_, boolean is_quick_) { return common.get_where_symbol(SOURCE, symbol_); }
 }

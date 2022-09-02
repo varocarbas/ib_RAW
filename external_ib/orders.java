@@ -64,6 +64,23 @@ public abstract class orders
 
 	public static boolean status_is_ok(String status_) { return arrays.value_exists(get_all_statuses(), status_); }
 	
+	public static boolean status_in_progress(String status_) { return (strings.is_ok(status_) && (status_.equals(STATUS_IB_PENDING_SUBMIT) || status_.equals(STATUS_IB_PENDING_CANCEL) || status_.equals(STATUS_IB_API_CANCELLED))); }
+
+	public static String get_type(String type_place_)
+	{
+		String output = strings.DEFAULT;
+		
+		String type_place = ib.orders.check_place(type_place_);
+		if (!strings.is_ok(type_place)) return output;
+		
+		if (type_place.equals(ib.orders.PLACE_MARKET)) output = TYPE_MARKET;
+		else if (type_place.equals(ib.orders.PLACE_STOP)) output = TYPE_STOP;
+		else if (type_place.equals(ib.orders.PLACE_LIMIT)) output = TYPE_LIMIT;
+		else if (type_place.equals(ib.orders.PLACE_STOP_LIMIT)) output = TYPE_STOP_LIMIT;
+		
+		return output;
+	}
+		
 	public static String[] populate_all_exec_sides() { return new String[] { EXEC_SIDE_BOUGHT, EXEC_SIDE_SOLD }; }
 	
 	public static String[] populate_all_actions() { return new String[] { ACTION_BUY, ACTION_SELL }; }

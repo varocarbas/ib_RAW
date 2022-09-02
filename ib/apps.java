@@ -1,5 +1,6 @@
 package ib;
 
+import accessory.logs;
 import accessory.strings;
 import accessory_ib._defaults;
 import accessory_ib.types;
@@ -12,31 +13,43 @@ public abstract class apps
 	public static final String STATUS_ERROR = types.APPS_STATUS_ERROR;
 
 	public static final String DEFAULT_APP_NAME = _defaults.APP_NAME;
-	public static final String DEFAULT_STATUS = STATUS_RUNNING;
+	public static final String DEFAULT_STATUS = STATUS_STOPPED;
 	
 	public static boolean start()
 	{
-		if (!can_start()) return false;
+		String app = get_app_name(true);
+				
+		get_conn_type();
+
+		get_conn_id();
+
+		boolean is_running = is_running();
 		
-		start_internal();
+		if (is_running) logs.update_screen(app + " already running");
+		else 
+		{
+			db_ib.apps.update_status(ib.apps.STATUS_RUNNING);
+			
+			logs.update_screen(app + " started");
+		}
 		
-		db_ib.apps.update_status(STATUS_RUNNING);
-		
-		return true;
+		return !is_running;
 	}
 
-	public static void end() { db_ib.apps.update_status(STATUS_STOPPED); }
+	public static void stop() 
+	{ 
+		if (db_ib.apps.exists()) db_ib.apps.update_status(STATUS_STOPPED); 
+		
+		logs.update_screen(ini_apps.get_app_name() + " stopped");
+	}
 	
-	public static boolean can_start() { return !strings.are_equal(db_ib.apps.get_status(), STATUS_RUNNING); }
+	public static boolean is_running() { return db_ib.apps.is_running(null); }
+	
+	public static boolean is_stopped() { return !is_running(); }
 	
 	public static void update_time() { db_ib.apps.update_time(); }
 
-	public static String get_app_name() 
-	{
-		db_ib.apps.update_app_name(); 
-		
-		return ini_apps.get_app_name();
-	} 
+	public static String get_app_name() { return get_app_name(false); }
 	
 	public static String get_conn_type() 
 	{ 
@@ -68,12 +81,10 @@ public abstract class apps
 
 	public static String check_status(String status_) { return accessory.types.check_type(status_, STATUS); }
 
-	private static void start_internal()
+	private static String get_app_name(boolean is_ini_) 
 	{
-		get_app_name();
+		if (is_ini_) db_ib.apps.update_app_name(); 
 		
-		get_conn_type();
-
-		get_conn_id();
-	}
+		return ini_apps.get_app_name();
+	} 
 }

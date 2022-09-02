@@ -92,23 +92,29 @@ abstract class remote_request extends parent_static
 		return request;
 	}
 	
-	public static boolean cancel(int request_, boolean wait_for_execution_) 
-	{ 
-		boolean output = false;
+	public static boolean __cancel(int request_, boolean wait_for_execution_) 
+	{ 	
+		if (!__can_cancel(request_)) return true;
 		
-		if (!is_ok(request_))
+		if (!__is_ok(request_, true))
 		{
 			remote.update_error(request_, ERROR_REQUEST, remote.CANCEL, remote.CANCEL);
+			
+			return false;
+		}
+		
+		boolean output = db_ib.remote.request_update_type_order(request_, remote.CANCEL, remote.is_quick()); 
+		
+		if (!output)
+		{
+			remote.update_error(request_, ERROR_CANCEL, null, remote.CANCEL);
 			
 			return output;
 		}
 		
-		output = db_ib.remote.request_update_type_order(request_, remote.CANCEL, remote.is_quick()); 
-
-		if (output) remote.log(Integer.toString(request_) + " (cancel) requested successfully");
+		remote.log(Integer.toString(request_) + " (cancel) requested successfully"); 
 		
-		if (!output) remote.update_error(request_, ERROR_CANCEL, null, remote.CANCEL);
-		else if (wait_for_execution_) 
+		if (wait_for_execution_) 
 		{
 			output = wait_for_execution(request_, true);
 			
@@ -118,11 +124,11 @@ abstract class remote_request extends parent_static
 		return output;
 	}
 
-	public static boolean update(int request_, String type_update_, double val_, boolean wait_for_execution_)
+	public static boolean __update(int request_, String type_update_, double val_, boolean wait_for_execution_)
 	{
 		boolean output = false;
 
-		if (!is_ok(request_))
+		if (!__is_ok(request_, false))
 		{
 			remote.update_error(request_, ERROR_REQUEST, type_update_, type_update_);
 			
@@ -188,8 +194,12 @@ abstract class remote_request extends parent_static
 	
 		return output;
 	}
+
+	private static boolean __can_cancel(int request_) { return (!strings.are_equal(db_ib.remote.get_type_order(request_, remote.is_quick()), remote.CANCEL) && __is_ok_not_cancel(request_, true)); }
 	
-	private static boolean is_ok(int request_) { return (db_ib.remote.is_active(request_) && remote.order_id_is_ok(remote.get_order_id_main(request_)) && is_executed(request_, true, false)); }
+	private static boolean __is_ok(int request_, boolean is_cancel_) { return ((is_cancel_ || __is_ok_not_cancel(request_, is_cancel_)) && is_executed(request_, true, false)); }
+
+	private static boolean __is_ok_not_cancel(int request_, boolean is_cancel_) { return (db_ib.remote.is_active(request_) && remote.__order_id_is_ok(remote.get_order_id_main(request_), is_cancel_)); }		
 	
 	private static boolean is_executed(int request_, boolean ignore_error_, boolean inactive_ok_)
 	{

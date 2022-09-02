@@ -117,5 +117,5 @@ public abstract class basic
 	
 	private static String get_where_user() { return get_where_user(ini_basic.get_user()); }
 
-	private static String get_where_user(String val_) { return common.get_where(SOURCE, USER, val_, false); }
+	private static String get_where_user(String val_) { return common.get_where(SOURCE, USER, val_); }
 }

@@ -50,7 +50,7 @@ public abstract class watchlist
 
 	public static ArrayList<HashMap<String, String>> get_all_vals(boolean is_quick_) { return (is_quick_ ? common.get_all_vals_quick(SOURCE, get_cols(), accessory.db.DEFAULT_WHERE) : common.get_all_vals(SOURCE, get_fields(), accessory.db.DEFAULT_WHERE)); }
 	
-	public static HashMap<String, String> get_vals(String symbol_, boolean is_quick_) { return (is_quick_ ? common.get_vals_quick(SOURCE, get_cols(), common.get_where_symbol_quick(SOURCE, symbol_)) : common.get_vals(SOURCE, get_fields(), common.get_where_symbol(SOURCE, symbol_))); }
+	public static HashMap<String, String> get_vals(String symbol_, boolean is_quick_) { return (is_quick_ ? common.get_vals_quick(SOURCE, get_cols(), common.get_where_symbol(SOURCE, symbol_)) : common.get_vals(SOURCE, get_fields(), common.get_where_symbol(SOURCE, symbol_))); }
 	
 	public static boolean delete(String symbol_) { return common.delete(SOURCE, common.get_where_symbol(SOURCE, symbol_)); }
 

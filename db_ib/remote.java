@@ -62,26 +62,45 @@ public abstract class remote extends parent_static
 	public static HashMap<String, String> get_vals(int request_, boolean is_quick_) 
 	{ 
 		String source = SOURCE;
-		String where = get_where_request(request_, is_quick_);
+		String where = get_where_request(request_);
 		
 		return (is_quick_ ? common.get_vals_quick(source, get_cols(), where) : common.get_vals(SOURCE, get_fields(), where)); 
 	}
 
-	public static String get_status(int request_, boolean is_quick_) { return get_status_from_key(common.get_string(SOURCE, get_field_col(STATUS, is_quick_), get_where_request(request_, is_quick_), is_quick_)); }
+	public static HashMap<String, String> get_vals_order_id(int order_id_main_, boolean is_quick_) 
+	{ 
+		String source = SOURCE;
+		String where = get_where_order_id(order_id_main_);
+		
+		return (is_quick_ ? common.get_vals_quick(source, get_cols(), where) : common.get_vals(SOURCE, get_fields(), where)); 
+	}
 
-	public static String get_status2(int request_, boolean is_quick_) { return get_status_from_key(common.get_string(SOURCE, get_field_col(STATUS2, is_quick_), get_where_request(request_, is_quick_), is_quick_)); }
+	public static String get_status(int request_, boolean is_quick_) { return get_status_from_key(common.get_string(SOURCE, get_field_col(STATUS, is_quick_), get_where_request(request_), is_quick_)); }
 
-	public static String get_type_order(int request_, boolean is_quick_) { return remote.get_type_order_from_key(common.get_string(SOURCE, get_field_col(TYPE_ORDER, is_quick_), get_where_request(request_, is_quick_), is_quick_)); }
+	public static String get_status2(int request_, boolean is_quick_) { return get_status_from_key(common.get_string(SOURCE, get_field_col(STATUS2, is_quick_), get_where_request(request_), is_quick_)); }
 
-	public static String get_error(int request_, boolean is_quick_) { return common.get_string(SOURCE, get_field_col(ERROR, is_quick_), get_where_request(request_, is_quick_)); }
+	public static String get_type_order(int request_, boolean is_quick_) { return get_type_order_from_key(common.get_string(SOURCE, get_field_col(TYPE_ORDER, is_quick_), get_where_request(request_), is_quick_)); }
+
+	public static String get_error(int request_, boolean is_quick_) { return common.get_string(SOURCE, get_field_col(ERROR, is_quick_), get_where_request(request_)); }
 
 	public static int get_order_id(int request_, boolean is_quick_) { return get_order_id(request_, true, is_quick_); }
 
 	public static int get_order_id(int request_, boolean is_main_, boolean is_quick_) 
 	{ 
-		int output = common.get_int(SOURCE, get_field_col((is_main_ ? ORDER_ID_MAIN : ORDER_ID_SEC), is_quick_), get_where_request(request_, is_quick_), is_quick_); 
+		int output = common.get_int(SOURCE, get_field_col((is_main_ ? ORDER_ID_MAIN : ORDER_ID_SEC), is_quick_), get_where_request(request_), is_quick_); 
 	
 		return (output == db.WRONG_INT ? ib.common.WRONG_ORDER_ID : output);
+	}
+
+	public static int get_request(String symbol_, boolean is_quick_) 
+	{
+		String where = common.join_wheres(get_where_symbol(symbol_), get_where_active());
+
+		if (common.get_count(SOURCE, where) != 1) return ib.common.WRONG_REQUEST;
+		
+		int output = common.get_int(SOURCE, get_field_col(REQUEST, is_quick_), where, is_quick_);
+	
+		return (output == db.WRONG_INT ? ib.common.WRONG_REQUEST : output);
 	}
 
 	public static int get_request(int order_id_main_, boolean is_quick_) 
@@ -91,7 +110,19 @@ public abstract class remote extends parent_static
 		return (output == db.WRONG_INT ? ib.common.WRONG_REQUEST : output);
 	}
 
-	public static String get_symbol(int request_, boolean is_quick_) { return common.get_string(SOURCE, remote.get_field_col(SYMBOL, is_quick_), get_where_request(request_, is_quick_), is_quick_); }
+	public static String get_symbol(int request_, boolean is_quick_) 
+	{ 
+		String output = common.get_string(SOURCE, get_field_col(SYMBOL, is_quick_), get_where_request(request_), is_quick_); 
+	
+		return (strings.are_equal(output, db.WRONG_STRING) ? strings.DEFAULT : output);
+	}
+
+	public static String get_symbol_order_id(int order_id_main_, boolean is_quick_) 
+	{ 
+		String output = common.get_string(SOURCE, get_field_col(SYMBOL, is_quick_), get_where_order_id(order_id_main_), is_quick_); 
+		
+		return (strings.are_equal(output, db.WRONG_STRING) ? strings.DEFAULT : output);		
+	}
 	
 	public static int __request_start(_order order_, double perc_money_, double price_, boolean is_quick_)
 	{
@@ -153,7 +184,7 @@ public abstract class remote extends parent_static
 		return update(request_, vals, is_quick_);	
 	}
 	
-	public static boolean update(int request_, Object vals_, boolean is_quick_) { return common.update_where(SOURCE, vals_, get_where_request(request_, is_quick_), is_quick_); }
+	public static boolean update(int request_, Object vals_, boolean is_quick_) { return common.update_where(SOURCE, vals_, get_where_request(request_), is_quick_); }
 	
 	public static boolean update_status(int request_, String status_key_) { return update(request_, STATUS, status_key_); }
 
@@ -176,7 +207,7 @@ public abstract class remote extends parent_static
 		return update(request_, vals, is_quick_);
 	}
 
-	public static boolean update_order_id(int order_id_main_, HashMap<String, Object> vals_) { return common.update(SOURCE, vals_, get_where_order_id(order_id_main_)); }
+	public static boolean update_order_id(int order_id_main_, Object vals_, boolean is_quick_) { return common.update_where(SOURCE, vals_, get_where_order_id(order_id_main_), is_quick_); }
 	
 	public static boolean deactivate_order_id(int order_id_main_) { return common.update(SOURCE, STATUS, get_key_from_status(ib.remote.STATUS_INACTIVE), get_where_order_id(order_id_main_)); }
 	
@@ -263,7 +294,7 @@ public abstract class remote extends parent_static
 
 	public static Object to_hashmap(_order order_, boolean is_quick_)
 	{
-		Object vals = orders.to_hashmap(order_, true, false, is_quick_);
+		Object vals = orders.to_hashmap(order_, true, is_quick_);
 		
 		String field_col = (is_quick_ ? common.get_col(orders.SOURCE, orders.TYPE_PLACE) : orders.TYPE_PLACE);
 		
@@ -343,7 +374,7 @@ public abstract class remote extends parent_static
 	{
 		_type_orders = new HashMap<String, String>();
 		
-		String[] types = new String[] { ib.orders.PLACE_LIMIT, ib.orders.PLACE_MARKET, ib.orders.PLACE_STOP, ib.orders.PLACE_STOP_LIMIT, ib.orders.CANCEL, ib.orders.UPDATE_START_MARKET, ib.orders.UPDATE_START_VALUE, ib.orders.UPDATE_START2_VALUE, ib.orders.UPDATE_STOP_MARKET, ib.orders.UPDATE_STOP_VALUE };
+		String[] types = new String[] { ib.remote.PLACE_LIMIT, ib.remote.PLACE_MARKET, ib.remote.PLACE_STOP, ib.remote.PLACE_STOP_LIMIT, ib.remote.CANCEL, ib.remote.UPDATE_START_MARKET, ib.remote.UPDATE_START_VALUE, ib.remote.UPDATE_START2_VALUE, ib.remote.UPDATE_STOP_MARKET, ib.remote.UPDATE_STOP_VALUE };
 
 		for (String type: types) { _type_orders.put(type, get_key_from_type_order_internal(type)); }
 	}
@@ -352,7 +383,7 @@ public abstract class remote extends parent_static
 
 	private static String get_key_from_status2_internal(String status2_) { return common.get_key_from_type(status2_, ib.remote.STATUS2); }
 
-	private static String get_key_from_type_order_internal(String type_) { return orders.get_key_from_type_order(type_); }
+	private static String get_key_from_type_order_internal(String type_) { return common.get_key_from_type(type_, ib.remote.ORDERS); }
 	
 	private static boolean field_is_boolean(String field_) { return field_.equals(IS_MARKET); }
 	
@@ -374,9 +405,7 @@ public abstract class remote extends parent_static
 
 	private static boolean update(int request_, String field_, Object val_) { return common.update(SOURCE, field_, val_, get_where_request(request_)); }
 
-	private static String get_where_request(int request_) { return get_where_request(request_, false); }
-
-	private static String get_where_request(int request_, boolean is_quick_) { return common.get_where(SOURCE, REQUEST, Integer.toString(request_), is_quick_); }
+	private static String get_where_request(int request_) { return common.get_where(SOURCE, REQUEST, Integer.toString(request_)); }
 
 	private static String get_where_order_id(int order_id_main_) { return common.get_where_order_id(SOURCE, order_id_main_); }
 
@@ -384,9 +413,9 @@ public abstract class remote extends parent_static
 
 	private static String get_where_pending() { return common.join_wheres(get_where_status2(get_key_from_status2(ib.remote.STATUS2_PENDING)), get_where_status(get_key_from_status(ib.remote.STATUS_ACTIVE))); }
 
-	private static String get_where_status(String status_key_) { return common.get_where(SOURCE, STATUS, status_key_, false); }
+	private static String get_where_status(String status_key_) { return common.get_where(SOURCE, STATUS, status_key_); }
 
-	private static String get_where_status2(String status2_key_) { return common.get_where(SOURCE, STATUS2, status2_key_, false); }
+	private static String get_where_status2(String status2_key_) { return common.get_where(SOURCE, STATUS2, status2_key_); }
 
 	private static String get_where_symbol(String symbol_) { return common.get_where_symbol(SOURCE, symbol_); }
 }

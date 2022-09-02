@@ -52,5 +52,5 @@ public abstract class market
 	
 	public static String[] get_fields() { return new String[] { SYMBOL, PRICE, SIZE, TIME, OPEN, CLOSE, LOW, HIGH, VOLUME, ASK, ASK_SIZE, BID, BID_SIZE, HALTED, HALTED_TOT, ENABLED }; }
 
-	public static String get_where_enabled() { return common.get_where(SOURCE, ENABLED, "1", false); }
+	public static String get_where_enabled() { return common.get_where(SOURCE, ENABLED, "1"); }
 }

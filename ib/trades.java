@@ -28,17 +28,44 @@ public abstract class trades extends parent_static
 	
 	public static void update_logs_to_screen(boolean logs_to_screen_) { async_data_trades.logs_to_screen(logs_to_screen_); }
 	
-	public static void order_status(int order_id_, String status_ib_) 
+	public static boolean start(String symbol_, int order_id_, double start_) 
 	{ 
-		if (!synced_with_execs()) return;
+		String symbol = common.normalise_symbol(symbol_);
+		if (!strings.is_ok(symbol)) return false;
+
+		async_trades.start(symbol, order_id_, start_); 
 		
-		async_trades.start(order_id_, status_ib_);
+		return true;
 	}
 	
-	public static void start(String symbol_, int order_id_, double start_) { async_trades.start(symbol_, order_id_, start_); }
-	
-	public static void end(String symbol_, int order_id_, double end_) { async_trades.end(symbol_, order_id_, end_); }
+	public static boolean end(String symbol_, int order_id_, double end_) 
+	{
+		String symbol = common.normalise_symbol(symbol_);
+		if (!strings.is_ok(symbol)) return false;
 
+		async_trades.end(symbol, order_id_, end_);
+		
+		return true;
+	}
+
+	public static boolean start_data(String symbol_)
+	{
+		String symbol = common.normalise_symbol(symbol_);
+		if (!strings.is_ok(symbol)) return false;
+
+		return async_data_trades.start(symbol);
+	}
+
+	public static boolean stop_data(String symbol_)
+	{
+		String symbol = common.normalise_symbol(symbol_);
+		if (!strings.is_ok(symbol)) return false;
+
+		async_data_trades.stop(symbol);
+	
+		return true;
+	}
+	
 	public static double get_price(String symbol_) 
 	{ 
 		String symbol = ib.common.normalise_symbol(symbol_);

@@ -106,25 +106,19 @@ abstract class async_execs extends parent_static
 		{
 			ib.orders.update_status(order_id, ib.orders.STATUS_FILLED);
 
-			if (trades.synced_with_execs()) 
-			{
-				double temp = execs.get_start_price(order_id);
-				if (common.price_is_ok(temp)) price = temp;
-				
-				async_trades.start(symbol, order_id, price);
-			}
+			double temp = execs.get_start_price(order_id);
+			if (common.price_is_ok(temp)) price = temp;
+			
+			async_trades.start(symbol, order_id, price);		
 		}
 		else 
 		{
 			ib.orders.deactivate(_order.get_id_main(order_id));
 			
-			if (trades.synced_with_execs()) 
-			{
-				double temp = execs.get_end_price(order_id);
-				if (common.price_is_ok(temp)) price = temp;
-				
-				async_trades.end(symbol, order_id, price);
-			}
+			double temp = execs.get_end_price(order_id);
+			if (common.price_is_ok(temp)) price = temp;
+			
+			async_trades.end(symbol, order_id, price);
 		}
 		
 		basic.update_money();

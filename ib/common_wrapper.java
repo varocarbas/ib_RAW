@@ -5,6 +5,7 @@ import com.ib.client.Contract;
 import com.ib.client.Execution;
 
 import accessory_ib.errors;
+import external_ib.calls;
 
 public abstract class common_wrapper
 {
@@ -20,6 +21,8 @@ public abstract class common_wrapper
 	{
 		if (sync_basic.is_ok(id_)) sync_basic.account_summary_end(id_); 
 		else if (async_basic.is_ok(id_)) async_basic.account_summary_end(id_);
+		
+		calls.cancelAccountSummary(id_);
 	}
 	
 	public static void next_valid_id(int id_) 
@@ -74,12 +77,7 @@ public abstract class common_wrapper
 		errors.wrapper_error(id_, code_, message_); 
 	}
 	
-	public static void order_status(int order_id_, String status_ib_) 
-	{ 
-		orders.order_status(order_id_, status_ib_); 
-		
-		trades.order_status(order_id_, status_ib_);
-	}
+	public static void order_status(int order_id_, String status_ib_) { orders.order_status(order_id_, status_ib_); }
 
 	public static void open_order_end() { sync_orders.open_order_end(); }
 	

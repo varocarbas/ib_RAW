@@ -76,14 +76,14 @@ public abstract class async_data
 
 	public static boolean is_halted(String source_, String symbol_, boolean is_quick_)
 	{
-		int temp = common.get_int(source_, (is_quick_ ? get_col(HALTED) : HALTED), common.get_where_symbol(source_, symbol_, is_quick_), is_quick_);
+		int temp = common.get_int(source_, (is_quick_ ? get_col(HALTED) : HALTED), common.get_where_symbol(source_, symbol_), is_quick_);
 	
 		return data.is_halted(temp);
 	}
 	
-	public static int get_halted_tot(String source_, String symbol_, boolean is_quick_) { return common.get_int(source_, (is_quick_ ? get_col(HALTED_TOT) : HALTED_TOT), common.get_where_symbol(source_, symbol_, is_quick_), is_quick_); }
+	public static int get_halted_tot(String source_, String symbol_, boolean is_quick_) { return common.get_int(source_, (is_quick_ ? get_col(HALTED_TOT) : HALTED_TOT), common.get_where_symbol(source_, symbol_), is_quick_); }
 	
-	public static long get_elapsed_ini(String source_, String symbol_, boolean is_quick_) { return common.get_long(source_, (is_quick_ ? get_col(ELAPSED_INI) : ELAPSED_INI), common.get_where_symbol(source_, symbol_, is_quick_), is_quick_); }
+	public static long get_elapsed_ini(String source_, String symbol_, boolean is_quick_) { return common.get_long(source_, (is_quick_ ? get_col(ELAPSED_INI) : ELAPSED_INI), common.get_where_symbol(source_, symbol_), is_quick_); }
 
 	public static boolean update(String source_, Object vals_, String symbol_, boolean is_quick_) { return common.update(source_, vals_, symbol_, is_quick_); }
 
@@ -122,9 +122,9 @@ public abstract class async_data
 		return update_quick(source_, symbol_, vals); 
 	}
 	
-	public static boolean update_quick(String source_, String symbol_, HashMap<String, String> vals_) { return common.update_quick(source_, vals_, common.get_where_symbol_quick(source_, symbol_)); }
+	public static boolean update_quick(String source_, String symbol_, HashMap<String, String> vals_) { return common.update_quick(source_, vals_, common.get_where_symbol(source_, symbol_)); }
 
-	public static boolean update_timestamp(String source_, String symbol_, boolean is_quick_) { return common.update(source_, (is_quick_ ? common.get_col(source_, accessory.db.FIELD_TIMESTAMP) : accessory.db.FIELD_TIMESTAMP), dates.get_now_string(dates.FORMAT_TIMESTAMP), common.get_where_symbol(source_, symbol_, is_quick_), is_quick_); }
+	public static boolean update_timestamp(String source_, String symbol_, boolean is_quick_) { return common.update(source_, (is_quick_ ? common.get_col(source_, accessory.db.FIELD_TIMESTAMP) : accessory.db.FIELD_TIMESTAMP), dates.get_now_string(dates.FORMAT_TIMESTAMP), common.get_where_symbol(source_, symbol_), is_quick_); }
 	
 	public static boolean insert(String source_, String symbol_) { return common.insert(source_, get_default_vals(source_, symbol_)); }
 

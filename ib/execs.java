@@ -79,6 +79,8 @@ public abstract class execs
 
 	public static double get_quantity(int order_id_, boolean is_main_) { return (db_ib.execs.order_id_exists(order_id_, is_main_) ? get_quantity(order_id_) : 0); }
 
+	public static String get_symbol(int order_id_) { return db_ib.execs.get_symbol(order_id_); }
+	
 	public static double get_unrealised(int order_id_main_) 
 	{	
 		double output = WRONG_MONEY;

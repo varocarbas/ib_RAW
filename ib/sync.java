@@ -6,7 +6,6 @@ import java.util.HashMap;
 import com.ib.client.Contract;
 import com.ib.client.Order;
 
-import accessory.arrays;
 import accessory.misc;
 import accessory.numbers;
 import accessory.parent_static;
@@ -23,14 +22,15 @@ public abstract class sync extends parent_static
 	public static final String GET_ORDERS = types.SYNC_GET_ORDERS;
 	public static final String GET_FUNDS = types.SYNC_GET_FUNDS;
 	
-	public static final String ORDER_PLACE = sync_orders.PLACE;
-	public static final String ORDER_UPDATE = sync_orders.UPDATE;
-	public static final String ORDER_CANCEL = sync_orders.CANCEL;
+	public static final String ORDER_PLACE = orders.PLACE;
+	public static final String ORDER_UPDATE = orders.UPDATE;
+	public static final String ORDER_CANCEL = orders.CANCEL;
 
 	public static final String ORDER_STATUS_SUBMITTED = orders.STATUS_SUBMITTED;
 	public static final String ORDER_STATUS_FILLED = orders.STATUS_FILLED;
 	public static final String ORDER_STATUS_INACTIVE = orders.STATUS_INACTIVE;
-	
+	public static final String ORDER_STATUS_IN_PROGRESS = orders.STATUS_IN_PROGRESS;
+
 	public static final String OUT_INT = types.SYNC_OUT_INT;
 	public static final String OUT_ORDERS = types.SYNC_OUT_ORDERS;
 	public static final String OUT_FUNDS = types.SYNC_OUT_FUNDS;
@@ -188,8 +188,6 @@ public abstract class sync extends parent_static
 			
 		end_get(); 
 	}
-
-	static boolean order_is_filled(int order_id_, HashMap<Integer, String> orders_) { return _order_is_common(order_id_, ORDER_STATUS_FILLED, orders_, false, false); }	
 	
 	@SuppressWarnings("unchecked")
 	private static HashMap<Integer, String> _get_orders(boolean lock_) 
@@ -204,39 +202,9 @@ public abstract class sync extends parent_static
 		return orders;
 	}
 
-	private static boolean order_is_submitted(int order_id_) { return _order_is_common(order_id_, ORDER_STATUS_SUBMITTED, null, true, false); }
+	private static boolean order_is_submitted(int order_id_) { return sync_orders.is_submitted(order_id_, _get_orders(false)); }
 	
-	private static boolean order_is_inactive(int order_id_) { return _order_is_common(order_id_, ORDER_STATUS_INACTIVE, null, true, false); }
-
-	private static boolean _order_is_common(int order_id_, String target_, HashMap<Integer, String> orders_, boolean get_orders_, boolean lock_)
-	{
-		HashMap<Integer, String> orders = arrays.get_new_hashmap_xy((get_orders_ ? _get_orders(lock_) : orders_));
-
-		String status_ib = (String)arrays.get_value(orders, order_id_);
-
-		boolean output = _order.is_status(status_ib, target_);
-		boolean is_filled = (output && strings.are_equal(target_, ORDER_STATUS_FILLED));
-				
-		if (!output && strings.matches_any(target_, new String[] { ORDER_STATUS_INACTIVE, ORDER_STATUS_FILLED }, false))
-		{
-			is_filled = _order.is_status(status_ib, ORDER_STATUS_FILLED);
-			
-			if (!is_filled && !strings.is_ok(status_ib))
-			{
-				int order_id_sec = _order.get_id_sec(order_id_);
-				String status_ib_sec = (String)arrays.get_value(orders, order_id_sec);
-				
-				is_filled = (strings.is_ok(status_ib_sec) && !_order.is_status(status_ib_sec, ORDER_STATUS_FILLED));
-			}
-			
-			output = is_filled;			
-			if (strings.are_equal(target_, ORDER_STATUS_INACTIVE)) output = !output;
-		}
-
-		if (is_filled) ib.orders.update_status(order_id_, ORDER_STATUS_FILLED);
-		
-		return output;
-	}
+	private static boolean order_is_inactive(int order_id_) { return sync_orders.is_inactive(order_id_, _get_orders(false)); }
 	
 	private static HashMap<String, String> get_all_get_outs() { return _alls.SYNC_GET_OUTS; }
 	

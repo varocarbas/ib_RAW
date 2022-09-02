@@ -238,7 +238,7 @@ public abstract class common
 		return accessory.db.is_ok(source_);
 	}
 	
-	public static boolean update(String source_, Object vals_, String symbol_, boolean is_quick_) { return update_where(source_, vals_, get_where_symbol(source_, symbol_, is_quick_), is_quick_); }
+	public static boolean update(String source_, Object vals_, String symbol_, boolean is_quick_) { return update_where(source_, vals_, get_where_symbol(source_, symbol_), is_quick_); }
 
 	@SuppressWarnings("unchecked")
 	public static boolean update_where(String source_, Object vals_, String where_, boolean is_quick_) { return (is_quick_ ? update_quick(source_, (HashMap<String, String>)vals_, where_) : update(source_, (HashMap<String, Object>)vals_, where_)); }
@@ -305,8 +305,8 @@ public abstract class common
 		
 		Object vals = (is_quick_ ? get_insert_vals_quick(source_, (HashMap<String, String>)vals_) : get_insert_vals(source_, (HashMap<String, Object>)vals_));
 
-		if (is_quick_) accessory.db.insert_update_quick(source_, (HashMap<String, String>)vals, where_);
-		else accessory.db.insert_update(source_, (HashMap<String, Object>)vals, where_);
+		if (is_quick_) accessory.db.insert_update_id_quick(source_, (HashMap<String, String>)vals, where_);
+		else accessory.db.insert_update_id(source_, (HashMap<String, Object>)vals, where_);
 		
 		return accessory.db.is_ok(source_);
 	}
@@ -320,10 +320,17 @@ public abstract class common
 			String source = item.getKey();
 			String source_old = item.getValue();
 			
-			boolean temp = update_old_quick(source, source_old);
-			if (!temp) is_ok = false;
+			String message = db.get_table(source_old);
 			
-			generic.to_screen(db.get_table(source_old) + " updated (" + (temp ? "ok" : "error") + ")");
+			if (!exists(source_old, get_where(source_old, FIELD_DATE, dates.get_now_string(ib.common.FORMAT_DATE))))
+			{
+				boolean temp = update_old_quick(source, source_old);
+				if (!temp) is_ok = false;		
+				
+				message += " updated (" + (temp ? "ok" : "error") + ")";
+			}
+			
+			generic.to_screen(message);
 		}
 	
 		return is_ok;
@@ -346,21 +353,17 @@ public abstract class common
 
 	public static String join_wheres(String where1_, String where2_, String link_) { return db_where.join(where1_, where2_, link_); }
 	
-	public static String get_where_user(String source_) { return get_where(source_, FIELD_USER, ib.basic.get_user(), false); }
+	public static String get_where_user(String source_) { return get_where(source_, FIELD_USER, ib.basic.get_user()); }
 
-	public static String get_where_symbol(String source_, String symbol_, boolean quick_) { return (quick_ ? get_where_symbol_quick(source_, symbol_) : get_where_symbol(source_, symbol_)); }
-
-	public static String get_where_symbol(String source_, String symbol_) { return get_where(source_, FIELD_SYMBOL, symbol_, false); }
-
-	public static String get_where_symbol_quick(String source_, String symbol_) { return get_where(source_, FIELD_SYMBOL, symbol_, true); }
+	public static String get_where_symbol(String source_, String symbol_) { return get_where(source_, FIELD_SYMBOL, symbol_); }
 	
-	public static String get_where(String source_, String field_, String val_, boolean is_quick_) { return get_where(source_, field_, val_, is_quick_, true); }
+	public static String get_where(String source_, String field_, String val_) { return get_where(source_, field_, val_, true); }
 
-	public static String get_where(String source_, String field_, String val_, boolean is_quick_, boolean add_user_) { return get_where_internal(source_, field_, val_, is_quick_, add_user_); }
+	public static String get_where(String source_, String field_, String val_, boolean add_user_) { return get_where_internal(source_, field_, val_, add_user_); }
 
 	public static String get_where_order_id(String source_, int order_id_main_) { return get_where_order_id(source_, order_id_main_, true); }
 	
-	public static String get_where_order_id(String source_, int order_id_, boolean is_main_) { return get_where(source_, (is_main_ ? FIELD_ORDER_ID_MAIN : FIELD_ORDER_ID_SEC), Integer.toString(order_id_), false); }
+	public static String get_where_order_id(String source_, int order_id_, boolean is_main_) { return get_where(source_, (is_main_ ? FIELD_ORDER_ID_MAIN : FIELD_ORDER_ID_SEC), Integer.toString(order_id_)); }
 
 	public static String get_where_order_id(String source_, Integer[] ids_, boolean equal_) 
 	{ 
@@ -473,7 +476,11 @@ public abstract class common
 	public static String get_type_from_key(String key_, String root_) { return ((strings.is_ok(key_) && strings.is_ok(root_)) ? (root_ + SEPARATOR + key_) : strings.DEFAULT); }
 
 	public static String get_key_from_type(String type_, String root_) { return get_key(type_, root_); }
-	
+
+	public static String get_type_from_key(String key_, HashMap<String, String> array_) { return ((strings.is_ok(key_) && array_.containsValue(key_)) ? (String)arrays.get_key(array_, key_) : strings.DEFAULT); }
+
+	public static String get_key_from_type(String type_, HashMap<String, String> array_) { return ((strings.is_ok(type_) && array_.containsKey(type_)) ? array_.get(type_) : strings.DEFAULT); }
+
 	public static String get_key(String type_, String root_) { return accessory._keys.get_key(type_, root_); }
 	
 	public static HashMap<String, String> populate_cols(String source_, String[] fields_)
@@ -533,9 +540,9 @@ public abstract class common
 
 	public static long get_timestamp_elapsed_hours(String source_, String where_) { return get_timestamp_elapsed(source_, where_, dates.UNIT_HOURS); }
 
-	public static String get_where_user(String source_, String where_, boolean is_quick_) 
+	public static String get_where_user(String source_, String where_) 
 	{
-		String output = get_where_internal(source_, FIELD_USER, ib.basic.get_user(), is_quick_, false);
+		String output = get_where_internal(source_, FIELD_USER, ib.basic.get_user(), false);
 		
 		if (strings.is_ok(where_)) output = join_wheres(output, where_);
 		
@@ -634,14 +641,11 @@ public abstract class common
 
 	private static String[] get_all_sources_enabled() { return _alls.DB_SOURCES_ENABLED; }
 	
-	private static String get_where_internal(String source_, String field_, String val_, boolean is_quick_, boolean add_user_) 
+	private static String get_where_internal(String source_, String field_, String val_, boolean add_user_) 
 	{
-		String where = null;
+		String where = accessory.db.get_variable(get_col(source_, field_)) + "=" + accessory.db.get_value(val_);
 		
-		if (is_quick_) where = accessory.db.get_variable(get_col(source_, field_)) + "=" + accessory.db.get_value(val_);
-		else where = (new db_where(source_, field_, val_)).toString();
-		
-		if (!strings.are_equal(field_, FIELD_USER) && add_user_ && source_includes_user(source_)) where = get_where_user(source_, where, is_quick_);
+		if (!strings.are_equal(field_, FIELD_USER) && add_user_ && source_includes_user(source_)) where = get_where_user(source_, where);
 	
 		return where;		
 	}

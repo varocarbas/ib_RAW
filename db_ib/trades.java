@@ -40,11 +40,9 @@ public abstract class trades
 
 	public static boolean started(int order_id_main_) { return common.exists(SOURCE, get_where_started(order_id_main_)); }
 
-	public static boolean order_id_is_ok(int order_id_main_) { return orders.is_active(order_id_main_, true); }
-
 	public static boolean order_id_exists(int order_id_, boolean is_start_) { return common.exists(SOURCE, get_where_order_id(order_id_, is_start_)); }
 	
-	public static String get_symbol(int order_id_, boolean is_start_) { return (is_start_ ? ib.orders.get_symbol(order_id_) : get_string(SYMBOL, order_id_, false)); }
+	public static String get_symbol(int order_id_, boolean is_start_) { return (is_start_ ? ib.common.get_symbol(order_id_) : get_string(SYMBOL, order_id_, false)); }
 	
 	public static double get_price(int order_id_main_) { return get_price(order_id_main_, true); }
 	
@@ -183,7 +181,7 @@ public abstract class trades
 
 	private static boolean update(String field_, Object val_, int order_id_, boolean is_main_) { return common.update(SOURCE, field_, val_, get_where_order_id(order_id_, is_main_)); }
 
-	private static String get_where_is_active() { return common.get_where(SOURCE, IS_ACTIVE, accessory.db.adapt_input(true), false); }
+	private static String get_where_is_active() { return common.get_where(SOURCE, IS_ACTIVE, accessory.db.adapt_input(true)); }
 	
 	private static String get_where_order_id(int order_id_main_) { return common.get_where_order_id(SOURCE, order_id_main_); }
 	

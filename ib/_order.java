@@ -12,12 +12,6 @@ public class _order extends parent
 {
 	public static final String CONFIG_TIF = types.CONFIG_ORDERS_TIF;
 	public static final String CONFIG_QUANTITIES_INT = types.CONFIG_ORDERS_QUANTITIES_INT;
-
-	public static final String STATUS = types.ORDERS_STATUS;
-	public static final String STATUS_SUBMITTED = types.ORDERS_STATUS_SUBMITTED;
-	public static final String STATUS_FILLED = types.ORDERS_STATUS_FILLED;
-	public static final String STATUS_ACTIVE = types.ORDERS_STATUS_ACTIVE;
-	public static final String STATUS_INACTIVE = types.ORDERS_STATUS_INACTIVE;
 	
 	public static final String TYPE_MARKET = external_ib.orders.TYPE_MARKET;
 	public static final String TYPE_STOP = external_ib.orders.TYPE_STOP;
@@ -32,7 +26,6 @@ public class _order extends parent
 	
 	public static final String DEFAULT_TIF = external_ib.orders.TIF_GTC; 
 	public static final boolean DEFAULT_QUANTITIES_INT = true;
-	public static final String DEFAULT_STATUS = STATUS_ACTIVE;
 	
 	private int _id_main = common.WRONG_ORDER_ID;
 	private int _id_sec = common.WRONG_ORDER_ID;	
@@ -63,52 +56,13 @@ public class _order extends parent
 
 	public static boolean quantities_int() { return config.get_order_boolean(CONFIG_QUANTITIES_INT); }
 
-	public static String check_type_place(String type_) { return ib.orders.check_place(type_); }
-
 	public static String check_symbol(String symbol_) { return common.check_symbol(symbol_); }
 	
 	public static boolean type_is_ok(String type_) { return external_ib.orders.type_is_ok(type_); }
 	
 	public static double adapt_quantity(double quantity_) { return (quantities_int() ? (double)numbers.to_int(quantity_) : quantity_); }
 	
-	public static String type_from_place(String type_place_)
-	{
-		String output = null;
-		
-		String type_place = check_type_place(type_place_);
-		if (!strings.is_ok(type_place)) return output;
-		
-		if (type_place.equals(TYPE_PLACE_MARKET)) output = TYPE_MARKET;
-		else if (type_place.equals(TYPE_PLACE_STOP)) output = TYPE_STOP;
-		else if (type_place.equals(TYPE_PLACE_LIMIT)) output = TYPE_LIMIT;
-		else if (type_place.equals(TYPE_PLACE_STOP_LIMIT)) output = TYPE_STOP_LIMIT;
-		
-		return output;
-	}
-	
-	public static String get_status(String status_ib_, boolean be_specific_)
-	{
-		String status = strings.DEFAULT;
-		if (!strings.is_ok(status_ib_)) return status;
-
-		if (status_ib_.equals(external_ib.orders.STATUS_IB_SUBMITTED) || status_ib_.equals(external_ib.orders.STATUS_IB_PRESUBMITTED)) status = (be_specific_ ? STATUS_SUBMITTED : STATUS_ACTIVE);
-		else if (status_ib_.equals(external_ib.orders.STATUS_IB_FILLED)) status = (be_specific_ ? STATUS_FILLED : STATUS_ACTIVE);
-		else if (!status_ib_.equals(external_ib.orders.STATUS_IB_PENDING_SUBMIT) && !status_ib_.equals(external_ib.orders.STATUS_IB_PENDING_CANCEL) && !status_ib_.equals(external_ib.orders.STATUS_IB_API_CANCELLED)) status = STATUS_INACTIVE;
-		
-		return status;
-	}	
-
-	public static boolean is_status(String status_ib_, String status_)
-	{
-		if (!external_ib.orders.status_is_ok(status_ib_)) return false;
-
-		String status = check_status(status_);
-		if (!strings.is_ok(status)) return false;
-		
-		return strings.are_equal(status, _order.get_status(status_ib_, !status_is_generic(status)));
-	}
-	
-	public static String check_status(String type_) { return accessory.types.check_type(type_, STATUS); }
+	public static boolean is_market(_order order_) { return (order_ != null && (order_.is_market(true) || order_.is_market(false))); } 
 	
 	public _order(_order input_) { instantiate(input_); }
 	
@@ -226,14 +180,6 @@ public class _order extends parent
 		return order_id;
 	}
 	
-	private static boolean status_is_generic(String status_) 
-	{ 
-		String status = check_status(status_);
-		if (!strings.is_ok(status)) return false;
-
-		return (status.equals(STATUS_ACTIVE) || status.equals(STATUS_INACTIVE)); 
-	}
-	
 	private void instantiate(_order input_)
 	{
 		instantiate_common();
@@ -254,7 +200,7 @@ public class _order extends parent
 			
 	private boolean is_ok(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_, int id_main_)
 	{
-		_temp_type = check_type_place(type_place_);
+		_temp_type = ib.orders.check_place(type_place_);
 		_temp_symbol = check_symbol(symbol_);
 
 		return (strings.are_ok(new String[] { _temp_type, _temp_symbol }) && quantity_ > common.WRONG_QUANTITY && (stop_ > common.WRONG_PRICE) && (start_ > common.WRONG_PRICE || _temp_type.equals(TYPE_PLACE_MARKET)) && (start2_ > common.WRONG_PRICE || !_temp_type.equals(TYPE_PLACE_STOP_LIMIT)) && id_main_ > common.WRONG_ORDER_ID);
@@ -274,5 +220,5 @@ public class _order extends parent
 		_id_sec = get_id_sec(id_main_);
 	}
 	
-	private String get_type_from_place(boolean is_main_) { return (is_main_ ? type_from_place(_type_place) : TYPE_STOP); }
+	private String get_type_from_place(boolean is_main_) { return (is_main_ ? external_ib.orders.get_type(_type_place) : TYPE_STOP); }
 }

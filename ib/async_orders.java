@@ -11,8 +11,8 @@ abstract class async_orders extends parent_static
 {
 	public static void order_status(int order_id_, String status_ib_) 
 	{ 
-		String status = _order.get_status(status_ib_, true);
-		if (!strings.is_ok(status) || status.equals(orders.STATUS_INACTIVE)) return;
+		String status = orders.get_status(status_ib_, true);
+		if (!strings.is_ok(status) || status.equals(orders.STATUS_IN_PROGRESS)) return;
 		
 		orders.update_status(order_id_, status);	
 	}
@@ -23,31 +23,31 @@ abstract class async_orders extends parent_static
 	{
 		HashMap<Integer, String> orders = arrays.get_new_hashmap_xy(sync.__get_orders());
 		
-		ArrayList<HashMap<String, String>> db = ib.orders.get_all_active(new String[] { db_ib.orders.ORDER_ID_MAIN, db_ib.orders.STATUS });
+		ArrayList<HashMap<String, String>> db = ib.orders.get_all_active(new String[] { ib.orders.get_field_col(db_ib.orders.ORDER_ID_MAIN), ib.orders.get_field_col(db_ib.orders.STATUS) });
 		if (!arrays.is_ok(db)) return;
 		
 		for (HashMap<String, String> item: db)
 		{
 			int order_id = Integer.parseInt(item.get(ib.orders.get_field_col(db_ib.orders.ORDER_ID_MAIN)));
+			
 			String status = db_ib.orders.get_status_from_key(item.get(ib.orders.get_field_col(db_ib.orders.STATUS)));
+			if (!strings.is_ok(status)) continue;
 			
-			boolean is_filled = (sync.order_is_filled(order_id, orders) || execs.is_filled(order_id));
+			boolean is_filled = sync_orders.is_filled(order_id, orders);
 			
-			if (strings.are_equal(status, ib.orders.STATUS_FILLED))
+			if (status.equals(ib.orders.STATUS_FILLED))
 			{
 				if (!is_filled) ib.orders.deactivate(order_id);
 			}
 			else if (is_filled) ib.orders.update_status(order_id, ib.orders.STATUS_FILLED);
 			
-			if (is_filled) continue;
+			if (is_filled || !orders.containsKey(order_id)) continue;
 			
-			if (orders.containsKey(order_id))
-			{
-				String status_ib = orders.get(order_id);
-				
-				if (!_order.is_status(status_ib, status)) ib.orders.update_status(order_id, _order.get_status(status_ib, true));
-			}
-			else if (!strings.are_equal(status, ib.orders.STATUS_INACTIVE)) ib.orders.delete(order_id);
+			String status_ib = orders.get(order_id);
+			if (external_ib.orders.status_in_progress(status_ib) || ib.orders.is_status(status_ib, status)) continue;
+			
+			status = ib.orders.get_status(status_ib, true);
+			if (strings.is_ok(status)) ib.orders.update_status(order_id, status);
 		}
 	}
 }

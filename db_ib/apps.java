@@ -50,9 +50,19 @@ public abstract class apps
 
 	public static String get_additional() { return common.get_string(SOURCE, ADDITIONAL, get_where_app()); }
 	
-	public static boolean update_app_name() { return update(APP, ini_apps.get_app_name()); }
+	public static boolean is_running(String app_) { return is_common(ib.apps.STATUS_RUNNING, app_); }
+	
+	public static boolean is_stopped(String app_) { return is_common(ib.apps.STATUS_STOPPED, app_); }
+	
+	public static boolean update_app_name() { return update(APP, ini_apps.get_app_name(), ini_apps.get_app_name()); }
 
-	public static boolean update_app_name(String val_) { return (strings.is_ok(ini_apps.get_app_name()) ? update_app_name() : update(APP, val_)); }
+	public static boolean update_app_name(String val_) 
+	{ 
+		String app = val_;
+		if (strings.is_ok(ini_apps.get_app_name())) app = ini_apps.get_app_name();
+		
+		return (strings.is_ok(app) ? update(APP, app, app) : false); 
+	}
 
 	public static boolean update_conn_id() { return update(CONN_ID, ini_apps.get_conn_id()); }
 
@@ -102,40 +112,46 @@ public abstract class apps
 		return (strings.is_ok(val) ? update(ADDITIONAL, val) : false); 
 	}
 
-	public static boolean update_status(String status_) 
-	{
-		String status = ib.apps.check_status(status_);
-		
-		return (strings.is_ok(status) ? update(STATUS, get_key_from_status(status)) : false);
-	}
+	public static boolean update_status(String status_) { return update_status(ib.ini_apps.get_app_name(), status_); }
 	
+	public static boolean update_status(String app_, String status_) 
+	{
+		String key = get_key_from_status(status_);
+
+		return (strings.is_ok(key) ? update(STATUS, key, app_) : false);
+	}
+
 	public static boolean update(HashMap<String, Object> vals_) 
 	{ 
 		vals_.put(TIME2, ib.common.get_current_time2());
 		
 		return common.insert_update(SOURCE, vals_, get_where_app()); 
 	}
-
+	
 	public static boolean update_time() { return common.insert_update(SOURCE, TIME2, ib.common.get_current_time2(), get_where_app()); }
 	
 	public static String get_key_from_status(String status_) { return common.get_key_from_type(status_, ib.apps.STATUS); }
 
 	public static String get_status_from_key(String key_) { return common.get_type_from_key(key_, ib.apps.STATUS); }
 
-	private static boolean update(String field_, Object val_) { return common.insert_update(SOURCE, field_, val_, ((!strings.is_ok(ini_apps.get_app_name()) && field_.equals(APP)) ? get_where_app((String)val_) : get_where_app())); }
+	private static boolean is_common(String status_, String app_) { return common.exists(SOURCE, common.join_wheres(get_where_app(app_), get_where_status(status_))); }
+
+	private static boolean update(String field_, Object val_) { return update(field_, val_, ini_apps.get_app_name()); }
+
+	private static boolean update(String field_, Object val_, String app_) { return common.insert_update(SOURCE, field_, val_, get_where_app(app_)); }
 
 	private static String get_where_active(boolean errors_too_, boolean any_user_) 
 	{ 
-		String output = get_where_status(ib.apps.STATUS_RUNNING, any_user_);
+		String output = get_where_status(ib.apps.STATUS_RUNNING);
 		
-		if (errors_too_) output = common.join_wheres(output, get_where_status(ib.apps.STATUS_ERROR, any_user_), db_where.LINK_OR);
+		if (errors_too_) output = common.join_wheres(output, get_where_status(ib.apps.STATUS_ERROR), db_where.LINK_OR);
 		
 		return output; 
 	}
 
-	private static String get_where_status(String status_, boolean any_user_) { return common.get_where(SOURCE, STATUS, get_key_from_status(status_), false, !any_user_); }
+	private static String get_where_status(String status_) { return common.get_where(SOURCE, STATUS, get_key_from_status(status_), false); }
 	
 	private static String get_where_app() { return get_where_app(ini_apps.get_app_name()); }
 
-	private static String get_where_app(String app_) { return common.get_where(SOURCE, APP, app_, false); }
+	private static String get_where_app(String app_) { return common.get_where(SOURCE, APP, (strings.is_ok(app_) ? app_ : ini_apps.get_app_name()), false); }
 }

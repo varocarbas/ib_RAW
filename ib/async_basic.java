@@ -10,6 +10,8 @@ abstract class async_basic
 	
 	public static void get_funds()
 	{
+		if (_id != async.WRONG_ID) return;
+		
 		_id = async.get_req_id();
 
 		calls.reqAccountSummary(_id);
@@ -17,5 +19,5 @@ abstract class async_basic
 	
 	public static void update_funds(String key_, String value_) { db_ib.basic.update_money_common(calls.get_all_keys_funds().get(key_), Double.parseDouble(value_)); }
 	
-	public static void account_summary_end(int id_) { calls.cancelAccountSummary(id_); }
+	public static void account_summary_end(int id_) { _id = async.WRONG_ID; }
 }

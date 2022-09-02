@@ -3,12 +3,13 @@ package ib;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import accessory.arrays;
 import accessory.strings;
 import accessory_ib.types;
 
 public abstract class orders 
 {
+	public static final String ORDERS = types.ORDERS;
+
 	public static final String PLACE = types.ORDERS_PLACE;
 	public static final String PLACE_MARKET = types.ORDERS_PLACE_MARKET;
 	public static final String PLACE_STOP = types.ORDERS_PLACE_STOP;
@@ -31,6 +32,7 @@ public abstract class orders
 	public static final String STATUS_FILLED = types.ORDERS_STATUS_FILLED;
 	public static final String STATUS_ACTIVE = types.ORDERS_STATUS_ACTIVE;
 	public static final String STATUS_INACTIVE = types.ORDERS_STATUS_INACTIVE;
+	public static final String STATUS_IN_PROGRESS = types.ORDERS_STATUS_IN_PROGRESS;
 
 	public static final int MIN_ORDER_ID = 0;
 	
@@ -65,36 +67,45 @@ public abstract class orders
 	{ 	
 		boolean output = false;
 		
-		orders.__sync_db();
+		async_orders.__check_all();
 		
-		if (is_inactive(order_id_main_)) output = true;
+		if (is_inactive(order_id_main_))
+		{
+			deactivate(order_id_main_);
+			
+			output = true;
+		}
 		else if (is_filled(order_id_main_)) output = false;
 		else output = sync_orders.cancel(order_id_main_);
 		
 		return output;
 	}	
 
-	public static boolean cancel_is_ok(int order_id_main_) { return (is_active(order_id_main_) && !is_filled(order_id_main_)); }
-
 	public static boolean is_submitted(int order_id_main_) { return order_is_common(order_id_main_, STATUS_SUBMITTED); }
 
 	public static boolean is_submitted(String symbol_) { return order_is_common(symbol_, STATUS_SUBMITTED); }
 
+	public static boolean __is_submitted_ib(int order_id_main_) { return sync_orders.is_submitted(order_id_main_, sync.__get_orders()); }	
+
 	public static boolean is_filled(int order_id_main_) { return order_is_common(order_id_main_, STATUS_FILLED); }	
 
 	public static boolean is_filled(String symbol_) { return order_is_common(symbol_, STATUS_FILLED); }	
+
+	public static boolean __is_filled_ib(int order_id_main_) { return sync_orders.is_filled(order_id_main_, sync.__get_orders()); }	
 	
 	public static boolean is_inactive(int order_id_main_) { return is_inactive(order_id_main_, true); }	
 
 	public static boolean is_inactive(int order_id_main_, boolean check_exists_) { return ((!check_exists_ || (check_exists_ && !db_ib.orders.exists(order_id_main_, true))) || order_is_common(order_id_main_, STATUS_INACTIVE)); }	
-	
-	public static boolean is_active(int order_id_main_) { return !is_inactive(order_id_main_); }	
-	
-	public static boolean is_active(String symbol_) { return !is_inactive(symbol_); }	
 
 	public static boolean is_inactive(String symbol_) { return is_inactive(symbol_, true); }	
 	
 	public static boolean is_inactive(String symbol_, boolean check_exists_) { return ((!check_exists_ || (check_exists_ && !db_ib.orders.exists(symbol_))) || order_is_common(symbol_, STATUS_INACTIVE)); }	
+
+	public static boolean __is_inactive_ib(int order_id_main_) { return sync_orders.is_inactive(order_id_main_, sync.__get_orders()); }	
+	
+	public static boolean is_active(int order_id_main_) { return !is_inactive(order_id_main_); }	
+	
+	public static boolean is_active(String symbol_) { return !is_inactive(symbol_); }	
 
 	public static int get_last_id_main() { return sync_orders._last_id_main; }
 
@@ -104,11 +115,11 @@ public abstract class orders
 
 	public static String get_key(String input_, boolean is_status_) { return (is_status_ ? db_ib.orders.get_key_from_status(input_) : db_ib.orders.get_key_from_type_place(input_)); }
 
-	public static boolean is_status(String type_) { return strings.is_ok(_order.check_status(type_)); }
+	public static boolean is_status(String type_) { return strings.is_ok(check_status(type_)); }
 	
 	public static boolean update_is_ok(String type_, double stop_, double start_) { return update_is_ok(type_, stop_, start_, common.WRONG_PRICE); }
 
-	public static boolean update_is_ok(String type_, double stop_, double start_, double start2_) { return (is_update(type_) && (is_update_market(type_) || (common.price_is_ok(stop_) && (common.price_is_ok(start_) || common.price_is_ok(start2_))))); }
+	public static boolean update_is_ok(String type_, double stop_, double start_, double start2_) { return (is_update(type_) && (is_update_market(type_) || ((orders.is_update_stop(type_) && common.price_is_ok(stop_)) || (orders.is_update_start(type_) && common.price_is_ok(start_)) || (orders.is_update_start2(type_) && common.price_is_ok(start2_))))); }
 	
 	public static double get_update_val(String type_, double stop_, double start_, double start2_) 
 	{
@@ -122,20 +133,7 @@ public abstract class orders
 		return val; 
 	}
 
-	public static ArrayList<HashMap<String, String>> get_all_active(String[] fields_) 
-	{ 
-		String[] fields_cols = null;
-		
-		if (arrays.is_ok(fields_))
-		{
-			int tot = fields_.length;
-			fields_cols = new String[tot];
-			
-			for (int i = 0; i < tot; i++) fields_cols[i] = get_field_col(fields_[i]);
-		}
-		
-		return db_ib.orders.get_all_active(fields_cols, _is_quick); 
-	}
+	public static ArrayList<HashMap<String, String>> get_all_active(String[] fields_cols_) { return db_ib.orders.get_all_active(fields_cols_, _is_quick); }
 
 	public static String get_field_col(String field_) { return db_ib.orders.get_field_col(field_, _is_quick); }
 	
@@ -167,10 +165,43 @@ public abstract class orders
 
 	public static String check_cancel(String type_) { return accessory.types.check_type(type_, CANCEL); }
 
+	public static String check_status(String type_) { return accessory.types.check_type(type_, STATUS); }
+	
+	public static String get_status(String status_ib_, boolean be_specific_)
+	{
+		String status = strings.DEFAULT;
+		if (!external_ib.orders.status_is_ok(status_ib_)) return status;
+
+		if (external_ib.orders.status_in_progress(status_ib_)) status = STATUS_IN_PROGRESS;
+		else if (status_ib_.equals(external_ib.orders.STATUS_IB_SUBMITTED) || status_ib_.equals(external_ib.orders.STATUS_IB_PRESUBMITTED)) status = (be_specific_ ? STATUS_SUBMITTED : STATUS_ACTIVE);
+		else if (status_ib_.equals(external_ib.orders.STATUS_IB_FILLED)) status = (be_specific_ ? STATUS_FILLED : STATUS_ACTIVE);
+		else status = STATUS_INACTIVE;
+		
+		return status;
+	}	
+
+	public static boolean is_status(String status_ib_, String status_)
+	{
+		if (!external_ib.orders.status_is_ok(status_ib_)) return false;
+
+		String status = check_status(status_);
+		if (!strings.is_ok(status)) return false;
+		
+		return strings.are_equal(status, get_status(status_ib_, !status_is_generic(status)));
+	}
+	
+	public static boolean status_is_generic(String status_) 
+	{ 
+		String status = check_status(status_);
+		if (!strings.is_ok(status)) return false;
+
+		return (status.equals(STATUS_ACTIVE) || status.equals(STATUS_INACTIVE)); 
+	}
+	
 	public static double adapt_quantity(double quantity_) { return _order.adapt_quantity(quantity_); }
 	
 	public static void __sync_db() { async_orders.__check_db(); }
-	
+
 	public static boolean deactivate(int order_id_main_) 
 	{ 
 		boolean output = db_ib.orders.deactivate(order_id_main_, _is_quick); 
@@ -180,20 +211,14 @@ public abstract class orders
 		return output;
 	}
 	
-	public static boolean delete(int order_id_main_) { return db_ib.orders.delete(order_id_main_); }
-	
 	public static boolean update_status(int order_id_main_, String status_) { return db_ib.orders.update_status(order_id_main_, status_, _is_quick); }
 
 	public static boolean order_was_updated(int order_id_main_, String type_, double stop_, double start_, double start2_) { return db_ib.orders.order_was_updated(order_id_main_, type_, stop_, start_, start2_, _is_quick); }
 
 	public static String get_symbol(int order_id_main_) { return db_ib.orders.get_symbol(order_id_main_, _is_quick); }
 
-	public static int get_order_id(String symbol_) { return get_order_id(symbol_, true); }
-
-	public static int get_order_id(String symbol_, boolean is_main_) { return db_ib.orders.get_order_id(symbol_, is_main_, _is_quick); }
-
 	public static int get_highest_order_id() { return db_ib.orders.get_highest_order_id(_is_quick); }
-	
+
 	static void order_status(int order_id_, String status_ib_) 
 	{ 
 		sync_orders.order_status(order_id_, status_ib_); 
@@ -201,7 +226,7 @@ public abstract class orders
 		async_orders.order_status(order_id_, status_ib_);
 	}
 	
-	private static boolean order_is_common(int order_id_main_, String target_) { return ((order_id_main_ > common.WRONG_ORDER_ID) && strings.are_equal(db_ib.orders.get_status(order_id_main_, _is_quick), target_)); }	
+	private static boolean order_is_common(int order_id_main_, String target_) { return strings.are_equal(db_ib.orders.get_status(order_id_main_), target_); }	
 	
-	private static boolean order_is_common(String symbol_, String target_) { return (strings.is_ok(symbol_) && strings.are_equal(db_ib.orders.get_status(symbol_, _is_quick), target_)); }	
+	private static boolean order_is_common(String symbol_, String target_) { return strings.are_equal(db_ib.orders.get_status(symbol_), target_); }	
 }

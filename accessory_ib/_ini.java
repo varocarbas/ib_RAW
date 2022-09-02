@@ -127,9 +127,9 @@ public class _ini extends parent_ini
 	}
 	
 	private static void populate_inis(HashMap<String, Object> info_) 
-	{ 
+	{
 		ini_basic.start((String)get_info_val(info_, INFO_USER), (String)get_info_val(info_, INFO_ACCOUNT_IB));
-		
+
 		ini_apps.start((String)get_info_val(info_, INFO_APP_NAME), (String)get_info_val(info_, INFO_CONN_TYPE_IB), (int)get_info_val(info_, INFO_CONN_ID_IB));
 	}
 
