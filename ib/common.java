@@ -2,15 +2,10 @@ package ib;
 
 import accessory.strings;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
 import accessory.arrays;
 import accessory.dates;
-import accessory.io;
 import accessory.misc;
 import accessory.numbers;
-import accessory.paths;
 
 public abstract class common
 {
@@ -20,6 +15,7 @@ public abstract class common
 	public static final String FORMAT_TIME2 = dates.FORMAT_TIME_FULL;
 	public static final String FORMAT_TIME_ELAPSED = dates.FORMAT_TIME_FULL;
 	public static final String FORMAT_DATE = dates.FORMAT_DATE;
+	public static final String FORMAT_TIMESTAMP = dates.FORMAT_TIMESTAMP;
 		
 	public static final double WRONG_VALUE = 0.0;
 	public static final double WRONG_PRICE = 0.0;
@@ -36,60 +32,6 @@ public abstract class common
 	public static final int WRONG_I = -1;
 	
 	public static final String DEFAULT_FORMAT_TIME = FORMAT_TIME;
-
-	private static boolean _use_market_tz = true;
-
-	public static final String MARKET_TZ = dates.TZ_NY;
-	public static final int MARKET_OFFSET = (_use_market_tz ? dates.get_offset(MARKET_TZ, true) : 0);
-	
-	public static final LocalTime MARKET_TIME_OPEN = dates.time_from_string("09:30:00");
-	public static final LocalTime MARKET_TIME_CLOSE = dates.time_from_string("16:00:00");
-	public static final LocalTime MARKET_TIME_CLOSE_EARLY = dates.time_from_string("13:00:00");
-	
-	private static LocalTime _market_time_open = null;
-	private static LocalTime _market_time_close = null;
-	
-	private static boolean _is_market_holiday = false;
-	private static boolean _is_market_holiday_ok = false;
-	
-	//--- Each line of these files is expected to follow the pattern defined by dates.get_pattern(FORMAT_DATE).
-	private static String _path_market_holidays = paths.build(new String[] { paths.get_dir(paths.DIR_INFO), ("market_holidays" + paths.EXTENSION_TEXT) }, true);
-	private static String _path_market_early_closes = paths.build(new String[] { paths.get_dir(paths.DIR_INFO), ("market_early_closes" + paths.EXTENSION_TEXT) }, true);
-	//---
-	
-	public static boolean use_market_tz() { return _use_market_tz; }
-
-	public static String path_market_holidays() { return _path_market_holidays; }
-
-	public static boolean path_market_holidays(String path_) 
-	{
-		boolean updated = false;
-		
-		if (paths.exists(path_)) 
-		{
-			_path_market_holidays = path_;
-			
-			updated = true;
-		}
-	
-		return updated;
-	}
-
-	public static String path_market_early_closes() { return _path_market_early_closes; }
-
-	public static boolean path_market_early_closes(String path_) 
-	{
-		boolean updated = false;
-		
-		if (paths.exists(path_)) 
-		{
-			_path_market_early_closes = path_;
-			
-			updated = true;
-		}
-	
-		return updated;
-	}
 	
 	public static String get_current_time() { return get_current_time(true); }
 
@@ -140,9 +82,16 @@ public abstract class common
 		return numbers.is_ok(val_, -1.0 * max, max); 
 	}
 	
-	public static boolean percent_is_ok(double val_) { return percent_is_ok(val_, true); }
+	public static boolean percent_is_ok(double val_) { return percent_is_ok(val_, true, false); }
 
-	public static boolean percent_is_ok(double val_, boolean negative_too_) { return (((negative_too_ && val_ >= -100.0) || (!negative_too_ && val_ > 0.0)) && val_ <= 100.0); }
+	public static boolean percent_is_ok(double val_, boolean negative_too_) { return percent_is_ok(val_, negative_too_, false); }
+	
+	public static boolean percent_is_ok(double val_, boolean negative_too_, boolean beyond_100_) 
+	{
+		double max_min = (beyond_100_ ? 1000 : 100);
+		
+		return (((negative_too_ && val_ >= -1 * max_min) || (!negative_too_ && val_ > 0.0)) && (val_ <= max_min)); 
+	}
 	
 	public static double get_price(String symbol_)
 	{
@@ -154,8 +103,8 @@ public abstract class common
 		for (int i = 0; i < 3; i++)
 		{
 			if (i == 0) price = watchlist.get_price(symbol_);
-			else if (i == 1) price = trades.get_price(symbol_);
-			else if (i == 2) price = market.get_price(symbol_);
+			else if (i == 1) price = market.get_price(symbol_);
+			else if (i == 2) price = trades.get_price(symbol_);
 			
 			if (price_is_ok(price)) break;	
 		}
@@ -179,27 +128,22 @@ public abstract class common
 				
 		return symbol;
 	}	
-
-	public static LocalTime get_market_time_open() 
+	
+	public static double get_quantity(int order_id_main_)
 	{
-		if (_market_time_open == null) populate_market_time_open();
+		double quantity = common.WRONG_QUANTITY;
+		if (order_id_main_ <= WRONG_ORDER_ID) return quantity;
+		
+		for (int i = 0; i < 2; i++)
+		{
+			if (i == 0) quantity = orders.get_quantity(order_id_main_);
+			else if (i == 1) quantity = execs.get_quantity(order_id_main_, true);
+			
+			if (quantity > WRONG_QUANTITY) break;	
+		}
 				
-		return _market_time_open;
-	}
-
-	public static LocalTime get_market_time_close() 
-	{
-		if (_market_time_close == null) populate_market_time_close();
-		
-		return _market_time_close;
-	}
-
-	public static boolean is_market_holiday() 
-	{
-		if (!_is_market_holiday_ok) populate_is_market_holiday();
-		
-		return _is_market_holiday;
-	}
+		return quantity;
+	}	
 	
 	static String get_log_file_id(String id_) 
 	{
@@ -217,26 +161,4 @@ public abstract class common
 	static boolean id_is_ok(int id_, int min_, int max_) { return numbers.is_ok(id_, min_, max_); }
 
 	private static String get_current_time(boolean is_main_) { return dates.get_now_string((is_main_ ? FORMAT_TIME : FORMAT_TIME2)); }
-
-	private static void populate_market_time_open() { _market_time_open = MARKET_TIME_OPEN; }
-
-	private static void populate_market_time_close() { _market_time_close = (market_today_is_included(_path_market_early_closes) ? MARKET_TIME_CLOSE_EARLY : MARKET_TIME_CLOSE); }
-
-	private static void populate_is_market_holiday() { _is_market_holiday = market_today_is_included(_path_market_holidays); }
-	
-	private static boolean market_today_is_included(String path_) 
-	{
-		String[] lines = io.file_to_array(path_);
-		if (!arrays.is_ok(lines)) return false;
-		
-		LocalDate today = dates.get_now_date();
-		
-		for (String line: lines)
-		{
-			LocalDate date = dates.date_from_string(line);
-			if (date != null && date.isEqual(today)) return true;
-		}
-		
-		return false;
-	}
 }

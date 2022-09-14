@@ -145,13 +145,13 @@ abstract class async_data_apps
 		return output;
 	}
 
-	public static int pause_nonstop(String app_)
+	public static boolean snapshot_nonstop(String app_)
 	{
-		int output = async_data.DEFAULT_PAUSE_NONSTOP;
+		boolean output = async_data.DEFAULT_SNAPSHOT_NONSTOP;
 		
-		if (app_.equals(async_data_watchlist._APP)) output = async_data_watchlist._pause_nonstop;		
-		else if (app_.equals(async_data_trades._APP)) output = async_data_trades._pause_nonstop;		
-		else if (app_.equals(async_data_market._APP)) output = async_data_market._pause_nonstop;		
+		if (app_.equals(async_data_watchlist._APP)) output = async_data_watchlist._snapshot_nonstop;		
+		else if (app_.equals(async_data_trades._APP)) output = async_data_trades._snapshot_nonstop;		
+		else if (app_.equals(async_data_market._APP)) output = async_data_market._snapshot_nonstop;		
 	
 		return output;
 	}

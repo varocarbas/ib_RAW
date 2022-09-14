@@ -22,31 +22,14 @@ public abstract class trades extends parent_static
 	{ 
 		_synced_with_execs = synced_with_execs_; 
 	
-		if (synced_with_execs_) execs.enabled(is_ok(), false);
-		else execs.disable(false);
+		if (synced_with_execs_) execs.enabled(true, false);
 	}
-	
-	public static void update_logs_to_screen(boolean logs_to_screen_) { async_data_trades.logs_to_screen(logs_to_screen_); }
-	
-	public static boolean start(String symbol_, int order_id_, double start_) 
-	{ 
-		String symbol = common.normalise_symbol(symbol_);
-		if (!strings.is_ok(symbol)) return false;
 
-		async_trades.start(symbol, order_id_, start_); 
-		
-		return true;
-	}
+	public static int max_simultaneous_symbols() { return async_data_trades.MAX_SIMULTANEOUS_SYMBOLS; }
 	
-	public static boolean end(String symbol_, int order_id_, double end_) 
-	{
-		String symbol = common.normalise_symbol(symbol_);
-		if (!strings.is_ok(symbol)) return false;
-
-		async_trades.end(symbol, order_id_, end_);
-		
-		return true;
-	}
+	public static void start(String symbol_, int order_id_, double start_) { async_trades.start(symbol_, order_id_, start_); }
+	
+	public static void end(String symbol_, int order_id_, double end_) { async_trades.end(symbol_, order_id_, end_); }
 
 	public static boolean start_data(String symbol_)
 	{

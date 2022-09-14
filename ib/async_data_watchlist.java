@@ -35,7 +35,7 @@ abstract class async_data_watchlist extends parent_static
 	public static volatile boolean _enabled = async_data.DEFAULT_ENABLED;
 	public static volatile boolean _is_quick = async_data.DEFAULT_IS_QUICK;
 	public static volatile boolean _logs_to_screen = async_data.DEFAULT_LOGS_TO_SCREEN;
-	public static volatile int _pause_nonstop = async_data.DEFAULT_PAUSE_NONSTOP;
+	public static volatile boolean _snapshot_nonstop = async_data.DEFAULT_SNAPSHOT_NONSTOP;
 
 	public static ArrayList<Integer> _fields = new ArrayList<Integer>();
 
@@ -64,7 +64,7 @@ abstract class async_data_watchlist extends parent_static
 	public static boolean logs_to_screen() { return _logs_to_screen; }
 
 	public static void logs_to_screen(boolean logs_to_screen_) { _logs_to_screen = logs_to_screen_; }
-
+	
 	public static void stop_all() { async_data.stop_all(_APP, true); }
 	
 	public static void tick_price(int id_, int field_ib_, double price_) { async_data.tick_price(_APP, id_, field_ib_, price_); }
@@ -111,9 +111,9 @@ abstract class async_data_watchlist extends parent_static
 		if (strings.is_ok(symbol) && async_data.symbol_is_running(_APP, symbol)) async_data.stop(_APP, symbol, true);
 	}
 	
-	public static ArrayList<String> get_all_symbols() { return async_data.get_all_symbols(_APP); }
+	public static ArrayList<String> get_all_symbols() { return async_data.get_all_symbols(_APP, _is_quick); }
 	
-	public static ArrayList<String> get_active_symbols() { return async_data.get_active_symbols(_APP); }
+	public static ArrayList<String> get_active_symbols() { return async_data.get_active_symbols(_APP, _is_quick); }
 
 	private static boolean start(String symbol_, String type_, int data_type_) 
 	{

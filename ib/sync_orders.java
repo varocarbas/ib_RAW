@@ -118,28 +118,26 @@ abstract class sync_orders extends parent_static
 		
 		String status_ib = (String)arrays.get_value(orders_, order_id_);
 		if (external_ib.orders.status_in_progress(status_ib)) return output;
+
+		boolean is_filled = false;
+		boolean exists = strings.is_ok(status_ib); 
 		
-		output = orders.is_status(status_ib, target);
-		boolean is_filled = ((output && target.equals(orders.STATUS_FILLED)) || execs.is_filled(order_id_));
-				
-		if (strings.matches_any(target, new String[] { orders.STATUS_INACTIVE, orders.STATUS_FILLED }, false))
+		if (exists) is_filled = orders.is_status(status_ib, orders.STATUS_FILLED);
+		else 
 		{
-			if (!is_filled)
-			{
-				if (!strings.is_ok(status_ib))
-				{
-					int order_id_sec = _order.get_id_sec(order_id_);
-					String status_ib_sec = (String)arrays.get_value(orders_, order_id_sec);
-					
-					is_filled = orders.is_status(status_ib_sec, orders.STATUS_SUBMITTED);					
-				}
-				else is_filled = orders.is_status(status_ib, orders.STATUS_FILLED);				
-			}
+			String status2 = ib.orders.get_status((String)arrays.get_value(orders_, _order.get_id_sec(order_id_)), true);
 			
-			output = (target.equals(orders.STATUS_FILLED) ? is_filled : !is_filled);			
+			is_filled = (strings.is_ok(status2) && !strings.matches_any(status2, new String[] { ib.orders.STATUS_FILLED, ib.orders.STATUS_INACTIVE }, false));
+		} 
+				
+		if (is_filled) 
+		{
+			output = target.equals(orders.STATUS_FILLED);
+			
+			ib.orders.update_status(order_id_, orders.STATUS_FILLED);
 		}
-		
-		if (is_filled) ib.orders.update_status(order_id_, orders.STATUS_FILLED);
+		else if (!exists) output = target.equals(orders.STATUS_INACTIVE);
+		else output = orders.is_status(status_ib, target);
 		
 		return output;
 	}

@@ -2,6 +2,7 @@ package ib;
 
 import java.util.HashMap;
 
+import accessory.arrays;
 import accessory.config;
 import accessory.credentials;
 import accessory.misc;
@@ -98,17 +99,34 @@ public abstract class basic extends parent_static
 	{
 		double money = db_ib.basic.get_money();
 		
-		if (money <= db_ib.basic.WRONG_MONEY2)
+		if (money == db_ib.basic.WRONG_MONEY)
 		{
 			__update_money();
 			
 			money = db_ib.basic.get_money();
 		}
+
+		if (money == db_ib.basic.WRONG_MONEY) money = WRONG_MONEY2;
 		
 		return money; 
 	} 
+	
+	public static HashMap<String, Double> __get_money_ib()
+	{
+		HashMap<String, Double> money = sync_basic.__get_money();	
+		if (!arrays.is_ok(money) || !money.containsKey(MONEY) || !money.containsKey(MONEY_FREE)) return null;
+		
+		update_money(money, false);
+		
+		return money;
+	}
 
-	public static double get_money_free() { return db_ib.basic.get_money_free(); }	
+	public static double get_money_free() 
+	{ 
+		double output = db_ib.basic.get_money_free(); 
+	
+		return (output == db_ib.basic.WRONG_MONEY ? WRONG_MONEY2 : output);
+	}	
 
 	public static void update_money() { async_basic.get_funds(); }
 	
@@ -123,7 +141,7 @@ public abstract class basic extends parent_static
 		return currency;
 	}
 	
-	static boolean update_funds_is_ok(String account_id_, String key_, String value_, String currency_) { return (calls.get_all_keys_funds().containsKey(key_) && strings.is_number(value_) && ib.basic.account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
+	static boolean update_funds_is_ok(String account_id_, String key_, String value_, String currency_) { return (arrays.is_ok(calls.get_funds_fields(key_)) && strings.is_ok(value_) && ib.basic.account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
 
 	static String get_account_ib_last(String account_ib_, boolean decrypt_) 
 	{
@@ -146,15 +164,16 @@ public abstract class basic extends parent_static
 		
 		__update_money(true);
 	}
-	
-	private static boolean __update_money(boolean ini_too_)
-	{
-		HashMap<String, Double> ib = sync_basic.__get_money();
 
-		if (ib == null || !ib.containsKey(MONEY) || !ib.containsKey(MONEY_FREE)) return false;
+	private static boolean __update_money(boolean ini_too_) { return update_money(sync_basic.__get_money(), ini_too_); }
+	
+	private static boolean update_money(HashMap<String, Double> money_, boolean ini_too_)
+	{
+		HashMap<String, Double> money = arrays.get_new_hashmap_xy(money_);
+		if (!money.containsKey(MONEY) || !money.containsKey(MONEY_FREE)) return false;
 		
-		HashMap<String, Double> vals = new HashMap<String, Double>(ib);
-		if (ini_too_) vals.put(MONEY_INI, ib.get(MONEY));
+		HashMap<String, Double> vals = new HashMap<String, Double>(money);
+		if (ini_too_) vals.put(MONEY_INI, money.get(MONEY));
 
 		return db_ib.basic.update_money_common(vals);
 	}

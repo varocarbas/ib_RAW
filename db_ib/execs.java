@@ -108,7 +108,7 @@ public abstract class execs
 	{ 
 		double output = common.get_decimal(SOURCE, QUANTITY, get_where_order_id_any(order_id_)); 
 	
-		return (output == db.WRONG_DECIMAL ? 0.0 : output);
+		return (output == db.WRONG_DECIMAL ? ib.common.WRONG_QUANTITY : output);
 	}
 
 	public static double get_start_price(int order_id_buy_) 
@@ -162,8 +162,8 @@ public abstract class execs
 			if (is_quick_) 
 			{
 				vals = new HashMap<String, String>();
-				
-				for (int i = 0; i < tot; i++) { vals.put(fields[i], temp.get(cols[i])); }
+
+				for (int i = 0; i < tot; i++) { vals.put(fields[i], temp.get(is_quick_ ? cols[i] : fields[i])); }
 			}
 			else vals = new HashMap<String, String>(temp);
 			

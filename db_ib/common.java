@@ -137,10 +137,33 @@ public abstract class common
 	
 	public static final int DEFAULT_SIZE_DECIMAL = MAX_SIZE_MONEY;
 	public static final int DEFAULT_SIZE_STRING = 30;
-	
-	private static final String COL_ID = common.get_col(SOURCE_MARKET, db.FIELD_ID);
 
-	private static ArrayList<String> _quicker_mysql = new ArrayList<String>();
+	private static ArrayList<String> _sources_quicker_mysql = new ArrayList<String>();
+	private static HashMap<String, String> _sources_old = new HashMap<String, String>();
+	
+	private static boolean _sources_old_populated = false;
+	private static String _col_id = null;
+
+	public static void add_to_sources_quicker_mysql(String[] sources_)
+	{
+		if (!arrays.is_ok(sources_)) return;
+		
+		populate_sources_quicker_mysql(sources_);
+	}
+	
+	public static void add_to_sources_old(String source_main_, String source_old_)
+	{
+		if (!strings.are_ok(new String[] { source_main_, source_old_ })) return;
+		
+		_sources_old.put(source_main_, source_old_);
+	}
+
+	public static HashMap<String, String> get_sources_old() 
+	{
+		if (!_sources_old_populated) populate_sources_old();
+		
+		return _sources_old; 
+	}
 	
 	public static void __truncate(String source_) 
 	{
@@ -164,7 +187,7 @@ public abstract class common
 
 	public static int get_count(String source_, String where_) { return accessory.db.select_count(source_, where_); }
 
-	public static boolean exists(String source_, String where_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.exists(source_, COL_ID, where_) : accessory.db.exists_id(source_, where_)); }
+	public static boolean exists(String source_, String where_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.exists(source_, get_col_id(), where_) : accessory.db.exists_id(source_, where_)); }
 	
 	public static boolean is_enabled(String source_, String where_) { return (!arrays.value_exists(get_all_sources_enabled(), source_) || accessory.db.select_one_boolean(source_, FIELD_ENABLED, where_, db.DEFAULT_ORDER)); }
 
@@ -196,19 +219,19 @@ public abstract class common
 
 	public static ArrayList<Double> get_all_decimals(String source_, String col_field_, String where_, boolean is_quick_) { return (is_quick_ ? get_all_decimals_quick(source_, col_field_, where_) : db.select_some_decimals(source_, col_field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
 
-	public static ArrayList<Double> get_all_decimals_quick(String source_, String col_, String where_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.select_some_decimals(source_, col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER) : db.select_some_decimals(source_, col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
+	public static ArrayList<Double> get_all_decimals_quick(String source_, String col_, String where_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.select_some_decimals(source_, col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER) : db.select_some_decimals_quick(source_, col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
 
 	public static ArrayList<String> get_all_strings(String source_, String field_, String where_) { return get_all_strings(source_, field_, where_, false); }
 
 	public static ArrayList<String> get_all_strings(String source_, String col_field_, String where_, boolean is_quick_) { return (is_quick_ ? get_all_strings_quick(source_, col_field_, where_) : db.select_some_strings(source_, col_field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
 
-	public static ArrayList<String> get_all_strings_quick(String source_, String col_, String where_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.select_some_strings(source_, col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER) : db.select_some_strings(source_, col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
+	public static ArrayList<String> get_all_strings_quick(String source_, String col_, String where_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.select_some_strings(source_, col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER) : db.select_some_strings_quick(source_, col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
 
 	public static ArrayList<Integer> get_all_ints(String source_, String field_, String where_) { return get_all_ints(source_, field_, where_, false); }
 
 	public static ArrayList<Integer> get_all_ints(String source_, String col_field_, String where_, boolean is_quick_) { return (is_quick_ ? get_all_ints_quick(source_, col_field_, where_) : db.select_some_ints(source_, col_field_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
 
-	public static ArrayList<Integer> get_all_ints_quick(String source_, String col_, String where_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.select_some_ints(source_, col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER) : db.select_some_ints(source_, col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
+	public static ArrayList<Integer> get_all_ints_quick(String source_, String col_, String where_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.select_some_ints(source_, col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER) : db.select_some_ints_quick(source_, col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
 
 	public static ArrayList<HashMap<String, String>> get_all_vals(String source_, String[] fields_cols_, String where_, boolean is_quick_) { return (is_quick_ ? get_all_vals_quick(source_, fields_cols_, where_) : get_all_vals(source_, fields_cols_, where_)); }
 
@@ -328,7 +351,7 @@ public abstract class common
 
 		if (is_quick_) 
 		{
-			if (is_quicker_mysql(source_)) db_quicker_mysql.insert_update(source_, COL_ID, (HashMap<String, String>)vals, where_); 
+			if (is_quicker_mysql(source_)) db_quicker_mysql.insert_update(source_, get_col_id(), (HashMap<String, String>)vals, where_); 
 			else db.insert_update_id_quick(source_, (HashMap<String, String>)vals, where_);
 		}
 		else accessory.db.insert_update_id(source_, (HashMap<String, Object>)vals, where_);
@@ -340,7 +363,9 @@ public abstract class common
 	{
 		boolean is_ok = true;
 		
-		for (Entry<String, String> item: get_all_sources_old().entrySet()) 
+		if (!_sources_old_populated) populate_sources_old();
+		
+		for (Entry<String, String> item: _sources_old.entrySet()) 
 		{
 			String source = item.getKey();
 			String source_old = item.getValue();
@@ -361,7 +386,12 @@ public abstract class common
 		return is_ok;
 	}
 
-	public static boolean update_old_quick(String source_) { return update_old_quick(source_, (String)arrays.get_value(get_all_sources_old(), source_)); }
+	public static boolean update_old_quick(String source_) 
+	{
+		if (!_sources_old_populated) populate_sources_old();
+		
+		return update_old_quick(source_, (String)arrays.get_value(_sources_old, source_)); 
+	}
 	
 	public static String get_field_col(String source_, String field_, boolean is_quick_) { return (is_quick_ ? get_col(source_, field_) : field_); }
 
@@ -417,20 +447,6 @@ public abstract class common
 	public static String[] populate_all_sources_enabled() { return new String[] { SOURCE_MARKET }; }
 
 	public static String[] populate_all_sources_elapsed() { return new String[] { SOURCE_TRADES, SOURCE_WATCHLIST }; }
-
-	public static HashMap<String, String> populate_all_sources_old() 
-	{ 
-		HashMap<String, String> all = new HashMap<String, String>();
-		
-		all.put(SOURCE_EXECS, SOURCE_EXECS_OLD);
-		all.put(SOURCE_BASIC, SOURCE_BASIC_OLD);
-		all.put(SOURCE_REMOTE, SOURCE_REMOTE_OLD);
-		all.put(SOURCE_ORDERS, SOURCE_ORDERS_OLD);
-		all.put(SOURCE_TRADES, SOURCE_TRADES_OLD);
-		all.put(SOURCE_APPS, SOURCE_APPS_OLD);
-
-		return all; 
-	}
 
 	public static String[] get_all_sources_elapsed() { return _alls.DB_SOURCES_ELAPSED; }
 
@@ -523,9 +539,20 @@ public abstract class common
 		if (!arrays.is_ok(fields_)) return output;
 		
 		for (String field: fields_) { output.put(field, get_col(source_, field)); }
+	
+		populate_col_id();
 		
 		return output;
 	}
+	
+	public static String get_col_id()
+	{
+		if (_col_id == null) populate_col_id();
+		
+		return _col_id;
+	}
+	
+	public static void populate_col_id() { _col_id = common.get_col(SOURCE_APPS, db.FIELD_ID); }
 	
 	public static String adapt_user(String val_) { return adapt_string(val_, FIELD_USER); }
 
@@ -556,7 +583,7 @@ public abstract class common
 	{ 
 		String timestamp = get_string(source_, db.FIELD_TIMESTAMP, where_);
 		
-		return (db.WRONG_STRING.equals(timestamp) ? false : dates.is_today(timestamp, dates.FORMAT_TIMESTAMP)); 
+		return (db.WRONG_STRING.equals(timestamp) ? false : dates.is_today(timestamp, ib.common.FORMAT_TIMESTAMP)); 
 	}
 
 	public static String get_where_timestamp_today(String source_, String where_) 
@@ -583,31 +610,42 @@ public abstract class common
 		return output;
 	}
 
-	public static HashMap<String, String> get_all_sources_old() { return _alls.DB_SOURCES_OLD; }
-
 	private static String[] get_all_sources() { return _alls.DB_SOURCES; }
 	
 	private static boolean is_quicker_mysql(String source_)
 	{
-		if (_quicker_mysql.size() == 0) populate_quicker_mysql();
+		if (_sources_quicker_mysql.size() == 0) populate_sources_quicker_mysql(null);
 		
-		return (strings.is_ok(source_) && _quicker_mysql.contains(source_));
+		return _sources_quicker_mysql.contains(source_);
 	}
 	
-	private static void populate_quicker_mysql()
+	private static void populate_sources_quicker_mysql(String[] sources_)
 	{
 		String any_source = null;
 
-		for (String source: get_all_sources()) 
+		for (String source: (arrays.is_ok(sources_) ? sources_ : get_all_sources())) 
 		{
 			if (!strings.are_equal(db.get_valid_type(source), db_quicker_mysql.TYPE)) continue;
 		
 			if (any_source == null) any_source = source;
 			
-			_quicker_mysql.add(source);
+			_sources_quicker_mysql.add(source);
 		}
 
 		if (any_source != null) db_quicker_mysql.update_conn_info(any_source);
+	}
+	
+	private static void populate_sources_old() 
+	{ 
+		add_to_sources_old(SOURCE_EXECS, SOURCE_EXECS_OLD);
+		add_to_sources_old(SOURCE_BASIC, SOURCE_BASIC_OLD);
+		add_to_sources_old(SOURCE_REMOTE, SOURCE_REMOTE_OLD);
+		
+		add_to_sources_old(SOURCE_ORDERS, SOURCE_ORDERS_OLD);
+		add_to_sources_old(SOURCE_TRADES, SOURCE_TRADES_OLD);
+		add_to_sources_old(SOURCE_APPS, SOURCE_APPS_OLD);
+	
+		_sources_old_populated = true;
 	}
 	
 	private static boolean update_old_quick(String source_, String source_old_)
@@ -636,7 +674,7 @@ public abstract class common
 		return output;	
 	}
 
-	private static long get_timestamp_elapsed(String source_, String where_, String unit_) { return dates.get_diff(get_string(source_, accessory.db.FIELD_TIMESTAMP, where_), dates.FORMAT_TIMESTAMP, dates.get_now_string(dates.FORMAT_TIMESTAMP), dates.FORMAT_TIMESTAMP, unit_); }
+	private static long get_timestamp_elapsed(String source_, String where_, String unit_) { return dates.get_diff(get_string(source_, accessory.db.FIELD_TIMESTAMP, where_), ib.common.FORMAT_TIMESTAMP, dates.get_now_string(ib.common.FORMAT_TIMESTAMP, 0), ib.common.FORMAT_TIMESTAMP, unit_); }
 
 	private static double adapt_number(double val_, int max_, boolean is_negative_)
 	{

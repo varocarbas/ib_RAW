@@ -76,6 +76,8 @@ public class _ini_db extends parent_ini_db
 	
 	public static db_field get_status_type(String default_) { return get_string(db_ib.common.DEFAULT_SIZE_STRING, false, default_); }
 	
+	public static db_field get_app(boolean is_unique_) { return get_name(db_ib.common.MAX_SIZE_APP_NAME, is_unique_); }
+	
 	public static db_field get_name(int size_, boolean is_unique_) { return get_string(size_, is_unique_); }
 	
 	public static db_field get_error() { return get_string(common.MAX_SIZE_ERROR); }
@@ -93,6 +95,12 @@ public class _ini_db extends parent_ini_db
 	public static db_field get_string(int size_, boolean is_unique_) { return get_string(size_, is_unique_, null); }
 	
 	public static db_field get_string(int size_, boolean is_unique_, String default_) { return new db_field(data.STRING, size_, db_field.WRONG_DECIMALS, (strings.is_ok(default_) ? default_ : db_field.WRONG_DEFAULT), (is_unique_ ? new String[] { db_field.KEY_UNIQUE } : null)); }
+	
+	public static db_field get_time(String format_) { return new db_field(data.STRING, dates.get_length(format_), db_field.WRONG_DECIMALS, dates.get_default(format_), null); }
+	
+	public static db_field get_date() { return new db_field(data.STRING, dates.get_length(ib.common.FORMAT_DATE), db_field.WRONG_DECIMALS, dates.get_default(ib.common.FORMAT_DATE), null); }
+
+	public static String get_table_old(String table_) { return (table_ + misc.SEPARATOR_NAME + "old"); }
 
 	@SuppressWarnings("unchecked")
 	protected boolean populate_all_dbs(HashMap<String, Object> dbs_setup_)
@@ -344,20 +352,18 @@ public class _ini_db extends parent_ini_db
 		info.put(apps.TIME2, get_time2());
 		
 		HashMap<String, db_field> info2 = new HashMap<String, db_field>(info);	
-		info2.put(apps.APP, get_name(db_ib.common.MAX_SIZE_APP_NAME, true));
+		info2.put(apps.APP, get_app(true));
 		
 		HashMap<String, Object[]> sources = add_source_common(db_, source, table, info2, sources_);		
 
 		info2 = new HashMap<String, db_field>(info);	
-		info2.put(apps.APP, get_name(db_ib.common.MAX_SIZE_APP_NAME, false));
+		info2.put(apps.APP, get_app(false));
 
 		sources = add_source_common(db_, apps.SOURCE_OLD, get_table_old(table), info2, sources, true);
 		
 		return sources;
-	}
+	}	
 
-	private static String get_table_old(String table_) { return (table_ + misc.SEPARATOR_NAME + "old"); }
-	
 	private HashMap<String, Object[]> add_source_common(String db_, String source_, String table_, HashMap<String, db_field> info_, HashMap<String, Object[]> sources_) { return add_source_common(db_, source_, table_, info_, sources_, false); }
 	
 	private HashMap<String, Object[]> add_source_common(String db_, String source_, String table_, HashMap<String, db_field> info_, HashMap<String, Object[]> sources_, boolean is_old_) 
@@ -368,8 +374,4 @@ public class _ini_db extends parent_ini_db
 		
 		return add_source(source_, table_, db_, info, true, sources_); 
 	}
-	
-	private static db_field get_time(String format_) { return new db_field(data.STRING, dates.get_length(format_), db_field.WRONG_DECIMALS, dates.get_default(format_), null); }
-	
-	private static db_field get_date() { return new db_field(data.STRING, dates.get_length(ib.common.FORMAT_DATE), db_field.WRONG_DECIMALS, dates.get_default(ib.common.FORMAT_DATE), null); }
 }

@@ -16,13 +16,11 @@ public abstract class remote
 	public static final String STATUS_ACTIVE = types.REMOTE_STATUS_ACTIVE;
 	public static final String STATUS_INACTIVE = types.REMOTE_STATUS_INACTIVE;
 	public static final String STATUS_ERROR = types.REMOTE_STATUS_ERROR;
-	public static final String STATUS_FIXED = types.REMOTE_STATUS_FIXED;
 
 	public static final String STATUS2 = types.REMOTE_STATUS2;
 	public static final String STATUS2_PENDING = types.REMOTE_STATUS2_PENDING;
 	public static final String STATUS2_EXECUTED = types.REMOTE_STATUS2_EXECUTED;
 	public static final String STATUS2_ERROR = types.REMOTE_STATUS2_ERROR;
-	public static final String STATUS2_FIXED = types.REMOTE_STATUS2_FIXED;
 
 	public static final String ORDERS = types.ORDERS;
 
@@ -39,6 +37,9 @@ public abstract class remote
 	public static final String UPDATE_STOP_VALUE = orders.UPDATE_STOP_VALUE;
 	public static final String UPDATE_STOP_MARKET = orders.UPDATE_STOP_MARKET;
 
+	public static final double MAX_PERC_MONEY = 90.0;
+	public static final double MIN_PERC_FREE = (100.0 - MAX_PERC_MONEY) + 1.0;
+	
 	public static final double WRONG_MONEY2 = common.WRONG_MONEY2;
 
 	public static final String DEFAULT_STATUS = STATUS_ACTIVE;
@@ -46,14 +47,22 @@ public abstract class remote
 	public static final boolean DEFAULT_WAIT_FOR_EXECUTION = true;
 	public static final boolean DEFAULT_IS_QUICK = true;
 	public static final boolean DEFAULT_LOGS_TO_FILE = false;
+	public static final String DEFAULT_PATH_LOGS = common.get_log_file_id(_ID);
 	
+	static String _temp_type_error = null;
+
 	private static boolean _is_quick = DEFAULT_IS_QUICK;
 	private static boolean _logs_to_file = DEFAULT_LOGS_TO_FILE;
+	private static String _path_logs = DEFAULT_PATH_LOGS;
 	
 	public static boolean is_quick() { return _is_quick; }
 
 	public static boolean logs_to_file() { return _logs_to_file; }
-
+	
+	public static String path_logs() { return _path_logs; }
+	
+	public static void path_logs(String path_logs_) { _path_logs = path_logs_; }
+	
 	public static void logs_to_file(boolean logs_to_file_) { _logs_to_file = logs_to_file_; }
 	
 	public static int __request_place(String type_place_, String symbol_, double stop_, double start_, double quantity_) { return __request_place(type_place_, symbol_, stop_, start_, quantity_, DEFAULT_WAIT_FOR_EXECUTION); }
@@ -82,7 +91,7 @@ public abstract class remote
 
 	public static void __execute_all() { remote_execute.__execute_all(); }
 
-	public static void wait_for_execution(int request_, boolean is_cancel_) { remote_request.wait_for_execution(request_, is_cancel_); }
+	public static void __wait_for_execution(int request_, boolean is_cancel_) { remote_request.__wait_for_execution(request_, is_cancel_); }
 
 	public static boolean status_is_ok(String type_) { return strings.is_ok(check_status(type_)); }
 
@@ -112,7 +121,7 @@ public abstract class remote
 			if (!common.price_is_ok(price)) price = common.get_price(symbol_);
 			if (!common.price_is_ok(price)) return null;
 			
-			double investment = __get_investment(perc_money_);
+			double investment = __get_investment(perc_money_, true);
 			if (investment <= WRONG_MONEY2) return null;
 			
 			quantity = investment / price;
@@ -125,21 +134,7 @@ public abstract class remote
 		return output;
 	}
 
-	public static double __get_investment(double perc_)
-	{
-		double investment = WRONG_MONEY2;
-		if (!common.percent_is_ok(perc_, false)) return investment;
-		
-		double money = basic.__get_money();			
-		if (money <= WRONG_MONEY2) return investment;			
-		
-		investment = perc_ * money / 100.0;
-		
-		double free = basic.get_money_free();
-		if (free > WRONG_MONEY2 && investment > free) investment = free;
-	
-		return investment;
-	}
+	public static double __get_investment(double perc_) { return __get_investment(perc_, false); }
 
 	public static int get_order_id_main(int request_) { return db_ib.remote.get_order_id(request_, _is_quick); }
 
@@ -152,6 +147,8 @@ public abstract class remote
 	public static String get_symbol_order_id(int order_id_main_) { return db_ib.remote.get_symbol_order_id(order_id_main_, _is_quick); }
 	
 	public static HashMap<String, String> get_vals(int request_) { return db_ib.remote.get_vals(request_, _is_quick); }
+	
+	public static HashMap<String, String> get_vals_order_id(int order_id_main_) { return db_ib.remote.get_vals_order_id(order_id_main_, _is_quick); }
 
 	public static int get_request(HashMap<String, String> vals_) { return (int)db_ib.remote.get_val(db_ib.remote.REQUEST, vals_, _is_quick); }
 
@@ -217,11 +214,20 @@ public abstract class remote
 	
 	static void update_error(int request_, String type_, Object vals_, String type_order_) 
 	{ 
-		String message = get_error_message(type_, vals_);
+		String type = type_;
+		
+		if (strings.is_ok(_temp_type_error))
+		{
+			type = _temp_type_error;
+			
+			_temp_type_error = null;
+		}
+		
+		String message = get_error_message(type, vals_);
 		
 		if (request_ > common.WRONG_REQUEST) db_ib.remote.update_error(request_, message, type_order_, _is_quick); 
 	
-		errors.manage(type_, message);
+		errors.manage(type, message);
 	}
 
 	public static void update_error_place(int request_, String symbol_, String type_, double quantity_, double stop_, double start_, double start2_, boolean is_request_)
@@ -272,6 +278,21 @@ public abstract class remote
 		update_error(request_, (is_request_ ? remote_request.ERROR_UPDATE : remote_execute.ERROR_UPDATE), vals, type);		
 	}
 
+	static String get_ok_message_default(String type_, int request_, String symbol_, int order_id_, boolean is_request_)
+	{		
+		String temp = "";
+		if (strings.is_ok(symbol_)) temp = symbol_;
+		if (order_id_ > common.WRONG_ORDER_ID) temp += (temp.equals("") ? "" : ", ") + Integer.toString(order_id_);
+	
+		String message = Integer.toString(request_) + " (";
+		if (!temp.equals("")) message += temp + ", ";
+		message += db_ib.orders.get_key_from_type_order(type_) + ") ";
+		
+		message += (is_request_ ? "requested" : "executed") + " successfully";
+		
+		return message;
+	}
+	
 	static String get_error_message_default(String type_, boolean is_request_) 
 	{ 
 		String message = "";
@@ -288,9 +309,49 @@ public abstract class remote
 	{
 		logs.update_screen(message_, true);
 		
-		if (_logs_to_file) logs.update_file(message_, common.get_log_file_id(_ID), false, true); 
+		if (_logs_to_file) logs.update_file(message_, _path_logs, false, true); 
 	}
 	
+	private static double __get_investment(double perc_, boolean log_)
+	{
+		double investment = WRONG_MONEY2;
+		if (!common.percent_is_ok(perc_, false)) return investment;
+		
+		HashMap<String, Double> money_ib = ib.basic.__get_money_ib();
+		if (!arrays.is_ok(money_ib)) 
+		{
+			if (log_) log("not enough money");
+
+			return investment;
+		}
+		
+		double money = money_ib.get(ib.basic.MONEY);	
+		if (money <= basic.WRONG_MONEY2) 
+		{
+			if (log_) log("not enough money (" + strings.to_string(money_ib) + ")");
+
+			return investment;
+		}
+
+		double free = money_ib.get(ib.basic.MONEY_FREE);
+		double free_min = money * MIN_PERC_FREE / 100.0;
+
+		if (free < free_min)
+		{
+			if (log_) log("not enough money (" + strings.to_string(money_ib) + ")");
+			
+			return investment;
+		}
+		
+		double perc = perc_;
+		if (perc > MAX_PERC_MONEY) perc = MAX_PERC_MONEY;	
+		
+		investment = money * perc / 100.0;			
+		if (investment > free) investment = free;
+		
+		return investment;
+	}
+
 	private static String get_error_message(String type_, Object vals_)
 	{	
 		String message = strings.DEFAULT;

@@ -7,11 +7,6 @@ public abstract class types
 	public static final String CONFIG_ORDERS = "config_orders";
 	public static final String CONFIG_ORDERS_TIF = "config_orders_tif";
 	public static final String CONFIG_ORDERS_QUANTITIES_INT = "config_orders_quantities_int";
-	
-	public static final String CONFIG_ASYNC = "config_async";
-	public static final String CONFIG_ASYNC_DATA = "config_async_data";
-	public static final String CONFIG_ASYNC_DATA_SNAPSHOT = "config_async_data_snapshot";
-	public static final String CONFIG_ASYNC_DATA_SNAPSHOT_NONSTOP = "config_async_data_snapshot_nonstop";
 
 	public static final String CONFIG_CONTRACT = "config_contract";
 	public static final String CONFIG_CONTRACT_SECURITY_TYPE = "config_contract_security_type";
@@ -167,12 +162,10 @@ public abstract class types
 	public static final String REMOTE_STATUS_ACTIVE = "remote_status_active";
 	public static final String REMOTE_STATUS_INACTIVE = "remote_status_inactive";
 	public static final String REMOTE_STATUS_ERROR = "remote_status_error";
-	public static final String REMOTE_STATUS_FIXED = "remote_status_fixed";
 	public static final String REMOTE_STATUS2 = "remote_status2";
 	public static final String REMOTE_STATUS2_PENDING = "remote_status2_pending";
 	public static final String REMOTE_STATUS2_EXECUTED = "remote_status2_executed";
 	public static final String REMOTE_STATUS2_ERROR = "remote_status2_error";
-	public static final String REMOTE_STATUS2_FIXED = "remote_status2_fixed";
 
 	public static final String SYNC = "sync";
 	public static final String SYNC_GET = "sync_get";
@@ -222,6 +215,7 @@ public abstract class types
 	public static final String ERROR_IB_REMOTE_REQUEST_CANCEL = "error_ib_remote_request_cancel";
 	public static final String ERROR_IB_REMOTE_REQUEST_UPDATE = "error_ib_remote_request_update";
 	public static final String ERROR_IB_REMOTE_REQUEST_WAIT = "error_ib_remote_request_wait";
+	public static final String ERROR_IB_REMOTE_REQUEST_FAIL = "error_ib_remote_request_fail";
 	
 	static String[] populate_all_types()
 	{		
@@ -231,11 +225,6 @@ public abstract class types
 			
 			CONFIG_ORDERS,
 			CONFIG_ORDERS_TIF, CONFIG_ORDERS_QUANTITIES_INT,
-	
-			CONFIG_ASYNC,
-			CONFIG_ASYNC_DATA,
-			CONFIG_ASYNC_DATA_SNAPSHOT,
-			CONFIG_ASYNC_DATA_SNAPSHOT_NONSTOP, 
 			
 			CONFIG_CONTRACT,
 			CONFIG_CONTRACT_SECURITY_TYPE, CONFIG_CONTRACT_CURRENCY, 
@@ -306,9 +295,9 @@ public abstract class types
 			
 			REMOTE,
 			REMOTE_STATUS,
-			REMOTE_STATUS_ACTIVE, REMOTE_STATUS_INACTIVE, REMOTE_STATUS_ERROR, REMOTE_STATUS_FIXED,
+			REMOTE_STATUS_ACTIVE, REMOTE_STATUS_INACTIVE, REMOTE_STATUS_ERROR,
 			REMOTE_STATUS2,
-			REMOTE_STATUS2_PENDING, REMOTE_STATUS2_EXECUTED, REMOTE_STATUS2_ERROR, REMOTE_STATUS2_FIXED,
+			REMOTE_STATUS2_PENDING, REMOTE_STATUS2_EXECUTED, REMOTE_STATUS2_ERROR,
 			
 			SYNC,
 			SYNC_GET,
@@ -339,7 +328,7 @@ public abstract class types
 			ERROR_IB_REMOTE_EXECUTE_PLACE, ERROR_IB_REMOTE_EXECUTE_CANCEL, ERROR_IB_REMOTE_EXECUTE_UPDATE,
 			ERROR_IB_REMOTE_REQUEST,
 			ERROR_IB_REMOTE_REQUEST_REQUEST, ERROR_IB_REMOTE_REQUEST_PLACE, ERROR_IB_REMOTE_REQUEST_CANCEL, 
-			ERROR_IB_REMOTE_REQUEST_UPDATE, ERROR_IB_REMOTE_REQUEST_WAIT
+			ERROR_IB_REMOTE_REQUEST_UPDATE, ERROR_IB_REMOTE_REQUEST_WAIT, ERROR_IB_REMOTE_REQUEST_FAIL
 		};		
 	}
 }

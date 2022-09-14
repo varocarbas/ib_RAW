@@ -14,7 +14,12 @@ public abstract class apps
 
 	public static final String DEFAULT_APP_NAME = _defaults.APP_NAME;
 	public static final String DEFAULT_STATUS = STATUS_STOPPED;
+	public static final boolean DEFAULT_IS_QUICK = true;
 	
+	private static boolean _is_quick = DEFAULT_IS_QUICK;
+
+	public static boolean is_quick() { return _is_quick; }
+
 	public static boolean start()
 	{
 		String app = get_app_name(true);
@@ -47,7 +52,7 @@ public abstract class apps
 	
 	public static boolean is_stopped() { return !is_running(); }
 	
-	public static void update_time() { db_ib.apps.update_time(); }
+	public static void update_time() { db_ib.apps.update_time(_is_quick); }
 
 	public static String get_app_name() { return get_app_name(false); }
 	

@@ -8,7 +8,6 @@ import accessory.dates;
 import accessory.misc;
 import accessory.parent_static;
 import accessory.strings;
-import accessory_ib.config;
 import accessory_ib.logs;
 import accessory_ib.types;
 import external_ib.calls;
@@ -16,8 +15,6 @@ import external_ib.data;
 
 public abstract class async_data extends parent_static
 {
-	public static final String CONFIG_SNAPSHOT_NONSTOP = types.CONFIG_ASYNC_DATA_SNAPSHOT_NONSTOP;
-
 	public static final int PRICE_IB = external_ib.data.TICK_LAST;
 	public static final int OPEN_IB = external_ib.data.TICK_OPEN;
 	public static final int CLOSE_IB = external_ib.data.TICK_CLOSE;
@@ -48,7 +45,6 @@ public abstract class async_data extends parent_static
 	public static final boolean DEFAULT_IS_QUICK = true;
 	public static final int DEFAULT_DATA_TYPE = external_ib.data.DATA_LIVE;
 	public static final boolean DEFAULT_LOGS_TO_SCREEN = true;
-	public static final int DEFAULT_PAUSE_NONSTOP = 0;
 	public static final boolean DEFAULT_ENABLED = false;
 	public static final int DEFAULT_MAX_MINS_INACTIVE = 1;
 	public static final boolean DEFAULT_DISABLE_ASAP = true;
@@ -68,7 +64,7 @@ public abstract class async_data extends parent_static
 	private static HashMap<Integer, String> _fields = new HashMap<Integer, String>();
 	
 	public static String get_symbol(int id_) { return get_string(id_, _symbols); }
-
+	
 	static boolean start_common(String app_, String symbol_, String type_, int data_type_)
 	{
 		perform_initial_actions(app_, symbol_);
@@ -198,13 +194,13 @@ public abstract class async_data extends parent_static
 	
 	static boolean field_is_ok(String app_, int field_ib_) { return async_data_apps.populate_fields(app_).contains(field_ib_); }
 	
-	static ArrayList<String> get_all_symbols(String app_) { return get_all_symbols(app_, accessory.db.DEFAULT_WHERE); }
+	static ArrayList<String> get_all_symbols(String app_, boolean is_quick_) { return get_all_symbols(app_, accessory.db.DEFAULT_WHERE, is_quick_); }
 	
-	static ArrayList<String> get_all_symbols(String app_, String where_) { return db_ib.async_data.get_all_symbols(async_data_apps.get_source(app_), where_); }
+	static ArrayList<String> get_all_symbols(String app_, String where_, boolean is_quick_) { return db_ib.async_data.get_all_symbols(async_data_apps.get_source(app_), where_, is_quick_); }
 	
-	static ArrayList<String> get_active_symbols(String app_) { return get_active_symbols(app_, accessory.db.DEFAULT_WHERE); }
+	static ArrayList<String> get_active_symbols(String app_, boolean is_quick_) { return get_active_symbols(app_, accessory.db.DEFAULT_WHERE, is_quick_); }
 	
-	static ArrayList<String> get_active_symbols(String app_, String where_) { return db_ib.async_data.get_active_symbols(async_data_apps.get_source(app_), async_data_apps.get_max_mins_inactive(app_), where_); }
+	static ArrayList<String> get_active_symbols(String app_, String where_, boolean is_quick_) { return db_ib.async_data.get_active_symbols(async_data_apps.get_source(app_), async_data_apps.get_max_mins_inactive(app_), where_, is_quick_); }
 	
 	static boolean symbol_is_running(String app_, String symbol_) { return (!async_data_apps.is_stopping(app_, symbol_) && db_ib.async_data.symbol_is_active(async_data_apps.get_source(app_), symbol_, async_data_apps.get_max_mins_inactive(app_))); }
 
@@ -252,14 +248,11 @@ public abstract class async_data extends parent_static
 		
 		to_screen(app_, id_, symbol_, "snapshot precompleted");
 		
-		if (snapshot_is_nonstop() && symbol_is_running(app_, symbol_)) 
+		if (async_data_apps.snapshot_nonstop(app_) && symbol_is_running(app_, symbol_)) 
 		{
 			int data_type = get_data_type(id_);
 			if (data_type <= WRONG_DATA) return;
 			
-			int pause = async_data_apps.pause_nonstop(app_);
-			if (pause > 0) misc.pause_secs(pause);
-
 			start_internal(app_, symbol_, TYPE_SNAPSHOT, data_type, true);
 		}
 	}
@@ -325,7 +318,7 @@ public abstract class async_data extends parent_static
 		{
 			String message = null;
 			
-			if (is_snapshot) message = "snapshot" + ((is_restart_ || !snapshot_is_nonstop()) ? "" : "s") + " started";
+			if (is_snapshot) message = "snapshot" + ((is_restart_ || !async_data_apps.snapshot_nonstop(app_)) ? "" : "s") + " started";
 			else message = "stream started";
 			
 			to_screen(app_, id, symbol_, message);
@@ -369,8 +362,6 @@ public abstract class async_data extends parent_static
 		if (is_quick_) _vals_quick[i_] = new HashMap<String, String>();
 		else _vals[i_] = new HashMap<String, Object>();
 	}
-	
-	private static boolean snapshot_is_nonstop() { return config.get_async_boolean(CONFIG_SNAPSHOT_NONSTOP); }
 
 	private static double adapt_val(double val_, int field_ib_)
 	{

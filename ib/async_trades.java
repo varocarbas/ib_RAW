@@ -20,8 +20,6 @@ abstract class async_trades extends parent_static
 	
 	private static void start_internal(String symbol_, int order_id_main_, double start_) 
 	{
-		if (!trades.synced_with_execs()) basic.update_money();
-
 		db_ib.trades.start(symbol_, order_id_main_, start_);
 
 		if (trades.synced_with_execs()) async_data_trades.start(symbol_);
@@ -29,8 +27,6 @@ abstract class async_trades extends parent_static
 	
 	private static void end_internal(String symbol_, int order_id_sec_, double end_) 
 	{
-		if (!trades.synced_with_execs()) basic.update_money();
-
 		db_ib.trades.end(order_id_sec_, end_);
 	
 		if (trades.synced_with_execs()) async_data_trades.stop(symbol_);		

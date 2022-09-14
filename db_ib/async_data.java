@@ -56,18 +56,18 @@ public abstract class async_data
 	
 	public static boolean is_enabled(String source_, String symbol_) { return common.is_enabled(source_, common.get_where_symbol(source_, symbol_)); }
 
-	public static ArrayList<String> get_all_symbols(String source_) { return get_all_symbols(source_, db.DEFAULT_WHERE); }
+	public static ArrayList<String> get_all_symbols(String source_, boolean is_quick_) { return get_all_symbols(source_, db.DEFAULT_WHERE, is_quick_); }
 
-	public static ArrayList<String> get_all_symbols(String source_, String where_) { return get_active_symbols(source_, 0, where_); }
+	public static ArrayList<String> get_all_symbols(String source_, String where_, boolean is_quick_) { return get_active_symbols(source_, 0, where_, is_quick_); }
 	
-	public static ArrayList<String> get_active_symbols(String source_, int max_mins_inactive_, String where_) 
+	public static ArrayList<String> get_active_symbols(String source_, int max_mins_inactive_, String where_, boolean is_quick_) 
 	{ 
 		String where = null;
 		
 		if (max_mins_inactive_ > 0) where = get_where_active(source_, max_mins_inactive_);
 		if (strings.is_ok(where_)) where = (strings.is_ok(where) ? common.join_wheres(where, where_) : where_);
 		
-		return common.get_all_strings(source_, SYMBOL, where); 
+		return common.get_all_strings(source_, (is_quick_ ? async_data.get_col(SYMBOL) : SYMBOL), where, is_quick_); 
 	}
 
 	public static boolean symbol_is_active(String source_, String symbol_, int max_mins_inactive_) { return common.exists(source_, common.join_wheres(common.get_where_symbol(source_, symbol_), get_where_active(source_, max_mins_inactive_))); } 
@@ -124,7 +124,7 @@ public abstract class async_data
 	
 	public static boolean update_quick(String source_, String symbol_, HashMap<String, String> vals_) { return common.update_quick(source_, vals_, common.get_where_symbol(source_, symbol_)); }
 
-	public static boolean update_timestamp(String source_, String symbol_, boolean is_quick_) { return common.update(source_, (is_quick_ ? common.get_col(source_, accessory.db.FIELD_TIMESTAMP) : accessory.db.FIELD_TIMESTAMP), dates.get_now_string(dates.FORMAT_TIMESTAMP), common.get_where_symbol(source_, symbol_), is_quick_); }
+	public static boolean update_timestamp(String source_, String symbol_, boolean is_quick_) { return common.update(source_, (is_quick_ ? common.get_col(source_, accessory.db.FIELD_TIMESTAMP) : accessory.db.FIELD_TIMESTAMP), dates.get_now_string(ib.common.FORMAT_TIMESTAMP, 0), common.get_where_symbol(source_, symbol_), is_quick_); }
 	
 	public static boolean insert(String source_, String symbol_) { return common.insert(source_, get_default_vals(source_, symbol_)); }
 

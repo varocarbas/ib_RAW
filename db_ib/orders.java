@@ -87,9 +87,9 @@ public abstract class orders
 		return (order_id == db.WRONG_INT ? ib.common.WRONG_ORDER_ID : order_id);
 	}
 
-	public static double get_quantity(int order_id_main_) 
+	public static double get_quantity(int order_id_main_, boolean is_quick_) 
 	{ 
-		double quantity = common.get_decimal(SOURCE, QUANTITY, get_where_order_id(order_id_main_)); 
+		double quantity = common.get_decimal(SOURCE, get_field_col(QUANTITY, is_quick_), get_where_order_id(order_id_main_), is_quick_); 
 	
 		return (quantity == db.WRONG_DECIMAL ? ib.common.WRONG_QUANTITY : quantity);
 	}
@@ -298,7 +298,23 @@ public abstract class orders
 		return output;
 	}
 
-	public static ArrayList<HashMap<String, String>> get_all_active(String[] fields_cols_, boolean is_quick_) { return common.get_all_vals(SOURCE, fields_cols_, get_where_active(), is_quick_); }
+	public static ArrayList<HashMap<String, String>> get_all_active(String[] fields_cols_, boolean is_quick_) { return get_all_common(fields_cols_, ib.orders.STATUS_ACTIVE, is_quick_); }
+
+	public static ArrayList<HashMap<String, String>> get_all_filled(String[] fields_cols_, boolean is_quick_) { return get_all_common(fields_cols_, ib.orders.STATUS_FILLED, is_quick_); }
+
+	public static ArrayList<HashMap<String, String>> get_all_submitted(String[] fields_cols_, boolean is_quick_) { return get_all_common(fields_cols_, ib.orders.STATUS_SUBMITTED, is_quick_); }
+
+	public static ArrayList<HashMap<String, String>> get_all_common(String[] fields_cols_, String status_, boolean is_quick_) 
+	{ 
+		String status = ib.orders.check_status(status_);
+		if (!strings.is_ok(status)) return null;
+		
+		String where = null;
+		if (status.equals(ib.orders.STATUS_ACTIVE)) where = get_where_active();
+		else where = get_where_status(status);
+		
+		return common.get_all_vals(SOURCE, fields_cols_, where, is_quick_); 
+	}
 
 	public static int get_highest_order_id(boolean is_quick_)
 	{
@@ -490,5 +506,7 @@ public abstract class orders
 
 	private static String get_where_active() { return (new db_where(SOURCE, STATUS, db_where.OPERAND_NOT_EQUAL, orders.get_key_from_status(ib.orders.STATUS_INACTIVE))).toString(); }
 
-	private static String get_where_inactive() { return common.get_where(SOURCE, STATUS, orders.get_key_from_status(ib.orders.STATUS_INACTIVE)); }
+	private static String get_where_inactive() { return get_where_status(ib.orders.STATUS_INACTIVE); }
+
+	private static String get_where_status(String status_) { return common.get_where(SOURCE, STATUS, get_key_from_status(status_)); }
 }

@@ -8,14 +8,6 @@ public abstract class config
 
 	public static boolean update_order(String key_, String val_) { return accessory.config.update(types.CONFIG_ORDERS, key_, val_); }
 
-	public static Object get_async(String key_) { return accessory.config.get(types.CONFIG_ASYNC, key_); }
-
-	public static boolean get_async_boolean(String key_) { return accessory.config.get_boolean(types.CONFIG_ASYNC, key_); }
-
-	public static boolean update_async(String key_, String val_) { return accessory.config.update(types.CONFIG_ASYNC, key_, val_); }
-
-	public static boolean update_async(String key_, boolean val_) { return accessory.config.update(types.CONFIG_ASYNC, key_, val_); }
-
 	public static Object get_contract(String key_) { return accessory.config.get(types.CONFIG_CONTRACT, key_); }
 
 	public static boolean update_contract(String key_, String val_) { return accessory.config.update(types.CONFIG_CONTRACT, key_, val_); }

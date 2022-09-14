@@ -1,19 +1,22 @@
 package external_ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import com.ib.client.Contract;
 import com.ib.client.Order;
 
+import accessory.arrays;
+import accessory.strings;
 import accessory_ib._alls;
 import ib.conn;
 
 public abstract class calls 
 {
 	//--- To be synced with the info from https://interactivebrokers.github.io/tws-api/interfaceIBApi_1_1EWrapper.html#acd761f48771f61dd0fb9e9a7d88d4f04.
+	public static final String NET_LIQUIDATION = "NetLiquidation"; //The basis for determining the price of the assets in your account. Total cash value + stock value + options value + bond value.
 	public static final String TOTAL_CASH_VALUE = "TotalCashValue"; //Total cash balance recognized at the time of trade + futures PNL.
-	public static final String AVAILABLE_FUNDS = "AvailableFunds"; //This value tells what you have available for trading.
 	//---
 	
 	public static void eConnect(String arg0_, int arg1_, int arg2_) { if (conn._client != null) conn._client.eConnect(arg0_, arg1_, arg2_); }
@@ -46,27 +49,48 @@ public abstract class calls
 
 	public static void reqIds() { if (conn._client != null) conn._client.reqIds(-1); }
 
-	public static HashMap<String, String> populate_all_keys_funds()
-	{		
-		HashMap<String, String> all = new HashMap<String, String>();
+	public static ArrayList<String> get_funds_fields(String key_)
+	{
+		ArrayList<String> fields = new ArrayList<String>();
+		if (!strings.is_ok(key_)) return fields;
 		
-		all.put(TOTAL_CASH_VALUE, db_ib.basic.MONEY);
-		all.put(AVAILABLE_FUNDS, db_ib.basic.MONEY_FREE);
+		for (Entry<String, String[]> item: get_all_keys_funds().entrySet())
+		{
+			if (arrays.value_exists(item.getValue(), key_)) fields.add(item.getKey());
+		}
+		
+		return fields;
+	}
+	
+	public static HashMap<String, String[]> populate_all_keys_funds()
+	{		
+		HashMap<String, String[]> all = new HashMap<String, String[]>();
+		
+		all.put(db_ib.basic.MONEY, new String[] { NET_LIQUIDATION });
+		all.put(db_ib.basic.MONEY_FREE, new String[] { TOTAL_CASH_VALUE });
 		
 		return all;
 	}
 	
-	public static HashMap<String, String> get_all_keys_funds() { return _alls.CALLS_KEYS_FUNDS; }
+	public static HashMap<String, String[]> get_all_keys_funds() { return _alls.CALLS_KEYS_FUNDS; }
 
 	private static String get_account_summary_tags()
 	{
 		String output = "";
 		
-		for (Entry<String, String> item: get_all_keys_funds().entrySet()) 
+		ArrayList<String> included = new ArrayList<String>();
+		
+		for (Entry<String, String[]> item: get_all_keys_funds().entrySet()) 
 		{
-			if (output != "") output += ",";
-			
-			output += item.getKey();
+			for (String key: item.getValue())
+			{
+				if (included.contains(key)) continue;
+		
+				included.add(key);
+				
+				if (output != "") output += ",";
+				output += key;
+			}
 		}
 		
 		return output;

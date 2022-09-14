@@ -90,7 +90,7 @@ public abstract class execs
 		double start = get_investment(info);
 		if (start == WRONG_MONEY) return output;
 		
-		double quantity = db_ib.orders.get_quantity(order_id_main_);
+		double quantity = ib.orders.get_quantity(order_id_main_);
 		if (quantity == common.WRONG_QUANTITY) quantity = get_quantity(info);
 		if (quantity == common.WRONG_QUANTITY) return output;
 

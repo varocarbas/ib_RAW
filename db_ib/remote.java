@@ -126,14 +126,19 @@ public abstract class remote extends parent_static
 	
 	public static int __request_start(_order order_, double perc_money_, double price_, boolean is_quick_)
 	{
-		__lock();
-
 		Object vals = to_hashmap(order_, is_quick_);	
 		vals = get_vals_common(get_status2_key_request(), vals, is_quick_);
 		
 		if (perc_money_ > ib.common.WRONG_MONEY) vals = add_to_vals(PERC_MONEY, perc_money_, vals, is_quick_);
 		if (price_ > ib.common.WRONG_PRICE) vals = add_to_vals(PRICE, price_, vals, is_quick_);
-		
+
+		return __insert_new(vals, is_quick_);
+	}
+
+	public static int __insert_new(Object vals_, boolean is_quick_)
+	{
+		__lock();
+
 		int request = ib.common.WRONG_REQUEST;
 		
 		int max = 5;
@@ -145,8 +150,7 @@ public abstract class remote extends parent_static
 			
 			if (request > ib.common.WRONG_REQUEST)
 			{
-				vals = add_to_vals(REQUEST, request, vals, is_quick_);		
-				if (common.insert(SOURCE, vals, is_quick_)) break;	
+				if (common.insert(SOURCE, add_to_vals(REQUEST, request, vals_, is_quick_), is_quick_)) break;	
 			}
 			
 			count++;
@@ -157,12 +161,12 @@ public abstract class remote extends parent_static
 				break;
 			}
 		}		
-		
+
 		__unlock();
 
 		return request;
 	}
-
+	
 	public static boolean request_update_type_order(int request_, String type_, boolean is_quick_)
 	{
 		Object vals = get_vals_common(get_status2_key_request(), is_quick_);
@@ -281,7 +285,7 @@ public abstract class remote extends parent_static
 	{ 
 		Object vals = add_to_vals(TIME2, ib.common.get_current_time2(), vals_, is_quick_);
 		
-		vals = add_to_vals(STATUS2, status2_key_, vals_, is_quick_);
+		vals = add_to_vals(STATUS2, status2_key_, vals, is_quick_);
 		
 		return vals; 
 	}	
@@ -350,13 +354,13 @@ public abstract class remote extends parent_static
 		for (String field: get_fields()) { _cols.put(field, common.get_col(SOURCE, field)); }
 	}	
 	
-	private static String[] get_fields() { return new String[] { SYMBOL, ORDER_ID_MAIN, ORDER_ID_SEC, STATUS, STATUS2, START, START2, STOP, QUANTITY, PERC_MONEY, PRICE, REQUEST, TYPE_ORDER, ERROR, IS_MARKET }; }
+	private static String[] get_fields() { return new String[] { SYMBOL, TIME2, ORDER_ID_MAIN, ORDER_ID_SEC, STATUS, STATUS2, START, START2, STOP, QUANTITY, PERC_MONEY, PRICE, REQUEST, TYPE_ORDER, ERROR, IS_MARKET }; }
 		
 	private static void populate_statuses()
 	{
 		_statuses = new HashMap<String, String>();
 		
-		String[] statuses = new String[] { ib.remote.STATUS_ACTIVE, ib.remote.STATUS_INACTIVE, ib.remote.STATUS_ERROR, ib.remote.STATUS_FIXED };
+		String[] statuses = new String[] { ib.remote.STATUS_ACTIVE, ib.remote.STATUS_INACTIVE, ib.remote.STATUS_ERROR };
 
 		for (String status: statuses) { _statuses.put(status, get_key_from_status_internal(status)); }
 	}
@@ -365,7 +369,7 @@ public abstract class remote extends parent_static
 	{
 		_statuses2 = new HashMap<String, String>();
 		
-		String[] statuses2 = new String[] { ib.remote.STATUS2_PENDING, ib.remote.STATUS2_EXECUTED, ib.remote.STATUS2_ERROR, ib.remote.STATUS2_FIXED };
+		String[] statuses2 = new String[] { ib.remote.STATUS2_PENDING, ib.remote.STATUS2_EXECUTED, ib.remote.STATUS2_ERROR };
 
 		for (String status2: statuses2) { _statuses2.put(status2, get_key_from_status2_internal(status2)); }
 	}

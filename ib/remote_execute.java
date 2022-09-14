@@ -51,9 +51,12 @@ abstract class remote_execute
 			return executed;
 		}
 
+		String symbol = null;
+		int order_id = common.WRONG_ORDER_ID;
+		
 		if (orders.is_place(type))
 		{
-			String symbol = remote.get_symbol(vals_);
+			symbol = remote.get_symbol(vals_);
 			
 			double quantity = remote.get_quantity(vals_);
 			double perc = remote.get_perc_money(vals_);
@@ -87,7 +90,7 @@ abstract class remote_execute
 		}
 		else
 		{
-			int order_id = remote.get_order_id_main(vals_);
+			order_id = remote.get_order_id_main(vals_);
 			
 			if (order_id <= common.WRONG_ORDER_ID) 
 			{
@@ -112,11 +115,10 @@ abstract class remote_execute
 				executed = __update(request, order_id, type, val);
 				
 				if (!executed) update_error_update(request, db_ib.remote.get_symbol(request, remote.is_quick()), type, order_id, val);
-
 			}			
 		}
 
-		if (executed) remote.log(Integer.toString(request) + " (" + type + ") executed successfully");
+		if (executed) remote.log(remote.get_ok_message_default(type, request, symbol, order_id, false));
 		
 		return executed;
 	}
@@ -210,7 +212,7 @@ abstract class remote_execute
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
 		vals.put(db_ib.remote.get_col(db_ib.remote.ORDER_ID_MAIN), order_id_);
-		vals.put(db_ib.remote.get_col(db_ib.remote.TYPE_ORDER), strings.to_string(type_));
+		vals.put(db_ib.remote.get_col(db_ib.remote.TYPE_ORDER), db_ib.remote.get_key_from_type_order(type_));
 		
 		remote.update_error(request_, ERROR_ORDER_ID, vals, type_);		
 	}

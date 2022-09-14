@@ -3,6 +3,7 @@ package ib;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import accessory.arrays;
 import accessory.strings;
 import accessory_ib.types;
 
@@ -69,12 +70,7 @@ public abstract class orders
 		
 		async_orders.__check_all();
 		
-		if (is_inactive(order_id_main_))
-		{
-			deactivate(order_id_main_);
-			
-			output = true;
-		}
+		if (is_inactive(order_id_main_)) output = true;
 		else if (is_filled(order_id_main_)) output = false;
 		else output = sync_orders.cancel(order_id_main_);
 		
@@ -133,7 +129,11 @@ public abstract class orders
 		return val; 
 	}
 
-	public static ArrayList<HashMap<String, String>> get_all_active(String[] fields_cols_) { return db_ib.orders.get_all_active(fields_cols_, _is_quick); }
+	public static ArrayList<HashMap<String, String>> get_all_active(String[] fields_) { return get_all_common(fields_, STATUS_ACTIVE); }
+
+	public static ArrayList<HashMap<String, String>> get_all_filled(String[] fields_) { return get_all_common(fields_, STATUS_FILLED); }
+
+	public static ArrayList<HashMap<String, String>> get_all_submitted(String[] fields_) { return get_all_common(fields_, STATUS_SUBMITTED); }
 
 	public static String get_field_col(String field_) { return db_ib.orders.get_field_col(field_, _is_quick); }
 	
@@ -217,15 +217,37 @@ public abstract class orders
 
 	public static String get_symbol(int order_id_main_) { return db_ib.orders.get_symbol(order_id_main_, _is_quick); }
 
+	public static double get_quantity(int order_id_main_) { return db_ib.orders.get_quantity(order_id_main_, _is_quick); }
+
 	public static int get_highest_order_id() { return db_ib.orders.get_highest_order_id(_is_quick); }
 
+	public static boolean exists(int order_id_main_) { return db_ib.orders.exists(order_id_main_, true); }
+
+	public static HashMap<Integer, String> __get_orders_ib() { return sync.__get_orders(); }
+	
 	static void order_status(int order_id_, String status_ib_) 
 	{ 
 		sync_orders.order_status(order_id_, status_ib_); 
 		
 		async_orders.order_status(order_id_, status_ib_);
 	}
-	
+
+	private static ArrayList<HashMap<String, String>> get_all_common(String[] fields_, String status_) 
+	{		
+		int tot = arrays.get_size(fields_);
+
+		String[] field_cols = null;
+		
+		if (tot > 0)
+		{
+			field_cols = new String[tot];
+			
+			for (int i = 0; i < tot; i++) field_cols[i] = get_field_col(fields_[i]);
+		}
+
+		return db_ib.orders.get_all_common(field_cols, status_, _is_quick);
+	}
+
 	private static boolean order_is_common(int order_id_main_, String target_) { return strings.are_equal(db_ib.orders.get_status(order_id_main_), target_); }	
 	
 	private static boolean order_is_common(String symbol_, String target_) { return strings.are_equal(db_ib.orders.get_status(symbol_), target_); }	

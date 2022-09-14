@@ -15,7 +15,7 @@ public class _alls extends parent_ini_first
 	
 	public static HashMap<String, String> SYNC_GET_OUTS = null;
 
-	public static HashMap<String, String> CALLS_KEYS_FUNDS = null;
+	public static HashMap<String, String[]> CALLS_KEYS_FUNDS = null;
 	
 	public static String[] EXTERNAL_CONTRACTS_SECURITIES = null;
 	
@@ -31,7 +31,6 @@ public class _alls extends parent_ini_first
 	public static String[] DB_SOURCES_USER = null;
 	public static String[] DB_SOURCES_ENABLED = null;
 	public static String[] DB_SOURCES_ELAPSED = null;
-	public static HashMap<String, String> DB_SOURCES_OLD = null;
 	
 	public static HashMap<String, Integer> DB_MAX_SIZES_NUMBERS = null;
 	public static HashMap<String, Integer> DB_MAX_SIZES_STRINGS = null;
@@ -63,7 +62,6 @@ public class _alls extends parent_ini_first
 		DB_SOURCES_USER = db_ib.common.populate_all_sources_user();
 		DB_SOURCES_ENABLED = db_ib.common.populate_all_sources_enabled();
 		DB_SOURCES_ELAPSED = db_ib.common.populate_all_sources_elapsed();
-		DB_SOURCES_OLD = db_ib.common.populate_all_sources_old();
 		
 		DB_MAX_SIZES_NUMBERS = db_ib.common.populate_all_max_sizes_numbers();
 		DB_MAX_SIZES_STRINGS = db_ib.common.populate_all_max_sizes_strings();

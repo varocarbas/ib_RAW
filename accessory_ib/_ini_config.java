@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import accessory.parent_ini_config;
 import external_ib.contracts;
-import ib.async_data;
 import ib.basic;
 import ib._order;
 
@@ -20,7 +19,6 @@ public class _ini_config extends parent_ini_config
 	{
 		load_config_basic();
 		load_config_order();
-		load_config_async();
 		load_config_contract();
 	}
 
@@ -44,17 +42,7 @@ public class _ini_config extends parent_ini_config
 		vals.put(_order.CONFIG_QUANTITIES_INT, _order.DEFAULT_QUANTITIES_INT);
 
 		return populate(type, null, vals);
-	}
-	
-	private boolean load_config_async()
-	{
-		String type = types.CONFIG_ASYNC;
-
-		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(async_data.CONFIG_SNAPSHOT_NONSTOP, async_data.DEFAULT_SNAPSHOT_NONSTOP);
-		
-		return populate(type, null, vals);
-	}
+	}	
 
 	private boolean load_config_contract()
 	{

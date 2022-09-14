@@ -48,7 +48,7 @@ public abstract class market
 		return true; 
 	}
 	
-	public static HashMap<String, String> get_val(String symbol_) { return common.get_vals(SOURCE, null, common.get_where_symbol(SOURCE, symbol_)); }
+	public static HashMap<String, String> get_vals(String symbol_, String[] field_cols_, boolean is_quick_) { return common.get_vals(SOURCE, field_cols_, common.get_where_symbol(SOURCE, symbol_), is_quick_); }
 	
 	public static String[] get_fields() { return new String[] { SYMBOL, PRICE, SIZE, TIME, OPEN, CLOSE, LOW, HIGH, VOLUME, ASK, ASK_SIZE, BID, BID_SIZE, HALTED, HALTED_TOT, ENABLED }; }
 

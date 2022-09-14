@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import accessory.arrays;
+import accessory.db;
 import accessory.strings;
 import ib.ini_basic;
 
@@ -19,21 +20,23 @@ public abstract class basic
 	public static final String CURRENCY = common.FIELD_CURRENCY;
 	public static final String MONEY_FREE = common.FIELD_MONEY_FREE;
 	
-	public static final double WRONG_MONEY2 = ib.common.WRONG_MONEY2;
+	public static final double WRONG_MONEY = ib.common.WRONG_MONEY;
 	
 	public static void __truncate() { common.__truncate(SOURCE); }
 	
 	public static void __backup() { common.__backup(SOURCE); }	
 
-	public static void __start() 
+	public static void __start() { __truncate_others(true); }
+	
+	public static void __truncate_others(boolean only_if_not_active_)
 	{
-		execs.__truncate(true);
+		execs.__truncate(only_if_not_active_);
 		
-		orders.__truncate(true);
+		orders.__truncate(only_if_not_active_);
 		
-		remote.__truncate(true);
+		remote.__truncate(only_if_not_active_);
 		
-		trades.__truncate(true);
+		trades.__truncate(only_if_not_active_);		
 	}
 	
 	public static boolean exists() { return common.exists(SOURCE, get_where_user()); }
@@ -42,24 +45,25 @@ public abstract class basic
 
 	public static String get_account_ib() { return common.get_string(SOURCE, ACCOUNT_IB, get_where_user()); }
 
-	public static double get_money() { return common.get_decimal(SOURCE, MONEY, get_where_user()); }
-
-	public static double get_money_ini() { return common.get_decimal(SOURCE, MONEY_INI, get_where_user()); }
-
-	public static double get_money_free() { return common.get_decimal(SOURCE, MONEY_FREE, get_where_user()); }
-
-	public static HashMap<String, Double> get_money_and_free() 
+	public static double get_money() 
 	{ 
-		HashMap<String, Double> output = new HashMap<String, Double>();
-		
-		String[] fields = new String[] { MONEY, MONEY_FREE };
-		
-		HashMap<String, String> temp = common.get_vals(SOURCE, fields, get_where_user()); 
-		if (!arrays.is_ok(temp)) return output;
+		double output = common.get_decimal(SOURCE, MONEY, get_where_user()); 
 	
-		for (String field: fields) { output.put(field, Double.parseDouble(temp.get(field))); }
-	
-		return output;
+		return (output == db.WRONG_DECIMAL ? WRONG_MONEY : output);
+	}
+
+	public static double get_money_ini() 
+	{ 
+		double output = common.get_decimal(SOURCE, MONEY_INI, get_where_user()); 
+		
+		return (output == db.WRONG_DECIMAL ? WRONG_MONEY : output);
+	}
+
+	public static double get_money_free() 
+	{ 
+		double output = common.get_decimal(SOURCE, MONEY_FREE, get_where_user()); 
+
+		return (output == db.WRONG_DECIMAL ? WRONG_MONEY : output);
 	}
 
 	public static boolean update_user_ini(String val_) { return common.insert_update(SOURCE, USER, val_, get_where_user(val_)); }
@@ -91,7 +95,7 @@ public abstract class basic
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		for (Entry<String, Double> item: vals_.entrySet()) { vals.put(item.getKey(), adapt_money(item.getValue())); }
 		
-		return basic.update(vals);
+		return update(vals);
 	}
 	
 	public static boolean update_money_common(String field_, double val_) { return update(field_, adapt_money(val_)); }
@@ -112,7 +116,7 @@ public abstract class basic
 	{
 		double val = common.adapt_number(val_, common.FIELD_MONEY);
 		
-		return (ib.common.money_is_ok(val) ? val : WRONG_MONEY2);
+		return (ib.common.money_is_ok(val) ? val : ib.common.WRONG_MONEY2);
 	}
 	
 	private static String get_where_user() { return get_where_user(ini_basic.get_user()); }

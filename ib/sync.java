@@ -10,6 +10,7 @@ import accessory.misc;
 import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
+import accessory.arrays;
 import accessory.dates;
 import accessory_ib._alls;
 import accessory_ib.errors;
@@ -188,7 +189,30 @@ public abstract class sync extends parent_static
 			
 		end_get(); 
 	}
-	
+
+	static HashMap<String, Double> get_funds(ArrayList<String> keys_, ArrayList<Double> vals_)
+	{
+		HashMap<String, Double> funds = new HashMap<String, Double>();
+		if (keys_.size() != vals_.size()) return funds;
+
+		for (int i = 0; i < keys_.size(); i++)
+		{
+			ArrayList<String> fields = calls.get_funds_fields(keys_.get(i));
+			if (!arrays.is_ok(fields)) continue;
+			
+			double val = vals_.get(i);
+			
+			for (String field: fields)
+			{
+				if (funds.containsKey(field)) val += funds.get(field);
+				
+				funds.put(field, val);				
+			}
+		}
+
+		return funds;
+	}
+
 	@SuppressWarnings("unchecked")
 	private static HashMap<Integer, String> _get_orders(boolean lock_) 
 	{
@@ -290,30 +314,12 @@ public abstract class sync extends parent_static
 				_out_strings = new ArrayList<String>();
 				_out_decimals = new ArrayList<Double>();
 			}
-			else 
-			{
-				HashMap<String, Double> funds = new HashMap<String, Double>();
-
-				HashMap<String, String> keys = calls.get_all_keys_funds();
-				
-				for (int i = 0; i < _out_strings.size(); i++)
-				{
-					String key = _out_strings.get(i);
-					if (!keys.containsKey(key)) continue;
-					
-					String field = keys.get(key);
-					double val = _out_decimals.get(i);
-					
-					funds.put(field, val);
-				}
-
-				output = funds;
-			}
+			else output = get_funds(_out_strings, _out_decimals); 
 		}
 		
 		return output;
 	}
-
+	
 	private static String get_out_type(String get_) { return get_all_get_outs().get(get_); }
 	
 	private static boolean get_call(String get_)

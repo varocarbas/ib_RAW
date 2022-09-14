@@ -51,7 +51,7 @@ public class tests extends parent_tests
 			common.SOURCE_ORDERS, common.SOURCE_TRADES, common.SOURCE_WATCHLIST, common.SOURCE_APPS,
 		};
 
-		HashMap<String, String> olds = db_ib.common.get_all_sources_old();
+		HashMap<String, String> olds = db_ib.common.get_sources_old();
 		
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
 		

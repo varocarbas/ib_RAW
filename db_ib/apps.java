@@ -128,7 +128,7 @@ public abstract class apps
 		return common.insert_update(SOURCE, vals_, get_where_app()); 
 	}
 	
-	public static boolean update_time() { return common.insert_update(SOURCE, TIME2, ib.common.get_current_time2(), get_where_app()); }
+	public static boolean update_time(boolean is_quick_) { return common.update(SOURCE, common.get_field_col(SOURCE, TIME2, is_quick_), ib.common.get_current_time2(), get_where_app(), is_quick_); }
 	
 	public static String get_key_from_status(String status_) { return common.get_key_from_type(status_, ib.apps.STATUS); }
 

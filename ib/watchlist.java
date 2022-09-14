@@ -11,6 +11,8 @@ public abstract class watchlist extends parent_static
 	public static boolean logs_to_screen() { return async_data_watchlist.logs_to_screen(); }
 
 	public static void logs_to_screen(boolean logs_to_screen_) { async_data_watchlist.logs_to_screen(logs_to_screen_); }
+
+	public static int max_simultaneous_symbols() { return async_data_watchlist.MAX_SIMULTANEOUS_SYMBOLS; }
 	
 	public static boolean add(String symbol_) { return async_data_watchlist.start(symbol_); }
 
