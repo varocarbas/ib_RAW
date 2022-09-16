@@ -87,8 +87,10 @@ public abstract class orders
 
 	public static boolean is_filled(String symbol_) { return order_is_common(symbol_, STATUS_FILLED); }	
 
-	public static boolean __is_filled_ib(int order_id_main_) { return sync_orders.is_filled(order_id_main_, sync.__get_orders()); }	
-	
+	public static boolean __is_filled_ib(int order_id_main_) { return is_filled_ib(order_id_main_, sync.__get_orders()); }	
+
+	public static boolean is_filled_ib(int order_id_main_, HashMap<Integer, String> orders_) { return sync_orders.is_filled(order_id_main_, orders_); }	
+
 	public static boolean is_inactive(int order_id_main_) { return is_inactive(order_id_main_, true); }	
 
 	public static boolean is_inactive(int order_id_main_, boolean check_exists_) { return ((!check_exists_ || (check_exists_ && !db_ib.orders.exists(order_id_main_, true))) || order_is_common(order_id_main_, STATUS_INACTIVE)); }	
@@ -103,9 +105,15 @@ public abstract class orders
 	
 	public static boolean is_active(String symbol_) { return !is_inactive(symbol_); }	
 
+	public static boolean is_order_id_main(int order_id_) { return db_ib.orders.exists(order_id_, true); }	
+
+	public static boolean is_order_id_sec(int order_id_) { return db_ib.orders.exists(order_id_, false); }
+	
 	public static int get_last_id_main() { return sync_orders._last_id_main; }
 
 	public static int get_last_id_sec() { return sync_orders._last_id_sec; }
+	
+	public static int get_order_id_main(int order_id_sec_) { return db_ib.orders.get_order_id_main(order_id_sec_, _is_quick); }
 	
 	public static String get_type(String input_, boolean is_status_) { return (is_status_ ? db_ib.orders.get_status_from_key(input_) : db_ib.orders.get_type_place_from_key(input_)); }
 

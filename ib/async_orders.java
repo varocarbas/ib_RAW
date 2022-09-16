@@ -2,6 +2,7 @@ package ib;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import accessory.arrays;
 import accessory.parent_static;
@@ -20,29 +21,56 @@ abstract class async_orders extends parent_static
 	public static void __check_all() { __check_db(); }
 	
 	public static void __check_db()
-	{	
-		ArrayList<HashMap<String, String>> db = ib.orders.get_all_active(new String[] { db_ib.orders.ORDER_ID_MAIN, db_ib.orders.STATUS });
-		if (!arrays.is_ok(db)) return;
-	
+	{
+		ArrayList<HashMap<String, String>> db = arrays.get_new(ib.orders.get_all_active(new String[] { db_ib.orders.ORDER_ID_MAIN, db_ib.orders.STATUS }));
 		HashMap<Integer, String> orders = arrays.get_new_hashmap_xy(sync.__get_orders());
 
-		for (HashMap<String, String> item: db)
+		check_db_orders(orders, check_db_db(db, orders));
+	}
+	
+	private static ArrayList<Integer> check_db_db(ArrayList<HashMap<String, String>> db_, HashMap<Integer, String> orders_)
+	{
+		ArrayList<Integer> active = new ArrayList<Integer>();
+
+		for (HashMap<String, String> item: db_)
 		{
-			int order_id = Integer.parseInt(item.get(ib.orders.get_field_col(db_ib.orders.ORDER_ID_MAIN)));
+			int order_id = Integer.parseInt(item.get(orders.get_field_col(db_ib.orders.ORDER_ID_MAIN)));
 			if (order_id <= ib.common.WRONG_ORDER_ID) continue;
 			
-			String status = db_ib.orders.get_status_from_key(item.get(ib.orders.get_field_col(db_ib.orders.STATUS)));
+			active.add(order_id);
+			
+			String status = db_ib.orders.get_status_from_key(item.get(orders.get_field_col(db_ib.orders.STATUS)));
 			if (!strings.is_ok(status)) continue;
 		
 			String status2 = null;
 			
-			if (sync_orders.is_filled(order_id, orders)) status2 = ib.orders.STATUS_FILLED;
-			else if (sync_orders.is_inactive(order_id, orders)) status2 = ib.orders.STATUS_INACTIVE;
-			else if (orders.containsKey(order_id) && !external_ib.orders.status_in_progress(orders.get(order_id))) status2 = ib.orders.get_status(orders.get(order_id), true);
+			if (sync_orders.is_filled(order_id, orders_)) status2 = orders.STATUS_FILLED;
+			else if (sync_orders.is_inactive(order_id, orders_)) status2 = orders.STATUS_INACTIVE;
+			else if (orders_.containsKey(order_id) && !external_ib.orders.status_in_progress(orders_.get(order_id))) status2 = orders.get_status(orders_.get(order_id), true);
 			
-			if (!strings.is_ok(status2) || status.equals(status2) || status.equals(ib.orders.STATUS_FILLED)) continue;
+			if (!strings.is_ok(status2) || status2.equals(ib.orders.STATUS_INACTIVE) || strings.matches_any(status, new String[] { status2, orders.STATUS_FILLED }, false)) continue;
 			
-			ib.orders.update_status(order_id, status2);
+			orders.update_status(order_id, status2);
 		}
+				
+		return active;
 	}
+	
+	private static void check_db_orders(HashMap<Integer, String> orders_, ArrayList<Integer> active_)
+	{
+		for (Entry<Integer, String> order: orders_.entrySet())
+		{
+			int order_id = order.getKey();
+			String status = orders.get_status(order.getValue(), true);
+			
+			if (active_.contains(order_id) || !strings.is_ok(status) || strings.matches_any(status, new String[] { orders.STATUS_IN_PROGRESS, orders.STATUS_INACTIVE }, false)) continue;
+					
+			if (orders.is_order_id_main(order_id)) orders.update_status(order_id, status);
+			else if (orders.is_order_id_sec(order_id))
+			{
+				int order_id_main = orders.get_order_id_main(order_id);
+				if (order_id_main != common.WRONG_ORDER_ID && sync_orders.is_filled(order_id_main, orders_)) orders.update_status(order_id_main, orders.STATUS_FILLED);
+			}
+		}		
+	}	
 }

@@ -347,7 +347,7 @@ public abstract class remote
 		if (perc > MAX_PERC_MONEY) perc = MAX_PERC_MONEY;	
 		
 		investment = money * perc / 100.0;			
-		if (investment > free) investment = free;
+		if (investment > free) investment = MAX_PERC_MONEY * free / 100;
 		
 		return investment;
 	}

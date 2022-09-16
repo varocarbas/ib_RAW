@@ -102,21 +102,21 @@ abstract class sync_orders extends parent_static
 		return true;
 	}
 
-	public static boolean is_filled(int order_id_, HashMap<Integer, String> orders_) { return is_common(order_id_, orders.STATUS_FILLED, orders_); }	
+	public static boolean is_filled(int order_id_main_, HashMap<Integer, String> orders_) { return is_common(order_id_main_, orders.STATUS_FILLED, orders_); }	
 
-	public static boolean is_submitted(int order_id_, HashMap<Integer, String> orders_) { return is_common(order_id_, orders.STATUS_SUBMITTED, orders_); }
+	public static boolean is_submitted(int order_id_main_, HashMap<Integer, String> orders_) { return is_common(order_id_main_, orders.STATUS_SUBMITTED, orders_); }
 	
-	public static boolean is_inactive(int order_id_, HashMap<Integer, String> orders_) { return is_common(order_id_, orders.STATUS_INACTIVE, orders_); }
+	public static boolean is_inactive(int order_id_main_, HashMap<Integer, String> orders_) { return is_common(order_id_main_, orders.STATUS_INACTIVE, orders_); }
 
-	private static boolean is_common(int order_id_, String target_, HashMap<Integer, String> orders_)
+	private static boolean is_common(int order_id_main_, String target_, HashMap<Integer, String> orders_)
 	{
 		boolean output = false;
-		if (order_id_ <= common.WRONG_ORDER_ID) return output;
+		if (order_id_main_ <= common.WRONG_ORDER_ID) return output;
 	
 		String target = orders.check_status(target_);
 		if (!strings.is_ok(target)) return output;
 		
-		String status_ib = (String)arrays.get_value(orders_, order_id_);
+		String status_ib = (String)arrays.get_value(orders_, order_id_main_);
 		if (external_ib.orders.status_in_progress(status_ib)) return output;
 
 		boolean is_filled = false;
@@ -125,7 +125,7 @@ abstract class sync_orders extends parent_static
 		if (exists) is_filled = orders.is_status(status_ib, orders.STATUS_FILLED);
 		else 
 		{
-			String status2 = ib.orders.get_status((String)arrays.get_value(orders_, _order.get_id_sec(order_id_)), true);
+			String status2 = ib.orders.get_status((String)arrays.get_value(orders_, _order.get_id_sec(order_id_main_)), true);
 			
 			is_filled = (strings.is_ok(status2) && !strings.matches_any(status2, new String[] { ib.orders.STATUS_FILLED, ib.orders.STATUS_INACTIVE }, false));
 		} 
@@ -134,7 +134,7 @@ abstract class sync_orders extends parent_static
 		{
 			output = target.equals(orders.STATUS_FILLED);
 			
-			ib.orders.update_status(order_id_, orders.STATUS_FILLED);
+			ib.orders.update_status(order_id_main_, orders.STATUS_FILLED);
 		}
 		else if (!exists) output = target.equals(orders.STATUS_INACTIVE);
 		else output = orders.is_status(status_ib, target);

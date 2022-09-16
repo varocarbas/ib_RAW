@@ -94,6 +94,13 @@ public abstract class orders
 		return (quantity == db.WRONG_DECIMAL ? ib.common.WRONG_QUANTITY : quantity);
 	}
 
+	public static int get_order_id_main(int order_id_sec_, boolean is_quick_) 
+	{ 
+		int order_id_main = common.get_int(SOURCE, get_field_col(ORDER_ID_MAIN, is_quick_), get_where_order_id(order_id_sec_, false), is_quick_); 
+		
+		return (order_id_main == db.WRONG_INT ? ib.common.WRONG_ORDER_ID : order_id_main);
+	}
+
 	public static String get_field_update(String type_update_) 
 	{
 		String field = strings.DEFAULT;
