@@ -458,7 +458,7 @@ public abstract class orders
 		return _fields;
 	}
 	
-	private static void populate_fields() { _fields = new String[] { SYMBOL, ORDER_ID_MAIN, ORDER_ID_SEC, STATUS, START, START2, STOP, IS_MARKET, TYPE_PLACE, TYPE_MAIN, TYPE_SEC, QUANTITY }; }	
+	private static void populate_fields() { _fields = new String[] { db.FIELD_ID, db.FIELD_TIMESTAMP, SYMBOL, ORDER_ID_MAIN, ORDER_ID_SEC, STATUS, START, START2, STOP, IS_MARKET, TYPE_PLACE, TYPE_MAIN, TYPE_SEC, QUANTITY }; }	
 
 	private static String get_status_common(String where_) { return common.get_type(SOURCE, STATUS, ib.orders.STATUS, where_); }
 

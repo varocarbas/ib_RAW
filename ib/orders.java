@@ -37,22 +37,22 @@ public abstract class orders
 
 	public static final int MIN_ORDER_ID = 0;
 	
-	public static final String DEFAULT_STATUS = STATUS_ACTIVE;
+	public static final String DEFAULT_STATUS = STATUS_SUBMITTED;
 	public static final boolean DEFAULT_IS_QUICK = true;
 	
 	private static boolean _is_quick = DEFAULT_IS_QUICK;
 
 	public static boolean is_quick() { return _is_quick; }
 
-	public static boolean __place_market(String symbol_, double quantity_, double stop_) { return sync_orders.__place(PLACE_MARKET, symbol_, quantity_, stop_, common.WRONG_PRICE); }
+	public static boolean place_market(String symbol_, double quantity_, double stop_) { return sync_orders.place(PLACE_MARKET, symbol_, quantity_, stop_, common.WRONG_PRICE); }
 
-	public static boolean __place_stop(String symbol_, double quantity_, double stop_, double start_) { return sync_orders.__place(PLACE_STOP, symbol_, quantity_, stop_, start_); }
+	public static boolean place_stop(String symbol_, double quantity_, double stop_, double start_) { return sync_orders.place(PLACE_STOP, symbol_, quantity_, stop_, start_); }
 
-	public static boolean __place_limit(String symbol_, double quantity_, double stop_, double start_) { return sync_orders.__place(PLACE_LIMIT, symbol_, quantity_, stop_, start_); }
+	public static boolean place_limit(String symbol_, double quantity_, double stop_, double start_) { return sync_orders.place(PLACE_LIMIT, symbol_, quantity_, stop_, start_); }
 
-	public static boolean __place_stop_limit(String symbol_, double quantity_, double stop_, double start_limit_, double start_stop_) { return sync_orders.__place(PLACE_STOP_LIMIT, symbol_, quantity_, stop_, start_limit_, start_stop_); }
+	public static boolean place_stop_limit(String symbol_, double quantity_, double stop_, double start_limit_, double start_stop_) { return sync_orders.place(PLACE_STOP_LIMIT, symbol_, quantity_, stop_, start_limit_, start_stop_); }
 
-	public static boolean __update(int id_, String type_, double val_) { return sync_orders.__update(sync_orders.__get_order(id_), check_update(type_), val_); }
+	public static boolean update(int id_, String type_, double val_) { return sync_orders.update(sync_orders.__get_order(id_), check_update(type_), val_); }
 
 	public static boolean __update_start(String symbol_, double start_) { return sync_orders.__update(symbol_, UPDATE_START_VALUE, start_); }
 

@@ -12,6 +12,10 @@ public abstract class remote
 {
 	public static final String _ID = "remote";
 	
+	public static final String REQUEST_OK = remote_request.REQUEST_OK;
+	public static final String REQUEST_ERROR = remote_request.REQUEST_ERROR;
+	public static final String REQUEST_IGNORED = remote_request.REQUEST_IGNORED;
+	
 	public static final String STATUS = types.REMOTE_STATUS;
 	public static final String STATUS_ACTIVE = types.REMOTE_STATUS_ACTIVE;
 	public static final String STATUS_INACTIVE = types.REMOTE_STATUS_INACTIVE;
@@ -81,13 +85,13 @@ public abstract class remote
 
 	public static int __request_place_perc(String type_place_, String symbol_, double stop_, double start_, double start2_, double perc_money_, double price_, boolean wait_for_execution_) { return remote_request.__place_perc(type_place_, symbol_, stop_, start_, start2_, perc_money_, price_, wait_for_execution_); }
 
-	public static boolean __request_cancel(int request_) { return __request_cancel(request_, DEFAULT_WAIT_FOR_EXECUTION); }
+	public static String __request_cancel(int request_) { return __request_cancel(request_, DEFAULT_WAIT_FOR_EXECUTION); }
 
-	public static boolean __request_cancel(int request_, boolean wait_for_execution_) { return remote_request.__cancel(request_, wait_for_execution_); }
+	public static String __request_cancel(int request_, boolean wait_for_execution_) { return remote_request.__cancel(request_, wait_for_execution_); }
 
-	public static boolean __request_update(int request_, String type_update_, double val_) { return __request_update(request_, type_update_, val_, DEFAULT_WAIT_FOR_EXECUTION); }
+	public static String __request_update(int request_, String type_update_, double val_) { return __request_update(request_, type_update_, val_, DEFAULT_WAIT_FOR_EXECUTION); }
 
-	public static boolean __request_update(int request_, String type_update_, double val_, boolean wait_for_execution_) { return remote_request.__update(request_, type_update_, val_, wait_for_execution_); }
+	public static String __request_update(int request_, String type_update_, double val_, boolean wait_for_execution_) { return remote_request.__update(request_, type_update_, val_, wait_for_execution_); }
 
 	public static void __execute_all() { remote_execute.__execute_all(); }
 
@@ -109,7 +113,7 @@ public abstract class remote
 
 	public static String get_status2_execute(boolean is_ok_) { return (is_ok_ ? remote.STATUS2_EXECUTED : remote.STATUS2_ERROR); }
 
-	public static HashMap<String, Object> __get_quantity(String symbol_, double quantity_, double perc_money_, double price_)
+	public static HashMap<String, Object> get_quantity(String symbol_, double quantity_, double perc_money_, double price_)
 	{
 		HashMap<String, Object> output = new HashMap<String, Object>();
 		
@@ -121,7 +125,7 @@ public abstract class remote
 			if (!common.price_is_ok(price)) price = common.get_price(symbol_);
 			if (!common.price_is_ok(price)) return null;
 			
-			double investment = __get_investment(perc_money_, true);
+			double investment = get_investment(perc_money_, true);
 			if (investment <= WRONG_MONEY2) return null;
 			
 			quantity = investment / price;
@@ -134,7 +138,7 @@ public abstract class remote
 		return output;
 	}
 
-	public static double __get_investment(double perc_) { return __get_investment(perc_, false); }
+	public static double get_investment(double perc_) { return get_investment(perc_, false); }
 
 	public static int get_order_id_main(int request_) { return db_ib.remote.get_order_id(request_, _is_quick); }
 
@@ -162,6 +166,8 @@ public abstract class remote
 
 	public static String get_symbol(HashMap<String, String> vals_) { return (String)db_ib.remote.get_val(db_ib.remote.SYMBOL, vals_, _is_quick); }
 
+	public static String get_type_order(int request_) { return db_ib.remote.get_type_order(request_, _is_quick); }
+
 	public static boolean get_is_market(HashMap<String, String> vals_) { return (boolean)db_ib.remote.get_val(db_ib.remote.IS_MARKET, vals_, _is_quick); }
 
 	public static double get_stop(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.STOP, vals_, _is_quick); }
@@ -175,22 +181,21 @@ public abstract class remote
 	public static double get_perc_money(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.PERC_MONEY, vals_, _is_quick); }
 
 	public static double get_price(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.PRICE, vals_, _is_quick); }
-	
-	public static boolean __order_id_is_ok(int order_id_main_, boolean is_cancel_) 
-	{ 		
-		boolean is_ok = false;
+
+	public static void update_error_place(int request_, String symbol_, String type_, double quantity_, double stop_, double start_, double start2_, boolean is_request_)
+	{
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+
+		String type = strings.to_string(type_);
 		
-		orders.__sync_db();
+		vals.put(db_ib.remote.get_col(db_ib.remote.SYMBOL), strings.to_string(symbol_));
+		vals.put(db_ib.remote.get_col(db_ib.remote.TYPE_ORDER), db_ib.remote.get_key_from_type_order(type));
+		vals.put(db_ib.remote.get_col(db_ib.remote.QUANTITY), quantity_);
+		vals.put(db_ib.remote.get_col(db_ib.remote.STOP), stop_);
+		vals.put(db_ib.remote.get_col(db_ib.remote.START), start_);
+		vals.put(db_ib.remote.get_col(db_ib.remote.START2), start2_);
 		
-		if (orders.is_filled(order_id_main_))
-		{
-			if (!is_cancel_) is_ok = true;
-		}
-		else if (orders.is_active(order_id_main_)) is_ok = true;
-		
-		if (!is_ok) db_ib.remote.deactivate_order_id(order_id_main_);
-		
-		return is_ok;
+		update_error(request_, (is_request_ ? remote_request.ERROR_PLACE : remote_execute.ERROR_PLACE), vals, type);		
 	}
 
 	static boolean order_was_updated(HashMap<String, String> vals_)
@@ -228,22 +233,6 @@ public abstract class remote
 		if (request_ > common.WRONG_REQUEST) db_ib.remote.update_error(request_, message, type_order_, _is_quick); 
 	
 		errors.manage(type, message);
-	}
-
-	public static void update_error_place(int request_, String symbol_, String type_, double quantity_, double stop_, double start_, double start2_, boolean is_request_)
-	{
-		HashMap<String, Object> vals = new HashMap<String, Object>();
-
-		String type = strings.to_string(type_);
-		
-		vals.put(db_ib.remote.get_col(db_ib.remote.SYMBOL), strings.to_string(symbol_));
-		vals.put(db_ib.remote.get_col(db_ib.remote.TYPE_ORDER), db_ib.remote.get_key_from_type_order(type));
-		vals.put(db_ib.remote.get_col(db_ib.remote.QUANTITY), quantity_);
-		vals.put(db_ib.remote.get_col(db_ib.remote.STOP), stop_);
-		vals.put(db_ib.remote.get_col(db_ib.remote.START), start_);
-		vals.put(db_ib.remote.get_col(db_ib.remote.START2), start2_);
-		
-		update_error(request_, (is_request_ ? remote_request.ERROR_PLACE : remote_execute.ERROR_PLACE), vals, type);		
 	}
 
 	static void update_error_place(int request_, String symbol_, String type_, double price_, double perc_, double stop_, double start_, double start2_, boolean is_request_)
@@ -312,33 +301,33 @@ public abstract class remote
 		if (_logs_to_file) logs.update_file(message_, _path_logs, false, true); 
 	}
 	
-	private static double __get_investment(double perc_, boolean log_)
+	private static double get_investment(double perc_, boolean log_)
 	{
 		double investment = WRONG_MONEY2;
 		if (!common.percent_is_ok(perc_, false)) return investment;
 		
-		HashMap<String, Double> money_ib = ib.basic.__get_money_ib();
-		if (!arrays.is_ok(money_ib)) 
+		HashMap<String, Double> money_all = ib.basic.get_money_and_free();
+		if (!arrays.is_ok(money_all)) 
 		{
 			if (log_) log("not enough money");
 
 			return investment;
 		}
 		
-		double money = money_ib.get(ib.basic.MONEY);	
+		double money = money_all.get(db_ib.basic.MONEY);	
 		if (money <= basic.WRONG_MONEY2) 
 		{
-			if (log_) log("not enough money (" + strings.to_string(money_ib) + ")");
+			if (log_) log("not enough money (" + strings.to_string(money_all) + ")");
 
 			return investment;
 		}
 
-		double free = money_ib.get(ib.basic.MONEY_FREE);
+		double free = money_all.get(db_ib.basic.MONEY_FREE);
 		double free_min = money * MIN_PERC_FREE / 100.0;
 
 		if (free < free_min)
 		{
-			if (log_) log("not enough money (" + strings.to_string(money_ib) + ")");
+			if (log_) log("not enough money (" + strings.to_string(money_all) + ")");
 			
 			return investment;
 		}

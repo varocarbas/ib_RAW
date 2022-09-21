@@ -66,6 +66,20 @@ public abstract class basic
 		return (output == db.WRONG_DECIMAL ? WRONG_MONEY : output);
 	}
 
+	public static HashMap<String, Double> get_money_and_free()
+	{
+		HashMap<String, Double> output = new HashMap<String, Double>();
+		
+		String[] fields = new String[] { MONEY, MONEY_FREE };
+		
+		HashMap<String, String> temp = common.get_vals(SOURCE, fields, get_where_user());
+		if (!arrays.is_ok(temp)) return output;
+		
+		for (String field: fields) { output.put(field, Double.parseDouble(temp.get(field))); }
+		
+		return output;
+	}
+	
 	public static boolean update_user_ini(String val_) { return common.insert_update(SOURCE, USER, val_, get_where_user(val_)); }
 
 	public static boolean update_user(String val_) { return (strings.is_ok(ini_basic.get_user()) ? update_user() : update(USER, val_)); }

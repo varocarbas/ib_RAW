@@ -128,6 +128,8 @@ public abstract class basic extends parent_static
 		return (output == db_ib.basic.WRONG_MONEY ? WRONG_MONEY2 : output);
 	}	
 
+	public static HashMap<String, Double> get_money_and_free() { return db_ib.basic.get_money_and_free(); }
+	
 	public static void update_money() { async_basic.get_funds(); }
 	
 	public static void __update_money() { __update_money(false); }

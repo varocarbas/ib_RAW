@@ -62,7 +62,7 @@ abstract class remote_execute
 			double perc = remote.get_perc_money(vals_);
 			double price = remote.get_price(vals_);
 			
-			HashMap<String, Object> temp = remote.__get_quantity(symbol, quantity, perc, price);			
+			HashMap<String, Object> temp = remote.get_quantity(symbol, quantity, perc, price);			
 			if (!arrays.is_ok(temp)) 
 			{
 				update_error_quantity(request, quantity, perc, price);
@@ -128,7 +128,7 @@ abstract class remote_execute
 		_order order = new _order(type_place_, symbol_, quantity_, stop_, start_, start2_);
 		if (!order.is_ok()) return false;
 
-		boolean is_ok = sync_orders.__place_update(order);
+		boolean is_ok = sync_orders.place_update(order);
 		boolean is_quick = remote.is_quick();		
 
 		Object vals = db_ib.remote.add_to_vals(db_ib.remote.ORDER_ID_MAIN, order.get_id_main(), null, is_quick);
@@ -172,7 +172,7 @@ abstract class remote_execute
 		if (start != common.WRONG_PRICE) vals = db_ib.remote.add_to_vals(db_ib.remote.START, start, vals, is_quick);
 		if (start2 != common.WRONG_PRICE) vals = db_ib.remote.add_to_vals(db_ib.remote.START2, start2, vals, is_quick);
 
-		is_ok = sync_orders.__place_update(order, type_update, val_);
+		is_ok = sync_orders.place_update(order, type_update, val_);
 		vals = db_ib.remote.get_vals_common(db_ib.remote.get_status2_key_execute(is_ok), vals, is_quick);
 		
 		db_ib.remote.update(request_, vals, is_quick);

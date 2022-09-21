@@ -1,6 +1,5 @@
 package ib;
 
-import accessory.dates;
 import accessory.logs;
 import accessory.strings;
 import accessory_ib._defaults;
@@ -15,7 +14,7 @@ public abstract class apps
 
 	public static final String DEFAULT_APP_NAME = _defaults.APP_NAME;
 	public static final String DEFAULT_STATUS = STATUS_STOPPED;
-	public static final long DEFAULT_APP_OK_DELAY_SECS = 60;
+	public static final long DEFAULT_APP_OK_DELAY_SECS = 60l;
 	public static final boolean DEFAULT_IS_QUICK = true;
 	
 	private static boolean _is_quick = DEFAULT_IS_QUICK;
@@ -60,12 +59,7 @@ public abstract class apps
 
 	public static boolean app_running_ok(String app_) { return app_running_ok(app_, DEFAULT_APP_OK_DELAY_SECS); }
 
-	public static boolean app_running_ok(String app_, long delay_secs_)
-	{
-		String time = db_ib.apps.get_time(app_, STATUS_RUNNING, _is_quick);
-		
-		return (strings.is_ok(time) && !dates.target_met(dates.time_from_string(time), dates.UNIT_SECONDS, delay_secs_));
-	}
+	public static boolean app_running_ok(String app_, long delay_secs_) { return common.time2_is_ok(db_ib.apps.get_time(app_, STATUS_RUNNING, _is_quick), delay_secs_); }
 	
 	public static String get_app_name() { return get_app_name(false); }
 	

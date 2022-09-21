@@ -13,6 +13,10 @@ abstract class remote_request extends parent_static
 {
 	public static final long TIMEOUT = 10l;
 
+	public static final String REQUEST_OK = types.REMOTE_REQUEST_OK;
+	public static final String REQUEST_ERROR = types.REMOTE_REQUEST_ERROR;
+	public static final String REQUEST_IGNORED = types.REMOTE_REQUEST_IGNORED;
+	
 	public static final String ERROR = types.ERROR_IB_REMOTE_REQUEST; 
 	public static final String ERROR_REQUEST = types.ERROR_IB_REMOTE_REQUEST_REQUEST; 
 	public static final String ERROR_PLACE = types.ERROR_IB_REMOTE_REQUEST_PLACE; 
@@ -92,70 +96,73 @@ abstract class remote_request extends parent_static
 		
 		return request;
 	}
-	
-	public static boolean __cancel(int request_, boolean wait_for_execution_) 
-	{ 	
-		if (!__can_cancel(request_)) return true;
 		
-		if (!__is_ok(request_, true))
+	public static String __cancel(int request_, boolean wait_for_execution_) 
+	{ 	
+		if (!can_request(request_, true)) return REQUEST_IGNORED;
+		
+		if (!is_ok(request_))
 		{
 			remote.update_error(request_, ERROR_REQUEST, remote.CANCEL, remote.CANCEL);
 			
-			return false;
+			return REQUEST_ERROR;
 		}
 		
-		boolean output = db_ib.remote.request_update_type_order(request_, remote.CANCEL, remote.is_quick()); 
+		boolean is_ok = db_ib.remote.request_update_type_order(request_, remote.CANCEL, remote.is_quick()); 
 		
-		if (!output)
+		if (!is_ok)
 		{
 			remote.update_error(request_, ERROR_CANCEL, null, remote.CANCEL);
 			
-			return output;
+			return REQUEST_ERROR;
 		}
 		
 		remote.log(remote.get_ok_message_default(remote.CANCEL, request_, db_ib.remote.get_symbol(request_, remote.is_quick()), common.WRONG_ORDER_ID, true)); 
 		
 		if (wait_for_execution_) 
 		{
-			output = __wait_for_execution(request_, true);
+			is_ok = __wait_for_execution(request_, true);
 			
-			if (!output) remote.update_error(request_, ERROR_WAIT, remote.CANCEL, remote.CANCEL);
+			if (!is_ok) remote.update_error(request_, ERROR_WAIT, remote.CANCEL, remote.CANCEL);
 		}
 		
-		return output;
+		return (is_ok ? REQUEST_OK : REQUEST_ERROR);
 	}
 
-	public static boolean __update(int request_, String type_update_, double val_, boolean wait_for_execution_)
+	public static String __update(int request_, String type_update_, double val_, boolean wait_for_execution_)
 	{
-		boolean output = false;
-
-		if (!__is_ok(request_, false))
+		if (!can_request(request_, false)) return REQUEST_IGNORED;
+		
+		if (!is_ok(request_))
 		{
 			remote.update_error(request_, ERROR_REQUEST, type_update_, type_update_);
 			
-			return output;
+			return REQUEST_ERROR;
 		}
 		
 		double val = db_ib.common.adapt_price(val_);
 
 		String type_update = orders.check_update(type_update_);
-		if (!strings.is_ok(type_update) || !(orders.is_update_market(type_update) || common.price_is_ok(val))) return output;
-
-		output = db_ib.remote.request_update_type_order_values(request_, type_update, db_ib.orders.get_field_update(type_update), val, remote.is_quick());
+		if (!strings.is_ok(type_update) || !(orders.is_update_market(type_update) || common.price_is_ok(val))) return REQUEST_ERROR;
 
 		String symbol = db_ib.remote.get_symbol(request_, remote.is_quick());
+
+		boolean is_ok = db_ib.remote.request_update_type_order_values(request_, type_update, db_ib.orders.get_field_update(type_update), val, remote.is_quick());
 		
-		if (output) remote.log(remote.get_ok_message_default(type_update, request_, symbol, common.WRONG_ORDER_ID, true));
-		
-		if (!output) update_error_update(request_, symbol, type_update, val_);
-		else if (wait_for_execution_) 
+		if (is_ok) 
 		{
-			output = __wait_for_execution(request_);
-			
-			if (!output) remote.update_error(request_, ERROR_WAIT, type_update, type_update);
-		}
+			remote.log(remote.get_ok_message_default(type_update, request_, symbol, common.WRONG_ORDER_ID, true));
 		
-		return output;
+			if (wait_for_execution_) 
+			{
+				is_ok = __wait_for_execution(request_);
+				
+				if (!is_ok) remote.update_error(request_, ERROR_WAIT, type_update, type_update);
+			}
+		}
+		else update_error_update(request_, symbol, type_update, val_);
+		
+		return (is_ok ? REQUEST_OK : REQUEST_ERROR);
 	}
 
 	public static boolean __wait_for_execution(int request_) { return __wait_for_execution(request_, false); }
@@ -199,11 +206,9 @@ abstract class remote_request extends parent_static
 		return output;
 	}
 	
-	private static boolean __can_cancel(int request_) { return (!strings.are_equal(db_ib.remote.get_type_order(request_, remote.is_quick()), remote.CANCEL) && __is_ok_not_cancel(request_, true)); }
-	
-	private static boolean __is_ok(int request_, boolean is_cancel_) { return ((is_cancel_ || __is_ok_not_cancel(request_, false)) && _is_executed(request_, true, false, false)); }
+	private static boolean can_request(int request_, boolean is_cancel_) { return (db_ib.remote.is_active(request_) && (!is_cancel_ || !strings.are_equal(remote.get_type_order(request_), remote.CANCEL))); }
 
-	private static boolean __is_ok_not_cancel(int request_, boolean is_cancel_) { return (db_ib.remote.is_active(request_) && remote.__order_id_is_ok(remote.get_order_id_main(request_), is_cancel_)); }		
+	private static boolean is_ok(int request_) { return _is_executed(request_, true, false, false); }
 	
 	private static boolean _is_executed(int request_, boolean ignore_error_, boolean inactive_ok_, boolean lock_)
 	{

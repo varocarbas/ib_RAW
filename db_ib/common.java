@@ -187,7 +187,7 @@ public abstract class common
 
 	public static int get_count(String source_, String where_) { return accessory.db.select_count(source_, where_); }
 
-	public static boolean exists(String source_, String where_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.exists(source_, get_col_id(), where_) : accessory.db.exists_id(source_, where_)); }
+	public static boolean exists(String source_, String where_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.exists(source_, where_) : accessory.db.exists(source_, where_)); }
 	
 	public static boolean is_enabled(String source_, String where_) { return (!arrays.value_exists(get_all_sources_enabled(), source_) || accessory.db.select_one_boolean(source_, FIELD_ENABLED, where_, db.DEFAULT_ORDER)); }
 
@@ -239,13 +239,17 @@ public abstract class common
 
 	public static ArrayList<HashMap<String, String>> get_all_vals_quick(String source_, String[] cols_, String where_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.select(source_, cols_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER) : db.select_quick(source_, cols_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
 
-	public static HashMap<String, String> get_vals(String source_, String where_) { return get_vals(source_, null, where_); }
+	public static HashMap<String, String> get_vals(String source_, String[] fields_cols_, String where_, boolean is_quick_) { return get_vals(source_, fields_cols_, where_, db.DEFAULT_ORDER, is_quick_); }
 
-	public static HashMap<String, String> get_vals(String source_, String[] fields_cols_, String where_, boolean is_quick_) { return (is_quick_ ? get_vals_quick(source_, fields_cols_, where_) : get_vals(source_, fields_cols_, where_)); }
+	public static HashMap<String, String> get_vals(String source_, String[] fields_cols_, String where_, String order_, boolean is_quick_) { return (is_quick_ ? get_vals_quick(source_, fields_cols_, where_, order_) : get_vals(source_, fields_cols_, where_, order_)); }
 
-	public static HashMap<String, String> get_vals(String source_, String[] fields_, String where_) { return accessory.db.select_one(source_, fields_, where_, db.DEFAULT_ORDER); }
+	public static HashMap<String, String> get_vals(String source_, String[] fields_, String where_) { return get_vals(source_, fields_, where_, db.DEFAULT_ORDER); }
+	
+	public static HashMap<String, String> get_vals(String source_, String[] fields_, String where_, String order_) { return accessory.db.select_one(source_, fields_, where_, order_); }
 
-	public static HashMap<String, String> get_vals_quick(String source_, String[] cols_, String where_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.select_one(source_, cols_, where_, db.DEFAULT_ORDER) : db.select_one_quick(source_, cols_, where_, db.DEFAULT_ORDER)); }
+	public static HashMap<String, String> get_vals_quick(String source_, String[] cols_, String where_) { return get_vals_quick(source_, cols_, where_, db.DEFAULT_ORDER); }
+
+	public static HashMap<String, String> get_vals_quick(String source_, String[] cols_, String where_, String order_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.select_one(source_, cols_, where_, order_) : db.select_one_quick(source_, cols_, where_, order_)); }
 
 	public static String get_type(String source_, String field_, String root_, String where_) 
 	{

@@ -36,7 +36,11 @@ public abstract class common
 	public static String get_current_time() { return get_current_time(true); }
 
 	public static String get_current_time2() { return get_current_time(false); }
-	
+
+	public static boolean time2_is_ok(String time2_, long delay_secs_) { return (strings.is_ok(time2_) && !dates.target_met(dates.time_from_string(time2_, false), dates.UNIT_SECONDS, delay_secs_)); }
+
+	public static boolean timestamp_is_ok(String timestamp_, long delay_secs_) { return (strings.is_ok(timestamp_) && !dates.target_met(dates.from_string(timestamp_, FORMAT_TIMESTAMP, true), dates.UNIT_SECONDS, delay_secs_)); }
+
 	public static String normalise_symbol(String symbol_) { return check_symbol(symbol_); }
 	
 	public static double adapt_price(double val_) { return db_ib.common.adapt_price(val_); }

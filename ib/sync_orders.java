@@ -29,13 +29,13 @@ abstract class sync_orders extends parent_static
 	
 	public static void open_order_end() { sync.end_get(); }
 	
-	public static boolean __update(String symbol_, String type_, double val_) { return __update(__get_order(symbol_), orders.check_update(type_), val_); }
+	public static boolean __update(String symbol_, String type_, double val_) { return update(__get_order(symbol_), orders.check_update(type_), val_); }
 
-	public static boolean __update(_order order_, String type_, double val_) { return ((order_ != null && strings.is_ok(type_)) ? __place_update(order_, type_, val_) : false); }
+	public static boolean update(_order order_, String type_, double val_) { return ((order_ != null && strings.is_ok(type_)) ? place_update(order_, type_, val_) : false); }
 
-	public static boolean __place(String type_place_, String symbol_, double quantity_, double stop_, double start_) { return __place(type_place_, symbol_, quantity_, stop_, start_, common.WRONG_PRICE); }
+	public static boolean place(String type_place_, String symbol_, double quantity_, double stop_, double start_) { return place(type_place_, symbol_, quantity_, stop_, start_, common.WRONG_PRICE); }
 
-	public static boolean __place(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_) { return (orders.is_inactive(symbol_) ? __place_update(new _order(type_place_, symbol_, quantity_, stop_, start_, start2_)) : false); }
+	public static boolean place(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_) { return (orders.is_inactive(symbol_) ? place_update(new _order(type_place_, symbol_, quantity_, stop_, start_, start2_)) : false); }
 
 	public static _order __get_order(int id_main_) { return __get_order(id_main_, true); }
 
@@ -46,9 +46,9 @@ abstract class sync_orders extends parent_static
 		return db_ib.orders.get_to_order(id_main_, orders.is_quick());
 	}
 
-	public static boolean __place_update(_order order_) { return __place_update(order_, null, common.WRONG_VALUE); }
+	public static boolean place_update(_order order_) { return place_update(order_, null, common.WRONG_VALUE); }
 
-	public static boolean __place_update(_order order_, String update_type_, double update_val_) 
+	public static boolean place_update(_order order_, String update_type_, double update_val_) 
 	{
 		if (!_order.is_ok(order_)) return false;
 		
@@ -96,7 +96,7 @@ abstract class sync_orders extends parent_static
 		{
 			if (!sync.wait_orders(main, orders.PLACE)) return false;
 
-			__add_order(order_);
+			add_order(order_);
 		}
 
 		return true;
@@ -149,7 +149,7 @@ abstract class sync_orders extends parent_static
 		return db_ib.orders.get_to_order(symbol_, orders.is_quick());
 	}
 
-	private static void __add_order(_order order_) { db_ib.orders.insert_update(order_, orders.is_quick()); }
+	private static void add_order(_order order_) { db_ib.orders.insert_update(order_, orders.is_quick()); }
 
 	private static boolean update_order(int id_, double val_, boolean is_market_, String type_)
 	{
