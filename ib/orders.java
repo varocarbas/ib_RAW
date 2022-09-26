@@ -231,6 +231,8 @@ public abstract class orders
 
 	public static boolean exists(int order_id_main_) { return db_ib.orders.exists(order_id_main_, true); }
 
+	public static boolean exists_status(String status_) { return db_ib.orders.exists_status(status_); }
+
 	public static HashMap<Integer, String> __get_orders_ib() { return sync.__get_orders(); }
 	
 	static void order_status(int order_id_, String status_ib_) 

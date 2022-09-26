@@ -46,6 +46,8 @@ public abstract class remote extends parent_static
 	public static void __backup() { common.__backup(SOURCE); }	
 	
 	public static ArrayList<HashMap<String, String>> get_all_pending(boolean is_quick_) { return common.get_all_vals(SOURCE, (is_quick_ ? get_cols() : get_fields()), get_where_pending(), is_quick_); }
+	
+	public static ArrayList<HashMap<String, String>> get_all_errors(boolean is_quick_) { return common.get_all_vals(SOURCE, (is_quick_ ? get_cols() : get_fields()), get_where_error(), is_quick_); }
 
 	public static boolean contains_active() { return (common.contains_active(SOURCE) || common.exists(SOURCE, get_where_active())); }
 
@@ -201,7 +203,6 @@ public abstract class remote extends parent_static
 		
 		Object vals = get_vals_common(get_key_from_status2(ib.remote.STATUS2_ERROR), is_quick_);
 		vals = add_to_vals(ERROR, error, vals, is_quick_);
-		vals = add_to_vals(STATUS, get_key_from_status(ib.remote.STATUS_INACTIVE), vals, is_quick_);
 	
 		String type_order = get_key_from_type_order(type_order_);
 		if (!strings.is_ok(type_order)) type_order = type_order_;
@@ -416,6 +417,8 @@ public abstract class remote extends parent_static
 	private static String get_where_active() { return (new db_where(SOURCE, STATUS, db_where.OPERAND_NOT_EQUAL, get_key_from_status(ib.remote.STATUS_INACTIVE))).toString(); }
 
 	private static String get_where_pending() { return common.join_wheres(get_where_status2(get_key_from_status2(ib.remote.STATUS2_PENDING)), get_where_status(get_key_from_status(ib.remote.STATUS_ACTIVE))); }
+
+	private static String get_where_error() { return common.join_wheres(get_where_status2(get_key_from_status2(ib.remote.STATUS2_ERROR)), get_where_status(get_key_from_status(ib.remote.STATUS_ACTIVE))); }
 
 	private static String get_where_status(String status_key_) { return common.get_where(SOURCE, STATUS, status_key_); }
 

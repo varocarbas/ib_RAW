@@ -1,5 +1,6 @@
 package ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
@@ -105,6 +106,10 @@ public abstract class remote
 
 	public static String check_status2(String type_) { return accessory.types.check_type(type_, STATUS2); }
 
+	public static String check_type_update(String type_) { return orders.check_update(type_); }
+
+	public static boolean is_update_market(String type_) { return orders.is_update_market(type_); }
+
 	public static boolean is_active(int request_) { return db_ib.remote.is_active(request_); }
 
 	public static boolean is_active(String symbol_) { return db_ib.remote.is_active(symbol_); }
@@ -181,6 +186,8 @@ public abstract class remote
 	public static double get_perc_money(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.PERC_MONEY, vals_, _is_quick); }
 
 	public static double get_price(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.PRICE, vals_, _is_quick); }
+
+	public static ArrayList<HashMap<String, String>> get_all_errors() { return db_ib.remote.get_all_errors(_is_quick); }
 
 	public static void update_error_place(int request_, String symbol_, String type_, double quantity_, double stop_, double start_, double start2_, boolean is_request_)
 	{
@@ -314,7 +321,7 @@ public abstract class remote
 			return investment;
 		}
 		
-		double money = money_all.get(db_ib.basic.MONEY);	
+		double money = money_all.get(ib.basic.MONEY);	
 		if (money <= basic.WRONG_MONEY2) 
 		{
 			if (log_) log("not enough money (" + strings.to_string(money_all) + ")");
@@ -322,7 +329,7 @@ public abstract class remote
 			return investment;
 		}
 
-		double free = money_all.get(db_ib.basic.MONEY_FREE);
+		double free = money_all.get(ib.basic.MONEY_FREE);
 		double free_min = money * MIN_PERC_FREE / 100.0;
 
 		if (free < free_min)

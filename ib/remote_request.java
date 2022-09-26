@@ -108,25 +108,27 @@ abstract class remote_request extends parent_static
 			return REQUEST_ERROR;
 		}
 		
-		boolean is_ok = db_ib.remote.request_update_type_order(request_, remote.CANCEL, remote.is_quick()); 
-		
-		if (!is_ok)
+		if (!db_ib.remote.request_update_type_order(request_, remote.CANCEL, remote.is_quick()))
 		{
 			remote.update_error(request_, ERROR_CANCEL, null, remote.CANCEL);
 			
 			return REQUEST_ERROR;
 		}
+				
+		String symbol = db_ib.remote.get_symbol(request_, remote.is_quick());
 		
-		remote.log(remote.get_ok_message_default(remote.CANCEL, request_, db_ib.remote.get_symbol(request_, remote.is_quick()), common.WRONG_ORDER_ID, true)); 
+		remote.log(remote.get_ok_message_default(remote.CANCEL, request_, symbol, common.WRONG_ORDER_ID, true)); 
 		
-		if (wait_for_execution_) 
-		{
-			is_ok = __wait_for_execution(request_, true);
-			
-			if (!is_ok) remote.update_error(request_, ERROR_WAIT, remote.CANCEL, remote.CANCEL);
+		String output = REQUEST_OK;
+
+		if (wait_for_execution_ && !__wait_for_execution(request_, true)) 
+		{				
+			remote.update_error(request_, ERROR_WAIT, remote.CANCEL, remote.CANCEL);
+		
+			output = (ib.orders.is_submitted(symbol) ? REQUEST_ERROR : REQUEST_IGNORED);
 		}
 		
-		return (is_ok ? REQUEST_OK : REQUEST_ERROR);
+		return output;
 	}
 
 	public static String __update(int request_, String type_update_, double val_, boolean wait_for_execution_)
@@ -142,27 +144,30 @@ abstract class remote_request extends parent_static
 		
 		double val = db_ib.common.adapt_price(val_);
 
-		String type_update = orders.check_update(type_update_);
-		if (!strings.is_ok(type_update) || !(orders.is_update_market(type_update) || common.price_is_ok(val))) return REQUEST_ERROR;
-
+		String type_update = remote.check_type_update(type_update_);
+		if (!strings.is_ok(type_update) || !(remote.is_update_market(type_update) || common.price_is_ok(val))) return REQUEST_ERROR;
+		
 		String symbol = db_ib.remote.get_symbol(request_, remote.is_quick());
 
-		boolean is_ok = db_ib.remote.request_update_type_order_values(request_, type_update, db_ib.orders.get_field_update(type_update), val, remote.is_quick());
-		
-		if (is_ok) 
+		if (!db_ib.remote.request_update_type_order_values(request_, type_update, db_ib.orders.get_field_update(type_update), val, remote.is_quick()))
 		{
-			remote.log(remote.get_ok_message_default(type_update, request_, symbol, common.WRONG_ORDER_ID, true));
-		
-			if (wait_for_execution_) 
-			{
-				is_ok = __wait_for_execution(request_);
-				
-				if (!is_ok) remote.update_error(request_, ERROR_WAIT, type_update, type_update);
-			}
+			update_error_update(request_, symbol, type_update, val_);
+			
+			return REQUEST_ERROR;
 		}
-		else update_error_update(request_, symbol, type_update, val_);
+
+		remote.log(remote.get_ok_message_default(type_update, request_, symbol, common.WRONG_ORDER_ID, true));
+
+		String output = REQUEST_OK;
+
+		if (wait_for_execution_ && !__wait_for_execution(request_)) 
+		{
+			remote.update_error(request_, ERROR_WAIT, type_update, type_update);
+			
+			output = (ib.orders.is_filled(symbol) ? REQUEST_ERROR : REQUEST_IGNORED);
+		}
 		
-		return (is_ok ? REQUEST_OK : REQUEST_ERROR);
+		return output;
 	}
 
 	public static boolean __wait_for_execution(int request_) { return __wait_for_execution(request_, false); }
@@ -208,7 +213,14 @@ abstract class remote_request extends parent_static
 	
 	private static boolean can_request(int request_, boolean is_cancel_) { return (db_ib.remote.is_active(request_) && (!is_cancel_ || !strings.are_equal(remote.get_type_order(request_), remote.CANCEL))); }
 
-	private static boolean is_ok(int request_) { return _is_executed(request_, true, false, false); }
+	private static boolean is_ok(int request_) 
+	{ 
+		boolean is_ok = _is_executed(request_, true, false, false); 
+	
+		if (is_ok) db_ib.remote.update_status2(request_, db_ib.remote.get_key_from_status2(ib.remote.STATUS2_EXECUTED));
+		
+		return is_ok;
+	}
 	
 	private static boolean _is_executed(int request_, boolean ignore_error_, boolean inactive_ok_, boolean lock_)
 	{

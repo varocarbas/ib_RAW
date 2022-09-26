@@ -47,6 +47,8 @@ public abstract class orders
 	public static void __backup() { common.__backup(SOURCE); }	
 
 	public static boolean exists(String symbol_) { return common.exists(SOURCE, get_where_symbol(symbol_)); }
+
+	public static boolean exists_status(String status_) { return common.exists(SOURCE, get_where_status(status_)); }
 	
 	public static boolean exists(int order_id_, boolean is_main_) { return exists_internal(order_id_, is_main_, null); }
 
