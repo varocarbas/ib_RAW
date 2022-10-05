@@ -110,6 +110,8 @@ public abstract class market
 		return _time_close;
 	}
 
+	public static boolean day_is_ok() { return (!is_holiday() && !dates.is_weekend()); }
+	
 	public static boolean is_holiday() 
 	{
 		if (!_is_holiday_populated) populate_is_holiday();

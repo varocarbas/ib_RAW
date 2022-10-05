@@ -82,12 +82,16 @@ public abstract class orders
 	public static boolean is_submitted(String symbol_) { return order_is_common(symbol_, STATUS_SUBMITTED); }
 
 	public static boolean __is_submitted_ib(int order_id_main_) { return sync_orders.is_submitted(order_id_main_, sync.__get_orders()); }	
+	
+	public static boolean __is_submitted_both(int order_id_main_) { return (is_submitted(order_id_main_) || __is_submitted_ib(order_id_main_)); }
 
 	public static boolean is_filled(int order_id_main_) { return order_is_common(order_id_main_, STATUS_FILLED); }	
 
 	public static boolean is_filled(String symbol_) { return order_is_common(symbol_, STATUS_FILLED); }	
 
 	public static boolean __is_filled_ib(int order_id_main_) { return is_filled_ib(order_id_main_, sync.__get_orders()); }	
+
+	public static boolean __is_filled_both(int order_id_main_) { return (is_filled(order_id_main_) || __is_filled_ib(order_id_main_)); }
 
 	public static boolean is_filled_ib(int order_id_main_, HashMap<Integer, String> orders_) { return sync_orders.is_filled(order_id_main_, orders_); }	
 

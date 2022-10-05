@@ -43,7 +43,6 @@ public abstract class remote
 	public static final String UPDATE_STOP_MARKET = orders.UPDATE_STOP_MARKET;
 
 	public static final double MAX_PERC_MONEY = 90.0;
-	public static final double MIN_PERC_FREE = (100.0 - MAX_PERC_MONEY) + 1.0;
 	
 	public static final double WRONG_MONEY2 = common.WRONG_MONEY2;
 
@@ -322,28 +321,20 @@ public abstract class remote
 		}
 		
 		double money = money_all.get(ib.basic.MONEY);	
-		if (money <= basic.WRONG_MONEY2) 
-		{
-			if (log_) log("not enough money (" + strings.to_string(money_all) + ")");
-
-			return investment;
-		}
-
 		double free = money_all.get(ib.basic.MONEY_FREE);
-		double free_min = money * MIN_PERC_FREE / 100.0;
-
-		if (free < free_min)
+		
+		if (money <= basic.WRONG_MONEY2 || free <= basic.WRONG_MONEY2) 
 		{
 			if (log_) log("not enough money (" + strings.to_string(money_all) + ")");
-			
+
 			return investment;
 		}
-		
-		double perc = perc_;
-		if (perc > MAX_PERC_MONEY) perc = MAX_PERC_MONEY;	
-		
+
+		double perc = (perc_ > MAX_PERC_MONEY ? MAX_PERC_MONEY : perc_);	
 		investment = money * perc / 100.0;			
-		if (investment > free) investment = MAX_PERC_MONEY * free / 100;
+
+		double min_free = MAX_PERC_MONEY * free / 100;
+		if (investment > min_free) investment = min_free;
 		
 		return investment;
 	}
