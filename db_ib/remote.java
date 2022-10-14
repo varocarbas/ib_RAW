@@ -260,6 +260,20 @@ public abstract class remote extends parent_static
 		return ((strings.is_ok(key_) && _type_orders.containsValue(key_)) ? (String)arrays.get_key(_type_orders, key_) : strings.DEFAULT);
 	}
 
+	public static double get_start(int request_, boolean is_quick_)
+	{
+		double output = common.get_decimal_quick(SOURCE, remote.get_field_col(START, is_quick_), get_where_request(request_));
+		
+		return (output == db.WRONG_DECIMAL ? ib.common.WRONG_PRICE : output);
+	}
+	
+	public static double get_stop(int request_, boolean is_quick_)
+	{
+		double output = common.get_decimal_quick(SOURCE, remote.get_field_col(STOP, is_quick_), get_where_request(request_));
+		
+		return (output == db.WRONG_DECIMAL ? ib.common.WRONG_PRICE : output);
+	}
+	
 	public static Object get_val(String field_, HashMap<String, String> vals_, boolean is_quick_)
 	{
 		Object val = null;

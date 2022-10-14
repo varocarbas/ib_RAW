@@ -99,7 +99,8 @@ public abstract class common
 	public static final String FIELD_FLU2 = types.CONFIG_DB_IB_FIELD_FLU2;
 	public static final String FIELD_FLU2_MIN = types.CONFIG_DB_IB_FIELD_FLU2_MIN;
 	public static final String FIELD_FLU2_MAX = types.CONFIG_DB_IB_FIELD_FLU2_MAX;
-	public static final String FIELD_FLU_PRICE = types.CONFIG_DB_IB_FIELD_FLU_PRICE;
+	public static final String FIELD_FLUS_PRICE = types.CONFIG_DB_IB_FIELD_FLUS_PRICE;
+	public static final String FIELD_FLUS_ELAPSED_INI = types.CONFIG_DB_IB_FIELD_FLUS_ELAPSED_INI;
 	public static final String FIELD_VAR_TOT = types.CONFIG_DB_IB_FIELD_VAR_TOT;
 	
 	public static final String FIELD_APP = types.CONFIG_DB_IB_FIELD_APP;

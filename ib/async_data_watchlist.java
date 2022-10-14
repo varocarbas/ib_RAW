@@ -122,7 +122,7 @@ abstract class async_data_watchlist extends parent_static
 		String symbol = common.normalise_symbol(symbol_);
 		if (async_data.symbol_is_running(_APP, symbol)) return started;
 
-		started = async_data.start_common(_APP, symbol, type_, data_type_);
+		started = async_data.start(_APP, symbol, type_, data_type_);
 		if (started) start_globals(symbol, type_);
 		
 		return started;
@@ -132,9 +132,9 @@ abstract class async_data_watchlist extends parent_static
 
 	private static Object tick_price_flus(String symbol_, double price_, HashMap<String, String> db_, Object vals_)
 	{
-		Object vals = db_ib.async_data.add_to_vals(db_ib.async_data.FLU_PRICE, price_, arrays.get_new(vals_), _is_quick);
+		Object vals = db_ib.async_data.add_to_vals(db_ib.async_data.FLUS_PRICE, price_, arrays.get_new(vals_), _is_quick);
 		
-		double price_db = db_ib.async_data.get_out_vals_number(db_ib.async_data.FLU_PRICE, db_, _is_quick);			
+		double price_db = db_ib.async_data.get_out_vals_number(db_ib.async_data.FLUS_PRICE, db_, _is_quick);			
 		
 		double var = numbers.get_perc_hist(price_, price_db);
 		if (var == 0.0) return vals; 
@@ -325,7 +325,7 @@ abstract class async_data_watchlist extends parent_static
 		
 		items.put(db_ib.async_data.PRICE, db_ib.async_data.VOLUME);
 		items.put(db_ib.async_data.PRICE_INI, db_ib.async_data.VOLUME_INI);
-		items.put(db_ib.async_data.FLU_PRICE, strings.DEFAULT);
+		items.put(db_ib.async_data.FLUS_PRICE, strings.DEFAULT);
 
 		double price_ini = common.WRONG_PRICE;
 		

@@ -27,7 +27,8 @@ public abstract class watchlist
 	public static final String FLU2 = common.FIELD_FLU2;
 	public static final String FLU2_MIN = common.FIELD_FLU2_MIN;
 	public static final String FLU2_MAX = common.FIELD_FLU2_MAX;
-	public static final String FLU_PRICE = common.FIELD_FLU_PRICE;
+	public static final String FLUS_PRICE = common.FIELD_FLUS_PRICE;
+	public static final String FLUS_ELAPSED_INI = common.FIELD_FLUS_ELAPSED_INI;
 	public static final String VAR_TOT = common.FIELD_VAR_TOT;
 	
 	private static HashMap<String, String> _cols = new HashMap<String, String>();
@@ -37,7 +38,7 @@ public abstract class watchlist
 	
 	public static void __backup() { common.__backup(SOURCE); }	
 
-	public static String[] get_fields() { return new String[] { SYMBOL, PRICE, PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME, VOLUME_INI, VOLUME_MIN, VOLUME_MAX, TIME_ELAPSED, ELAPSED_INI, HALTED, HALTED_TOT, FLU, FLU_PRICE, FLU2, FLU2_MIN, FLU2_MAX, VAR_TOT }; }
+	public static String[] get_fields() { return new String[] { SYMBOL, PRICE, PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME, VOLUME_INI, VOLUME_MIN, VOLUME_MAX, TIME_ELAPSED, ELAPSED_INI, HALTED, HALTED_TOT, FLU, FLU2, FLU2_MIN, FLU2_MAX, FLUS_PRICE, FLUS_ELAPSED_INI, VAR_TOT }; }
 
 	public static String[] get_cols() 
 	{ 

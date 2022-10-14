@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import accessory.arrays;
+import accessory.dates;
 import accessory.misc;
 import accessory.numbers;
 import accessory.parent_tests;
@@ -15,7 +16,7 @@ import ib.conn;
 import ib.market;
 import ib.orders;
 import ib.sync;
-import ib.watchlist;
+import ib.watchlist_quicker;
 
 public class tests extends parent_tests 
 {
@@ -345,39 +346,36 @@ public class tests extends parent_tests
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
 		
-		Class<?> class0 = watchlist.class;
+		Class<?> class0 = watchlist_quicker.class;
 		String name0 = class0.getName();
 		
 		update_screen(name0, true, 1);
 
-		int pause1 = 5;
-		int pause2 = 2;
+		int secs_while = 5;
+		int secs_after = 2;
 		
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
-		String name = "add";
+		String name = "__add";
 		
-		String symbol = tests.get_symbol(0).getKey();
+		ArrayList<String> symbols = arrays.get_keys_hashmap(get_symbols());
 		
 		ArrayList<Object> args = new ArrayList<Object>();
-		args.add(symbol);
+		args.add(symbols);
 
-		boolean is_ok = _instance.run_method(class0, name, new Class<?>[] { String.class }, args, null);
+		boolean is_ok = false;
+
+		long start = dates.start_elapsed();
 		
-		misc.pause_secs(pause1);
+		while (dates.get_elapsed(start) < secs_while)
+		{
+			is_ok = _instance.run_method(class0, name, new Class<?>[] { ArrayList.class }, args, null);
+			
+			if (!is_ok) break;
+		}
+
 		output.put(name, is_ok);
-
-		name = "remove";
-		
-		args = new ArrayList<Object>();
-		args.add(symbol);
-
-		is_ok = _instance.run_method(class0, name, new Class<?>[] { String.class }, args, null);
-		
-		misc.pause_secs(pause1);
-		output.put(name, is_ok);
-		
-		watchlist.remove_all();
-		misc.pause_secs(pause2);
+				
+		misc.pause_secs(secs_after);
 		
 		outputs.put(name0, output);
 		

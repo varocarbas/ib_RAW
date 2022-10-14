@@ -52,25 +52,17 @@ public abstract class conn extends parent_static
 	private static volatile boolean _first_conn = false;
 
 	private static wrapper _wrapper = null;
-	private static int _id = MIN_ID - 1; 
+	private static int _id = WRONG_ID; 
 	private static int _port = PORT_TWS_REAL - 1;
+	private static String _type = strings.DEFAULT; 
 	
 	public static int get_max_length_type() { return TYPE_GATEWAY_PAPER.length(); }
-	
-	public static boolean is_ok()
-	{		
-		if (!_connected) connect();
-
-		if (!_connected) errors.manage(ERROR_NONE);
-
-		return _connected;
-	}
 
 	public static String get_account_ib() { return basic.get_account_ib(); }
 
-	public static int get_conn_id() { return apps.get_conn_id(); }
+	public static int get_conn_id() { return (id_is_ok(_id) ? _id : apps.get_conn_id()); }
 
-	public static String get_conn_type() { return apps.get_conn_type(); }
+	public static String get_conn_type() { return (type_is_ok(_type) ? _type : apps.get_conn_type()); }
 
 	public static String update_conn_type(String conn_type_) { return apps.update_conn_type(conn_type_); }
 		
@@ -91,6 +83,7 @@ public abstract class conn extends parent_static
 		}
 		
 		_id = id_;
+		_type = type_;
 		
 		update_port(type_);
 		
@@ -100,20 +93,42 @@ public abstract class conn extends parent_static
 		return connect();
 	}
 	
+	public static boolean connect()
+	{
+		if (_connected) return true;
+
+		if (_wrapper == null || _client == null || !id_is_ok() || !type_is_ok() || !port_is_ok()) return start();
+		
+		_connected = false;
+		
+		while (!_connected)
+		{	
+			connect_internal();	
+
+			if (_connected) break;
+			if (!_first_conn) misc.pause_secs(1);
+			
+			update_port();
+		}
+		
+		return _connected;
+	}
+
 	public static void end() { disconnect(); }
 
 	public static void disconnect() { calls.eDisconnect(); }
 
-	public static boolean connection_is_ok()
-	{
-		if (!_connected) connect();
-
-		return _connected;
-	}
+	public static boolean id_is_ok() { return id_is_ok(_id); }
 
 	public static boolean id_is_ok(int id_) { return numbers.is_ok(id_, MIN_ID, MAX_ID); }
 	
+	public static boolean type_is_ok() { return type_is_ok(_type); }
+	
 	public static boolean type_is_ok(String type_) { return (strings.is_ok(type_) ? arrays.value_exists(new String[] { TYPE_TWS_REAL, TYPE_TWS_PAPER, TYPE_GATEWAY_REAL, TYPE_GATEWAY_PAPER }, type_) : false); }
+	
+	public static boolean port_is_ok() { return port_is_ok(_port); }
+	
+	public static boolean port_is_ok(int port_) { return (port_ == PORT_TWS_REAL || port_ == PORT_TWS_PAPER || port_ == PORT_GATEWAY_REAL || port_ == PORT_GATEWAY_PAPER); }
 	
 	public static String check_error(String type_) { return accessory.types.check_type(type_, types.ERROR_IB_CONN); }
 
@@ -138,43 +153,13 @@ public abstract class conn extends parent_static
 		return (strings.are_equal(conn_type, TYPE_TWS_REAL) || strings.are_equal(conn_type, TYPE_GATEWAY_REAL));
 	}
 
-	private static void update_port() { update_port(strings.DEFAULT); }
+	private static void update_port() { update_port(get_conn_type()); }
 	
 	private static void update_port(String type_)
 	{
-		String type = (strings.is_ok(type_) ? type_ : get_conn_type());
-	
-		apps.update_conn_type(type);
+		apps.update_conn_type(type_);
 		
-		_port = get_port(type);
-	}
-	
-	private static boolean connect()
-	{
-		_connected = false;
-		
-		int count = 0;
-		int max = 500;
-
-		while (!_connected)
-		{	
-			connect_internal();	
-
-			if (_connected) break;
-			if (!_first_conn) misc.pause_secs(1);
-
-			count++;
-			
-			if (count < max) update_port();
-			else
-			{
-				errors.manage(ERROR_NONE);
-				
-				break;
-			}
-		}
-		
-		return _connected;
+		_port = get_port(type_);
 	}
 
 	private static void connect_internal()
@@ -229,13 +214,7 @@ public abstract class conn extends parent_static
 			catch (Exception e) 
 			{
 				String message = e.getMessage();							
-				if (strings.is_ok(message)) 
-				{
-					accessory_ib.errors.manage(ERROR_GENERIC, message);
-					
-					disconnect();
-					break;
-				}
+				if (strings.is_ok(message)) accessory_ib.errors.manage(ERROR_GENERIC, message);
 			}
 		}
 

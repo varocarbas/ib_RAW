@@ -62,14 +62,18 @@ public abstract class async_data extends parent_static
 	private static volatile HashMap<String, String>[] _vals_quick = (HashMap<String, String>[])new HashMap[SIZE_GLOBALS];
 
 	private static HashMap<Integer, String> _fields = new HashMap<Integer, String>();
-	
+
 	public static String get_symbol(int id_) { return get_string(id_, _symbols); }
 	
-	static boolean start_common(String app_, String symbol_, String type_, int data_type_)
+	static boolean start(String app_, String symbol_, String type_, int data_type_)
 	{
 		perform_initial_actions(app_, symbol_);
+		
+		boolean output = start_internal(app_, symbol_, type_, data_type_, false);
 	
-		return start_internal(app_, symbol_, type_, data_type_, false);
+		if (output) async_data_quicker.disable();
+
+		return output;
 	}
 	
 	static void tick_price(String app_, int id_, int field_ib_, double price_)

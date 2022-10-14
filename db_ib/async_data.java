@@ -40,12 +40,13 @@ public abstract class async_data
 	public static final String VOLUME_MAX = common.FIELD_VOLUME_MAX;
 	
 	public static final String FLU = common.FIELD_FLU;
-	public static final String FLU_PRICE = common.FIELD_FLU_PRICE;
 	public static final String FLU2 = common.FIELD_FLU2;
 	public static final String FLU2_MIN = common.FIELD_FLU2_MIN;
 	public static final String FLU2_MAX = common.FIELD_FLU2_MAX;
 	public static final String VAR_TOT = common.FIELD_VAR_TOT;
-
+	public static final String FLUS_PRICE = common.FIELD_FLUS_PRICE;
+	public static final String FLUS_ELAPSED_INI = common.FIELD_FLUS_ELAPSED_INI;
+	
 	private static HashMap<String, String> _cols = new HashMap<String, String>();
 
 	public static boolean contains_active(String source_, int max_mins_inactive_) { return (common.get_count(source_, get_where_active(source_, max_mins_inactive_)) > 0); }
@@ -81,9 +82,19 @@ public abstract class async_data
 		return data.is_halted(temp);
 	}
 	
-	public static int get_halted_tot(String source_, String symbol_, boolean is_quick_) { return common.get_int(source_, (is_quick_ ? get_col(HALTED_TOT) : HALTED_TOT), common.get_where_symbol(source_, symbol_), is_quick_); }
+	public static int get_halted_tot(String source_, String symbol_, boolean is_quick_) 
+	{ 
+		int output = common.get_int(source_, (is_quick_ ? get_col(HALTED_TOT) : HALTED_TOT), common.get_where_symbol(source_, symbol_), is_quick_); 
 	
-	public static long get_elapsed_ini(String source_, String symbol_, boolean is_quick_) { return common.get_long(source_, (is_quick_ ? get_col(ELAPSED_INI) : ELAPSED_INI), common.get_where_symbol(source_, symbol_), is_quick_); }
+		return (output == db.WRONG_INT ? 0 : output);
+	}
+	
+	public static long get_elapsed_ini(String source_, String symbol_, boolean is_quick_) 
+	{ 
+		long output = common.get_long(source_, (is_quick_ ? get_col(ELAPSED_INI) : ELAPSED_INI), common.get_where_symbol(source_, symbol_), is_quick_); 
+	
+		return (output == db.WRONG_LONG ? dates.ELAPSED_START : output);
+	}
 
 	public static boolean update(String source_, Object vals_, String symbol_, boolean is_quick_) { return common.update(source_, vals_, symbol_, is_quick_); }
 
@@ -215,7 +226,7 @@ public abstract class async_data
 			ENABLED, SYMBOL, PRICE, OPEN, CLOSE, LOW, HIGH, ASK, BID, HALTED, VOLUME,
 			SIZE, ASK_SIZE, BID_SIZE, HALTED_TOT, TIME, TIME_ELAPSED, ELAPSED_INI,
 			PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME_INI, VOLUME_MIN, VOLUME_MAX,
-			FLU, FLU_PRICE, FLU2, FLU2_MIN, FLU2_MAX, VAR_TOT
+			FLU, FLU2, FLU2_MIN, FLU2_MAX, FLUS_PRICE, FLUS_ELAPSED_INI, VAR_TOT
 		};
 	}
 	

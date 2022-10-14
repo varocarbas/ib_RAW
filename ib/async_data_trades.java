@@ -82,6 +82,6 @@ abstract class async_data_trades
 		String symbol = common.normalise_symbol(symbol_);
 		if (async_data.symbol_is_running(_APP, symbol)) return started;
 
-		return async_data.start_common(_APP, symbol, type_, data_type_);
+		return async_data.start(_APP, symbol, type_, data_type_);
 	}
 }

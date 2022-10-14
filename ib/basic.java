@@ -122,9 +122,23 @@ public abstract class basic extends parent_static
 		return money;
 	}
 
+	public static double get_money() 
+	{ 
+		double output = db_ib.basic.get_money(); 
+	
+		return (output == db_ib.basic.WRONG_MONEY ? WRONG_MONEY2 : output);
+	}	
+
 	public static double get_money_free() 
 	{ 
 		double output = db_ib.basic.get_money_free(); 
+	
+		return (output == db_ib.basic.WRONG_MONEY ? WRONG_MONEY2 : output);
+	}	
+
+	public static double get_money_ini() 
+	{ 
+		double output = db_ib.basic.get_money_ini(); 
 	
 		return (output == db_ib.basic.WRONG_MONEY ? WRONG_MONEY2 : output);
 	}	

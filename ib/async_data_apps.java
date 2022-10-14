@@ -2,6 +2,7 @@ package ib;
 
 import java.util.ArrayList;
 
+import accessory.arrays;
 import accessory.strings;
 
 abstract class async_data_apps 
@@ -197,17 +198,17 @@ abstract class async_data_apps
 		
 		if (app_.equals(async_data_watchlist._APP)) 
 		{
-			i = async_data.get_i(async_data_watchlist._stopping, async_data_watchlist._last_i_stopping, async_data_watchlist.MAX_I, symbol_);
+			i = async_data.get_i((String[])arrays.get_new(async_data_watchlist._stopping), async_data_watchlist._last_i_stopping, async_data_watchlist.MAX_I, symbol_);
 			if (i > async_data.WRONG_I) async_data_watchlist._stopping[i] = null;
 		}
 		else if (app_.equals(async_data_trades._APP)) 
 		{
-			i = async_data.get_i(async_data_trades._stopping, async_data_trades._last_i_stopping, async_data_trades.MAX_I, symbol_);
+			i = async_data.get_i((String[])arrays.get_new(async_data_trades._stopping), async_data_trades._last_i_stopping, async_data_trades.MAX_I, symbol_);
 			if (i > async_data.WRONG_I) async_data_trades._stopping[i] = null;
 		}
 		else if (app_.equals(async_data_market._APP)) 
 		{
-			i = async_data.get_i(async_data_market._stopping, async_data_market._last_i_stopping, async_data_market.MAX_I, symbol_);
+			i = async_data.get_i((String[])arrays.get_new(async_data_market._stopping), async_data_market._last_i_stopping, async_data_market.MAX_I, symbol_);
 			if (i > async_data.WRONG_I) async_data_market._stopping[i] = null;
 		}
 	}

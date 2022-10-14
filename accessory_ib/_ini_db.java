@@ -329,7 +329,8 @@ public class _ini_db extends parent_ini_db
 		info.put(watchlist.FLU2, get_decimal_tiny());
 		info.put(watchlist.FLU2_MIN, get_decimal_tiny());
 		info.put(watchlist.FLU2_MAX, get_decimal_tiny());
-		info.put(watchlist.FLU_PRICE, get_price());
+		info.put(watchlist.FLUS_PRICE, get_price());
+		info.put(watchlist.FLUS_ELAPSED_INI, get_elapsed_ini());
 		info.put(watchlist.ELAPSED_INI, get_elapsed_ini());
 		info.put(watchlist.VAR_TOT, get_decimal_tiny());
 		
