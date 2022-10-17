@@ -408,7 +408,7 @@ public class tests extends parent_tests
 		int secs_after = 5;
 		
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
-		String name = "__add";
+		String name = (class0_.equals(market_quicker.class) ? "__start" : "__add");
 		
 		ArrayList<String> symbols = arrays.get_keys_hashmap(get_symbols());
 		
