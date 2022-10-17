@@ -1,10 +1,13 @@
 package ib;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import accessory.arrays;
 import accessory.parent_static;
 import accessory.strings;
 
-class async_data_apps_quicker extends parent_static
+abstract class async_data_apps_quicker extends parent_static
 {
 	private static String _app = strings.DEFAULT;
 	private static String _source = strings.DEFAULT;
@@ -23,18 +26,18 @@ class async_data_apps_quicker extends parent_static
 
 	public static String get_source() { return _source; }
 	
-	public static void __tick_price(int field_ib_, double price_, String symbol_)
+	public static void __tick_price(int id_, int field_ib_, double price_, String symbol_)
 	{
-		if (_app.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker.__tick_price(field_ib_, price_, symbol_);
-		else if (_app.equals(async_data_trades_quicker._APP)) async_data_trades_quicker.tick_price(field_ib_, price_, symbol_);
-		else if (_app.equals(async_data_market_quicker._APP)) async_data_market_quicker.tick_price(field_ib_, price_, symbol_);
+		if (_app.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker.__tick_price(id_, field_ib_, price_, symbol_);
+		else if (_app.equals(async_data_trades_quicker._APP)) async_data_trades_quicker.tick_price(id_, field_ib_, price_, symbol_);
+		else if (_app.equals(async_data_market_quicker._APP)) async_data_market_quicker.tick_price(id_, field_ib_, price_, symbol_);
 	}
 
-	public static void tick_size(int field_ib_, double size_, String symbol_)
+	public static void tick_size(int id_, int field_ib_, double size_, String symbol_)
 	{
-		if (_app.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker.tick_size(field_ib_, size_, symbol_);
-		else if (_app.equals(async_data_trades_quicker._APP)) async_data_trades_quicker.tick_size(field_ib_, size_, symbol_);
-		else if (_app.equals(async_data_market_quicker._APP)) async_data_market_quicker.tick_size(field_ib_, size_, symbol_);
+		if (_app.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker.tick_size(id_, field_ib_, size_, symbol_);
+		else if (_app.equals(async_data_trades_quicker._APP)) async_data_trades_quicker.tick_size(id_, field_ib_, size_, symbol_);
+		else if (_app.equals(async_data_market_quicker._APP)) async_data_market_quicker.tick_size(id_, field_ib_, size_, symbol_);
 	}
 
 	public static boolean id_is_ok(int id_) { return (id_ > async_data_quicker.WRONG_ID && id_ <= get_max_id()); }
@@ -65,9 +68,9 @@ class async_data_apps_quicker extends parent_static
 	{
 		boolean output = false;
 		
-		if (_app.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker._includes_time;
-		else if (_app.equals(async_data_trades_quicker._APP)) output = async_data_trades_quicker._includes_time;
-		else if (_app.equals(async_data_market_quicker._APP)) output = async_data_market_quicker._includes_time;
+		if (_app.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker.INCLUDES_TIME;
+		else if (_app.equals(async_data_trades_quicker._APP)) output = async_data_trades_quicker.INCLUDES_TIME;
+		else if (_app.equals(async_data_market_quicker._APP)) output = async_data_market_quicker.INCLUDES_TIME;
 
 		return output;
 	}
@@ -76,9 +79,9 @@ class async_data_apps_quicker extends parent_static
 	{
 		boolean output = false;
 		
-		if (_app.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker._includes_time_elapsed;
-		else if (_app.equals(async_data_trades_quicker._APP)) output = async_data_trades_quicker._includes_time_elapsed;
-		else if (_app.equals(async_data_market_quicker._APP)) output = async_data_market_quicker._includes_time_elapsed;
+		if (_app.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker.INCLUDES_TIME_ELAPSED;
+		else if (_app.equals(async_data_trades_quicker._APP)) output = async_data_trades_quicker.INCLUDES_TIME_ELAPSED;
+		else if (_app.equals(async_data_market_quicker._APP)) output = async_data_market_quicker.INCLUDES_TIME_ELAPSED;
 
 		return output;
 	}
@@ -87,9 +90,9 @@ class async_data_apps_quicker extends parent_static
 	{
 		boolean output = false;
 		
-		if (_app.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker._includes_halted;
-		else if (_app.equals(async_data_trades_quicker._APP)) output = async_data_trades_quicker._includes_halted;
-		else if (_app.equals(async_data_market_quicker._APP)) output = async_data_market_quicker._includes_halted;
+		if (_app.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker.INCLUDES_HALTED;
+		else if (_app.equals(async_data_trades_quicker._APP)) output = async_data_trades_quicker.INCLUDES_HALTED;
+		else if (_app.equals(async_data_market_quicker._APP)) output = async_data_market_quicker.INCLUDES_HALTED;
 
 		return output;
 	}
@@ -98,9 +101,9 @@ class async_data_apps_quicker extends parent_static
 	{
 		boolean output = false;
 		
-		if (_app.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker._includes_halted_tot;
-		else if (_app.equals(async_data_trades_quicker._APP)) output = async_data_trades_quicker._includes_halted_tot;
-		else if (_app.equals(async_data_market_quicker._APP)) output = async_data_market_quicker._includes_halted_tot;
+		if (_app.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker.INCLUDES_HALTED_TOT;
+		else if (_app.equals(async_data_trades_quicker._APP)) output = async_data_trades_quicker.INCLUDES_HALTED_TOT;
+		else if (_app.equals(async_data_market_quicker._APP)) output = async_data_market_quicker.INCLUDES_HALTED_TOT;
 
 		return output;
 	}
@@ -109,9 +112,9 @@ class async_data_apps_quicker extends parent_static
 	{
 		boolean output = false;
 		
-		if (_app.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker._only_essential;
-		else if (_app.equals(async_data_trades_quicker._APP)) output = async_data_trades_quicker._only_essential;
-		else if (_app.equals(async_data_market_quicker._APP)) output = async_data_market_quicker._only_essential;
+		if (_app.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker.ONLY_ESSENTIAL;
+		else if (_app.equals(async_data_trades_quicker._APP)) output = async_data_trades_quicker.ONLY_ESSENTIAL;
+		else if (_app.equals(async_data_market_quicker._APP)) output = async_data_market_quicker.ONLY_ESSENTIAL;
 
 		return output;
 	}
@@ -120,9 +123,9 @@ class async_data_apps_quicker extends parent_static
 	{
 		boolean output = false;
 		
-		if (_app.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker._only_db;
-		else if (_app.equals(async_data_trades_quicker._APP)) output = async_data_trades_quicker._only_db;
-		else if (_app.equals(async_data_market_quicker._APP)) output = async_data_market_quicker._only_db;
+		if (_app.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker.ONLY_DB;
+		else if (_app.equals(async_data_trades_quicker._APP)) output = async_data_trades_quicker.ONLY_DB;
+		else if (_app.equals(async_data_market_quicker._APP)) output = async_data_market_quicker.ONLY_DB;
 
 		return output;
 	}
@@ -130,12 +133,14 @@ class async_data_apps_quicker extends parent_static
 	public static void start_globals(String symbol_, int id_)
 	{
 		boolean is_restart = id_is_ok(async_data_quicker.get_id(symbol_));
-
+		boolean start_vals = !only_db();
+		
 		if (_app.equals(async_data_watchlist_quicker._APP)) 
 		{
 			async_data_watchlist_quicker._last_id = id_;
 
 			async_data_watchlist_quicker._symbols[id_] = symbol_;
+			if (start_vals) async_data_watchlist_quicker._vals[id_] = new HashMap<String, String>();
 			
 			async_data_watchlist_quicker.start_globals(symbol_, is_restart);
 		}
@@ -144,6 +149,7 @@ class async_data_apps_quicker extends parent_static
 			async_data_trades_quicker._last_id = id_;
 
 			async_data_trades_quicker._symbols[id_] = symbol_;
+			if (start_vals) async_data_trades_quicker._vals[id_] = new HashMap<String, String>();
 			
 			async_data_trades_quicker.start_globals(symbol_, is_restart);
 		}
@@ -152,6 +158,7 @@ class async_data_apps_quicker extends parent_static
 			async_data_market_quicker._last_id = id_;
 
 			async_data_market_quicker._symbols[id_] = symbol_;
+			if (start_vals) async_data_market_quicker._vals[id_] = new HashMap<String, String>();
 			
 			async_data_market_quicker.start_globals(symbol_, is_restart);
 		}		
@@ -173,30 +180,69 @@ class async_data_apps_quicker extends parent_static
 			id_is_ok = id_is_ok(id);
 		}
 
-		boolean update_symbols = (id_is_ok && (snapshot_completed_ || remove_symbol_));		
-				
+		boolean delete_globals = (id_is_ok && (snapshot_completed_ || remove_symbol_));		
+		boolean delete_vals = !only_db();
+
 		if (_app.equals(async_data_watchlist_quicker._APP)) 
-		{	
-			if (update_symbols) async_data_watchlist_quicker._symbols[id] = null;
+		{
+			if (delete_globals) 
+			{
+				async_data_watchlist_quicker._symbols[id] = null;				
+				if (delete_vals) async_data_watchlist_quicker._vals[id] = null;
+			}
 
 			if (symbol_ok) async_data_watchlist_quicker.stop_globals(symbol_, remove_symbol_);
 		}
 		else if (_app.equals(async_data_trades_quicker._APP)) 
 		{	
-			if (update_symbols) async_data_trades_quicker._symbols[id] = null;
+			if (delete_globals) 
+			{
+				async_data_trades_quicker._symbols[id] = null;				
+				if (delete_vals) async_data_trades_quicker._vals[id] = null;
+			}
 
 			if (symbol_ok) async_data_trades_quicker.stop_globals(symbol_, remove_symbol_);
 		}
 		else if (_app.equals(async_data_market_quicker._APP)) 
 		{	
-			if (update_symbols) async_data_market_quicker._symbols[id] = null;
+			if (delete_globals) 
+			{
+				async_data_market_quicker._symbols[id] = null;				
+				if (delete_vals) async_data_market_quicker._vals[id] = null;
+			}
 
 			if (symbol_ok) async_data_market_quicker.stop_globals(symbol_, remove_symbol_);
 		}
 		
 		__unlock();
 	}
+	
+	public static void __update_vals(int id_, HashMap<String, String> vals_)
+	{
+		__lock();
 
+		for (Entry<String, String> item: vals_.entrySet()) { _update_vals(id_, item.getKey(), item.getValue(), false); }
+		
+		__unlock();		
+	}
+
+	public static void __update_vals(int id_, String col_, double val_) { _update_vals(id_, col_, Double.toString(val_), true); }
+
+	public static HashMap<String, String> __get_vals(int id_)
+	{
+		__lock();
+	
+		HashMap<String, String> vals = null;
+		
+		if (_app.equals(async_data_watchlist_quicker._APP) && arrays.is_ok(async_data_watchlist_quicker._vals[id_])) vals = new HashMap<String, String>(async_data_watchlist_quicker._vals[id_]);
+		else if (_app.equals(async_data_trades_quicker._APP) && arrays.is_ok(async_data_trades_quicker._vals[id_])) vals = new HashMap<String, String>(async_data_trades_quicker._vals[id_]);
+		else if (_app.equals(async_data_market_quicker._APP) && arrays.is_ok(async_data_market_quicker._vals[id_])) vals = new HashMap<String, String>(async_data_market_quicker._vals[id_]);
+		
+		__unlock();
+		
+		return vals;
+	}
+	
 	public static String[] get_symbols()
 	{
 		String[] output = null;
@@ -239,5 +285,16 @@ class async_data_apps_quicker extends parent_static
 		else if (_app.equals(async_data_market_quicker._APP)) output = async_data_market_quicker.log();
 		
 		return output;
+	}
+	
+	private static void _update_vals(int id_, String col_, String val_, boolean lock_)
+	{
+		if (lock_) __lock();
+		
+		if (_app.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker._vals[id_].put(col_, val_);
+		else if (_app.equals(async_data_trades_quicker._APP)) async_data_trades_quicker._vals[id_].put(col_, val_);
+		else if (_app.equals(async_data_market_quicker._APP)) async_data_market_quicker._vals[id_].put(col_, val_); 
+		
+		if (lock_) __unlock();		
 	}
 }

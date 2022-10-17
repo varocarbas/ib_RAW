@@ -14,8 +14,10 @@ import ib.apps;
 import ib.basic;
 import ib.conn;
 import ib.market;
+import ib.market_quicker;
 import ib.orders;
 import ib.sync;
+import ib.watchlist;
 import ib.watchlist_quicker;
 
 public class tests extends parent_tests 
@@ -126,6 +128,8 @@ public class tests extends parent_tests
 
 		outputs = run_data_market(outputs);
 		outputs = run_data_watchlist(outputs);
+		outputs = run_data_watchlist_quicker(outputs);
+		outputs = run_data_market_quicker(outputs);
 		
 		return outputs;
 	}
@@ -346,13 +350,62 @@ public class tests extends parent_tests
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
 		
-		Class<?> class0 = watchlist_quicker.class;
+		Class<?> class0 = watchlist.class;
 		String name0 = class0.getName();
 		
 		update_screen(name0, true, 1);
 
+		int pause1 = 5;
+		int pause2 = 2;
+		
+		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
+		String name = "add";
+		
+		String symbol = tests.get_symbol(0).getKey();
+		
+		ArrayList<Object> args = new ArrayList<Object>();
+		args.add(symbol);
+
+		boolean is_ok = _instance.run_method(class0, name, new Class<?>[] { String.class }, args, null);
+		
+		misc.pause_secs(pause1);
+		output.put(name, is_ok);
+
+		name = "remove";
+		
+		args = new ArrayList<Object>();
+		args.add(symbol);
+
+		is_ok = _instance.run_method(class0, name, new Class<?>[] { String.class }, args, null);
+		
+		misc.pause_secs(pause1);
+		output.put(name, is_ok);
+		
+		watchlist.remove_all();
+		misc.pause_secs(pause2);
+		
+		outputs.put(name0, output);
+		
+		update_screen(name0, false, 1);		
+		
+		return outputs;
+	}
+	
+	public static HashMap<String, HashMap<String, Boolean>> run_data_market_quicker(HashMap<String, HashMap<String, Boolean>> outputs_) { return run_data_quicker(market_quicker.class, outputs_); }	
+	
+	public static HashMap<String, HashMap<String, Boolean>> run_data_watchlist_quicker(HashMap<String, HashMap<String, Boolean>> outputs_) { return run_data_quicker(watchlist_quicker.class, outputs_); }	
+	
+	@SuppressWarnings("unchecked")
+	private static HashMap<String, HashMap<String, Boolean>> run_data_quicker(Class<?> class0_, HashMap<String, HashMap<String, Boolean>> outputs_)
+	{
+		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
+		
+		String name0 = class0_.getName();
+		
+		update_screen(name0, true, 1);
+
 		int secs_while = 5;
-		int secs_after = 2;
+		int secs_after = 5;
 		
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
 		String name = "__add";
@@ -368,7 +421,7 @@ public class tests extends parent_tests
 		
 		while (dates.get_elapsed(start) < secs_while)
 		{
-			is_ok = _instance.run_method(class0, name, new Class<?>[] { ArrayList.class }, args, null);
+			is_ok = _instance.run_method(class0_, name, new Class<?>[] { ArrayList.class }, args, null);
 			
 			if (!is_ok) break;
 		}

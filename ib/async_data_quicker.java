@@ -94,9 +94,9 @@ public class async_data_quicker extends parent_static
 		double price = adapt_val(price_, field_ib_);
 		if (!ib.common.price_is_ok(price)) return;
 		
-		async_data_apps_quicker.__tick_price(field_ib_, price, symbol);	
+		async_data_apps_quicker.__tick_price(id_, field_ib_, price, symbol);	
 		
-		update(symbol, field_ib_, price);
+		_update(id_, symbol, field_ib_, price);
 	}
 
 	static void __tick_size(int id_, int field_ib_, int size_)
@@ -110,9 +110,9 @@ public class async_data_quicker extends parent_static
 
 			if (ib.common.size_is_ok(size))
 			{
-				async_data_apps_quicker.tick_size(field_ib_, size, symbol);
+				async_data_apps_quicker.tick_size(id_, field_ib_, size, symbol);
 				
-				update(symbol, field_ib_, size);			
+				_update(id_, symbol, field_ib_, size);			
 			}
 		}
 		
@@ -129,13 +129,13 @@ public class async_data_quicker extends parent_static
 		
 		if (field_ib_ == HALTED_IB) 
 		{
-			value = adapt_halted(id_, value, symbol);
+			value = __adapt_halted(id_, value, symbol);
 			if (value == WRONG_HALTED) return;
 			
 			if (!update && async_data_apps_quicker.includes_halted()) update = true;
 		}		
 		
-		if (update) update(symbol, field_ib_, value);
+		if (update) _update(id_, symbol, field_ib_, value);
 	}
 	
 	static void __tick_snapshot_end(int id_) 
@@ -143,7 +143,7 @@ public class async_data_quicker extends parent_static
 		String symbol = async_data_apps_quicker.__get_symbol(id_);
 		if (symbol == null) return;
 		
-		__complete_snapshot(id_, symbol);
+		__complete_snapshot(id_, symbol, true);
 	}	
 	
 	static String get_col(int field_ib_) 
@@ -153,7 +153,11 @@ public class async_data_quicker extends parent_static
 		return (_cols.containsKey(field_ib_) ? _cols.get(field_ib_) : strings.DEFAULT);
 	}
 	
-	static void update(String symbol_, HashMap<String, String> vals_) { update_internal(symbol_, vals_, async_data_apps_quicker.only_db()); }
+	static void _update(int id_, String symbol_, HashMap<String, String> vals_) 
+	{ 
+		if (async_data_apps_quicker.only_db()) update_db(id_, symbol_, vals_); 
+		else async_data_apps_quicker.__update_vals(id_, vals_);
+	}
 
 	static int get_id(String symbol_) { return get_id_i(symbol_, async_data_apps_quicker.get_symbols(), async_data_apps_quicker.get_last_id(), async_data_apps_quicker.get_max_id(), true); }
 
@@ -182,15 +186,23 @@ public class async_data_quicker extends parent_static
 		return id;
 	}
 
-	static void __complete_snapshot(int id_, String symbol_) 
-	{ 
-		__stop(id_, symbol_, true, false); 
+	private static void __complete_snapshot(int id_, String symbol_, boolean is_tick_) 
+	{
+		if (is_tick_ && async_data_apps_quicker.only_essential()) return;
 	
+		if (!async_data_apps_quicker.only_db()) __store_vals(id_, symbol_);
+		
+		__stop(id_, symbol_, true, false);
+		
 		calls.cancelMktData(id_);
 	}
 	
-	private static void __precomplete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, async_data_apps_quicker.only_essential(), false); }
-
+	private static void __precomplete_snapshot(int id_, String symbol_) 
+	{ 
+		if (async_data_apps_quicker.only_essential()) __complete_snapshot(id_, symbol_, false);
+		else if (!async_data_apps_quicker.only_db()) __store_vals(id_, symbol_);
+	}
+	
 	private static void __stop(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_)
 	{
 		async_data_apps_quicker.__stop_globals(id_, symbol_, snapshot_completed_, remove_symbol_);
@@ -249,26 +261,38 @@ public class async_data_quicker extends parent_static
 		return id;
 	}
 
-	private static void update(String symbol_, int field_ib_, double val_) { update_internal(symbol_, field_ib_, val_, async_data_apps_quicker.only_db()); }
-	
-	private static void update_internal(String symbol_, int field_ib_, double val_, boolean update_db_)
+	private static void __store_vals(int id_, String symbol_)
 	{
-		HashMap<String, String> vals = (update_db_ ? start_db_vals(symbol_) : new HashMap<String, String>());
+		HashMap<String, String> vals = async_data_apps_quicker.__get_vals(id_);
+		if (vals == null) return;
 		
+		update_db(id_, symbol_, start_db_vals(symbol_, vals));
+	}
+	
+	private static void _update(int id_, String symbol_, int field_ib_, double val_) 
+	{
 		String col = get_col(field_ib_);
 
-		vals.put(col, Double.toString(val_));
-
-		update_internal(symbol_, vals, async_data_apps_quicker.only_db());
-		
-		log(symbol_, col, val_);
-	}	
-
-	private static void update_internal(String symbol_, HashMap<String, String> vals_, boolean update_db_) { db_ib.async_data.update_quick(async_data_apps_quicker.get_source(), symbol_, vals_); }
-
-	private static HashMap<String, String> start_db_vals(String symbol_)
+		if (async_data_apps_quicker.only_db()) update_db(id_, symbol_, col, val_); 
+		else async_data_apps_quicker.__update_vals(id_, col, val_);
+	
+		log(id_, symbol_, col, val_);
+	}
+	
+	private static void update_db(int id_, String symbol_, String col_, double val_)
 	{
-		HashMap<String, String> vals = new HashMap<String, String>(); 
+		HashMap<String, String> vals = start_db_vals(symbol_, null);
+		
+		vals.put(col_, Double.toString(val_));
+
+		update_db(id_, symbol_, vals);
+	}
+
+	private static void update_db(int id_, String symbol_, HashMap<String, String> vals_) { db_ib.async_data.update_quick(async_data_apps_quicker.get_source(), symbol_, vals_); }
+	
+	private static HashMap<String, String> start_db_vals(String symbol_, HashMap<String, String> vals_)
+	{
+		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_); 
 		
 		if (async_data_apps_quicker.includes_time_elapsed())
 		{
@@ -283,19 +307,14 @@ public class async_data_quicker extends parent_static
 		return vals;
 	}
 	
-	private static void log(String symbol_, String col_, double val_)
+	private static void log(int id_, String symbol_, String col_, double val_)
 	{
 		if (!async_data_apps_quicker.log()) return;
-	
-		int id = get_id(symbol_);
-		if (!async_data_apps_quicker.id_is_ok(id)) return;
-		
+			
 		String message = dates.get_now_string(dates.FORMAT_TIME_FULL) + accessory.misc.SEPARATOR_CONTENT;
 		
-		message += async_data_apps_quicker.get_app() + accessory.misc.SEPARATOR_CONTENT;
-				
-		message += symbol_ + " (" + id + ")" + accessory.misc.SEPARATOR_CONTENT;
-			
+		message += async_data_apps_quicker.get_app() + accessory.misc.SEPARATOR_CONTENT;		
+		message += symbol_ + " (" + id_ + ")" + accessory.misc.SEPARATOR_CONTENT;
 		message += col_ + ": " + Double.toString(val_);
 		
 		generic.to_screen(message);
@@ -315,8 +334,10 @@ public class async_data_quicker extends parent_static
 		return output;
 	}
 
-	private static int adapt_halted(int id_, double val_, String symbol_)
+	private static int __adapt_halted(int id_, double val_, String symbol_)
 	{
+		__lock();
+		
 		String source = async_data_apps_quicker.get_source();
 
 		int val = (int)val_;			
@@ -326,7 +347,11 @@ public class async_data_quicker extends parent_static
 			
 		if (async_data_apps_quicker.includes_halted_tot() && (halted && !halted_db)) db_ib.async_data.update_halted_tot(source, symbol_, true);		
 		
-		return ((async_data_apps_quicker.includes_halted() && (halted != halted_db)) ? val : WRONG_HALTED);
+		val = ((async_data_apps_quicker.includes_halted() && (halted != halted_db)) ? val : WRONG_HALTED);
+	
+		__unlock();
+	
+		return val;
 	}
 
 	private static void populate_cols()

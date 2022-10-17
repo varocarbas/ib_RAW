@@ -9,37 +9,38 @@ import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
 
-public class async_data_watchlist_quicker extends parent_static 
+abstract class async_data_watchlist_quicker extends parent_static 
 {
 	public static final String _APP = "watchlist";
 	
 	public static final String SOURCE = db_ib.watchlist.SOURCE;
 
 	public static final int MAX_SIMULTANEOUS_SYMBOLS = 5;
-	public static final double MAX_VAR = 100.0;
+	public static final double MAX_VAR = 50.0;
 
-	static final int SIZE_GLOBALS = 250;
-	static final int MAX_ID = SIZE_GLOBALS - 1;
+	static final int SIZE_GLOBALS = 50;
+	static final int MAX_ID = SIZE_GLOBALS - 1;	
+	static final boolean INCLUDES_TIME = false;
+	static final boolean INCLUDES_TIME_ELAPSED = true;
+	static final boolean INCLUDES_HALTED = true;
+	static final boolean INCLUDES_HALTED_TOT = false;
+	static final boolean ONLY_ESSENTIAL = true;
+	static final boolean ONLY_DB = true;
 
 	static volatile String[] _symbols = new String[SIZE_GLOBALS];
+	@SuppressWarnings("unchecked")
+	static volatile HashMap<String, String>[] _vals = (HashMap<String, String>[])new HashMap[SIZE_GLOBALS];
 
 	static volatile int _last_id = -1;
 	
 	static int[] _fields = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.VOLUME_IB, async_data_quicker.HALTED_IB };
-	
-	static boolean _includes_time = false;
-	static boolean _includes_time_elapsed = true;
-	static boolean _includes_halted = true;
-	static boolean _includes_halted_tot = false;
-	static boolean _only_essential = true;
-	static boolean _only_db = true;
 	
 	private static final int SIZE_GLOBALS_FLUS = MAX_SIMULTANEOUS_SYMBOLS;
 	private static final int MAX_I_FLUS = SIZE_GLOBALS_FLUS - 1;
 
 	private static final int MIN_FLUS_TOT = 3;
 	private static final int MAX_FLUS_TOT = 10;
-	private static final int MAX_FLU2_MIN_MAX_TOT = 50;
+	private static final int MAX_FLU2_MIN_MAX_TOT = 100;
 	private static final double FACTOR_FLU2_ZERO = 1.5;
 
 	private static volatile String[] _symbols_flus = new String[SIZE_GLOBALS_FLUS];
@@ -68,7 +69,7 @@ public class async_data_watchlist_quicker extends parent_static
 	
 	public static ArrayList<String> get_all_symbols() { return async_data_quicker.get_all_symbols(SOURCE); }
 	
-	public static void __tick_price(int field_ib_, double price_, String symbol_)
+	public static void __tick_price(int id_, int field_ib_, double price_, String symbol_)
 	{
 		if (field_ib_ != async_data_quicker.PRICE_IB) return;
 			
@@ -81,10 +82,10 @@ public class async_data_watchlist_quicker extends parent_static
 		HashMap<String, String> temp = __tick_price_flus(symbol_, price_, db, vals);
 		if (arrays.is_ok(temp)) vals = new HashMap<String, String>(temp);
 		
-		async_data_quicker.update(symbol_, vals);
+		async_data_quicker._update(id_, symbol_, vals);
 	}
 
-	public static void tick_size(int field_ib_, double size_, String symbol_)
+	public static void tick_size(int id_, int field_ib_, double size_, String symbol_)
 	{
 		if (field_ib_ != async_data_quicker.VOLUME_IB) return;
 		
@@ -93,7 +94,7 @@ public class async_data_watchlist_quicker extends parent_static
 		HashMap<String, String> vals = tick_size_basic(symbol_, size_, db);
 		if (!arrays.is_ok(vals)) return;
 		
-		async_data_quicker.update(symbol_, vals);
+		async_data_quicker._update(id_, symbol_, vals);
 	}
 	
 	public static void start_globals(String symbol_, boolean is_restart_)
