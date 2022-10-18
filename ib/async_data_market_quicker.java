@@ -9,9 +9,9 @@ abstract class async_data_market_quicker
 	
 	public static final String SOURCE = db_ib.market.SOURCE;
 
-	public static final int MAX_SIMULTANEOUS_SYMBOLS = 500;
+	public static final int MAX_SIMULTANEOUS_SYMBOLS = 250;
 
-	static final int SIZE_GLOBALS = 2500;
+	static final int SIZE_GLOBALS = 500;
 	static final int MAX_ID = SIZE_GLOBALS - 1;
 	static final boolean INCLUDES_TIME = true;
 	static final boolean INCLUDES_TIME_ELAPSED = false;

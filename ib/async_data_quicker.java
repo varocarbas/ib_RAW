@@ -143,7 +143,7 @@ public class async_data_quicker extends parent_static
 		String symbol = async_data_apps_quicker.__get_symbol(id_);
 		if (symbol == null) return;
 		
-		__complete_snapshot(id_, symbol, true);
+		__complete_snapshot(id_, symbol);
 	}	
 	
 	static String get_col(int field_ib_) 
@@ -186,21 +186,18 @@ public class async_data_quicker extends parent_static
 		return id;
 	}
 
-	private static void __complete_snapshot(int id_, String symbol_, boolean is_tick_) 
+	private static void __complete_snapshot(int id_, String symbol_) 
 	{
-		if (is_tick_ && async_data_apps_quicker.only_essential()) return;
-	
 		if (!async_data_apps_quicker.only_db()) __store_vals(id_, symbol_);
 		
 		__stop(id_, symbol_, true, false);
-		
-		calls.cancelMktData(id_);
 	}
 	
 	private static void __precomplete_snapshot(int id_, String symbol_) 
 	{ 
-		if (async_data_apps_quicker.only_essential()) __complete_snapshot(id_, symbol_, false);
-		else if (!async_data_apps_quicker.only_db()) __store_vals(id_, symbol_);
+		__stop(id_, symbol_, async_data_apps_quicker.only_essential(), false);
+		
+		if (!async_data_apps_quicker.only_db()) __store_vals(id_, symbol_);
 	}
 	
 	private static void __stop(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_)

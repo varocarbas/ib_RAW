@@ -18,7 +18,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	public static final int MAX_SIMULTANEOUS_SYMBOLS = 5;
 	public static final double MAX_VAR = 50.0;
 
-	static final int SIZE_GLOBALS = 50;
+	static final int SIZE_GLOBALS = 350;
 	static final int MAX_ID = SIZE_GLOBALS - 1;	
 	static final boolean INCLUDES_TIME = false;
 	static final boolean INCLUDES_TIME_ELAPSED = true;
