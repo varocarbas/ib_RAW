@@ -13,7 +13,7 @@ abstract class async_data_trades_quicker
 
 	public static final int MAX_SIMULTANEOUS_SYMBOLS = 5;
 
-	static final int SIZE_GLOBALS = 150;
+	static final int SIZE_GLOBALS = 350;
 	static final int MAX_ID = SIZE_GLOBALS - 1;
 	static final boolean INCLUDES_TIME = false;
 	static final boolean INCLUDES_TIME_ELAPSED = true;

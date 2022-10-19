@@ -152,12 +152,8 @@ public class async_data_quicker extends parent_static
 		
 		return (_cols.containsKey(field_ib_) ? _cols.get(field_ib_) : strings.DEFAULT);
 	}
-	
-	static void _update(int id_, String symbol_, HashMap<String, String> vals_) 
-	{ 
-		if (async_data_apps_quicker.only_db()) update_db(id_, symbol_, vals_); 
-		else async_data_apps_quicker.__update_vals(id_, vals_);
-	}
+
+	static void update_db(int id_, String symbol_, HashMap<String, String> vals_) { db_ib.async_data.update_quick(async_data_apps_quicker.get_source(), symbol_, vals_); }
 
 	static int get_id(String symbol_) { return get_id_i(symbol_, async_data_apps_quicker.get_symbols(), async_data_apps_quicker.get_last_id(), async_data_apps_quicker.get_max_id(), true); }
 
@@ -194,10 +190,10 @@ public class async_data_quicker extends parent_static
 	}
 	
 	private static void __precomplete_snapshot(int id_, String symbol_) 
-	{ 
-		__stop(id_, symbol_, async_data_apps_quicker.only_essential(), false);
-		
+	{ 		
 		if (!async_data_apps_quicker.only_db()) __store_vals(id_, symbol_);
+	
+		__stop(id_, symbol_, async_data_apps_quicker.only_essential(), false);
 	}
 	
 	private static void __stop(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_)
@@ -284,8 +280,6 @@ public class async_data_quicker extends parent_static
 
 		update_db(id_, symbol_, vals);
 	}
-
-	private static void update_db(int id_, String symbol_, HashMap<String, String> vals_) { db_ib.async_data.update_quick(async_data_apps_quicker.get_source(), symbol_, vals_); }
 	
 	private static HashMap<String, String> start_db_vals(String symbol_, HashMap<String, String> vals_)
 	{

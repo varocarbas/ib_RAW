@@ -116,7 +116,12 @@ public abstract class conn extends parent_static
 
 	public static void end() { disconnect(); }
 
-	public static void disconnect() { calls.eDisconnect(); }
+	public static void disconnect() 
+	{	
+		calls.eDisconnect(); 
+	
+		_connected = false;
+	}
 
 	public static boolean id_is_ok() { return id_is_ok(_id); }
 

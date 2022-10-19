@@ -11,7 +11,7 @@ public abstract class common
 {
 	public static final int DEFAULT_ROUND_DECIMALS = 2;
 	
-	public static final String FORMAT_TIME = dates.FORMAT_TIME_SHORT;
+	public static final String FORMAT_TIME = dates.FORMAT_TIME_FULL;
 	public static final String FORMAT_TIME2 = dates.FORMAT_TIME_FULL;
 	public static final String FORMAT_TIME_ELAPSED = dates.FORMAT_TIME_FULL;
 	public static final String FORMAT_DATE = dates.FORMAT_DATE;

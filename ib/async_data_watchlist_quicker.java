@@ -40,7 +40,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 
 	private static final int MIN_FLUS_TOT = 3;
 	private static final int MAX_FLUS_TOT = 10;
-	private static final int MAX_FLU2_MIN_MAX_TOT = 100;
+	private static final int MAX_FLU2_MIN_MAX_TOT = 200;
 	private static final double FACTOR_FLU2_ZERO = 1.5;
 
 	private static volatile String[] _symbols_flus = new String[SIZE_GLOBALS_FLUS];
@@ -82,7 +82,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		HashMap<String, String> temp = __tick_price_flus(symbol_, price_, db, vals);
 		if (arrays.is_ok(temp)) vals = new HashMap<String, String>(temp);
 		
-		async_data_quicker._update(id_, symbol_, vals);
+		async_data_quicker.update_db(id_, symbol_, vals);
 	}
 
 	public static void tick_size(int id_, int field_ib_, double size_, String symbol_)
@@ -94,7 +94,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		HashMap<String, String> vals = tick_size_basic(symbol_, size_, db);
 		if (!arrays.is_ok(vals)) return;
 		
-		async_data_quicker._update(id_, symbol_, vals);
+		async_data_quicker.update_db(id_, symbol_, vals);
 	}
 	
 	public static void start_globals(String symbol_, boolean is_restart_)
@@ -147,17 +147,22 @@ abstract class async_data_watchlist_quicker extends parent_static
 
 	private static HashMap<String, String> __tick_price_flus(String symbol_, double price_, HashMap<String, String> db_, HashMap<String, String> vals_)
 	{
+		__lock();
+
 		String col_price = db_ib.async_data.get_col(db_ib.async_data.FLUS_PRICE);
 		
 		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_);
 		vals.put(col_price, Double.toString(price_));
-		
-		double var = numbers.get_perc_hist(price_, Double.parseDouble(db_.get(col_price)));
-		
-		if (Math.abs(var) > MAX_VAR) return null;
-		if (var == 0.0) return vals; 
 
-		__lock();
+		double price_old = Double.parseDouble(db_.get(col_price));	
+		double var = (common.price_is_ok(price_old) ? numbers.get_perc_hist(price_, price_old) : 0.0);
+		
+		if ((var == 0.0) || (Math.abs(var) > MAX_VAR)) 
+		{
+			__unlock();
+			
+			return ((var == 0.0) ? vals : null);
+		}		
 		
 		vals = tick_price_flus_flu(symbol_, vals, var);
 		vals = tick_price_flus_flu2(symbol_, vals, var);
