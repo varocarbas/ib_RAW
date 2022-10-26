@@ -70,6 +70,8 @@ public abstract class conn extends parent_static
 	
 	public static boolean start(int id_, String type_)
 	{
+		_connected = false;
+		
 		String error = null;
 
 		if (!id_is_ok(id_)) error = ERROR_ID;
@@ -95,9 +97,8 @@ public abstract class conn extends parent_static
 	
 	public static boolean connect()
 	{
-		if (_connected) return true;
-
 		if (_wrapper == null || _client == null || !id_is_ok() || !type_is_ok() || !port_is_ok()) return start();
+		if (_connected) return true;
 		
 		_connected = false;
 		
@@ -117,9 +118,9 @@ public abstract class conn extends parent_static
 	public static void end() { disconnect(); }
 
 	public static void disconnect() 
-	{	
+	{			
 		calls.eDisconnect(); 
-	
+		
 		_connected = false;
 	}
 

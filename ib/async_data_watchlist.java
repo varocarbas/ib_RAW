@@ -170,7 +170,7 @@ abstract class async_data_watchlist extends parent_static
 
 		flu /= (double)tot;
 
-		return db_ib.async_data.add_to_vals(db_ib.async_data.FLU, flu, vals, _is_quick);
+		return db_ib.async_data.add_to_vals(db_ib.async_data.FLU, numbers.round(flu), vals, _is_quick);
 	}
 
 	private static Object tick_price_flus_flu2(String symbol_, Object vals_, double var_)
@@ -266,7 +266,7 @@ abstract class async_data_watchlist extends parent_static
 			else if (tot_plus == 0) flu2 = Math.pow(FACTOR_FLU2_ZERO, -1.0 * (double)tot_minus);
 		}
 		
-		return db_ib.async_data.add_to_vals(db_ib.async_data.FLU2, flu2, vals, _is_quick);
+		return db_ib.async_data.add_to_vals(db_ib.async_data.FLU2, numbers.round(flu2), vals, _is_quick);
 	}
 
 	private static Object tick_price_flus_flu2_min_max(String symbol_, Object vals_, double var_)
@@ -290,8 +290,8 @@ abstract class async_data_watchlist extends parent_static
 			else if (val > max) max = val;
 		}
 
-		vals = db_ib.async_data.add_to_vals(db_ib.async_data.FLU2_MIN, min, vals, _is_quick);
-		vals = db_ib.async_data.add_to_vals(db_ib.async_data.FLU2_MAX, max, vals, _is_quick);
+		vals = db_ib.async_data.add_to_vals(db_ib.async_data.FLU2_MIN, numbers.round(min), vals, _is_quick);
+		vals = db_ib.async_data.add_to_vals(db_ib.async_data.FLU2_MAX, numbers.round(max), vals, _is_quick);
 		
 		return vals;
 	}

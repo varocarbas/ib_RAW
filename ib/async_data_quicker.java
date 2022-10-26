@@ -15,7 +15,9 @@ public class async_data_quicker extends parent_static
 {	
 	public static final double FACTOR_VOLUME = 1.0 / 1000.0;
 
-	public static final int WRONG_ID = common.WRONG_ID;
+	public static final int MIN_ID = common_xsync.MIN_REQ_ID_ASYNC;	
+
+	public static final int WRONG_ID = MIN_ID - 1;
 	public static final int WRONG_I = common.WRONG_I;
 	public static final int WRONG_HALTED = data.WRONG_HALTED;
 
@@ -66,7 +68,7 @@ public class async_data_quicker extends parent_static
 		if (!strings.is_ok(symbol)) return;
 
 		async_data_apps_quicker.update_app(app_);
-		
+
 		__stop(WRONG_ID, symbol_, true, true); 
 		
 		_enabled = true;
@@ -95,7 +97,7 @@ public class async_data_quicker extends parent_static
 		if (!ib.common.price_is_ok(price)) return;
 		
 		async_data_apps_quicker.__tick_price(id_, field_ib_, price, symbol);	
-		
+
 		_update(id_, symbol, field_ib_, price);
 	}
 
@@ -110,7 +112,7 @@ public class async_data_quicker extends parent_static
 
 			if (ib.common.size_is_ok(size))
 			{
-				async_data_apps_quicker.tick_size(id_, field_ib_, size, symbol);
+				async_data_apps_quicker._tick_size(id_, field_ib_, size, symbol);
 				
 				_update(id_, symbol, field_ib_, size);			
 			}
@@ -135,7 +137,7 @@ public class async_data_quicker extends parent_static
 			if (!update && async_data_apps_quicker.includes_halted()) update = true;
 		}		
 		
-		if (update) _update(id_, symbol, field_ib_, value);
+		if (update) _update(id_, symbol, field_ib_, value, true);
 	}
 	
 	static void __tick_snapshot_end(int id_) 
@@ -152,14 +154,37 @@ public class async_data_quicker extends parent_static
 		
 		return (_cols.containsKey(field_ib_) ? _cols.get(field_ib_) : strings.DEFAULT);
 	}
+	
+	static void _update(int id_, String symbol_, HashMap<String, String> vals_) 
+	{ 
+		if (async_data_apps_quicker.__only_db()) update_db(id_, symbol_, vals_); 
+		else async_data_apps_quicker.__update_vals(id_, vals_);
+	}
 
-	static void update_db(int id_, String symbol_, HashMap<String, String> vals_) { db_ib.async_data.update_quick(async_data_apps_quicker.get_source(), symbol_, vals_); }
-
-	static int get_id(String symbol_) { return get_id_i(symbol_, async_data_apps_quicker.get_symbols(), async_data_apps_quicker.get_last_id(), async_data_apps_quicker.get_max_id(), true); }
+	static int _get_id(String symbol_, boolean lock_) 
+	{ 
+		if (lock_) __lock();
+		
+		int id = WRONG_ID;
+		
+		id = get_id_i(symbol_, async_data_apps_quicker.get_symbols(), async_data_apps_quicker.get_last_id(), async_data_apps_quicker.get_max_id(), true); 
+	
+		if (lock_) __unlock();
+		
+		return id;
+	}
 
 	static int get_id_i(String symbol_, String[] symbols_, int last_, int max_, boolean is_id_) 
 	{
-		int wrong = (is_id_ ? WRONG_ID : WRONG_I);		
+		int min = 0;
+		int wrong = WRONG_I;	
+		
+		if (is_id_)
+		{
+			min = MIN_ID;	
+			wrong = WRONG_ID;	
+		}
+		
 		if (!strings.is_ok(symbol_) || last_ <= wrong) return wrong;
 		
 		int id = last_;
@@ -167,11 +192,12 @@ public class async_data_quicker extends parent_static
 		while (true)
 		{	
 			id--;
-			if (id < 0) id = max_; 
+			if (id < min) id = max_; 
 
 			boolean is_last = (id == last_);
 			
-			if (is_last || (symbols_[id] != null && symbols_[id].equals(symbol_))) 
+			int i = get_i(id, is_id_);
+			if (is_last || (symbols_[i] != null && symbols_[i].equals(symbol_))) 
 			{
 				if (is_last) id = wrong;
 				
@@ -182,23 +208,19 @@ public class async_data_quicker extends parent_static
 		return id;
 	}
 
-	private static void __complete_snapshot(int id_, String symbol_) 
-	{
-		if (!async_data_apps_quicker.only_db()) __store_vals(id_, symbol_);
-		
-		__stop(id_, symbol_, true, false);
-	}
+	static int get_i(int id_i_, boolean is_id_) { return (is_id_ ? id_i_ - MIN_ID : id_i_); }
 	
-	private static void __precomplete_snapshot(int id_, String symbol_) 
-	{ 		
-		if (!async_data_apps_quicker.only_db()) __store_vals(id_, symbol_);
+	private static void __complete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, true, false); }
 	
-		__stop(id_, symbol_, async_data_apps_quicker.only_essential(), false);
-	}
+	private static void __precomplete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, async_data_apps_quicker.__only_essential(), false); }
 	
 	private static void __stop(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_)
 	{
-		async_data_apps_quicker.__stop_globals(id_, symbol_, snapshot_completed_, remove_symbol_);
+		int id = (id_ > WRONG_ID ? id_ : _get_id(symbol_, true));
+		
+		if (!async_data_apps_quicker.__only_db()) __store_vals(id, symbol_);
+
+		async_data_apps_quicker.__stop_globals(id, symbol_, snapshot_completed_, remove_symbol_);
 		
 		if (remove_symbol_) db_ib.async_data.delete(async_data_apps_quicker.get_source(), symbol_);
 	}
@@ -208,14 +230,14 @@ public class async_data_quicker extends parent_static
 		boolean output = false;
 
 		String source = async_data_apps_quicker.get_source();
-		
+
 		if (!db_ib.async_data.exists(source, symbol_)) db_ib.async_data.insert_quick(source, symbol_);
-		else if (db_ib.async_data.is_enabled(source, symbol_)) db_ib.async_data.update_timestamp(source, symbol_, true);
+		else if (!async_data_apps_quicker.__check_enabled() || db_ib.async_data.is_enabled(source, symbol_)) db_ib.async_data.update_timestamp(source, symbol_, true);
 		else return output;			
 
 		int id = __get_new_id(symbol_); 
 		if (!async_data_apps_quicker.id_is_ok(id)) return output;
-		
+
 		return calls.reqMktData(id, symbol_, true);
 	}
 	
@@ -226,7 +248,7 @@ public class async_data_quicker extends parent_static
 		String[] symbols = async_data_apps_quicker.get_symbols();
 		
 		int last_id = async_data_apps_quicker.get_last_id();
-		if (!async_data_apps_quicker.id_is_ok(last_id)) last_id = 0;
+		if (!async_data_apps_quicker.id_is_ok(last_id)) last_id = MIN_ID;
 
 		int max_id = async_data_apps_quicker.get_max_id();
 		
@@ -235,11 +257,13 @@ public class async_data_quicker extends parent_static
 		while (true)
 		{
 			id++;
-			if (id > max_id) id = 0;
+			if (id > max_id) id = MIN_ID;
 			
 			boolean is_last = (id == last_id);
 			
-			if (is_last || symbols[id] == null) 
+			int i = get_i(id, true);
+			
+			if (is_last || symbols[i] == null) 
 			{
 				if (is_last) id = WRONG_ID;
 
@@ -261,12 +285,14 @@ public class async_data_quicker extends parent_static
 		
 		update_db(id_, symbol_, start_db_vals(symbol_, vals));
 	}
+
+	private static void _update(int id_, String symbol_, int field_ib_, double val_) { _update(id_, symbol_, field_ib_, val_, false); }
 	
-	private static void _update(int id_, String symbol_, int field_ib_, double val_) 
+	private static void _update(int id_, String symbol_, int field_ib_, double val_, boolean force_db_) 
 	{
 		String col = get_col(field_ib_);
 
-		if (async_data_apps_quicker.only_db()) update_db(id_, symbol_, col, val_); 
+		if (force_db_ || async_data_apps_quicker.__only_db()) update_db(id_, symbol_, col, val_); 
 		else async_data_apps_quicker.__update_vals(id_, col, val_);
 	
 		log(id_, symbol_, col, val_);
@@ -280,6 +306,8 @@ public class async_data_quicker extends parent_static
 
 		update_db(id_, symbol_, vals);
 	}
+		
+	private static void update_db(int id_, String symbol_, HashMap<String, String> vals_) { db_ib.async_data.update_quick(async_data_apps_quicker.get_source(), symbol_, vals_); }
 	
 	private static HashMap<String, String> start_db_vals(String symbol_, HashMap<String, String> vals_)
 	{

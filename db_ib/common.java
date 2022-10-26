@@ -683,7 +683,7 @@ public abstract class common
 
 	private static double adapt_number(double val_, int max_, boolean is_negative_)
 	{
-		double output = numbers.round(val_, ib.common.DEFAULT_ROUND_DECIMALS);
+		double output = numbers.round(val_);
 		if (max_ <= WRONG_MAX_SIZE) return output;
 		
 		double max = get_max_val(max_);

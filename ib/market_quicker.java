@@ -9,6 +9,18 @@ public abstract class market_quicker
 	public static boolean log() { return async_data_market_quicker.log(); }
 	
 	public static void log(boolean log_) { async_data_market_quicker.log(log_); }	
+	
+	public static boolean only_db() { return async_data_market_quicker.only_db(); }
+	
+	public static void only_db(boolean only_db_) { async_data_market_quicker.only_db(only_db_); }	
+	
+	public static boolean check_enabled() { return async_data_market_quicker.check_enabled(); }
+	
+	public static void check_enabled(boolean check_enabled_) { async_data_market_quicker.check_enabled(check_enabled_); }	
+	
+	public static boolean only_essential() { return async_data_market_quicker.only_essential(); }
+	
+	public static void only_essential(boolean only_essential_) { async_data_market_quicker.only_essential(only_essential_); }	
 
 	public static void __start(ArrayList<String> symbols_) 
 	{ 
