@@ -208,7 +208,7 @@ public class async_data_quicker extends parent_static
 		return id;
 	}
 
-	static int get_i(int id_i_, boolean is_id_) { return (is_id_ ? id_i_ - MIN_ID : id_i_); }
+	static int get_i(int id_i_, boolean is_id_) { return (is_id_ ? (id_i_ - MIN_ID) : id_i_); }
 	
 	private static void __complete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, true, false); }
 	

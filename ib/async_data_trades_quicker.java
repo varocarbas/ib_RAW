@@ -10,8 +10,9 @@ abstract class async_data_trades_quicker
 	public static final String _APP = "trades";
 	
 	public static final String SOURCE = db_ib.trades.SOURCE;
-
 	public static final int MAX_SIMULTANEOUS_SYMBOLS = 5;
+
+	static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.HALTED_IB };
 
 	static final int SIZE_GLOBALS = 350;
 	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
@@ -28,8 +29,6 @@ abstract class async_data_trades_quicker
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = false;
 	static volatile boolean _only_essential = true;
-
-	static int[] _fields = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.HALTED_IB };
 
 	private static boolean _log = async_data_quicker.DEFAULT_LOG;
 	

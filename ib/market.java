@@ -110,7 +110,19 @@ public abstract class market
 		return _time_close;
 	}
 
-	public static boolean day_is_ok() { return (!is_holiday() && !dates.is_weekend()); }
+	public static boolean day_is_ok() { return day_is_ok(dates.get_now_date()); }
+	
+	public static String get_last_day_ok()
+	{
+		LocalDate date = dates.get_now_date();
+	
+		while (true)
+		{
+			date = date.minusDays(1);
+			
+			if (day_is_ok(date)) return dates.to_string(date, common.FORMAT_DATE);
+		}
+	}
 	
 	public static boolean is_holiday() 
 	{
@@ -121,21 +133,23 @@ public abstract class market
 
 	private static void populate_time_open() { _time_open = TIME_OPEN; }
 
-	private static void populate_time_close() { _time_close = (is_today(_path_market_early_closes) ? TIME_CLOSE_EARLY : TIME_CLOSE); }
+	private static void populate_time_close() { _time_close = (is_today(_path_market_early_closes, dates.get_now_date()) ? TIME_CLOSE_EARLY : TIME_CLOSE); }
 
-	private static void populate_is_holiday() { _is_holiday = is_today(_path_market_holidays); }
+	private static void populate_is_holiday() { _is_holiday = is_holiday(dates.get_now_date()); }
+
+	private static boolean day_is_ok(LocalDate date_) { return (!is_holiday(date_) && !dates.is_weekend(date_)); }
+
+	private static boolean is_holiday(LocalDate date_) { return is_today(_path_market_holidays, date_); }
 	
-	private static boolean is_today(String path_) 
+	private static boolean is_today(String path_, LocalDate date_) 
 	{
 		String[] lines = io.file_to_array(path_);
 		if (!arrays.is_ok(lines)) return false;
 		
-		LocalDate today = dates.get_now_date();
-		
 		for (String line: lines)
 		{
 			LocalDate date = dates.date_from_string(line);
-			if (date != null && date.isEqual(today)) return true;
+			if (date != null && date.isEqual(date_)) return true;
 		}
 		
 		return false;

@@ -14,9 +14,9 @@ abstract class async_data_watchlist_quicker extends parent_static
 	public static final String _APP = "watchlist";
 	
 	public static final String SOURCE = db_ib.watchlist.SOURCE;
-
 	public static final int MAX_SIMULTANEOUS_SYMBOLS = 5;
-	public static final double MAX_VAR = 50.0;
+	
+	static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.VOLUME_IB, async_data_quicker.HALTED_IB };
 
 	static final int SIZE_GLOBALS = 350;
 	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
@@ -33,12 +33,10 @@ abstract class async_data_watchlist_quicker extends parent_static
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = false;
 	static volatile boolean _only_essential = true;
-	
-	static int[] _fields = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.VOLUME_IB, async_data_quicker.HALTED_IB };
-	
+
+	private static final double MAX_VAR = 30.0;
 	private static final int SIZE_GLOBALS_FLUS = MAX_SIMULTANEOUS_SYMBOLS;
 	private static final int MAX_I_FLUS = SIZE_GLOBALS_FLUS - 1;
-
 	private static final int MIN_FLUS_TOT = 3;
 	private static final int MAX_FLUS_TOT = 10;
 	private static final double FACTOR_FLU2_ZERO = 1.5;
@@ -317,27 +315,21 @@ abstract class async_data_watchlist_quicker extends parent_static
 			
 			return vals;
 		}
-		
-		double flu2_plus = 0.0;
-		for (double val: flus2_plus_i) { flu2_plus += val; }
-		
-		flu2_plus = (tot_plus == 0 ? 0.0 : flu2_plus / (double)tot_plus);
-		
-		double flu2_minus = 0.0;
-		for (double val: flus2_minus_i) { flu2_minus += val; }
-		
-		flu2_minus = (tot_minus == 0 ? 0.0 : flu2_minus / (double)tot_minus);
 
 		double flu2 = 0.0;		
+		double flu2_plus = 0.0;
+		double flu2_minus = 0.0;
+		
+		for (double val: flus2_plus_i) { flu2_plus += val; }		
+		flu2_plus = (tot_plus == 0 ? 0.0 : (flu2_plus / (double)tot_plus));
+		
+		for (double val: flus2_minus_i) { flu2_minus += val; }		
+		flu2_minus = (tot_minus == 0 ? 0.0 : (flu2_minus / (double)tot_minus));
+		
 		if (tot_plus > 0 && tot_minus > 0) flu2 = flu2_plus / Math.abs(flu2_minus);
 		else
 		{
-			if (tot_minus == 0) 
-			{
-				flu2 = (double)tot_plus;
-				
-				if (Math.abs(flu2) > 1.0) flu2 /= FACTOR_FLU2_ZERO;
-			}
+			if (tot_minus == 0) flu2 = (tot_plus == 1 ? 1.0 : ((double)tot_plus / FACTOR_FLU2_ZERO));
 			else if (tot_plus == 0) flu2 = Math.pow(FACTOR_FLU2_ZERO, -1.0 * (double)tot_minus);
 		}
 		
@@ -361,10 +353,10 @@ abstract class async_data_watchlist_quicker extends parent_static
 		String col_min = db_ib.async_data.get_col(db_ib.async_data.FLU2_MIN);
 		String col_max = db_ib.async_data.get_col(db_ib.async_data.FLU2_MAX);
 
-		HashMap<String, String> dbs = db_ib.common.get_vals_quick(SOURCE, new String[] { col_min, col_max }, db_ib.common.get_where_symbol(SOURCE, symbol_));
+		HashMap<String, String> db = db_ib.common.get_vals_quick(SOURCE, new String[] { col_min, col_max }, db_ib.common.get_where_symbol(SOURCE, symbol_));
 		
-		if (var_ < 0.0 && var_ < Double.parseDouble(dbs.get(col_min))) vals.put(col_min, Double.toString(numbers.round(var_)));
-		else if (var_ > 0.0 && var_ > Double.parseDouble(dbs.get(col_max))) vals.put(col_max, Double.toString(numbers.round(var_)));
+		if (var_ < 0.0 && var_ < Double.parseDouble(db.get(col_min))) vals.put(col_min, Double.toString(numbers.round(var_)));
+		else if (var_ > 0.0 && var_ > Double.parseDouble(db.get(col_max))) vals.put(col_max, Double.toString(numbers.round(var_)));
 				
 		return vals;
 	}

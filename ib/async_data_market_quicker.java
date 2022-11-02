@@ -8,8 +8,9 @@ abstract class async_data_market_quicker
 	public static final String _APP = "market";
 	
 	public static final String SOURCE = db_ib.market.SOURCE;
-
 	public static final int MAX_SIMULTANEOUS_SYMBOLS = 250;
+
+	static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.OPEN_IB, async_data_quicker.CLOSE_IB, async_data_quicker.LOW_IB, async_data_quicker.HIGH_IB, async_data_quicker.ASK_IB, async_data_quicker.BID_IB, async_data_quicker.VOLUME_IB, async_data_quicker.SIZE_IB, async_data_quicker.ASK_SIZE_IB, async_data_quicker.BID_SIZE_IB, async_data_quicker.HALTED_IB };
 
 	static final int SIZE_GLOBALS = 500;
 	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
@@ -26,8 +27,6 @@ abstract class async_data_market_quicker
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = true;
 	static volatile boolean _only_essential = false;
-
-	static int[] _fields = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.OPEN_IB, async_data_quicker.CLOSE_IB, async_data_quicker.LOW_IB, async_data_quicker.HIGH_IB, async_data_quicker.ASK_IB, async_data_quicker.BID_IB, async_data_quicker.VOLUME_IB, async_data_quicker.SIZE_IB, async_data_quicker.ASK_SIZE_IB, async_data_quicker.BID_SIZE_IB, async_data_quicker.HALTED_IB };
 
 	private static boolean _log = async_data_quicker.DEFAULT_LOG;
 		

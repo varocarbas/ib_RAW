@@ -1,5 +1,6 @@
 package db_ib;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -252,6 +253,44 @@ public abstract class common
 
 	public static HashMap<String, String> get_vals_quick(String source_, String[] cols_, String where_, String order_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.select_one(source_, cols_, where_, order_) : db.select_one_quick(source_, cols_, where_, order_)); }
 
+	public static HashMap<String, String> get_vals_old_quick(String source_old_, String[] cols_) { return get_vals_old(source_old_, cols_, true); }
+	
+	public static HashMap<String, String> get_vals_old(String source_old_, String[] fields_cols_, boolean is_quick_) 
+	{ 
+		HashMap<String, String> output = null;
+	
+		String field_col_date = get_field_col(source_old_, FIELD_DATE, is_quick_);
+		if (!strings.is_ok(field_col_date)) return output;
+		
+		String[] field_cols = get_cols_old(source_old_, fields_cols_, field_col_date, is_quick_);
+		if (!arrays.is_ok(field_cols)) return output;
+		
+		ArrayList<HashMap<String, String>> all = get_all_vals(source_old_, field_cols, db.DEFAULT_WHERE, is_quick_);
+		if (!arrays.is_ok(all)) return output;
+		
+		LocalDate date = null;
+		
+		for (HashMap<String, String> item: all)
+		{
+			LocalDate temp = dates.date_from_string((String)arrays.get_value(item, field_col_date), ib.common.FORMAT_DATE, false);
+			if (temp == null || (date != null && temp.isBefore(date))) continue;
+			
+			date = temp;		
+			output = new HashMap<String, String>(item);
+		}
+		
+		return output;
+	}
+	
+	public static HashMap<String, String> get_vals_old_quick(String source_old_, String[] cols_, String date_) { return get_vals_old(source_old_, cols_, date_, true); }
+
+	public static HashMap<String, String> get_vals_old(String source_old_, String[] fields_cols_, String date_, boolean is_quick_) 
+	{ 
+		String[] field_cols = get_cols_old(source_old_, fields_cols_, null, is_quick_);
+		
+		return (arrays.is_ok(field_cols) ? get_vals(source_old_, field_cols, (strings.is_ok(date_) ? get_where(source_old_, FIELD_DATE, date_) : null), is_quick_) : null); 
+	}
+
 	public static String get_type(String source_, String field_, String root_, String where_) 
 	{
 		String key = get_string(source_, field_, where_);
@@ -377,7 +416,7 @@ public abstract class common
 			
 			String message = db.get_table(source_old);
 			
-			if (!exists(source_old, get_where(source_old, FIELD_DATE, dates.get_now_string(ib.common.FORMAT_DATE))))
+			if (!exists(source_old, get_where(source_old, FIELD_DATE, dates.get_now_string(ib.common.FORMAT_DATE, dates.DEFAULT_OFFSET))))
 			{
 				boolean temp = update_old_quick(source, source_old);
 				if (!temp) is_ok = false;		
@@ -519,7 +558,7 @@ public abstract class common
 	{
 		int max = get_max_size_string(field_);
 		
-		return (max <= WRONG_MAX_SIZE ? val_ : adapt_string(val_, max));
+		return (max <= WRONG_MAX_SIZE ? val_ : adapt_string(db.sanitise_string(val_), max));
 	}
 	
 	public static String adapt_string(String val_, int max_) { return (strings.get_length(val_) <= get_max_length(max_) ? val_ : strings.truncate(val_, max_)); }
@@ -660,7 +699,7 @@ public abstract class common
 		ArrayList<HashMap<String, String>> all_vals = common.get_all_vals(source_, null, null, true);
 		if (!arrays.is_ok(all_vals)) return output;
 
-		String date = dates.get_now_string(ib.common.FORMAT_DATE);
+		String date = dates.get_now_string(ib.common.FORMAT_DATE, dates.DEFAULT_OFFSET);
 
 		String col_date = common.get_col(source_old_, FIELD_DATE);
 		String col_id = common.get_col(source_, db.FIELD_ID);
@@ -677,6 +716,17 @@ public abstract class common
 		}
 		
 		return output;	
+	}
+
+	private static String[] get_cols_old(String source_old_, String[] fields_cols_, String field_col_date_, boolean is_quick_)
+	{
+		String field_col_date = (strings.is_ok(field_col_date_) ? field_col_date_ : get_field_col(source_old_, FIELD_DATE, is_quick_));
+		if (!strings.is_ok(field_col_date)) return null;
+
+		ArrayList<String> temp = arrays.to_arraylist(fields_cols_);
+		if (!temp.contains(field_col_date)) temp.add(field_col_date);
+		
+		return arrays.to_array(temp);
 	}
 
 	private static long get_timestamp_elapsed(String source_, String where_, String unit_) { return dates.get_diff(get_string(source_, accessory.db.FIELD_TIMESTAMP, where_), ib.common.FORMAT_TIMESTAMP, dates.get_now_string(ib.common.FORMAT_TIMESTAMP, 0), ib.common.FORMAT_TIMESTAMP, unit_); }

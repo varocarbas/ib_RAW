@@ -46,9 +46,9 @@ abstract class async_data_apps_quicker extends parent_static
 	{
 		boolean output = false;
 		
-		if (_app.equals(async_data_watchlist_quicker._APP)) output = arrays.value_exists(async_data_watchlist_quicker._fields, field_ib_);
-		else if (_app.equals(async_data_trades_quicker._APP)) output = arrays.value_exists(async_data_trades_quicker._fields, field_ib_);
-		else if (_app.equals(async_data_market_quicker._APP)) output = arrays.value_exists(async_data_market_quicker._fields, field_ib_);
+		if (_app.equals(async_data_watchlist_quicker._APP)) output = arrays.value_exists(async_data_watchlist_quicker.FIELDS, field_ib_);
+		else if (_app.equals(async_data_trades_quicker._APP)) output = arrays.value_exists(async_data_trades_quicker.FIELDS, field_ib_);
+		else if (_app.equals(async_data_market_quicker._APP)) output = arrays.value_exists(async_data_market_quicker.FIELDS, field_ib_);
 		
 		return output;
 	}
