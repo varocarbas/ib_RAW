@@ -34,12 +34,12 @@ abstract class async_orders extends parent_static
 
 		for (HashMap<String, String> item: db_)
 		{
-			int order_id = Integer.parseInt(item.get(orders.get_field_col(db_ib.orders.ORDER_ID_MAIN)));
+			int order_id = orders.get_order_id_main(item);
 			if (order_id <= ib.common.WRONG_ORDER_ID) continue;
 			
 			active.add(order_id);
 			
-			String status = db_ib.orders.get_status_from_key(item.get(orders.get_field_col(db_ib.orders.STATUS)));
+			String status = orders.get_status(item);
 			if (!strings.is_ok(status)) continue;
 		
 			String status2 = null;

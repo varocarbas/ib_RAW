@@ -136,6 +136,25 @@ public abstract class execs
 
 	public static ArrayList<HashMap<String, String>> get_order_ids(String symbol_) { return common.get_all_vals(SOURCE, new String[] { db.FIELD_TIMESTAMP, ORDER_ID, SIDE }, get_where_symbol(symbol_)); }
 	
+	public static Object get_val(String field_, HashMap<String, String> vals_, boolean is_quick_)
+	{
+		Object val = null;
+
+		String field_col = (is_quick_ ? get_col(field_) : field_);
+		
+		String val0 = vals_.get(field_col);
+		
+		if (field_is_int(field_)) val = Integer.parseInt(val0);
+		else if (field_is_decimal(field_)) val = Double.parseDouble(val0);
+		else val = val0;
+		
+		return val;
+	}
+	
+	private static boolean field_is_decimal(String field_) { return (field_.equals(PRICE) || field_.equals(FEES) || field_.equals(QUANTITY)); }
+	
+	private static boolean field_is_int(String field_) { return (field_.equals(ORDER_ID)); }
+		
 	private static ArrayList<Integer> get_all_order_ids_main() { return get_all_order_ids_main(false); }
 
 	private static ArrayList<HashMap<String, String>> get_all_common(String symbol_, boolean is_filled_, boolean is_quick_)
@@ -148,24 +167,13 @@ public abstract class execs
 		String[] fields = new String[] { SYMBOL, ORDER_ID };
 		String[] cols = new String[] { get_col(SYMBOL), get_col(ORDER_ID)};
 
-		int tot = fields.length;
-		
 		for (int id_main: ids_main)
 		{
 			boolean filled = is_filled(id_main);			
 			if ((is_filled_ && !filled) || (!is_filled_ && filled)) continue;
 
-			HashMap<String, String> temp = common.get_vals(SOURCE, (is_quick_ ? cols : fields), get_where_order_id_any(id_main, is_quick_), is_quick_);
-			if (!arrays.is_ok(temp)) continue;
-			
-			HashMap<String, String> vals = null;
-			if (is_quick_) 
-			{
-				vals = new HashMap<String, String>();
-
-				for (int i = 0; i < tot; i++) { vals.put(fields[i], temp.get(is_quick_ ? cols[i] : fields[i])); }
-			}
-			else vals = new HashMap<String, String>(temp);
+			HashMap<String, String> vals = common.get_vals(SOURCE, (is_quick_ ? cols : fields), get_where_order_id_any(id_main, is_quick_), is_quick_);
+			if (!arrays.is_ok(vals)) continue;
 			
 			output.add(vals);
 		}	

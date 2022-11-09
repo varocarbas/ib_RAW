@@ -238,7 +238,31 @@ public abstract class orders
 	public static boolean exists_status(String status_) { return db_ib.orders.exists_status(status_); }
 
 	public static HashMap<Integer, String> __get_orders_ib() { return sync.__get_orders(); }
-	
+
+	public static String get_symbol(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(db_ib.orders.SYMBOL, vals_, _is_quick); }
+
+	public static int get_order_id_main(HashMap<String, String> vals_) { return (int)db_ib.orders.get_val(db_ib.orders.ORDER_ID_MAIN, vals_, _is_quick); }
+
+	public static int get_order_id_sec(HashMap<String, String> vals_) { return (int)db_ib.orders.get_val(db_ib.orders.ORDER_ID_SEC, vals_, _is_quick); }
+
+	public static String get_status(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(db_ib.orders.STATUS, vals_, _is_quick); }
+
+	public static double get_start(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(db_ib.orders.START, vals_, _is_quick); }
+
+	public static double get_start2(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(db_ib.orders.START2, vals_, _is_quick); }
+
+	public static double get_stop(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(db_ib.orders.STOP, vals_, _is_quick); }
+
+	public static boolean get_is_market(HashMap<String, String> vals_) { return (boolean)db_ib.orders.get_val(db_ib.orders.IS_MARKET, vals_, _is_quick); }
+
+	public static String get_type_place(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(db_ib.orders.TYPE_PLACE, vals_, _is_quick); }
+
+	public static String get_type_main(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(db_ib.orders.TYPE_MAIN, vals_, _is_quick); }
+
+	public static String get_type_sec(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(db_ib.orders.TYPE_SEC, vals_, _is_quick); }
+
+	public static double get_quantity(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(db_ib.orders.QUANTITY, vals_, _is_quick); }
+
 	static void order_status(int order_id_, String status_ib_) 
 	{ 
 		sync_orders.order_status(order_id_, status_ib_); 

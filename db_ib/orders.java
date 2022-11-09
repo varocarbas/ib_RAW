@@ -371,6 +371,32 @@ public abstract class orders
 		return output;
 	}
 	
+	public static Object get_val(String field_, HashMap<String, String> vals_, boolean is_quick_)
+	{
+		Object val = null;
+
+		String field_col = (is_quick_ ? get_col(field_) : field_);
+		
+		String val0 = vals_.get(field_col);
+		
+		if (field_is_boolean(field_)) val = strings.to_boolean(val0);
+		else if (field_is_int(field_)) val = Integer.parseInt(val0);
+		else if (field_is_decimal(field_)) val = Double.parseDouble(val0);
+		else 
+		{
+			if (field_.equals(STATUS)) val = get_status_from_key(val0);
+			else val = val0;
+		}
+		
+		return val;
+	}
+	
+	private static boolean field_is_decimal(String field_) { return (field_.equals(START) || field_.equals(START2) || field_.equals(STOP) || field_.equals(QUANTITY)); }
+	
+	private static boolean field_is_int(String field_) { return (field_.equals(ORDER_ID_MAIN) || field_.equals(ORDER_ID_SEC)); }
+	
+	private static boolean field_is_boolean(String field_) { return (field_.equals(IS_MARKET)); }
+	
 	private static void populate_type_places()
 	{
 		String[] types = new String[] { ib.orders.PLACE_MARKET, ib.orders.PLACE_STOP, ib.orders.PLACE_LIMIT, ib.orders.PLACE_STOP_LIMIT };

@@ -632,7 +632,7 @@ public abstract class common
 
 	public static String get_where_timestamp_today(String source_, String where_) 
 	{ 
-		String where = "DATE(" + db.get_variable(source_, db.get_col(source_, db.FIELD_TIMESTAMP)) + ") = CURDATE()"; 
+		String where = "(DATE(" + db.get_variable(source_, db.get_col(source_, db.FIELD_TIMESTAMP)) + ") = CURDATE())"; 
 	
 		if (strings.is_ok(where_)) where = join_wheres(where_, where);
 	
