@@ -23,7 +23,7 @@ abstract class async_data_market_quicker
 	@SuppressWarnings("unchecked")
 	static volatile HashMap<String, String>[] _vals = (HashMap<String, String>[])new HashMap[SIZE_GLOBALS];
 
-	static volatile int _last_id = async_data_quicker.WRONG_ID;
+	static volatile int _last_id = async_data_quicker.MIN_ID;
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = true;
 	static volatile boolean _only_essential = false;

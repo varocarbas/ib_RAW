@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.db;
+import accessory.db_common;
 import accessory.db_where;
 import accessory.strings;
 import ib.conn;
@@ -129,14 +130,14 @@ public abstract class apps
 		return common.insert_update(SOURCE, vals_, get_where_app()); 
 	}
 	
-	public static boolean update_time(boolean is_quick_) { return common.update(SOURCE, common.get_field_col(SOURCE, TIME2, is_quick_), ib.common.get_current_time2(), get_where_app(), is_quick_); }
+	public static boolean update_time(boolean is_quick_) { return common.update(SOURCE, db_common.get_field_col(SOURCE, TIME2, is_quick_), ib.common.get_current_time2(), get_where_app(), is_quick_); }
 
 	public static String get_time(String app_, String status_, boolean is_quick_) 
 	{
 		String where = get_where_app(app_);
 		if (strings.is_ok(status_)) where = common.join_wheres(where, get_where_status(status_));
 		
-		String output = common.get_string(SOURCE, common.get_field_col(SOURCE, TIME2, is_quick_), where, is_quick_);
+		String output = common.get_string(SOURCE, db_common.get_field_col(SOURCE, TIME2, is_quick_), where, is_quick_);
 		
 		return (strings.are_equal(output, db.WRONG_STRING) ? strings.DEFAULT : output);
 	}

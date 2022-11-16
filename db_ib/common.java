@@ -6,15 +6,19 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import accessory.arrays;
+import accessory.data;
 import accessory.dates;
 import accessory.db;
+import accessory.db_common;
+import accessory.db_field;
+import accessory.db_quick;
 import accessory.db_quicker_mysql;
 import accessory.db_where;
 import accessory.generic;
-import accessory.numbers;
 import accessory.strings;
 import accessory_ib._alls;
 import accessory_ib.types;
+import external_ib.contracts;
 import ib.basic;
 
 public abstract class common 
@@ -116,35 +120,73 @@ public abstract class common
 	public static final String FIELD_DATA_TYPE = types.CONFIG_DB_IB_FIELD_DATA_TYPE;
 
 	public static final String FIELD_DATE = types.CONFIG_DB_IB_FIELD_DATE;
+	
+	public static final String FIELD_KEY = types.CONFIG_DB_IB_FIELD_KEY;
+	public static final String FIELD_VALUE = types.CONFIG_DB_IB_FIELD_VALUE;
 
 	public static final String SEPARATOR = accessory.types.SEPARATOR;
 
 	public static final String BACKUP_ENDING = SEPARATOR + "last";
 
 	public static final int MAX_SIZE_USER = 15;
-	public static final int MAX_SIZE_MONEY = 7;
+	public static final int MAX_SIZE_MONEY = db_common.DEFAULT_SIZE_DECIMAL;
 	public static final int MAX_SIZE_PRICE = 4;
 	public static final int MAX_SIZE_VOLUME = 5;
-	public static final int MAX_SIZE_ERROR = 150;
-	public static final int MAX_SIZE_APP_NAME = 30;
+	public static final int MAX_SIZE_APP_NAME = db_common.MAX_SIZE_KEY;
 	public static final int MAX_SIZE_ADDITIONAL = 50;
-
+	
 	public static final int MAX_HOURS_ACTIVE = 12;
 	
-	public static final int WRONG_MAX_SIZE = 0;
 	public static final double WRONG_MAX_VAL = 0.0;
 	
 	public static final String DEFAULT_DB = types.CONFIG_DB_IB;
 	public static final String DEFAULT_DB_NAME = accessory.db.DEFAULT_DB_NAME;
 	
-	public static final int DEFAULT_SIZE_DECIMAL = MAX_SIZE_MONEY;
-	public static final int DEFAULT_SIZE_STRING = 30;
-
 	private static ArrayList<String> _sources_quicker_mysql = new ArrayList<String>();
 	private static HashMap<String, String> _sources_old = new HashMap<String, String>();
 	
 	private static boolean _sources_old_populated = false;
 	private static String _col_id = null;
+	
+	public static db_field get_field_symbol(boolean is_unique_) { return db_common.get_field_string(contracts.MAX_LENGTH_SYMBOL_US_ANY, is_unique_); }
+	
+	public static db_field get_field_order_id(boolean is_unique_) { return (is_unique_ ? new db_field(data.INT, db_field.DEFAULT_SIZE, db_field.WRONG_DECIMALS, ib.common.WRONG_ORDER_ID, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.INT)); }
+	
+	public static db_field get_field_money() { return db_common.get_field_decimal(common.MAX_SIZE_MONEY); }
+	
+	public static db_field get_field_quantity() { return db_common.get_field_decimal(); }
+	
+	public static db_field get_field_size_volume() { return db_common.get_field_decimal(common.MAX_SIZE_VOLUME); }
+	
+	public static db_field get_field_price() { return new db_field(data.DECIMAL, common.MAX_SIZE_PRICE, 2); }
+	
+	public static db_field get_field_halted() { return db_common.get_field_tiny(); }
+	
+	public static db_field get_field_halted_tot() { return db_common.get_field_tiny(); }
+	
+	public static db_field get_field_time() { return db_common.get_field_time(ib.common.FORMAT_TIME); }
+	
+	public static db_field get_field_time2() { return db_common.get_field_time(ib.common.FORMAT_TIME2); }
+
+	public static db_field get_field_time_elapsed() { return db_common.get_field_time(ib.common.FORMAT_TIME_ELAPSED); }
+	
+	public static db_field get_field_elapsed_ini() { return new db_field(data.LONG); }
+	
+	public static db_field get_field_user() { return get_field_user(false); }
+	
+	public static db_field get_field_user(boolean is_unique_) { return db_common.get_field_string(common.MAX_SIZE_USER, is_unique_); }
+	
+	public static db_field get_field_status_type() { return get_field_status_type(null); }
+	
+	public static db_field get_field_status_type(String default_) { return db_common.get_field_string(db_common.DEFAULT_SIZE_STRING, false, default_); }
+	
+	public static db_field get_field_app(boolean is_unique_) { return get_field_name(db_ib.common.MAX_SIZE_APP_NAME, is_unique_); }
+	
+	public static db_field get_field_name(int size_, boolean is_unique_) { return db_common.get_field_string(size_, is_unique_); }
+
+	public static db_field get_field_request() { return db_common.get_field_int(true); }	
+	
+	public static db_field get_field_date() { return db_common.get_field_date(ib.common.FORMAT_DATE); }
 
 	public static void add_to_sources_quicker_mysql(String[] sources_)
 	{
@@ -187,7 +229,7 @@ public abstract class common
 	
 	public static boolean is_empty(String source_) { return (get_count(source_, strings.DEFAULT) == 0); }
 
-	public static int get_count(String source_, String where_) { return accessory.db.select_count(source_, where_); }
+	public static int get_count(String source_, String where_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.select_count(source_, where_) : accessory.db.select_count(source_, where_)); }
 
 	public static boolean exists(String source_, String where_) { return (is_quicker_mysql(source_) ? db_quicker_mysql.exists(source_, where_) : accessory.db.exists(source_, where_)); }
 	
@@ -259,7 +301,7 @@ public abstract class common
 	{ 
 		HashMap<String, String> output = null;
 	
-		String field_col_date = get_field_col(source_old_, FIELD_DATE, is_quick_);
+		String field_col_date = db_common.get_field_col(source_old_, FIELD_DATE, is_quick_);
 		if (!strings.is_ok(field_col_date)) return output;
 		
 		String[] field_cols = get_cols_old(source_old_, fields_cols_, field_col_date, is_quick_);
@@ -436,10 +478,6 @@ public abstract class common
 		
 		return update_old_quick(source_, (String)arrays.get_value(_sources_old, source_)); 
 	}
-	
-	public static String get_field_col(String source_, String field_, boolean is_quick_) { return (is_quick_ ? get_col(source_, field_) : field_); }
-
-	public static String get_col(String source_, String field_) { return accessory.db.get_col(source_, field_); }
 
 	public static boolean delete(String source_, String where_)
 	{
@@ -483,7 +521,7 @@ public abstract class common
 	{ 
 		return new String[] 
 		{ 
-			SOURCE_MARKET, SOURCE_EXECS, SOURCE_BASIC, SOURCE_REMOTE, SOURCE_ORDERS, SOURCE_TRADES, SOURCE_WATCHLIST, SOURCE_APPS, 
+			SOURCE_MARKET, SOURCE_EXECS, SOURCE_BASIC, SOURCE_REMOTE, SOURCE_ORDERS, SOURCE_TRADES, SOURCE_WATCHLIST, SOURCE_APPS,  
 			SOURCE_EXECS_OLD, SOURCE_BASIC_OLD, SOURCE_REMOTE_OLD, SOURCE_ORDERS_OLD, SOURCE_TRADES_OLD, SOURCE_APPS_OLD 
 		}; 
 	}
@@ -509,7 +547,7 @@ public abstract class common
 	{
 		HashMap<String, Double> vals = new HashMap<String, Double>();
 		
-		for (Entry<String, Integer> item: populate_all_max_sizes_numbers().entrySet()) { vals.put(item.getKey(), get_max_val(item.getValue())); }
+		for (Entry<String, Integer> item: populate_all_max_sizes_numbers().entrySet()) { vals.put(item.getKey(), db_common.get_max_val(item.getValue())); }
 		
 		return vals;
 	}
@@ -519,10 +557,10 @@ public abstract class common
 		HashMap<String, Integer> all = new HashMap<String, Integer>();
 
 		all.put(FIELD_USER, MAX_SIZE_USER);
-		all.put(FIELD_ERROR, MAX_SIZE_ERROR);
+		all.put(FIELD_ERROR, db_common.MAX_SIZE_ERROR);
 		all.put(FIELD_APP, MAX_SIZE_APP_NAME);
 		all.put(FIELD_ADDITIONAL, MAX_SIZE_ADDITIONAL);
-
+		
 		return all;
 	}
 	
@@ -540,10 +578,8 @@ public abstract class common
 	{
 		int max = get_max_size_number(field_);
 		
-		return (max <= WRONG_MAX_SIZE ? val_ : adapt_number(val_, max, arrays.key_exists(get_all_negative_numbers(), field_)));
+		return (max <= db_common.WRONG_MAX_SIZE ? val_ : db_common.adapt_number(val_, max, arrays.key_exists(get_all_negative_numbers(), field_)));
 	}
-	
-	public static double adapt_number(double val_, int max_) { return adapt_number(val_, max_, false); }
 	
 	public static double get_max_val(String field_) 
 	{
@@ -551,21 +587,13 @@ public abstract class common
 		
 		return ((strings.is_ok(field_) && vals.containsKey(field_)) ? vals.get(field_) : WRONG_MAX_VAL);
 	}
-	
-	public static double get_max_val(int max_) { return (max_ <= WRONG_MAX_SIZE ? WRONG_MAX_SIZE : (Math.pow(10.0, ((double)max_ + 1.0)) - 1.0)); }
 
 	public static String adapt_string(String val_, String field_)
 	{
 		int max = get_max_size_string(field_);
 		
-		return (max <= WRONG_MAX_SIZE ? val_ : adapt_string(db.sanitise_string(val_), max));
+		return (max <= db_common.WRONG_MAX_SIZE ? val_ : db_common.adapt_string(db.sanitise_string(val_), max));
 	}
-	
-	public static String adapt_string(String val_, int max_) { return (strings.get_length(val_) <= get_max_length(max_) ? val_ : strings.truncate(val_, max_)); }
-	
-	public static int get_max_length(String field_) { return get_max_size_string(field_); }
-
-	public static int get_max_length(int max_) { return (max_ <= WRONG_MAX_SIZE ? WRONG_MAX_SIZE : max_); }
 
 	public static String get_type_from_key(String key_, String root_) { return ((strings.is_ok(key_) && strings.is_ok(root_)) ? (root_ + SEPARATOR + key_) : strings.DEFAULT); }
 
@@ -579,10 +607,8 @@ public abstract class common
 	
 	public static HashMap<String, String> populate_cols(String source_, String[] fields_)
 	{
-		HashMap<String, String> output = new HashMap<String, String>();
+		HashMap<String, String> output = db.get_cols(source_, fields_);
 		if (!arrays.is_ok(fields_)) return output;
-		
-		for (String field: fields_) { output.put(field, get_col(source_, field)); }
 	
 		populate_col_id();
 		
@@ -596,7 +622,7 @@ public abstract class common
 		return _col_id;
 	}
 	
-	public static void populate_col_id() { _col_id = common.get_col(SOURCE_APPS, db.FIELD_ID); }
+	public static void populate_col_id() { _col_id = db_common.get_col(SOURCE_APPS, db.FIELD_ID); }
 	
 	public static String adapt_user(String val_) { return adapt_string(val_, FIELD_USER); }
 
@@ -608,7 +634,7 @@ public abstract class common
 		if (is_quick_)
 		{
 			HashMap<String, String> vals = (HashMap<String, String>)arrays.get_new_hashmap_xx((HashMap<String, String>)vals_);	
-			vals.put(get_col(source_, field_), accessory.db.adapt_input(val_));
+			vals.put(db_common.get_col(source_, field_), accessory.db.adapt_input(val_));
 		
 			output = vals;
 		}
@@ -653,6 +679,8 @@ public abstract class common
 		
 		return output;
 	}
+	
+	public static void start() { db_quick.add_sources(get_all_sources()); };
 
 	private static String[] get_all_sources() { return _alls.DB_SOURCES; }
 	
@@ -701,8 +729,8 @@ public abstract class common
 
 		String date = dates.get_now_string(ib.common.FORMAT_DATE, dates.DEFAULT_OFFSET);
 
-		String col_date = common.get_col(source_old_, FIELD_DATE);
-		String col_id = common.get_col(source_, db.FIELD_ID);
+		String col_date = db_common.get_col(source_old_, FIELD_DATE);
+		String col_id = db_common.get_col(source_, db.FIELD_ID);
 
 		for (HashMap<String, String> vals: all_vals)
 		{
@@ -720,7 +748,7 @@ public abstract class common
 
 	private static String[] get_cols_old(String source_old_, String[] fields_cols_, String field_col_date_, boolean is_quick_)
 	{
-		String field_col_date = (strings.is_ok(field_col_date_) ? field_col_date_ : get_field_col(source_old_, FIELD_DATE, is_quick_));
+		String field_col_date = (strings.is_ok(field_col_date_) ? field_col_date_ : db_common.get_field_col(source_old_, FIELD_DATE, is_quick_));
 		if (!strings.is_ok(field_col_date)) return null;
 
 		ArrayList<String> temp = arrays.to_arraylist(fields_cols_);
@@ -730,25 +758,6 @@ public abstract class common
 	}
 
 	private static long get_timestamp_elapsed(String source_, String where_, String unit_) { return dates.get_diff(get_string(source_, accessory.db.FIELD_TIMESTAMP, where_), ib.common.FORMAT_TIMESTAMP, dates.get_now_string(ib.common.FORMAT_TIMESTAMP, 0), ib.common.FORMAT_TIMESTAMP, unit_); }
-
-	private static double adapt_number(double val_, int max_, boolean is_negative_)
-	{
-		double output = numbers.round(val_);
-		if (max_ <= WRONG_MAX_SIZE) return output;
-		
-		double max = get_max_val(max_);
-		double min = -1 * max;
-		
-		if (is_negative_)
-		{
-			if (output < min) output = min;
-		}
-		else if (output <= 0.0) output = 0.0;
-			
-		if (output > max) output = max;
-		
-		return output;
-	}
 	
 	private static String[] get_all_negative_numbers() { return _alls.DB_NEGATIVE_NUMBERS; }
 
@@ -765,7 +774,7 @@ public abstract class common
 	
 	private static HashMap<String, String> get_insert_vals_quick(String source_, HashMap<String, String> vals_)
 	{
-		String col = get_col(source_, FIELD_USER);
+		String col = db_common.get_col(source_, FIELD_USER);
 		
 		if (source_includes_user(source_) && !vals_.containsKey(col)) 
 		{
@@ -780,7 +789,7 @@ public abstract class common
 	{
 		HashMap<String, Integer> sizes = (is_number_ ? get_all_max_sizes_numbers() : get_all_max_sizes_strings());
 		
-		return (sizes.containsKey(field_) ? sizes.get(field_) : WRONG_MAX_SIZE);
+		return (sizes.containsKey(field_) ? sizes.get(field_) : db_common.WRONG_MAX_SIZE);
 	}
 
 	private static HashMap<String, Integer> get_all_max_sizes_numbers() { return _alls.DB_MAX_SIZES_NUMBERS; }
@@ -795,7 +804,7 @@ public abstract class common
 	
 	private static String get_where_internal(String source_, String field_, String val_, boolean add_user_) 
 	{
-		String where = accessory.db.get_variable(get_col(source_, field_)) + "=" + accessory.db.get_value(val_);
+		String where = accessory.db.get_variable(db_common.get_col(source_, field_)) + "=" + accessory.db.get_value(val_);
 		
 		if (!strings.are_equal(field_, FIELD_USER) && add_user_ && source_includes_user(source_)) where = get_where_user(source_, where);
 	

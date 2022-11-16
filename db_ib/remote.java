@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import accessory.arrays;
 import accessory.db;
+import accessory.db_common;
 import accessory.db_where;
 import accessory.numbers;
 import accessory.parent_static;
@@ -315,7 +316,7 @@ public abstract class remote extends parent_static
 	{
 		Object vals = orders.to_hashmap(order_, true, is_quick_);
 		
-		String field_col = (is_quick_ ? common.get_col(orders.SOURCE, orders.TYPE_PLACE) : orders.TYPE_PLACE);
+		String field_col = (is_quick_ ? db_common.get_col(orders.SOURCE, orders.TYPE_PLACE) : orders.TYPE_PLACE);
 		
 		String type_order = (ib.orders.PLACE + types.SEPARATOR + arrays.get_value(vals, field_col));
 		vals = add_to_vals(TYPE_ORDER, get_key_from_type_order(type_order), vals, is_quick_);
@@ -366,7 +367,7 @@ public abstract class remote extends parent_static
 	
 	private static void populate_cols()
 	{
-		for (String field: get_fields()) { _cols.put(field, common.get_col(SOURCE, field)); }
+		for (String field: get_fields()) { _cols.put(field, db_common.get_col(SOURCE, field)); }
 	}	
 	
 	private static String[] get_fields() { return new String[] { SYMBOL, TIME2, ORDER_ID_MAIN, ORDER_ID_SEC, STATUS, STATUS2, START, START2, STOP, QUANTITY, PERC_MONEY, PRICE, REQUEST, TYPE_ORDER, ERROR, IS_MARKET }; }

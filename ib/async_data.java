@@ -456,10 +456,14 @@ public abstract class async_data extends parent_static
 		
 		if (async_data_apps.includes_time_elapsed(app_))
 		{
-			long ini = db_ib.async_data.get_elapsed_ini(source_, symbol_, is_quick_);
-			if (ini <= 0) update_elapsed_ini(source_, symbol_, is_quick_);
+			long ini = db_ib.async_data.get_elapsed_ini(source_, symbol_, is_quick_);			
 			
-			vals = db_ib.async_data.add_to_vals(db_ib.async_data.TIME_ELAPSED, dates.seconds_to_time((int)dates.get_elapsed(ini)), vals, is_quick_);
+			if (ini <= dates.ELAPSED_START) db_ib.async_data.update_quick(source_, symbol_, db_ib.async_data.get_col(db_ib.async_data.ELAPSED_INI), Long.toString(dates.start_elapsed()));
+			else
+			{
+				String val = dates.seconds_to_time((int)dates.get_elapsed(ini));
+				if (strings.is_ok(val)) vals = db_ib.async_data.add_to_vals(db_ib.async_data.TIME_ELAPSED, val, vals, is_quick_);				
+			}
 		}
 				
 		if (async_data_apps.includes_time(app_)) vals = db_ib.async_data.add_to_vals(db_ib.async_data.TIME, ib.common.get_current_time(), vals, is_quick_);

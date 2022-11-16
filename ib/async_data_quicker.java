@@ -247,25 +247,33 @@ public class async_data_quicker extends parent_static
 		
 		String[] symbols = async_data_apps_quicker.get_symbols();
 		
-		int last_id = async_data_apps_quicker.get_last_id();
-		if (!async_data_apps_quicker.id_is_ok(last_id)) last_id = MIN_ID;
-
 		int max_id = async_data_apps_quicker.get_max_id();
+
+		int first_id = WRONG_ID;
+		int last_id = async_data_apps_quicker.get_last_id();
 		
 		int id = last_id;
-
+		
 		while (true)
 		{
 			id++;
 			if (id > max_id) id = MIN_ID;
 			
-			boolean is_last = (id == last_id);
+			boolean is_first = false;
+			
+			if (first_id == WRONG_ID) first_id = id;
+			else if (id == first_id) is_first = true;
 			
 			int i = get_i(id, true);
 			
-			if (is_last || symbols[i] == null) 
+			if (is_first || symbols[i] == null) 
 			{
-				if (is_last) id = WRONG_ID;
+				if (is_first && symbols[i] != null) 
+				{
+					calls.cancelMktData(id);
+					
+					async_data_apps_quicker.stop_globals(id, symbols[i], true, false);
+				}
 
 				break;
 			}
@@ -315,10 +323,16 @@ public class async_data_quicker extends parent_static
 		
 		if (async_data_apps_quicker.includes_time_elapsed())
 		{
-			long ini = db_ib.async_data.get_elapsed_ini(async_data_apps_quicker.get_source(), symbol_, true);
-			if (ini <= dates.ELAPSED_START) db_ib.async_data.update_quick(async_data_apps_quicker.get_source(), symbol_, db_ib.async_data.get_col(db_ib.async_data.ELAPSED_INI), Long.toString(dates.start_elapsed()));
+			String source = async_data_apps_quicker.get_source();
 			
-			vals.put(db_ib.async_data.get_col(db_ib.async_data.TIME_ELAPSED), dates.seconds_to_time((int)dates.get_elapsed(ini)));
+			long ini = db_ib.async_data.get_elapsed_ini(source, symbol_, true);
+			
+			if (ini <= dates.ELAPSED_START) db_ib.async_data.update_quick(source, symbol_, db_ib.async_data.get_col(db_ib.async_data.ELAPSED_INI), Long.toString(dates.start_elapsed()));
+			else
+			{
+				String val = dates.seconds_to_time((int)dates.get_elapsed(ini));
+				if (strings.is_ok(val)) vals.put(db_ib.async_data.get_col(db_ib.async_data.TIME_ELAPSED), val);				
+			}
 		}
 				
 		if (async_data_apps_quicker.includes_time()) vals.put(db_ib.async_data.get_col(db_ib.async_data.TIME), ib.common.get_current_time());

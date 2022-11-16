@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import accessory.arrays;
 import accessory.db;
+import accessory.db_common;
 import accessory.db_where;
 import accessory.strings;
 import ib._order;
@@ -192,7 +193,7 @@ public abstract class execs
 	
 	private static void populate_cols()
 	{
-		for (String field: get_fields()) { _cols.put(field, common.get_col(SOURCE, field)); }
+		for (String field: get_fields()) { _cols.put(field, db_common.get_col(SOURCE, field)); }
 	}	
 	
 	private static String[] get_fields() 

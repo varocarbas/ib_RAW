@@ -3,6 +3,7 @@ package ib;
 import java.util.ArrayList;
 
 import accessory.arrays;
+import accessory.misc;
 
 public abstract class watchlist_quicker 
 {
@@ -24,9 +25,15 @@ public abstract class watchlist_quicker
 
 	public static void __add(ArrayList<String> symbols_) 
 	{ 
-		if (!arrays.is_ok(symbols_)) return;
+		int size = arrays.get_size(symbols_);
+		if (size < 0) return;
 		
-		for (String symbol: symbols_) { __add(symbol); }  
+		for (int i = 0; i < size; i++) 
+		{
+			if (i > 0) misc.pause_loop();
+			
+			__add(symbols_.get(i)); 
+		}  
 	}
 
 	public static boolean __add(String symbol_) { return async_data_watchlist_quicker.__add(symbol_); }

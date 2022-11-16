@@ -53,19 +53,19 @@ public abstract class execs
 
 	public static String get_side(boolean is_main_) { return (is_main_ ? SIDE_BOUGHT : SIDE_SOLD); }
 
-	public static String get_symbol(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(db_ib.execs.SYMBOL, vals_, _is_quick); }
+	public static String get_symbol(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(db_ib.execs.SYMBOL, vals_, _is_quick); }
 
-	public static String get_exec_id(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(db_ib.execs.EXEC_ID, vals_, _is_quick); }
+	public static String get_exec_id(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(db_ib.execs.EXEC_ID, vals_, _is_quick); }
 
-	public static int get_order_id(HashMap<String, String> vals_) { return (int)db_ib.orders.get_val(db_ib.execs.ORDER_ID, vals_, _is_quick); }
+	public static int get_order_id(HashMap<String, String> vals_) { return (int)db_ib.execs.get_val(db_ib.execs.ORDER_ID, vals_, _is_quick); }
 
-	public static String get_side(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(db_ib.execs.SIDE, vals_, _is_quick); }
+	public static String get_side(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(db_ib.execs.SIDE, vals_, _is_quick); }
 
-	public static double get_price(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(db_ib.execs.PRICE, vals_, _is_quick); }
+	public static double get_price(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(db_ib.execs.PRICE, vals_, _is_quick); }
 
-	public static double get_quantity(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(db_ib.execs.QUANTITY, vals_, _is_quick); }
+	public static double get_quantity(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(db_ib.execs.QUANTITY, vals_, _is_quick); }
 
-	public static double get_fees(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(db_ib.execs.FEES, vals_, _is_quick); }
+	public static double get_fees(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(db_ib.execs.FEES, vals_, _is_quick); }
 
 	public static boolean side_is_main(String side_) { return get_side(true).equals(side_); }
 

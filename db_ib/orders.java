@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import accessory.arrays;
 import accessory.data;
 import accessory.db;
+import accessory.db_common;
 import accessory.db_where;
 
 import accessory.strings;
@@ -472,7 +473,7 @@ public abstract class orders
 		for (int i = 0; i < tot; i++) 
 		{	
 			String field = fields[i];
-			String col = common.get_col(SOURCE, field);
+			String col = db_common.get_col(SOURCE, field);
 		
 			_cols[i] = col;				
 			_field_cols.put(field, col); 

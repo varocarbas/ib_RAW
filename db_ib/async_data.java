@@ -6,6 +6,7 @@ import java.util.HashMap;
 import accessory.arrays;
 import accessory.dates;
 import accessory.db;
+import accessory.db_common;
 import accessory.strings;
 import external_ib.data;
 
@@ -135,7 +136,7 @@ public abstract class async_data
 	
 	public static boolean update_quick(String source_, String symbol_, HashMap<String, String> vals_) { return common.update_quick(source_, vals_, common.get_where_symbol(source_, symbol_)); }
 
-	public static boolean update_timestamp(String source_, String symbol_, boolean is_quick_) { return common.update(source_, (is_quick_ ? common.get_col(source_, accessory.db.FIELD_TIMESTAMP) : accessory.db.FIELD_TIMESTAMP), dates.get_now_string(ib.common.FORMAT_TIMESTAMP, 0), common.get_where_symbol(source_, symbol_), is_quick_); }
+	public static boolean update_timestamp(String source_, String symbol_, boolean is_quick_) { return common.update(source_, (is_quick_ ? db_common.get_col(source_, accessory.db.FIELD_TIMESTAMP) : accessory.db.FIELD_TIMESTAMP), dates.get_now_string(ib.common.FORMAT_TIMESTAMP, 0), common.get_where_symbol(source_, symbol_), is_quick_); }
 	
 	public static boolean insert(String source_, String symbol_) { return common.insert(source_, get_default_vals(source_, symbol_)); }
 
@@ -240,7 +241,7 @@ public abstract class async_data
 		{			
 			for (String source: sources)
 			{
-				String col = db_ib.common.get_col(source, field);	
+				String col = db_common.get_col(source, field);	
 				if (!strings.is_ok(col)) continue;
 				
 				_cols.put(field, col);

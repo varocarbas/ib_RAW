@@ -14,11 +14,11 @@ abstract class async_data_watchlist_quicker extends parent_static
 	public static final String _APP = "watchlist";
 	
 	public static final String SOURCE = db_ib.watchlist.SOURCE;
-	public static final int MAX_SIMULTANEOUS_SYMBOLS = 5;
+	public static final int MAX_SIMULTANEOUS_SYMBOLS = 10;
 	
 	static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.VOLUME_IB, async_data_quicker.HALTED_IB };
 
-	static final int SIZE_GLOBALS = 350;
+	static final int SIZE_GLOBALS = 1000;
 	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
 	static final boolean INCLUDES_TIME = false;
 	static final boolean INCLUDES_TIME_ELAPSED = true;
@@ -29,7 +29,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	@SuppressWarnings("unchecked")
 	static volatile HashMap<String, String>[] _vals = (HashMap<String, String>[])new HashMap[SIZE_GLOBALS];
 
-	static volatile int _last_id = async_data_quicker.WRONG_ID;
+	static volatile int _last_id = async_data_quicker.MIN_ID;
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = false;
 	static volatile boolean _only_essential = true;

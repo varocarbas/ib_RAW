@@ -3,6 +3,7 @@ package ib;
 import java.util.HashMap;
 
 import accessory.db;
+import accessory.db_common;
 import accessory.strings;
 
 public abstract class ini_apps 
@@ -55,7 +56,7 @@ public abstract class ini_apps
 		_app_name = app_name;
 	}
 	
-	private static String get_app_name(String app_name_) { return db_ib.common.adapt_string((strings.is_ok(app_name_) ? app_name_ : apps.DEFAULT_APP_NAME), db_ib.common.MAX_SIZE_APP_NAME); }
+	private static String get_app_name(String app_name_) { return db_common.adapt_string((strings.is_ok(app_name_) ? app_name_ : apps.DEFAULT_APP_NAME), db_ib.common.MAX_SIZE_APP_NAME); }
 	
 	private static void start_conn_id(int conn_id_) 
 	{ 

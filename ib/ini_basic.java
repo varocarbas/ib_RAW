@@ -1,6 +1,7 @@
 package ib;
 
 import accessory.db;
+import accessory.db_common;
 import accessory.strings;
 
 public abstract class ini_basic 
@@ -27,7 +28,7 @@ public abstract class ini_basic
 	{ 
 		String user = get_user_prelimary(user_);
 
-		if (!strings.is_ok(user)) user = db_ib.common.adapt_string(db_ib.basic.get_user(), db_ib.common.MAX_SIZE_USER);
+		if (!strings.is_ok(user)) user = db_common.adapt_string(db_ib.basic.get_user(), db_ib.common.MAX_SIZE_USER);
 
 		db_ib.basic.update_user_ini(user);
 
@@ -36,7 +37,7 @@ public abstract class ini_basic
 		return user;
 	}
 	
-	private static String get_user_prelimary(String user_) { return db_ib.common.adapt_string((strings.is_ok(user_) ? user_ : basic.DEFAULT_USER), db_ib.common.MAX_SIZE_USER); }
+	private static String get_user_prelimary(String user_) { return db_common.adapt_string((strings.is_ok(user_) ? user_ : basic.DEFAULT_USER), db_ib.common.MAX_SIZE_USER); }
 
 	private static void populate_account_ib(String account_ib_) 
 	{ 
