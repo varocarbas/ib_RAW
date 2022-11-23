@@ -58,7 +58,7 @@ abstract class async_data_trades_quicker
 
 	public static void tick_size(int id_, int field_ib_, double size_, String symbol_) { }
 	
-	public static void start_globals(String symbol_, boolean is_restart_) { }
+	public static void start(String symbol_, boolean is_restart_) { }
 	
-	public static void stop_globals(String symbol_, boolean remove_symbol_) { }	
+	public static void stop(String symbol_, boolean remove_symbol_) { }	
 }

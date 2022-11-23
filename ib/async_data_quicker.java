@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import accessory.arrays;
 import accessory.dates;
+import accessory.db;
 import accessory.generic;
 import accessory.parent_static;
 import accessory.strings;
@@ -96,7 +97,7 @@ public class async_data_quicker extends parent_static
 		double price = adapt_val(price_, field_ib_);
 		if (!ib.common.price_is_ok(price)) return;
 		
-		async_data_apps_quicker.__tick_price(id_, field_ib_, price, symbol);	
+		async_data_apps_quicker.tick_price(id_, field_ib_, price, symbol);	
 
 		_update(id_, symbol, field_ib_, price);
 	}
@@ -210,6 +211,37 @@ public class async_data_quicker extends parent_static
 
 	static int get_i(int id_i_, boolean is_id_) { return (is_id_ ? (id_i_ - MIN_ID) : id_i_); }
 	
+	static long get_elapsed(String source_, String symbol_, String col_ini_)
+	{
+		long output = 0l;	
+		
+		long ini = dates.ELAPSED_START;
+		
+		String col_ini = col_ini_;
+		
+		if (strings.is_ok(col_ini)) 
+		{
+			long temp = db_ib.common.get_long_quick(source_, col_ini, db_ib.common.get_where_symbol(source_, symbol_));
+			
+			ini = (temp == db.WRONG_LONG ? dates.ELAPSED_START : temp);
+		}
+		else
+		{			
+			col_ini = db_ib.async_data.get_col(db_ib.async_data.ELAPSED_INI);
+
+			ini = db_ib.async_data.get_elapsed_ini(source_, symbol_, true);
+		}
+
+		if (ini <= dates.ELAPSED_START) reset_elapsed_ini(source_, symbol_, col_ini);
+		else output = dates.get_elapsed(ini);
+		
+		return output;
+	}
+
+	static void reset_elapsed_ini(String source_, String symbol_, String col_ini_) { update_elapsed_ini(source_, symbol_, col_ini_, dates.ELAPSED_START); }
+	
+	static void update_elapsed_ini(String source_, String symbol_, String col_ini_, long ini_) { db_ib.async_data.update_quick(source_, symbol_, col_ini_, Long.toString(ini_ <= dates.ELAPSED_START ? dates.start_elapsed() : ini_)); }
+	
 	private static void __complete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, true, false); }
 	
 	private static void __precomplete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, async_data_apps_quicker.__only_essential(), false); }
@@ -220,7 +252,7 @@ public class async_data_quicker extends parent_static
 		
 		if (!async_data_apps_quicker.__only_db()) __store_vals(id, symbol_);
 
-		async_data_apps_quicker.__stop_globals(id, symbol_, snapshot_completed_, remove_symbol_);
+		async_data_apps_quicker.__stop(id, symbol_, snapshot_completed_, remove_symbol_);
 		
 		if (remove_symbol_) db_ib.async_data.delete(async_data_apps_quicker.get_source(), symbol_);
 	}
@@ -272,14 +304,14 @@ public class async_data_quicker extends parent_static
 				{
 					calls.cancelMktData(id);
 					
-					async_data_apps_quicker.stop_globals(id, symbols[i], true, false);
+					async_data_apps_quicker.stop(id, symbols[i], true, false);
 				}
 
 				break;
 			}
 		}
 		
-		if (async_data_apps_quicker.id_is_ok(id)) async_data_apps_quicker.start_globals(symbol_, id);
+		if (async_data_apps_quicker.id_is_ok(id)) async_data_apps_quicker.start(symbol_, id);
 		
 		__unlock();
 		
@@ -323,16 +355,8 @@ public class async_data_quicker extends parent_static
 		
 		if (async_data_apps_quicker.includes_time_elapsed())
 		{
-			String source = async_data_apps_quicker.get_source();
-			
-			long ini = db_ib.async_data.get_elapsed_ini(source, symbol_, true);
-			
-			if (ini <= dates.ELAPSED_START) db_ib.async_data.update_quick(source, symbol_, db_ib.async_data.get_col(db_ib.async_data.ELAPSED_INI), Long.toString(dates.start_elapsed()));
-			else
-			{
-				String val = dates.seconds_to_time((int)dates.get_elapsed(ini));
-				if (strings.is_ok(val)) vals.put(db_ib.async_data.get_col(db_ib.async_data.TIME_ELAPSED), val);				
-			}
+			String val = dates.seconds_to_time((int)get_elapsed(async_data_apps_quicker.get_source(), symbol_, null));
+			if (strings.is_ok(val)) vals.put(db_ib.async_data.get_col(db_ib.async_data.TIME_ELAPSED), val);				
 		}
 				
 		if (async_data_apps_quicker.includes_time()) vals.put(db_ib.async_data.get_col(db_ib.async_data.TIME), ib.common.get_current_time());

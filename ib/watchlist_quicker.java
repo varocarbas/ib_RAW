@@ -25,10 +25,10 @@ public abstract class watchlist_quicker
 
 	public static void __add(ArrayList<String> symbols_) 
 	{ 
-		int size = arrays.get_size(symbols_);
-		if (size < 0) return;
+		int tot = arrays.get_size(symbols_);
+		if (tot < 0) return;
 		
-		for (int i = 0; i < size; i++) 
+		for (int i = 0; i < tot; i++) 
 		{
 			if (i > 0) misc.pause_loop();
 			

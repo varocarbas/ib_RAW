@@ -8,11 +8,11 @@ abstract class async_data_market_quicker
 	public static final String _APP = "market";
 	
 	public static final String SOURCE = db_ib.market.SOURCE;
-	public static final int MAX_SIMULTANEOUS_SYMBOLS = 250;
+	public static final int MAX_SIMULTANEOUS_SYMBOLS = 5000;
 
 	static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.OPEN_IB, async_data_quicker.CLOSE_IB, async_data_quicker.LOW_IB, async_data_quicker.HIGH_IB, async_data_quicker.ASK_IB, async_data_quicker.BID_IB, async_data_quicker.VOLUME_IB, async_data_quicker.SIZE_IB, async_data_quicker.ASK_SIZE_IB, async_data_quicker.BID_SIZE_IB, async_data_quicker.HALTED_IB };
 
-	static final int SIZE_GLOBALS = 500;
+	static final int SIZE_GLOBALS = 1000;
 	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
 	static final boolean INCLUDES_TIME = true;
 	static final boolean INCLUDES_TIME_ELAPSED = false;
@@ -58,7 +58,7 @@ abstract class async_data_market_quicker
 
 	public static void tick_size(int id_, int field_ib_, double size_, String symbol_) { }
 	
-	public static void start_globals(String symbol_, boolean is_restart_) { }
+	public static void start(String symbol_, boolean is_restart_) { }
 	
-	public static void stop_globals(String symbol_, boolean remove_symbol_) { }
+	public static void stop(String symbol_, boolean remove_symbol_) { }
 }

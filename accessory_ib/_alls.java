@@ -2,11 +2,11 @@ package accessory_ib;
 
 import java.util.HashMap;
 
-import accessory.parent_ini_first;
+import accessory.parent_first;
 import external_ib.calls;
 import ib.sync;
 
-public class _alls extends parent_ini_first
+public class _alls extends parent_first
 {
 	private static _alls _instance = new _alls(); 
 	

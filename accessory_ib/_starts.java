@@ -1,8 +1,8 @@
 package accessory_ib;
 
-import accessory.parent_ini_first;
+import accessory.parent_first;
 
-class _starts extends parent_ini_first 
+class _starts extends parent_first 
 {
 	private static _starts _instance = new _starts(); 
 

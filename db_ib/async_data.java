@@ -46,7 +46,6 @@ public abstract class async_data
 	public static final String FLU2_MAX = common.FIELD_FLU2_MAX;
 	public static final String VAR_TOT = common.FIELD_VAR_TOT;
 	public static final String FLUS_PRICE = common.FIELD_FLUS_PRICE;
-	public static final String FLUS_ELAPSED_INI = common.FIELD_FLUS_ELAPSED_INI;
 	
 	private static HashMap<String, String> _cols = new HashMap<String, String>();
 
@@ -69,7 +68,7 @@ public abstract class async_data
 		if (max_mins_inactive_ > 0) where = get_where_active(source_, max_mins_inactive_);
 		if (strings.is_ok(where_)) where = (strings.is_ok(where) ? common.join_wheres(where, where_) : where_);
 		
-		return common.get_all_strings(source_, (is_quick_ ? async_data.get_col(SYMBOL) : SYMBOL), where, is_quick_); 
+		return common.get_all_strings(source_, (is_quick_ ? get_col(SYMBOL) : SYMBOL), where, is_quick_); 
 	}
 
 	public static boolean symbol_is_active(String source_, String symbol_, int max_mins_inactive_) { return common.exists(source_, common.join_wheres(common.get_where_symbol(source_, symbol_), get_where_active(source_, max_mins_inactive_))); } 
@@ -227,7 +226,7 @@ public abstract class async_data
 			ENABLED, SYMBOL, PRICE, OPEN, CLOSE, LOW, HIGH, ASK, BID, HALTED, VOLUME,
 			SIZE, ASK_SIZE, BID_SIZE, HALTED_TOT, TIME, TIME_ELAPSED, ELAPSED_INI,
 			PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME_INI, VOLUME_MIN, VOLUME_MAX,
-			FLU, FLU2, FLU2_MIN, FLU2_MAX, FLUS_PRICE, FLUS_ELAPSED_INI, VAR_TOT
+			FLU, FLU2, FLU2_MIN, FLU2_MAX, FLUS_PRICE, VAR_TOT
 		};
 	}
 	

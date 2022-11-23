@@ -3,6 +3,7 @@ package ib;
 import java.util.ArrayList;
 
 import accessory.arrays;
+import accessory.misc;
 
 public abstract class market_quicker 
 {
@@ -24,9 +25,15 @@ public abstract class market_quicker
 
 	public static void __start(ArrayList<String> symbols_) 
 	{ 
-		if (!arrays.is_ok(symbols_)) return;
+		int tot = arrays.get_size(symbols_);
+		if (tot < 0) return;
 		
-		for (String symbol: symbols_) { __start(symbol); }  
+		for (int i = 0; i < tot; i++) 
+		{
+			if (i > 0) misc.pause_loop();
+			
+			__start(symbols_.get(i)); 
+		}  
 	}
 
 	public static boolean __start(String symbol_) { return async_data_market_quicker.__start(symbol_); }

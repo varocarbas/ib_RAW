@@ -26,9 +26,9 @@ abstract class async_data_apps_quicker extends parent_static
 
 	public static String get_source() { return _source; }
 	
-	public static void __tick_price(int id_, int field_ib_, double price_, String symbol_)
+	public static void tick_price(int id_, int field_ib_, double price_, String symbol_)
 	{
-		if (_app.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker.__tick_price(id_, field_ib_, price_, symbol_);
+		if (_app.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker.tick_price(id_, field_ib_, price_, symbol_);
 		else if (_app.equals(async_data_trades_quicker._APP)) async_data_trades_quicker.tick_price(id_, field_ib_, price_, symbol_);
 		else if (_app.equals(async_data_market_quicker._APP)) async_data_market_quicker.tick_price(id_, field_ib_, price_, symbol_);
 	}
@@ -139,8 +139,8 @@ abstract class async_data_apps_quicker extends parent_static
 
 		return output;
 	}
-	
-	public static void start_globals(String symbol_, int id_)
+
+	public static void start(String symbol_, int id_)
 	{
 		boolean is_restart = id_is_ok(async_data_quicker._get_id(symbol_, false));
 		boolean start_vals = !_only_db(false);
@@ -154,7 +154,7 @@ abstract class async_data_apps_quicker extends parent_static
 			async_data_watchlist_quicker._symbols[i] = symbol_;
 			if (start_vals) async_data_watchlist_quicker._vals[i] = new HashMap<String, String>();
 			
-			async_data_watchlist_quicker.start_globals(symbol_, is_restart);
+			async_data_watchlist_quicker.start(symbol_, is_restart);
 		}
 		else if (_app.equals(async_data_trades_quicker._APP)) 
 		{
@@ -163,7 +163,7 @@ abstract class async_data_apps_quicker extends parent_static
 			async_data_trades_quicker._symbols[i] = symbol_;
 			if (start_vals) async_data_trades_quicker._vals[i] = new HashMap<String, String>();
 			
-			async_data_trades_quicker.start_globals(symbol_, is_restart);
+			async_data_trades_quicker.start(symbol_, is_restart);
 		}
 		else if (_app.equals(async_data_market_quicker._APP)) 
 		{
@@ -172,13 +172,13 @@ abstract class async_data_apps_quicker extends parent_static
 			async_data_market_quicker._symbols[i] = symbol_;
 			if (start_vals) async_data_market_quicker._vals[i] = new HashMap<String, String>();
 			
-			async_data_market_quicker.start_globals(symbol_, is_restart);
+			async_data_market_quicker.start(symbol_, is_restart);
 		}		
 	}
 
-	public static void __stop_globals(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_) { _stop_globals(id_, symbol_, snapshot_completed_, remove_symbol_, true); }
+	public static void __stop(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_) { _stop(id_, symbol_, snapshot_completed_, remove_symbol_, true); }
 
-	public static void stop_globals(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_) { _stop_globals(id_, symbol_, snapshot_completed_, remove_symbol_, false); }
+	public static void stop(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_) { _stop(id_, symbol_, snapshot_completed_, remove_symbol_, false); }
 	
 	public static void __update_vals(int id_, HashMap<String, String> vals_)
 	{
@@ -280,8 +280,8 @@ abstract class async_data_apps_quicker extends parent_static
 		else if (_app.equals(async_data_market_quicker._APP)) output = async_data_market_quicker.log();
 		
 		return output;
-	}
-	
+	}		
+
 	private static boolean _only_db(boolean lock_)
 	{
 		if (lock_) __lock();
@@ -312,7 +312,7 @@ abstract class async_data_apps_quicker extends parent_static
 		if (lock_) __unlock();		
 	}	
 	
-	private static void _stop_globals(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_, boolean lock_)
+	private static void _stop(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_, boolean lock_)
 	{
 		if (lock_) __lock();
 
@@ -341,7 +341,7 @@ abstract class async_data_apps_quicker extends parent_static
 				if (delete_vals) async_data_watchlist_quicker._vals[i] = null;
 			}
 
-			if (symbol_ok) async_data_watchlist_quicker.stop_globals(symbol_, remove_symbol_);
+			if (symbol_ok) async_data_watchlist_quicker.stop(symbol_, remove_symbol_);
 		}
 		else if (_app.equals(async_data_trades_quicker._APP)) 
 		{	
@@ -351,7 +351,7 @@ abstract class async_data_apps_quicker extends parent_static
 				if (delete_vals) async_data_trades_quicker._vals[i] = null;
 			}
 
-			if (symbol_ok) async_data_trades_quicker.stop_globals(symbol_, remove_symbol_);
+			if (symbol_ok) async_data_trades_quicker.stop(symbol_, remove_symbol_);
 		}
 		else if (_app.equals(async_data_market_quicker._APP)) 
 		{	
@@ -361,7 +361,7 @@ abstract class async_data_apps_quicker extends parent_static
 				if (delete_vals) async_data_market_quicker._vals[i] = null;
 			}
 
-			if (symbol_ok) async_data_market_quicker.stop_globals(symbol_, remove_symbol_);
+			if (symbol_ok) async_data_market_quicker.stop(symbol_, remove_symbol_);
 		}
 		
 		if (lock_) __unlock();
