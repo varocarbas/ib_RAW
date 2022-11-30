@@ -34,7 +34,7 @@ abstract class remote_request extends parent_static
 		{
 			if (!__wait_for_execution(request)) 
 			{
-				remote.update_error(request, ERROR_WAIT, type_place_, type_place_);
+				update_error_wait(request, symbol_, type_place_);
 				
 				request = common.WRONG_REQUEST;
 			}
@@ -52,7 +52,7 @@ abstract class remote_request extends parent_static
 		{
 			if (!__wait_for_execution(request)) 
 			{
-				remote.update_error(request, ERROR_WAIT, type_place_, type_place_);
+				update_error_wait(request, symbol_, type_place_);
 				
 				request = common.WRONG_REQUEST;
 			}
@@ -70,7 +70,7 @@ abstract class remote_request extends parent_static
 		{
 			if (!__wait_for_execution(request)) 
 			{
-				remote.update_error(request, ERROR_WAIT, type_place_, type_place_);
+				update_error_wait(request, symbol_, type_place_);
 				
 				request = common.WRONG_REQUEST;
 			}
@@ -88,7 +88,7 @@ abstract class remote_request extends parent_static
 		{
 			if (!__wait_for_execution(request)) 
 			{
-				remote.update_error(request, ERROR_WAIT, type_place_, type_place_);
+				update_error_wait(request, symbol_, type_place_);
 				
 				request = common.WRONG_REQUEST;
 			}
@@ -103,14 +103,14 @@ abstract class remote_request extends parent_static
 		
 		if (!is_ok(request_))
 		{
-			remote.update_error(request_, ERROR_REQUEST, remote.CANCEL, remote.CANCEL);
+			update_error_request(request_, remote.CANCEL);
 			
 			return REQUEST_ERROR;
 		}
 		
 		if (!db_ib.remote.request_update_type_order(request_, remote.CANCEL, remote.is_quick()))
 		{
-			remote.update_error(request_, ERROR_CANCEL, null, remote.CANCEL);
+			update_error(request_, null, ERROR_CANCEL, remote.CANCEL);
 			
 			return REQUEST_ERROR;
 		}
@@ -123,8 +123,8 @@ abstract class remote_request extends parent_static
 
 		if (wait_for_execution_ && !__wait_for_execution(request_, true)) 
 		{				
-			remote.update_error(request_, ERROR_WAIT, remote.CANCEL, remote.CANCEL);
-		
+			update_error_wait(request_, symbol, remote.CANCEL);
+			
 			output = (ib.orders.is_submitted(symbol) ? REQUEST_ERROR : REQUEST_IGNORED);
 		}
 		
@@ -137,7 +137,7 @@ abstract class remote_request extends parent_static
 		
 		if (!is_ok(request_))
 		{
-			remote.update_error(request_, ERROR_REQUEST, type_update_, type_update_);
+			update_error_request(request_, type_update_);
 			
 			return REQUEST_ERROR;
 		}
@@ -162,7 +162,7 @@ abstract class remote_request extends parent_static
 
 		if (wait_for_execution_ && !__wait_for_execution(request_)) 
 		{
-			remote.update_error(request_, ERROR_WAIT, type_update, type_update);
+			update_error_wait(request_, symbol, type_update);
 			
 			output = (ib.orders.is_filled(symbol) ? REQUEST_ERROR : REQUEST_IGNORED);
 		}
@@ -280,4 +280,24 @@ abstract class remote_request extends parent_static
 	private static void update_error_place(int request_, String symbol_, String type_, double price_, double perc_, double stop_, double start_, double start2_) { remote.update_error_place(request_, symbol_, type_, price_, perc_, stop_, start_, start2_, true); }
 
 	private static void update_error_update(int request_, String symbol_, String type_, double val_) { remote.update_error_update(request_, symbol_, type_, common.WRONG_ORDER_ID, val_, true); }
+
+	private static void update_error_request(int request_, String type_order_) { update_error(request_, null, ERROR_REQUEST, type_order_); }
+	
+	private static void update_error_wait(int request_, String symbol_, String type_order_) { update_error(request_, symbol_, ERROR_WAIT, type_order_); }
+	
+	private static void update_error(int request_, String symbol_, String type_error_, String type_order_) 
+	{ 
+		Object vals = null;
+		
+		if (strings.is_ok(symbol_))
+		{
+			HashMap<String, Object> vals2 = new HashMap<String, Object>();
+			vals2.put(db_ib.remote.get_col(db_ib.remote.SYMBOL), strings.to_string(symbol_));
+			
+			vals = vals2;
+		}
+		else vals = type_order_;
+		
+		remote.update_error(request_, type_error_, vals, type_order_);
+	}
 }

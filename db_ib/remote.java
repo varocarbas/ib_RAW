@@ -185,7 +185,7 @@ public abstract class remote extends parent_static
 
 		vals = add_to_vals(TYPE_ORDER, get_key_from_type_order(type_), vals, is_quick_);
 
-		if (ib.orders.is_update_market(type_)) vals = add_to_vals(IS_MARKET, true, vals, is_quick_);
+		if (ib.remote.is_update_market(type_)) vals = add_to_vals(IS_MARKET, true, vals, is_quick_);
 		else vals = add_to_vals(field_, common.adapt_price(val_), vals, is_quick_);
 		
 		return update(request_, vals, is_quick_);	
@@ -197,14 +197,16 @@ public abstract class remote extends parent_static
 
 	public static boolean update_status2(int request_, String status2_key_) { return update(request_, STATUS2, status2_key_); }
 
-	public static boolean update_error(int request_, String error_, String type_order_, boolean is_quick_) 
+	public static boolean update_error(int request_, String error_, String type_order_, boolean deactivate_, boolean is_quick_) 
 	{
 		String error = common.adapt_string(error_, ERROR);
 		if (!strings.is_ok(error)) error = "ERROR";
 		
 		Object vals = get_vals_common(get_key_from_status2(ib.remote.STATUS2_ERROR), is_quick_);
+		
 		vals = add_to_vals(ERROR, error, vals, is_quick_);
-	
+		if (deactivate_) vals = add_to_vals(STATUS, get_key_from_status(ib.remote.STATUS_INACTIVE), vals, is_quick_);
+		
 		String type_order = get_key_from_type_order(type_order_);
 		if (!strings.is_ok(type_order)) type_order = type_order_;
 		

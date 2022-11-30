@@ -11,17 +11,15 @@ public abstract class watchlist_quicker
 	
 	public static void log(boolean log_) { async_data_watchlist_quicker.log(log_); }	
 	
-	public static boolean only_db() { return async_data_watchlist_quicker.only_db(); }
+	public static boolean is_only_db() { return async_data_watchlist_quicker.is_only_db(); }
 	
-	public static void only_db(boolean only_db_) { async_data_watchlist_quicker.only_db(only_db_); }	
+	public static void __only_db(boolean only_db_) { async_data_watchlist_quicker.__only_db(only_db_); }	
 	
-	public static boolean check_enabled() { return async_data_watchlist_quicker.check_enabled(); }
+	public static boolean checks_enabled() { return async_data_watchlist_quicker.checks_enabled(); }
 	
-	public static void check_enabled(boolean check_enabled_) { async_data_watchlist_quicker.check_enabled(check_enabled_); }	
+	public static void __check_enabled(boolean check_enabled_) { async_data_watchlist_quicker.__check_enabled(check_enabled_); }	
 	
-	public static boolean only_essential() { return async_data_watchlist_quicker.only_essential(); }
-	
-	public static void only_essential(boolean only_essential_) { async_data_watchlist_quicker.only_essential(only_essential_); }	
+	public static boolean is_only_essential() { return async_data_watchlist_quicker.is_only_essential(); }
 
 	public static void __add(ArrayList<String> symbols_) 
 	{ 

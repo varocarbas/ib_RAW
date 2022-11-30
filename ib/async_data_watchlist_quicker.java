@@ -15,8 +15,6 @@ abstract class async_data_watchlist_quicker extends parent_static
 	
 	public static final String SOURCE = db_ib.watchlist.SOURCE;
 	public static final int MAX_SIMULTANEOUS_SYMBOLS = 15;
-	
-	static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.VOLUME_IB, async_data_quicker.HALTED_IB };
 
 	static final int SIZE_GLOBALS = 1000;
 	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
@@ -24,7 +22,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	static final boolean INCLUDES_TIME_ELAPSED = true;
 	static final boolean INCLUDES_HALTED = true;
 	static final boolean INCLUDES_HALTED_TOT = false;
-
+	
 	static volatile String[] _symbols = new String[SIZE_GLOBALS];
 	@SuppressWarnings("unchecked")
 	static volatile HashMap<String, String>[] _vals = (HashMap<String, String>[])new HashMap[SIZE_GLOBALS];
@@ -32,8 +30,10 @@ abstract class async_data_watchlist_quicker extends parent_static
 	static volatile int _last_id = async_data_quicker.MIN_ID;
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = false;
-	static volatile boolean _only_essential = true;
+	
+	private static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.VOLUME_IB, async_data_quicker.HALTED_IB };
 
+	private static final boolean ONLY_ESSENTIAL = true;
 	private static final double MAX_VAR = 30.0;
 	
 	private static final int SIZE_GLOBALS_FLUS = 2 * MAX_SIMULTANEOUS_SYMBOLS;
@@ -41,7 +41,8 @@ abstract class async_data_watchlist_quicker extends parent_static
 	private static final int MIN_FLUS_TOT = 1;
 	private static final int MAX_FLUS_TOT = 10;
 	private static final double FACTOR_FLU2_ZERO = 1.5;
-	
+
+	private static volatile ArrayList<Integer> _fields = null;
 	private static volatile String[] _symbols_flus = new String[SIZE_GLOBALS_FLUS];
 	@SuppressWarnings("unchecked")
 	private static volatile ArrayList<Double>[] _flus = new ArrayList[SIZE_GLOBALS_FLUS];
@@ -59,17 +60,29 @@ abstract class async_data_watchlist_quicker extends parent_static
 	
 	public static void log(boolean log_) { _log = log_; }	
 	
-	public static boolean only_db() { return _only_db; }
+	public static boolean is_only_db() { return _only_db; }
 	
-	public static void only_db(boolean only_db_) { _only_db = only_db_; }	
+	public static void __only_db(boolean only_db_) 
+	{ 
+		__lock();
+		
+		_only_db = only_db_; 
 	
-	public static boolean check_enabled() { return _check_enabled; }
+		__unlock();
+	}	
 	
-	public static void check_enabled(boolean check_enabled_) { _check_enabled = check_enabled_; }	
+	public static boolean checks_enabled() { return _check_enabled; }
 	
-	public static boolean only_essential() { return _only_essential; }
+	public static void __check_enabled(boolean check_enabled_) 
+	{ 
+		__lock();
+		
+		_check_enabled = check_enabled_; 
 	
-	public static void only_essential(boolean only_essential_) { _only_essential = only_essential_; }	
+		__unlock();
+	}	
+	
+	public static boolean is_only_essential() { return ONLY_ESSENTIAL; }
 
 	public static boolean __add(String symbol_) { return async_data_quicker.__start(_APP, symbol_); }
 	
@@ -110,6 +123,13 @@ abstract class async_data_watchlist_quicker extends parent_static
 	public static void start(String symbol_, boolean is_restart_) { start_globals(symbol_, is_restart_); }
 	
 	public static void stop(String symbol_, boolean remove_symbol_) { stop_globals(symbol_, remove_symbol_); }
+
+	public static ArrayList<Integer> _get_fields() 
+	{ 
+		if (_fields == null) _fields = async_data_quicker.__get_fields(FIELDS, ONLY_ESSENTIAL);
+		
+		return _fields; 
+	}
 	
 	private static void start_globals(String symbol_, boolean is_restart_)
 	{
@@ -152,7 +172,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		_flus2_plus[i] = null;
 		_flus2_remove[i] = true;				
 	}
-
+	
 	private static int get_i_flus(String symbol_) { return async_data_quicker.get_id_i(symbol_, _symbols_flus, _last_i_flus, MAX_I_FLUS, false); }
 
 	private static HashMap<String, String> tick_price_basic(String symbol_, double price_, HashMap<String, String> db_, HashMap<String, String> vals_) { return tick_basic(symbol_, price_, db_, vals_, true); }

@@ -54,7 +54,7 @@ abstract class remote_execute
 		String symbol = null;
 		int order_id = common.WRONG_ORDER_ID;
 		
-		if (orders.is_place(type))
+		if (remote.is_place(type))
 		{
 			symbol = remote.get_symbol(vals_);
 			
@@ -99,14 +99,14 @@ abstract class remote_execute
 				return executed;
 			}
 
-			if (orders.is_cancel(type)) 
+			if (remote.is_cancel(type)) 
 			{
 				executed = __cancel(request, order_id);
 
 				if (!executed) remote.update_error(request, ERROR_CANCEL, order_id, remote.CANCEL);
 
 			}
-			else if (orders.is_update(type)) 
+			else if (remote.is_update(type)) 
 			{				
 				String field_col = db_ib.orders.get_field_update(type);
 				if (remote.is_quick()) field_col = db_ib.remote.get_col(field_col);
@@ -149,7 +149,7 @@ abstract class remote_execute
 		if (order_id_ <= common.WRONG_ORDER_ID) return is_ok;
 		
 		String type_update = ib.orders.check_update(type_update_);
-		if (!strings.is_ok(type_update) || (val_ <= common.WRONG_PRICE && !orders.is_update_market(type_update))) return is_ok;
+		if (!strings.is_ok(type_update) || (val_ <= common.WRONG_PRICE && !remote.is_update_market(type_update))) return is_ok;
 		
 		_order order = sync_orders.__get_order(order_id_, false);
 		if (order == null || !order.is_ok()) return is_ok;
@@ -194,7 +194,7 @@ abstract class remote_execute
 
 	private static boolean is_ok(int request_, String type_) { return (type_is_ok(type_) && db_ib.remote.is_pending(request_)); }
 
-	private static boolean type_is_ok(String type_) { return (ib.orders.is_place(type_) || ib.orders.is_cancel(type_) || ib.orders.is_update(type_)); }
+	private static boolean type_is_ok(String type_) { return (remote.is_place(type_) || remote.is_cancel(type_) || remote.is_update(type_)); }
 
 	private static void update_error_quantity(int request_, double quantity_, double perc_, double price_)
 	{

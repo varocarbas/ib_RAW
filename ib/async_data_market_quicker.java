@@ -3,14 +3,14 @@ package ib;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-abstract class async_data_market_quicker 
+import accessory.parent_static;
+
+abstract class async_data_market_quicker extends parent_static
 {
 	public static final String _APP = "market";
 	
 	public static final String SOURCE = db_ib.market.SOURCE;
 	public static final int MAX_SIMULTANEOUS_SYMBOLS = 5000;
-
-	static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.OPEN_IB, async_data_quicker.CLOSE_IB, async_data_quicker.LOW_IB, async_data_quicker.HIGH_IB, async_data_quicker.ASK_IB, async_data_quicker.BID_IB, async_data_quicker.VOLUME_IB, async_data_quicker.SIZE_IB, async_data_quicker.ASK_SIZE_IB, async_data_quicker.BID_SIZE_IB, async_data_quicker.HALTED_IB };
 
 	static final int SIZE_GLOBALS = 1000;
 	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
@@ -26,7 +26,12 @@ abstract class async_data_market_quicker
 	static volatile int _last_id = async_data_quicker.MIN_ID;
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = true;
-	static volatile boolean _only_essential = false;
+
+	private static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.OPEN_IB, async_data_quicker.CLOSE_IB, async_data_quicker.LOW_IB, async_data_quicker.HIGH_IB, async_data_quicker.ASK_IB, async_data_quicker.BID_IB, async_data_quicker.VOLUME_IB, async_data_quicker.SIZE_IB, async_data_quicker.ASK_SIZE_IB, async_data_quicker.BID_SIZE_IB, async_data_quicker.HALTED_IB };
+
+	private static volatile ArrayList<Integer> _fields = null;
+
+	private static volatile boolean _only_essential = false;
 
 	private static boolean _log = async_data_quicker.DEFAULT_LOG;
 		
@@ -34,17 +39,40 @@ abstract class async_data_market_quicker
 	
 	public static void log(boolean log_) { _log = log_; }	
 	
-	public static boolean only_db() { return _only_db; }
+	public static boolean is_only_db() { return _only_db; }
 	
-	public static void only_db(boolean only_db_) { _only_db = only_db_; }	
+	public static void __only_db(boolean only_db_) 
+	{
+		__lock();
+		
+		_only_db = only_db_; 
 	
-	public static boolean check_enabled() { return _check_enabled; }
+		__unlock();
+	}	
 	
-	public static void check_enabled(boolean check_enabled_) { _check_enabled = check_enabled_; }	
+	public static boolean checks_enabled() { return _check_enabled; }
 	
-	public static boolean only_essential() { return _only_essential; }
+	public static void __check_enabled(boolean check_enabled_) 
+	{ 
+		__lock();
+		
+		_check_enabled = check_enabled_; 
 	
-	public static void only_essential(boolean only_essential_) { _only_essential = only_essential_; }	
+		__unlock();
+	}	
+	
+	public static boolean is_only_essential() { return _only_essential; }
+	
+	public static void __only_essential(boolean only_essential_) 
+	{ 
+		__lock();
+		
+		_only_essential = only_essential_; 
+	
+		_fields = async_data_quicker._get_fields(FIELDS, only_essential_, false);
+
+		__unlock();
+	}	
 	
 	public static boolean __start(String symbol_) { return async_data_quicker.__start(_APP, symbol_); }
 	
@@ -61,4 +89,11 @@ abstract class async_data_market_quicker
 	public static void start(String symbol_, boolean is_restart_) { }
 	
 	public static void stop(String symbol_, boolean remove_symbol_) { }
+
+	public static ArrayList<Integer> _get_fields() 
+	{ 
+		if (_fields == null) _fields = async_data_quicker.__get_fields(FIELDS, _only_essential);
+		
+		return _fields; 
+	}
 }

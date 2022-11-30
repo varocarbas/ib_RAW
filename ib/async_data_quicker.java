@@ -37,6 +37,8 @@ public class async_data_quicker extends parent_static
 	static final int ASK_SIZE_IB = external_ib.data.TICK_ASK_SIZE;
 	static final int BID_SIZE_IB = external_ib.data.TICK_BID_SIZE;
 
+	static final int[] FIELDS_ESSENTIAL = new int[] { PRICE_IB, VOLUME_IB, HALTED_IB };
+
 	private static HashMap<Integer, String> _cols = new HashMap<Integer, String>();
 
 	private static boolean _enabled = false;
@@ -92,7 +94,7 @@ public class async_data_quicker extends parent_static
 	static void __tick_price(int id_, int field_ib_, double price_)
 	{
 		String symbol = async_data_apps_quicker.__get_symbol(id_);		
-		if ((symbol == null) || !async_data_apps_quicker.field_is_ok(field_ib_)) return;		
+		if ((symbol == null) || !async_data_apps_quicker._field_is_ok(field_ib_)) return;		
 		
 		double price = adapt_val(price_, field_ib_);
 		if (!ib.common.price_is_ok(price)) return;
@@ -107,7 +109,7 @@ public class async_data_quicker extends parent_static
 		String symbol = async_data_apps_quicker.__get_symbol(id_);		
 		if (symbol == null) return;		
 
-		if (async_data_apps_quicker.field_is_ok(field_ib_))
+		if (async_data_apps_quicker._field_is_ok(field_ib_))
 		{
 			double size = adapt_val(size_, field_ib_);
 
@@ -128,7 +130,7 @@ public class async_data_quicker extends parent_static
 		if (symbol == null) return;		
 		
 		double value = value_;
-		boolean update = async_data_apps_quicker.field_is_ok(field_ib_);
+		boolean update = async_data_apps_quicker._field_is_ok(field_ib_);
 		
 		if (field_ib_ == HALTED_IB) 
 		{
@@ -158,7 +160,7 @@ public class async_data_quicker extends parent_static
 	
 	static void _update(int id_, String symbol_, HashMap<String, String> vals_) 
 	{ 
-		if (async_data_apps_quicker.__only_db()) update_db(id_, symbol_, vals_); 
+		if (async_data_apps_quicker.__is_only_db()) update_db(id_, symbol_, vals_); 
 		else async_data_apps_quicker.__update_vals(id_, vals_);
 	}
 
@@ -241,16 +243,29 @@ public class async_data_quicker extends parent_static
 	static void reset_elapsed_ini(String source_, String symbol_, String col_ini_) { update_elapsed_ini(source_, symbol_, col_ini_, dates.ELAPSED_START); }
 	
 	static void update_elapsed_ini(String source_, String symbol_, String col_ini_, long ini_) { db_ib.async_data.update_quick(source_, symbol_, col_ini_, Long.toString(ini_ <= dates.ELAPSED_START ? dates.start_elapsed() : ini_)); }
+
+	static ArrayList<Integer> __get_fields(int[] fields_, boolean only_essential_) { return _get_fields(fields_, only_essential_, true); }
+	
+	static ArrayList<Integer> _get_fields(int[] fields_, boolean only_essential_, boolean lock_) 
+	{
+		if (lock_) __lock();
+		
+		ArrayList<Integer> output = arrays.to_arraylist(only_essential_ ? FIELDS_ESSENTIAL : fields_); 
+	
+		if (lock_) __unlock();
+		
+		return output;
+	}
 	
 	private static void __complete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, true, false); }
 	
-	private static void __precomplete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, async_data_apps_quicker.__only_essential(), false); }
+	private static void __precomplete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, async_data_apps_quicker.__is_only_essential(), false); }
 	
 	private static void __stop(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_)
 	{
 		int id = (id_ > WRONG_ID ? id_ : _get_id(symbol_, true));
 		
-		if (!async_data_apps_quicker.__only_db()) __store_vals(id, symbol_);
+		if (!async_data_apps_quicker.__is_only_db()) __store_vals(id, symbol_);
 
 		async_data_apps_quicker.__stop(id, symbol_, snapshot_completed_, remove_symbol_);
 		
@@ -264,7 +279,7 @@ public class async_data_quicker extends parent_static
 		String source = async_data_apps_quicker.get_source();
 
 		if (!db_ib.async_data.exists(source, symbol_)) db_ib.async_data.insert_quick(source, symbol_);
-		else if (!async_data_apps_quicker.__check_enabled() || db_ib.async_data.is_enabled(source, symbol_)) db_ib.async_data.update_timestamp(source, symbol_, true);
+		else if (!async_data_apps_quicker.__checks_enabled() || db_ib.async_data.is_enabled(source, symbol_)) db_ib.async_data.update_timestamp(source, symbol_, true);
 		else return output;			
 
 		int id = __get_new_id(symbol_); 
@@ -332,7 +347,7 @@ public class async_data_quicker extends parent_static
 	{
 		String col = get_col(field_ib_);
 
-		if (force_db_ || async_data_apps_quicker.__only_db()) update_db(id_, symbol_, col, val_); 
+		if (force_db_ || async_data_apps_quicker.__is_only_db()) update_db(id_, symbol_, col, val_); 
 		else async_data_apps_quicker.__update_vals(id_, col, val_);
 	
 		log(id_, symbol_, col, val_);

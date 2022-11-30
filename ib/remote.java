@@ -105,7 +105,15 @@ public abstract class remote
 
 	public static String check_status2(String type_) { return accessory.types.check_type(type_, STATUS2); }
 
+	public static String check_type_place(String type_) { return orders.check_place(type_); }
+
 	public static String check_type_update(String type_) { return orders.check_update(type_); }
+
+	public static boolean is_place(String type_) { return orders.is_place(type_); }
+
+	public static boolean is_update(String type_) { return orders.is_update(type_); }
+
+	public static boolean is_cancel(String type_) { return orders.is_cancel(type_); }
 
 	public static boolean is_update_market(String type_) { return orders.is_update_market(type_); }
 
@@ -192,22 +200,6 @@ public abstract class remote
 
 	public static ArrayList<HashMap<String, String>> get_all_errors() { return db_ib.remote.get_all_errors(_is_quick); }
 
-	public static void update_error_place(int request_, String symbol_, String type_, double quantity_, double stop_, double start_, double start2_, boolean is_request_)
-	{
-		HashMap<String, Object> vals = new HashMap<String, Object>();
-
-		String type = strings.to_string(type_);
-		
-		vals.put(db_ib.remote.get_col(db_ib.remote.SYMBOL), strings.to_string(symbol_));
-		vals.put(db_ib.remote.get_col(db_ib.remote.TYPE_ORDER), db_ib.remote.get_key_from_type_order(type));
-		vals.put(db_ib.remote.get_col(db_ib.remote.QUANTITY), quantity_);
-		vals.put(db_ib.remote.get_col(db_ib.remote.STOP), stop_);
-		vals.put(db_ib.remote.get_col(db_ib.remote.START), start_);
-		vals.put(db_ib.remote.get_col(db_ib.remote.START2), start2_);
-		
-		update_error(request_, (is_request_ ? remote_request.ERROR_PLACE : remote_execute.ERROR_PLACE), vals, type);		
-	}
-
 	static boolean order_was_updated(HashMap<String, String> vals_)
 	{
 		boolean output = false;
@@ -220,9 +212,9 @@ public abstract class remote
 		double start = (double)get_start(vals_);
 		double start2 = (double)get_start2(vals_);
 		
-		if (orders.is_update(type)) output = orders.order_was_updated(order_id, type, stop, start, start2);
-		else if (orders.is_cancel(type)) output = orders.is_inactive(order_id);
-		else if (orders.is_place(type)) output = db_ib.orders.is_active(order_id, stop, start, start2);
+		if (is_update(type)) output = orders.order_was_updated(order_id, type, stop, start, start2);
+		else if (is_cancel(type)) output = orders.is_inactive(order_id);
+		else if (is_place(type)) output = db_ib.orders.is_active(order_id, stop, start, start2);
 		
 		return output;
 	}
@@ -240,26 +232,28 @@ public abstract class remote
 		
 		String message = get_error_message(type, vals_);
 		
-		if (request_ > common.WRONG_REQUEST) db_ib.remote.update_error(request_, message, type_order_, _is_quick); 
+		if (request_ > common.WRONG_REQUEST) db_ib.remote.update_error(request_, message, type_order_, is_place(type_order_), _is_quick); 
 	
 		errors.manage(type, message);
+	}
+
+	static void update_error_place(int request_, String symbol_, String type_, double quantity_, double stop_, double start_, double start2_, boolean is_request_)
+	{
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		
+		vals.put(db_ib.remote.get_col(db_ib.remote.QUANTITY), quantity_);
+		
+		update_error_place(request_, symbol_, type_, stop_, start_, start2_, is_request_, vals);
 	}
 
 	static void update_error_place(int request_, String symbol_, String type_, double price_, double perc_, double stop_, double start_, double start2_, boolean is_request_)
 	{
 		HashMap<String, Object> vals = new HashMap<String, Object>();
-
-		String type = strings.to_string(type_);
 		
-		vals.put(db_ib.remote.get_col(db_ib.remote.SYMBOL), strings.to_string(symbol_));
-		vals.put(db_ib.remote.get_col(db_ib.remote.TYPE_ORDER), db_ib.orders.get_key_from_type_order(type));
 		vals.put(db_ib.remote.get_col(db_ib.remote.PRICE), price_);
 		vals.put(db_ib.remote.get_col(db_ib.remote.PERC_MONEY), perc_);
-		vals.put(db_ib.remote.get_col(db_ib.remote.STOP), stop_);
-		vals.put(db_ib.remote.get_col(db_ib.remote.START), start_);
-		vals.put(db_ib.remote.get_col(db_ib.remote.START2), start2_);
 		
-		update_error(request_, (is_request_ ? remote_request.ERROR_PLACE : remote_execute.ERROR_PLACE), vals, type);		
+		update_error_place(request_, symbol_, type_, stop_, start_, start2_, is_request_, vals);
 	}
 
 	static void update_error_update(int request_, String symbol_, String type_, int order_id_, double val_, boolean is_request_)
@@ -309,6 +303,21 @@ public abstract class remote
 		logs.update_screen(message_, true);
 		
 		if (_logs_to_file) logs.update_file(message_, _path_logs, false, true); 
+	}
+
+	private static void update_error_place(int request_, String symbol_, String type_, double stop_, double start_, double start2_, boolean is_request_, HashMap<String, Object> vals_)
+	{
+		HashMap<String, Object> vals = new HashMap<String, Object>(vals_);
+
+		String type = strings.to_string(type_);
+		
+		vals.put(db_ib.remote.get_col(db_ib.remote.SYMBOL), strings.to_string(symbol_));
+		vals.put(db_ib.remote.get_col(db_ib.remote.TYPE_ORDER), db_ib.orders.get_key_from_type_order(type));
+		vals.put(db_ib.remote.get_col(db_ib.remote.STOP), stop_);
+		vals.put(db_ib.remote.get_col(db_ib.remote.START), start_);
+		vals.put(db_ib.remote.get_col(db_ib.remote.START2), start2_);
+		
+		update_error(request_, (is_request_ ? remote_request.ERROR_PLACE : remote_execute.ERROR_PLACE), vals, type);		
 	}
 	
 	private static double get_investment(double perc_, boolean log_)
