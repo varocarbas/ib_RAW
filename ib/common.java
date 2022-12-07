@@ -27,7 +27,7 @@ public abstract class common
 	public static final int WRONG_ORDER_ID = orders.MIN_ORDER_ID - 1;
 	public static final int WRONG_REQUEST_ID = common_xsync.MIN_REQ_ID_SYNC - 1; //Request ID required for some interactions with the IB's interface.
 	public static final int WRONG_REQUEST = 0; //Unique identifier used in the remote communication within this library.
-	public static final int WRONG_I = -1;
+	public static final int WRONG_I = arrays.WRONG_I;
 	
 	public static final String DEFAULT_FORMAT_TIME = FORMAT_TIME;
 	

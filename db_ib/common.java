@@ -593,7 +593,7 @@ public abstract class common
 	
 	public static HashMap<String, String> populate_cols(String source_, String[] fields_)
 	{
-		HashMap<String, String> output = db.get_cols(source_, fields_);
+		HashMap<String, String> output = db.get_fields_cols(source_, fields_);
 		if (!arrays.is_ok(fields_)) return output;
 	
 		populate_col_id();

@@ -50,7 +50,9 @@ public abstract class remote extends parent_static
 	
 	public static ArrayList<HashMap<String, String>> get_all_errors(boolean is_quick_) { return common.get_all_vals(SOURCE, (is_quick_ ? get_cols() : get_fields()), get_where_error(), is_quick_); }
 
-	public static boolean contains_active() { return (common.contains_active(SOURCE) || common.exists(SOURCE, get_where_active())); }
+	public static boolean contains_active() { return (common.contains_active(SOURCE) || contains_active_requests()); }
+	
+	public static boolean contains_active_requests() { return common.exists(SOURCE, get_where_active()); }
 
 	public static boolean exists(int request_) { return common.exists(SOURCE, get_where_request(request_)); }
 
