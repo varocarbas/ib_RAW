@@ -82,7 +82,7 @@ public abstract class apps
 		return update(vals);
 	}
 	
-	public static boolean update_conn_type() { return update(CONN_TYPE, ini_apps.get_conn_type()); }
+	public static boolean update_conn_type() { return update(CONN_TYPE, conn.get_type_key(ini_apps.get_conn_type())); }
 	
 	public static boolean update_conn_type(String val_) 
 	{ 
@@ -91,7 +91,7 @@ public abstract class apps
 		if (!exists()) vals.put(APP, ini_apps.get_app_name());
 		
 		String val0 = ini_apps.get_conn_type(); 
-		String val = (conn.type_is_ok(val0) ? val0 : val_);
+		String val = conn.get_type_key(conn.type_is_ok(val0) ? val0 : val_);
 		
 		vals.put(CONN_TYPE, val);
 		

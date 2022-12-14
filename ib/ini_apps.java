@@ -30,11 +30,11 @@ public abstract class ini_apps
 		db.create_table(SOURCE, false);
 
 		start_all(app_name_, conn_type_, conn_id_);
-	
+
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
 		vals.put(db_ib.apps.APP, _app_name);
-		vals.put(db_ib.apps.CONN_TYPE, _conn_type);
+		vals.put(db_ib.apps.CONN_TYPE, conn.get_type_key(conn_type_));
 		vals.put(db_ib.apps.CONN_ID, _conn_id);
 		
 		db_ib.apps.update(vals);

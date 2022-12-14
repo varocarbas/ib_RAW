@@ -130,6 +130,13 @@ public abstract class types
 
 	public static final String CONFIG_DB_IB_FIELD_KEY = "config_db_ib_field_key";
 	public static final String CONFIG_DB_IB_FIELD_VALUE = "config_db_ib_field_value";
+
+	public static final String CONN = "conn";
+	public static final String CONN_TYPE = "conn_type";
+	public static final String CONN_TYPE_TWS_REAL = "conn_type_tws_real";
+	public static final String CONN_TYPE_TWS_PAPER = "conn_type_tws_paper";
+	public static final String CONN_TYPE_GATEWAY_REAL = "conn_type_gateway_real";
+	public static final String CONN_TYPE_GATEWAY_PAPER = "conn_type_gateway_paper";
 	
 	public static final String ORDERS = "orders";
 	public static final String ORDERS_CANCEL = "orders_cancel";
@@ -202,7 +209,8 @@ public abstract class types
 	public static final String ERROR_IB_CONN_ID = "error_ib_conn_id";
 	public static final String ERROR_IB_CONN_TYPE = "error_ib_conn_type";
 	public static final String ERROR_IB_CONN_GENERIC = "error_ib_conn_generic";
-
+	public static final String ERROR_IB_CONN_IB = "error_ib_conn_ib";
+	
 	public static final String ERROR_IB_SYNC = "error_ib_sync";
 	public static final String ERROR_IB_SYNC_TIMEOUT = "error_ib_sync_timeout";
 	public static final String ERROR_IB_CONTRACTS = "error_ib_contracts";
@@ -290,6 +298,10 @@ public abstract class types
 			CONFIG_DB_IB_FIELD_ID, CONFIG_DB_IB_FIELD_TYPE, CONFIG_DB_IB_FIELD_DATA_TYPE, CONFIG_DB_IB_FIELD_DATE, CONFIG_DB_IB_FIELD_KEY, 
 			CONFIG_DB_IB_FIELD_VALUE,
 			
+			CONN,
+			CONN_TYPE,
+			CONN_TYPE_TWS_REAL, CONN_TYPE_TWS_PAPER, CONN_TYPE_GATEWAY_REAL, CONN_TYPE_GATEWAY_PAPER,
+	
 			ORDERS,
 			ORDERS_CANCEL, ORDERS_PLACE, ORDERS_PLACE_MARKET, ORDERS_PLACE_STOP, ORDERS_PLACE_LIMIT, ORDERS_PLACE_STOP_LIMIT, ORDERS_UPDATE,
 			ORDERS_UPDATE_START, ORDERS_UPDATE_START_VALUE, ORDERS_UPDATE_START2, ORDERS_UPDATE_START2_VALUE, ORDERS_UPDATE_START_MARKET,
@@ -326,7 +338,7 @@ public abstract class types
 			ERROR_IB_INI_DB_DBS,
 			
 			ERROR_IB_CONN,
-			ERROR_IB_CONN_NONE, ERROR_IB_CONN_ID, ERROR_IB_CONN_TYPE, ERROR_IB_CONN_GENERIC,
+			ERROR_IB_CONN_NONE, ERROR_IB_CONN_ID, ERROR_IB_CONN_TYPE, ERROR_IB_CONN_GENERIC, ERROR_IB_CONN_IB,
 			ERROR_IB_SYNC,
 			ERROR_IB_SYNC_TIMEOUT,
 			ERROR_IB_CONTRACTS_INFO_STOCK_ETF,

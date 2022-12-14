@@ -1,9 +1,14 @@
 package ib;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import com.ib.client.EClientSocket;
 import com.ib.client.EReader;
 import com.ib.client.EReaderSignal;
 
+import accessory._basic;
+import accessory._keys;
 import accessory.arrays;
 import accessory.misc;
 import accessory.numbers;
@@ -16,10 +21,11 @@ import external_ib.wrapper;
 
 public abstract class conn extends parent_static 
 {	
-	public static final String TYPE_TWS_REAL = "tws_real";
-	public static final String TYPE_TWS_PAPER = "tws_paper";
-	public static final String TYPE_GATEWAY_REAL = "gateway_real";
-	public static final String TYPE_GATEWAY_PAPER = "gateway_paper";
+	public static final String TYPE = types.CONN_TYPE;
+	public static final String TYPE_TWS_REAL = types.CONN_TYPE_TWS_REAL;
+	public static final String TYPE_TWS_PAPER = types.CONN_TYPE_TWS_PAPER;
+	public static final String TYPE_GATEWAY_REAL = types.CONN_TYPE_GATEWAY_REAL;
+	public static final String TYPE_GATEWAY_PAPER = types.CONN_TYPE_GATEWAY_PAPER;
 
 	public static final int MIN_ID = 0;
 	public static final int MAX_ID = 31;
@@ -33,12 +39,14 @@ public abstract class conn extends parent_static
 	public static final int DEFAULT_PORT_TWS_PAPER = 7497;
 	public static final int DEFAULT_PORT_GATEWAY_REAL = 4001;
 	public static final int DEFAULT_PORT_GATEWAY_PAPER = 4002;	
-	
+
+	public static final String ERROR = types.ERROR_IB;
 	public static final String ERROR_NONE = types.ERROR_IB_CONN_NONE;
 	public static final String ERROR_ID = types.ERROR_IB_CONN_ID;
 	public static final String ERROR_TYPE = types.ERROR_IB_CONN_TYPE;
 	public static final String ERROR_GENERIC = types.ERROR_IB_CONN_GENERIC;
-
+	public static final String ERROR_IB = types.ERROR_IB_CONN_IB;
+	
 	public static volatile boolean _started = false; 
 	
 	public static EClientSocket _client = null;
@@ -51,12 +59,21 @@ public abstract class conn extends parent_static
 	private static volatile boolean _connected = false;
 	private static volatile boolean _first_conn = false;
 
+	private static HashMap<String, String> _type_keys = null;
+	
 	private static wrapper _wrapper = null;
 	private static int _id = WRONG_ID; 
 	private static int _port = PORT_TWS_REAL - 1;
 	private static String _type = strings.DEFAULT; 
 	
-	public static int get_max_length_type() { return TYPE_GATEWAY_PAPER.length(); }
+	public static String get_type_key(String type_) 
+	{ 
+		populate_type_keys();
+		
+		return (_type_keys.containsKey(type_) ? _type_keys.get(type_) : strings.DEFAULT); 
+	}
+	
+	public static int get_max_length_type_key() { return get_type_key(TYPE_GATEWAY_PAPER).length(); }
 
 	public static String get_account_ib() { return basic.get_account_ib(); }
 
@@ -96,15 +113,16 @@ public abstract class conn extends parent_static
 	}
 	
 	public static boolean connect()
-	{
+	{	
 		if (_wrapper == null || _client == null || !id_is_ok() || !type_is_ok() || !port_is_ok()) return start();
 		if (_connected) return true;
 		
 		_connected = false;
 		
 		while (!_connected)
-		{	
-			connect_internal();	
+		{
+			if (!ib_is_running()) errors.manage(ERROR_IB);
+			else connect_internal();	
 
 			if (_connected) break;
 			if (!_first_conn) misc.pause_secs(1);
@@ -128,15 +146,17 @@ public abstract class conn extends parent_static
 
 	public static boolean id_is_ok(int id_) { return numbers.is_ok(id_, MIN_ID, MAX_ID); }
 	
-	public static boolean type_is_ok() { return type_is_ok(_type); }
+	public static boolean type_is_ok() { return type_is_ok(get_conn_type()); }
 	
-	public static boolean type_is_ok(String type_) { return (strings.is_ok(type_) ? arrays.value_exists(new String[] { TYPE_TWS_REAL, TYPE_TWS_PAPER, TYPE_GATEWAY_REAL, TYPE_GATEWAY_PAPER }, type_) : false); }
+	public static boolean type_is_ok(String type_) { return strings.is_ok(check_type(type_)); }
+	
+	public static String check_type(String type_) { return accessory.types.check_type(type_, TYPE); }
 	
 	public static boolean port_is_ok() { return port_is_ok(_port); }
 	
 	public static boolean port_is_ok(int port_) { return (port_ == PORT_TWS_REAL || port_ == PORT_TWS_PAPER || port_ == PORT_GATEWAY_REAL || port_ == PORT_GATEWAY_PAPER); }
 	
-	public static String check_error(String type_) { return accessory.types.check_type(type_, types.ERROR_IB_CONN); }
+	public static String check_error(String type_) { return accessory.types.check_type(type_, ERROR); }
 
 	public static String get_error_message(String type_)
 	{
@@ -148,17 +168,67 @@ public abstract class conn extends parent_static
 		if (type_.equals(ERROR_NONE)) message = "Impossible to connect";
 		else if (type_.equals(ERROR_ID)) message = "Wrong connection ID";
 		else if (type_.equals(ERROR_TYPE)) message = "Wrong connection type";
-
+		else if (type_.equals(ERROR_IB)) message = "The IB " + (type_is_gateway() ? "gateway" : "TWS") + " is stopped";
+		
 		return message;	
 	}
 	
-	static boolean type_is_real() 
-	{
-		String conn_type = get_conn_type();
+	public static boolean ib_is_running() { return ib_is_running(get_conn_type()); }
+	
+	public static boolean ib_is_running(String type_)
+	{	
+		boolean output = false;
 		
-		return (strings.are_equal(conn_type, TYPE_TWS_REAL) || strings.are_equal(conn_type, TYPE_GATEWAY_REAL));
+		String type = check_type(type_);
+		if (!strings.is_ok(type)) return output;
+		
+		boolean is_gateway = type_is_gateway(type);
+		boolean is_real = type_is_real(type);
+		
+		if (_basic.is_linux()) output = ib_is_running_linux(is_gateway, is_real);
+		
+		return output;
 	}
+	
+	static boolean type_is_real() { return type_is_real(get_conn_type()); }
+	
+	static boolean type_is_real(String type_) { return (strings.matches_any(type_, new String[] { TYPE_TWS_REAL, TYPE_GATEWAY_REAL }, false)); }
 
+	private static boolean type_is_gateway() { return type_is_gateway(get_conn_type()); }
+	
+	private static boolean type_is_gateway(String type_) { return (strings.matches_any(type_, new String[] { TYPE_GATEWAY_PAPER, TYPE_GATEWAY_REAL }, false)); }
+	
+	private static boolean ib_is_running_linux(boolean is_gateway_, boolean is_real_)
+	{
+		boolean output = false;
+
+		ArrayList<String> keywords = new ArrayList<String>();
+		
+		keywords.add("twslaunch");
+		if (is_gateway_) keywords.add("ibgateway");
+		
+		output = misc.app_is_running(null, arrays.to_array(keywords), null);
+	
+		if (output)
+		{
+			String[] keywords2 = null;
+			String[] keywords_to_ignore = null;
+	
+			if (is_gateway_) keywords2 = new String[] { "ib gateway" };
+			else
+			{
+				String account = basic.get_account_ib();
+			
+				keywords2 = new String[] { (strings.is_ok(account) ? account + " " : "") + "interactive brokers" + (is_real_ ? "" : " (simulated trading)") };
+				keywords_to_ignore = (is_real_ ? new String[] { "login", "simulated trading" } : new String[] { "login" });				
+			}
+			
+			output = arrays.is_ok(misc.get_running_windows(keywords2, keywords_to_ignore, false));
+		}
+		
+		return output;
+	}
+	
 	private static void update_port() { update_port(get_conn_type()); }
 	
 	private static void update_port(String type_)
@@ -227,6 +297,15 @@ public abstract class conn extends parent_static
 		_connected = false;
 	}
 	
+	private static void populate_type_keys()
+	{ 
+		if (_type_keys != null) return;
+		
+		_type_keys = new HashMap<String, String>();
+		
+		for (String type: new String[] { TYPE_TWS_REAL, TYPE_TWS_PAPER, TYPE_GATEWAY_REAL, TYPE_GATEWAY_PAPER }) { _type_keys.put(type, _keys.get_key(type, TYPE)); }
+	}
+
 	private static int get_port(String type_)
 	{
 		int port = -1;

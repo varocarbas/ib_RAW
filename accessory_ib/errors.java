@@ -14,12 +14,13 @@ import ib.sync;
 
 public abstract class errors
 {
-	public static final String MESSAGE = _keys.MESSAGE;
+	public static final String MESSAGE = accessory.errors.MESSAGE;
 	
 	public static final String ERROR_GENERIC = types.ERROR_IB_GENERIC;
 	
 	public static final String DEFAULT_WARNING = "WARNING";
-
+	public static final String DEFAULT_MESSAGE = accessory.errors.DEFAULT_MESSAGE;
+	
 	public static void wrapper_error(int id_, int code_, String message_)
 	{
 		String message = (strings.is_ok(message_) ? message_ : strings.DEFAULT);
@@ -79,7 +80,7 @@ public abstract class errors
 		if (!strings.is_ok(message)) message = get_message(type_);
 	
 		HashMap<String, Object> info = arrays.get_new_hashmap_xy(info_);
-		if (strings.is_ok(message)) info.put(_keys.MESSAGE, message);
+		if (strings.is_ok(message)) info.put(MESSAGE, message);
 		
 		accessory.errors.manage(type_, null, info);
 	}
@@ -98,7 +99,7 @@ public abstract class errors
 	{ 
 		String message = message_;
 		
-		if (!strings.is_ok(message)) message = accessory.errors.DEFAULT_MESSAGE;
+		if (!strings.is_ok(message)) message = DEFAULT_MESSAGE;
 		message = "IB" + misc.SEPARATOR_CONTENT + message;
 		
 		return message; 
