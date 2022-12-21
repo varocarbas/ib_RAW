@@ -219,7 +219,7 @@ public abstract class common
 	
 	public static boolean contains_active(String source_) { return (!is_empty(source_) && timestamp_is_today(source_, null)); }
 	
-	public static boolean is_empty(String source_) { return (get_count(source_, strings.DEFAULT) == 0); }
+	public static boolean is_empty(String source_) { return (get_count(source_, db.DEFAULT_WHERE) == 0); }
 
 	public static int get_count(String source_, String where_) { return db_quick.select_count(source_, where_); }
 

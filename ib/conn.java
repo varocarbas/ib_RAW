@@ -7,11 +7,11 @@ import com.ib.client.EClientSocket;
 import com.ib.client.EReader;
 import com.ib.client.EReaderSignal;
 
-import accessory._basic;
 import accessory._keys;
 import accessory.arrays;
 import accessory.misc;
 import accessory.numbers;
+import accessory.os;
 import accessory.parent_static;
 import accessory.strings;
 import accessory_ib.errors;
@@ -59,7 +59,7 @@ public abstract class conn extends parent_static
 	private static volatile boolean _connected = false;
 	private static volatile boolean _first_conn = false;
 
-	private static HashMap<String, String> _type_keys = null;
+	private static HashMap<String, String> _types_keys = null;
 	
 	private static wrapper _wrapper = null;
 	private static int _id = WRONG_ID; 
@@ -70,7 +70,7 @@ public abstract class conn extends parent_static
 	{ 
 		populate_type_keys();
 		
-		return (_type_keys.containsKey(type_) ? _type_keys.get(type_) : strings.DEFAULT); 
+		return (_types_keys.containsKey(type_) ? _types_keys.get(type_) : strings.DEFAULT); 
 	}
 	
 	public static int get_max_length_type_key() { return get_type_key(TYPE_GATEWAY_PAPER).length(); }
@@ -185,7 +185,8 @@ public abstract class conn extends parent_static
 		boolean is_gateway = type_is_gateway(type);
 		boolean is_real = type_is_real(type);
 		
-		if (_basic.is_linux()) output = ib_is_running_linux(is_gateway, is_real);
+		if (os.is_linux()) output = ib_is_running_linux(is_gateway, is_real);
+		else output = true;
 		
 		return output;
 	}
@@ -206,13 +207,14 @@ public abstract class conn extends parent_static
 		
 		keywords.add("twslaunch");
 		if (is_gateway_) keywords.add("ibgateway");
+		else keywords.add("tws");
 		
-		output = misc.app_is_running(null, arrays.to_array(keywords), null);
+		output = os.app_is_running(null, arrays.to_array(keywords), null);
 	
 		if (output)
 		{
 			String[] keywords2 = null;
-			String[] keywords_to_ignore = null;
+			String[] keywords_ignore = null;
 	
 			if (is_gateway_) keywords2 = new String[] { "ib gateway" };
 			else
@@ -220,10 +222,10 @@ public abstract class conn extends parent_static
 				String account = basic.get_account_ib();
 			
 				keywords2 = new String[] { (strings.is_ok(account) ? account + " " : "") + "interactive brokers" + (is_real_ ? "" : " (simulated trading)") };
-				keywords_to_ignore = (is_real_ ? new String[] { "login", "simulated trading" } : new String[] { "login" });				
+				keywords_ignore = (is_real_ ? new String[] { "login", "simulated trading" } : new String[] { "login" });				
 			}
 			
-			output = arrays.is_ok(misc.get_running_windows(keywords2, keywords_to_ignore, false));
+			output = arrays.is_ok(os.get_running_windows(keywords2, keywords_ignore, false));
 		}
 		
 		return output;
@@ -299,11 +301,11 @@ public abstract class conn extends parent_static
 	
 	private static void populate_type_keys()
 	{ 
-		if (_type_keys != null) return;
+		if (_types_keys != null) return;
 		
-		_type_keys = new HashMap<String, String>();
+		_types_keys = new HashMap<String, String>();
 		
-		for (String type: new String[] { TYPE_TWS_REAL, TYPE_TWS_PAPER, TYPE_GATEWAY_REAL, TYPE_GATEWAY_PAPER }) { _type_keys.put(type, _keys.get_key(type, TYPE)); }
+		for (String type: new String[] { TYPE_TWS_REAL, TYPE_TWS_PAPER, TYPE_GATEWAY_REAL, TYPE_GATEWAY_PAPER }) { _types_keys.put(type, _keys.get_key(type, TYPE)); }
 	}
 
 	private static int get_port(String type_)
