@@ -3,7 +3,6 @@ package ib;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import accessory.arrays;
 import accessory.strings;
 import accessory_ib.types;
 
@@ -141,13 +140,11 @@ public abstract class orders
 		return val; 
 	}
 
-	public static ArrayList<HashMap<String, String>> get_all_active(String[] fields_) { return get_all_common(fields_, STATUS_ACTIVE); }
+	public static ArrayList<HashMap<String, String>> get_all_active(String[] fields_) { return db_ib.orders.get_all_active(fields_); }
 
-	public static ArrayList<HashMap<String, String>> get_all_filled(String[] fields_) { return get_all_common(fields_, STATUS_FILLED); }
+	public static ArrayList<HashMap<String, String>> get_all_filled(String[] fields_) { return db_ib.orders.get_all_filled(fields_); }
 
-	public static ArrayList<HashMap<String, String>> get_all_submitted(String[] fields_) { return get_all_common(fields_, STATUS_SUBMITTED); }
-
-	public static String get_field_col(String field_) { return db_ib.orders.get_field_col(field_, _is_quick); }
+	public static ArrayList<HashMap<String, String>> get_all_submitted(String[] fields_) { return db_ib.orders.get_all_submitted(fields_); }
 	
 	public static boolean is_place(String type_) { return strings.is_ok(check_place(type_)); }
 
@@ -268,22 +265,6 @@ public abstract class orders
 		sync_orders.order_status(order_id_, status_ib_); 
 		
 		async_orders.order_status(order_id_, status_ib_);
-	}
-
-	private static ArrayList<HashMap<String, String>> get_all_common(String[] fields_, String status_) 
-	{		
-		int tot = arrays.get_size(fields_);
-
-		String[] field_cols = null;
-		
-		if (tot > 0)
-		{
-			field_cols = new String[tot];
-			
-			for (int i = 0; i < tot; i++) field_cols[i] = get_field_col(fields_[i]);
-		}
-
-		return db_ib.orders.get_all_common(field_cols, status_, _is_quick);
 	}
 
 	private static boolean order_is_common(int order_id_main_, String target_) { return strings.are_equal(db_ib.orders.get_status(order_id_main_), target_); }	

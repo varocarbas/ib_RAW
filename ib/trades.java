@@ -7,11 +7,17 @@ import accessory.strings;
 import db_ib.async_data;
 
 public abstract class trades extends parent_static
-{
+{	
+	public static final String DB_SOURCE = db_ib.trades.SOURCE;
+
 	public static final boolean DEFAULT_SYNCED_WITH_EXECS = true;
 	
 	private static boolean _synced_with_execs = DEFAULT_SYNCED_WITH_EXECS; 
+
+	public static boolean is_quick() { return db_ib.common.is_quick(DB_SOURCE); }
 	
+	public static void is_quick(boolean is_quick_) { db_ib.common.is_quick(DB_SOURCE, is_quick_); }
+
 	public static boolean logs_to_screen() { return async_data_trades.logs_to_screen(); }
 
 	public static void logs_to_screen(boolean logs_to_screen_) { async_data_trades.logs_to_screen(logs_to_screen_); }

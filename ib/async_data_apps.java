@@ -40,9 +40,9 @@ abstract class async_data_apps
 	{
 		boolean output = async_data.DEFAULT_IS_QUICK;
 		
-		if (app_.equals(async_data_watchlist._APP)) output = async_data_watchlist._is_quick;
-		else if (app_.equals(async_data_trades._APP)) output = async_data_trades._is_quick;
-		else if (app_.equals(async_data_market._APP)) output = async_data_market._is_quick;
+		if (app_.equals(async_data_watchlist._APP)) output = async_data_watchlist.is_quick();
+		else if (app_.equals(async_data_trades._APP)) output = async_data_trades.is_quick();
+		else if (app_.equals(async_data_market._APP)) output = async_data_market.is_quick();
 
 		return output;
 	}

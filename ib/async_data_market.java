@@ -23,7 +23,6 @@ abstract class async_data_market
 
 	public static volatile int _last_i_stopping = -1;
 	public static volatile boolean _enabled = async_data.DEFAULT_ENABLED;
-	public static volatile boolean _is_quick = async_data.DEFAULT_IS_QUICK;
 	public static volatile boolean _logs_to_screen = async_data.DEFAULT_LOGS_TO_SCREEN;
 	public static volatile boolean _snapshot_nonstop = async_data.DEFAULT_SNAPSHOT_NONSTOP;
 
@@ -36,6 +35,8 @@ abstract class async_data_market
 	public static boolean _disable_asap = false;
 	public static boolean _only_essential = false;
 	
+	public static boolean is_quick() { return db_ib.common.is_quick(SOURCE); }
+
 	public static boolean is_ok() { return _enabled; }
 	
 	public static boolean logs_to_screen() { return _logs_to_screen; }
@@ -87,9 +88,9 @@ abstract class async_data_market
 		if (strings.is_ok(symbol) && async_data.symbol_is_running(_APP, symbol)) async_data.stop(_APP, symbol, false);
 	}
 		
-	public static ArrayList<String> get_all_symbols() { return async_data.get_all_symbols(_APP, db_ib.market.get_where_enabled(), _is_quick); }
+	public static ArrayList<String> get_all_symbols() { return async_data.get_all_symbols(_APP, db_ib.market.get_where_enabled(), is_quick()); }
 	
-	public static ArrayList<String> get_active_symbols() { return async_data.get_active_symbols(_APP, db_ib.market.get_where_enabled(), _is_quick); }
+	public static ArrayList<String> get_active_symbols() { return async_data.get_active_symbols(_APP, db_ib.market.get_where_enabled(), is_quick()); }
 
 	private static boolean start(String symbol_, String type_, int data_type_) 
 	{

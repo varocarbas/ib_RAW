@@ -179,7 +179,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 
 	private static HashMap<String, String> tick_price_flus(String symbol_, double price_, HashMap<String, String> db_, HashMap<String, String> vals_)
 	{
-		String col_price = db_ib.async_data.get_col(db_ib.async_data.FLUS_PRICE);
+		String col_price = db_ib.common.get_col(SOURCE, db_ib.async_data.FLUS_PRICE);
 		
 		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_);
 		vals.put(col_price, Double.toString(price_));
@@ -221,7 +221,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		flu /= (double)tot;
 		
 		flu = numbers.round(flu);
-		if (flu != 0.0) vals.put(db_ib.async_data.get_col(db_ib.async_data.FLU), Double.toString(flu));
+		if (flu != 0.0) vals.put(db_ib.common.get_col(SOURCE, db_ib.async_data.FLU), Double.toString(flu));
 
 		return vals;
 	}
@@ -313,7 +313,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		}
 		
 		flu2 = numbers.round(flu2);		
-		if (flu2 != 0.0) vals.put(db_ib.async_data.get_col(db_ib.async_data.FLU2), Double.toString(flu2));
+		if (flu2 != 0.0) vals.put(db_ib.common.get_col(SOURCE, db_ib.async_data.FLU2), Double.toString(flu2));
 		
 		return vals;
 	}
@@ -322,13 +322,13 @@ abstract class async_data_watchlist_quicker extends parent_static
 	{
 		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_);
 
-		String col_min = db_ib.async_data.get_col(db_ib.async_data.FLU2_MIN);
-		String col_max = db_ib.async_data.get_col(db_ib.async_data.FLU2_MAX);
-
-		HashMap<String, String> db = db_ib.common.get_vals_quick(SOURCE, new String[] { col_min, col_max }, db_ib.common.get_where_symbol(SOURCE, symbol_));
+		String field_min = db_ib.async_data.FLU2_MIN;
+		String field_max = db_ib.async_data.FLU2_MAX;
 		
-		if (var_ < 0.0 && var_ < Double.parseDouble(db.get(col_min))) vals.put(col_min, Double.toString(numbers.round(var_)));
-		else if (var_ > 0.0 && var_ > Double.parseDouble(db.get(col_max))) vals.put(col_max, Double.toString(numbers.round(var_)));
+		HashMap<String, String> db = db_ib.common.get_vals(SOURCE, new String[] { field_min, field_max }, db_ib.common.get_where_symbol(SOURCE, symbol_));
+		
+		if (var_ < 0.0 && var_ < Double.parseDouble(db.get(field_min))) vals.put(field_min, Double.toString(numbers.round(var_)));
+		else if (var_ > 0.0 && var_ > Double.parseDouble(db.get(field_max))) vals.put(field_max, Double.toString(numbers.round(var_)));
 				
 		return vals;
 	}
@@ -340,13 +340,13 @@ abstract class async_data_watchlist_quicker extends parent_static
 		HashMap<String, String> vals = tick_basic_start(symbol_, val_, db_, vals_, is_price_);
 		if (!arrays.is_ok(vals)) return null;
 		
-		String col = db_ib.async_data.get_col(is_price_ ? db_ib.async_data.PRICE_MIN : db_ib.async_data.VOLUME_MIN);
+		String col = db_ib.common.get_col(SOURCE, (is_price_ ? db_ib.async_data.PRICE_MIN : db_ib.async_data.VOLUME_MIN));
 		double val_db = Double.parseDouble(db_.get(col));
 		
 		boolean is_ok_db = tick_app_val_is_ok(val_db, is_price_);
 		if (!is_ok_db || val_ < val_db) vals.put(col, Double.toString(val_));
 		
-		col = db_ib.async_data.get_col(is_price_ ? db_ib.async_data.PRICE_MAX : db_ib.async_data.VOLUME_MAX);
+		col = db_ib.common.get_col(SOURCE, (is_price_ ? db_ib.async_data.PRICE_MAX : db_ib.async_data.VOLUME_MAX));
 		val_db = Double.parseDouble(db_.get(col));
 		
 		is_ok_db = tick_app_val_is_ok(val_db, is_price_);
@@ -359,14 +359,14 @@ abstract class async_data_watchlist_quicker extends parent_static
 	{
 		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_);		
 		
-		String col_price_ini = db_ib.async_data.get_col(db_ib.async_data.PRICE_INI);
-		String col_var_tot = db_ib.async_data.get_col(db_ib.async_data.VAR_TOT);
+		String col_price_ini = db_ib.common.get_col(SOURCE, db_ib.async_data.PRICE_INI);
+		String col_var_tot = db_ib.common.get_col(SOURCE, db_ib.async_data.VAR_TOT);
 		
 		HashMap<String, String> items = new HashMap<String, String>();
 		
-		items.put(db_ib.async_data.get_col(db_ib.async_data.PRICE), db_ib.async_data.get_col(db_ib.async_data.VOLUME));
-		items.put(col_price_ini, db_ib.async_data.get_col(db_ib.async_data.VOLUME_INI));
-		items.put(db_ib.async_data.get_col(db_ib.async_data.FLUS_PRICE), strings.DEFAULT);
+		items.put(db_ib.common.get_col(SOURCE, db_ib.async_data.PRICE), db_ib.common.get_col(SOURCE, db_ib.async_data.VOLUME));
+		items.put(col_price_ini, db_ib.common.get_col(SOURCE, db_ib.async_data.VOLUME_INI));
+		items.put(db_ib.common.get_col(SOURCE, db_ib.async_data.FLUS_PRICE), strings.DEFAULT);
 
 		double price_ini = common.WRONG_PRICE;
 		

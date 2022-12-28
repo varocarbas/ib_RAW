@@ -292,7 +292,7 @@ abstract class remote_request extends parent_static
 		if (strings.is_ok(symbol_))
 		{
 			HashMap<String, Object> vals2 = new HashMap<String, Object>();
-			vals2.put(db_ib.remote.get_col(db_ib.remote.SYMBOL), strings.to_string(symbol_));
+			vals2.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.SYMBOL), strings.to_string(symbol_));
 			
 			vals = vals2;
 		}

@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import accessory.arrays;
 import accessory.dates;
-import accessory.db;
 import accessory.generic;
 import accessory.parent_static;
 import accessory.strings;
@@ -221,15 +220,10 @@ public class async_data_quicker extends parent_static
 		
 		String col_ini = col_ini_;
 		
-		if (strings.is_ok(col_ini)) 
-		{
-			long temp = db_ib.common.get_long_quick(source_, col_ini, db_ib.common.get_where_symbol(source_, symbol_));
-			
-			ini = (temp == db.WRONG_LONG ? dates.ELAPSED_START : temp);
-		}
+		if (strings.is_ok(col_ini)) ini = db_ib.common.get_long(source_, col_ini, db_ib.common.get_where_symbol(source_, symbol_), dates.ELAPSED_START, false);
 		else
 		{			
-			col_ini = db_ib.async_data.get_col(db_ib.async_data.ELAPSED_INI);
+			col_ini = db_ib.common.get_col(source_, db_ib.async_data.ELAPSED_INI);
 
 			ini = db_ib.async_data.get_elapsed_ini(source_, symbol_, true);
 		}
@@ -242,7 +236,7 @@ public class async_data_quicker extends parent_static
 
 	static void reset_elapsed_ini(String source_, String symbol_, String col_ini_) { update_elapsed_ini(source_, symbol_, col_ini_, dates.ELAPSED_START); }
 	
-	static void update_elapsed_ini(String source_, String symbol_, String col_ini_, long ini_) { db_ib.async_data.update_quick(source_, symbol_, col_ini_, Long.toString(ini_ <= dates.ELAPSED_START ? dates.start_elapsed() : ini_)); }
+	static void update_elapsed_ini(String source_, String symbol_, String col_ini_, long ini_) { db_ib.async_data.update(source_, symbol_, col_ini_, Long.toString(ini_ <= dates.ELAPSED_START ? dates.start_elapsed() : ini_), false); }
 
 	static ArrayList<Integer> __get_fields(int[] fields_, boolean only_essential_) { return _get_fields(fields_, only_essential_, true); }
 	
@@ -278,11 +272,12 @@ public class async_data_quicker extends parent_static
 
 		String source = async_data_apps_quicker.get_source();
 
-		if (!db_ib.async_data.exists(source, symbol_)) db_ib.async_data.insert_quick(source, symbol_);
+		int id = __get_new_id(symbol_); 
+		
+		if (!db_ib.async_data.exists(source, symbol_)) db_ib.async_data.insert_new(source, symbol_);
 		else if (!async_data_apps_quicker.__checks_enabled() || db_ib.async_data.is_enabled(source, symbol_)) db_ib.async_data.update_timestamp(source, symbol_, true);
 		else return output;			
 
-		int id = __get_new_id(symbol_); 
 		if (!async_data_apps_quicker.id_is_ok(id)) return output;
 
 		return calls.reqMktData(id, symbol_, true);
@@ -362,19 +357,21 @@ public class async_data_quicker extends parent_static
 		update_db(id_, symbol_, vals);
 	}
 		
-	private static void update_db(int id_, String symbol_, HashMap<String, String> vals_) { db_ib.async_data.update_quick(async_data_apps_quicker.get_source(), symbol_, vals_); }
+	private static void update_db(int id_, String symbol_, HashMap<String, String> vals_) { db_ib.async_data.update(async_data_apps_quicker.get_source(), symbol_, vals_); }
 	
 	private static HashMap<String, String> start_db_vals(String symbol_, HashMap<String, String> vals_)
 	{
 		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_); 
 		
+		String source = async_data_apps_quicker.get_source();
+		
 		if (async_data_apps_quicker.includes_time_elapsed())
 		{
 			String val = dates.seconds_to_time((int)get_elapsed(async_data_apps_quicker.get_source(), symbol_, null));
-			if (strings.is_ok(val)) vals.put(db_ib.async_data.get_col(db_ib.async_data.TIME_ELAPSED), val);				
+			if (strings.is_ok(val)) vals.put(db_ib.common.get_col(source, db_ib.async_data.TIME_ELAPSED), val);				
 		}
 				
-		if (async_data_apps_quicker.includes_time()) vals.put(db_ib.async_data.get_col(db_ib.async_data.TIME), ib.common.get_current_time());
+		if (async_data_apps_quicker.includes_time()) vals.put(db_ib.common.get_col(source, db_ib.async_data.TIME), ib.common.get_current_time());
 	
 		return vals;
 	}
@@ -415,7 +412,7 @@ public class async_data_quicker extends parent_static
 		int val = (int)val_;			
 		
 		boolean halted = data.is_halted(val);
-		boolean halted_db = db_ib.async_data.is_halted(source, symbol_, true);
+		boolean halted_db = db_ib.async_data.is_halted(source, symbol_);
 			
 		if (async_data_apps_quicker.includes_halted_tot() && (halted && !halted_db)) db_ib.async_data.update_halted_tot(source, symbol_, true);		
 		
@@ -428,17 +425,17 @@ public class async_data_quicker extends parent_static
 
 	private static void populate_cols()
 	{
-		_cols.put(PRICE_IB, db_ib.async_data.get_col(db_ib.async_data.PRICE));
-		_cols.put(OPEN_IB, db_ib.async_data.get_col(db_ib.async_data.OPEN));
-		_cols.put(CLOSE_IB, db_ib.async_data.get_col(db_ib.async_data.CLOSE));
-		_cols.put(LOW_IB, db_ib.async_data.get_col(db_ib.async_data.LOW));
-		_cols.put(HIGH_IB, db_ib.async_data.get_col(db_ib.async_data.HIGH));
-		_cols.put(ASK_IB, db_ib.async_data.get_col(db_ib.async_data.ASK));
-		_cols.put(BID_IB, db_ib.async_data.get_col(db_ib.async_data.BID));
-		_cols.put(HALTED_IB, db_ib.async_data.get_col(db_ib.async_data.HALTED));
-		_cols.put(VOLUME_IB, db_ib.async_data.get_col(db_ib.async_data.VOLUME));
-		_cols.put(SIZE_IB, db_ib.async_data.get_col(db_ib.async_data.SIZE));
-		_cols.put(ASK_SIZE_IB, db_ib.async_data.get_col(db_ib.async_data.ASK_SIZE));
-		_cols.put(BID_SIZE_IB, db_ib.async_data.get_col(db_ib.async_data.BID_SIZE));
+		_cols.put(PRICE_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.PRICE));
+		_cols.put(OPEN_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.OPEN));
+		_cols.put(CLOSE_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.CLOSE));
+		_cols.put(LOW_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.LOW));
+		_cols.put(HIGH_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.HIGH));
+		_cols.put(ASK_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.ASK));
+		_cols.put(BID_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.BID));
+		_cols.put(HALTED_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.HALTED));
+		_cols.put(VOLUME_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.VOLUME));
+		_cols.put(SIZE_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.SIZE));
+		_cols.put(ASK_SIZE_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.ASK_SIZE));
+		_cols.put(BID_SIZE_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.BID_SIZE));
 	}
 }

@@ -13,6 +13,8 @@ public abstract class remote
 {
 	public static final String _ID = "remote";
 	
+	public static final String DB_SOURCE = db_ib.remote.SOURCE;
+
 	public static final String REQUEST_OK = remote_request.REQUEST_OK;
 	public static final String REQUEST_ERROR = remote_request.REQUEST_ERROR;
 	public static final String REQUEST_IGNORED = remote_request.REQUEST_IGNORED;
@@ -55,11 +57,12 @@ public abstract class remote
 	
 	static String _temp_type_error = null;
 
-	private static boolean _is_quick = DEFAULT_IS_QUICK;
 	private static boolean _logs_to_file = DEFAULT_LOGS_TO_FILE;
 	private static String _path_logs = DEFAULT_PATH_LOGS;
 	
-	public static boolean is_quick() { return _is_quick; }
+	public static boolean is_quick() { return db_ib.common.is_quick(DB_SOURCE); }
+	
+	public static void is_quick(boolean is_quick_) { db_ib.common.is_quick(DB_SOURCE, is_quick_); }
 
 	public static boolean logs_to_file() { return _logs_to_file; }
 	
@@ -152,53 +155,53 @@ public abstract class remote
 
 	public static double get_investment(double perc_) { return get_investment(perc_, false); }
 
-	public static int get_order_id_main(int request_) { return db_ib.remote.get_order_id(request_, _is_quick); }
+	public static int get_order_id_main(int request_) { return db_ib.remote.get_order_id(request_, is_quick()); }
 
-	public static int get_request(int order_id_main_) { return db_ib.remote.get_request(order_id_main_, _is_quick); }
+	public static int get_request(int order_id_main_) { return db_ib.remote.get_request(order_id_main_, is_quick()); }
 
-	public static int get_request(String symbol_) { return db_ib.remote.get_request(symbol_, _is_quick); }
+	public static int get_request(String symbol_) { return db_ib.remote.get_request(symbol_, is_quick()); }
 
-	public static String get_symbol(int request_) { return db_ib.remote.get_symbol(request_, _is_quick); }
+	public static String get_symbol(int request_) { return db_ib.remote.get_symbol(request_, is_quick()); }
 
-	public static String get_symbol_order_id(int order_id_main_) { return db_ib.remote.get_symbol_order_id(order_id_main_, _is_quick); }
+	public static String get_symbol_order_id(int order_id_main_) { return db_ib.remote.get_symbol_order_id(order_id_main_, is_quick()); }
 	
-	public static HashMap<String, String> get_vals(int request_) { return db_ib.remote.get_vals(request_, _is_quick); }
+	public static HashMap<String, String> get_vals(int request_) { return db_ib.remote.get_vals(request_, is_quick()); }
 	
-	public static HashMap<String, String> get_vals_order_id(int order_id_main_) { return db_ib.remote.get_vals_order_id(order_id_main_, _is_quick); }
+	public static HashMap<String, String> get_vals_order_id(int order_id_main_) { return db_ib.remote.get_vals_order_id(order_id_main_, is_quick()); }
 
-	public static int get_request(HashMap<String, String> vals_) { return (int)db_ib.remote.get_val(db_ib.remote.REQUEST, vals_, _is_quick); }
+	public static int get_request(HashMap<String, String> vals_) { return (int)db_ib.remote.get_val(db_ib.remote.REQUEST, vals_, is_quick()); }
 
-	public static int get_order_id_main(HashMap<String, String> vals_) { return (int)db_ib.remote.get_val(db_ib.remote.ORDER_ID_MAIN, vals_, _is_quick); }
+	public static int get_order_id_main(HashMap<String, String> vals_) { return (int)db_ib.remote.get_val(db_ib.remote.ORDER_ID_MAIN, vals_, is_quick()); }
 
-	public static String get_status(HashMap<String, String> vals_) { return (String)db_ib.remote.get_val(db_ib.remote.STATUS, vals_, _is_quick); }
+	public static String get_status(HashMap<String, String> vals_) { return (String)db_ib.remote.get_val(db_ib.remote.STATUS, vals_, is_quick()); }
 	
-	public static String get_status2(HashMap<String, String> vals_) { return (String)db_ib.remote.get_val(db_ib.remote.STATUS2, vals_, _is_quick); }
+	public static String get_status2(HashMap<String, String> vals_) { return (String)db_ib.remote.get_val(db_ib.remote.STATUS2, vals_, is_quick()); }
 
-	public static String get_type(HashMap<String, String> vals_) { return (String)db_ib.remote.get_val(db_ib.remote.TYPE_ORDER, vals_, _is_quick); }
+	public static String get_type(HashMap<String, String> vals_) { return (String)db_ib.remote.get_val(db_ib.remote.TYPE_ORDER, vals_, is_quick()); }
 
-	public static String get_symbol(HashMap<String, String> vals_) { return (String)db_ib.remote.get_val(db_ib.remote.SYMBOL, vals_, _is_quick); }
+	public static String get_symbol(HashMap<String, String> vals_) { return (String)db_ib.remote.get_val(db_ib.remote.SYMBOL, vals_, is_quick()); }
 
-	public static String get_type_order(int request_) { return db_ib.remote.get_type_order(request_, _is_quick); }
+	public static String get_type_order(int request_) { return db_ib.remote.get_type_order(request_, is_quick()); }
 
-	public static boolean get_is_market(HashMap<String, String> vals_) { return (boolean)db_ib.remote.get_val(db_ib.remote.IS_MARKET, vals_, _is_quick); }
+	public static boolean get_is_market(HashMap<String, String> vals_) { return (boolean)db_ib.remote.get_val(db_ib.remote.IS_MARKET, vals_, is_quick()); }
 
-	public static double get_stop(int request_) { return (double)db_ib.remote.get_stop(request_, _is_quick); }
+	public static double get_stop(int request_) { return (double)db_ib.remote.get_stop(request_, is_quick()); }
 
-	public static double get_start(int request_) { return (double)db_ib.remote.get_start(request_, _is_quick); }
+	public static double get_start(int request_) { return (double)db_ib.remote.get_start(request_, is_quick()); }
 
-	public static double get_stop(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.STOP, vals_, _is_quick); }
+	public static double get_stop(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.STOP, vals_, is_quick()); }
 
-	public static double get_start(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.START, vals_, _is_quick); }
+	public static double get_start(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.START, vals_, is_quick()); }
 
-	public static double get_start2(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.START2, vals_, _is_quick); }
+	public static double get_start2(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.START2, vals_, is_quick()); }
 
-	public static double get_quantity(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.QUANTITY, vals_, _is_quick); }
+	public static double get_quantity(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.QUANTITY, vals_, is_quick()); }
 
-	public static double get_perc_money(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.PERC_MONEY, vals_, _is_quick); }
+	public static double get_perc_money(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.PERC_MONEY, vals_, is_quick()); }
 
-	public static double get_price(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.PRICE, vals_, _is_quick); }
+	public static double get_price(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(db_ib.remote.PRICE, vals_, is_quick()); }
 
-	public static ArrayList<HashMap<String, String>> get_all_errors() { return db_ib.remote.get_all_errors(_is_quick); }
+	public static ArrayList<HashMap<String, String>> get_all_errors() { return db_ib.remote.get_all_errors(is_quick()); }
 
 	static boolean order_was_updated(HashMap<String, String> vals_)
 	{
@@ -232,7 +235,7 @@ public abstract class remote
 		
 		String message = get_error_message(type, vals_);
 		
-		if (request_ > common.WRONG_REQUEST) db_ib.remote.update_error(request_, message, type_order_, is_place(type_order_), _is_quick); 
+		if (request_ > common.WRONG_REQUEST) db_ib.remote.update_error(request_, message, type_order_, is_place(type_order_), is_quick()); 
 	
 		errors.manage(type, message);
 	}
@@ -241,7 +244,7 @@ public abstract class remote
 	{
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
-		vals.put(db_ib.remote.get_col(db_ib.remote.QUANTITY), quantity_);
+		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.QUANTITY), quantity_);
 		
 		update_error_place(request_, symbol_, type_, stop_, start_, start2_, is_request_, vals);
 	}
@@ -250,8 +253,8 @@ public abstract class remote
 	{
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
-		vals.put(db_ib.remote.get_col(db_ib.remote.PRICE), price_);
-		vals.put(db_ib.remote.get_col(db_ib.remote.PERC_MONEY), perc_);
+		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.PRICE), price_);
+		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.PERC_MONEY), perc_);
 		
 		update_error_place(request_, symbol_, type_, stop_, start_, start2_, is_request_, vals);
 	}
@@ -262,11 +265,11 @@ public abstract class remote
 
 		String type = strings.to_string(type_);
 		
-		vals.put(db_ib.remote.get_col(db_ib.remote.SYMBOL), strings.to_string(symbol_));
-		vals.put(db_ib.remote.get_col(db_ib.remote.TYPE_ORDER), db_ib.orders.get_key_from_type_order(type));
+		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.SYMBOL), strings.to_string(symbol_));
+		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.TYPE_ORDER), db_ib.orders.get_key_from_type_order(type));
 		vals.put("val", val_);
 
-		if (order_id_ > common.WRONG_ORDER_ID) vals.put(db_ib.remote.get_col(db_ib.remote.ORDER_ID_MAIN), order_id_);
+		if (order_id_ > common.WRONG_ORDER_ID) vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_MAIN), order_id_);
 		
 		update_error(request_, (is_request_ ? remote_request.ERROR_UPDATE : remote_execute.ERROR_UPDATE), vals, type);		
 	}
@@ -311,11 +314,11 @@ public abstract class remote
 
 		String type = strings.to_string(type_);
 		
-		vals.put(db_ib.remote.get_col(db_ib.remote.SYMBOL), strings.to_string(symbol_));
-		vals.put(db_ib.remote.get_col(db_ib.remote.TYPE_ORDER), db_ib.orders.get_key_from_type_order(type));
-		vals.put(db_ib.remote.get_col(db_ib.remote.STOP), stop_);
-		vals.put(db_ib.remote.get_col(db_ib.remote.START), start_);
-		vals.put(db_ib.remote.get_col(db_ib.remote.START2), start2_);
+		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.SYMBOL), strings.to_string(symbol_));
+		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.TYPE_ORDER), db_ib.orders.get_key_from_type_order(type));
+		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.STOP), stop_);
+		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.START), start_);
+		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.START2), start2_);
 		
 		update_error(request_, (is_request_ ? remote_request.ERROR_PLACE : remote_execute.ERROR_PLACE), vals, type);		
 	}

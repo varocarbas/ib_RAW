@@ -12,6 +12,8 @@ import accessory.strings;
 
 public abstract class market 
 {	
+	public static final String DB_SOURCE = db_ib.market.SOURCE;
+
 	public static final LocalTime TIME_OPEN = dates.time_from_string("09:30:00");
 	public static final LocalTime TIME_CLOSE = dates.time_from_string("16:00:00");
 	public static final LocalTime TIME_CLOSE_EARLY = dates.time_from_string("13:00:00");
@@ -29,6 +31,10 @@ public abstract class market
 	private static String _path_market_early_closes = paths.build(new String[] { paths.get_dir(paths.DIR_INFO), ("market_early_closes" + paths.EXTENSION_TEXT) }, true);
 	//---
 	
+	public static boolean is_quick() { return db_ib.common.is_quick(DB_SOURCE); }
+	
+	public static void is_quick(boolean is_quick_) { db_ib.common.is_quick(DB_SOURCE, is_quick_); }
+
 	public static boolean logs_to_screen() { return async_data_market.logs_to_screen(); }
 
 	public static void logs_to_screen(boolean logs_to_screen_) { async_data_market.logs_to_screen(logs_to_screen_); }

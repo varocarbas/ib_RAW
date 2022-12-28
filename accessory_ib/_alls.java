@@ -28,6 +28,7 @@ public class _alls extends parent_first
 	public static String[] EXTERNAL_ORDERS_STATUSES = null;
 
 	public static String[] DB_SOURCES = null;
+	public static String[] DB_SOURCES_NEW = null;
 	public static String[] DB_SOURCES_USER = null;
 	public static String[] DB_SOURCES_ENABLED = null;
 	public static String[] DB_SOURCES_ELAPSED = null;
@@ -59,6 +60,7 @@ public class _alls extends parent_first
 		EXTERNAL_ORDERS_STATUSES = external_ib.orders.populate_all_statuses();
 
 		DB_SOURCES = db_ib.common.populate_all_sources();
+		DB_SOURCES_NEW = db_ib.common.populate_all_sources_new();
 		DB_SOURCES_USER = db_ib.common.populate_all_sources_user();
 		DB_SOURCES_ENABLED = db_ib.common.populate_all_sources_enabled();
 		DB_SOURCES_ELAPSED = db_ib.common.populate_all_sources_elapsed();

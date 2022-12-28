@@ -1,6 +1,5 @@
 package ib;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.ib.client.EClientSocket;
@@ -8,10 +7,8 @@ import com.ib.client.EReader;
 import com.ib.client.EReaderSignal;
 
 import accessory._keys;
-import accessory.arrays;
 import accessory.misc;
 import accessory.numbers;
-import accessory.os;
 import accessory.parent_static;
 import accessory.strings;
 import accessory_ib.errors;
@@ -56,7 +53,7 @@ public abstract class conn extends parent_static
 	private static final int PORT_GATEWAY_REAL = DEFAULT_PORT_GATEWAY_REAL;
 	private static final int PORT_GATEWAY_PAPER = DEFAULT_PORT_GATEWAY_PAPER;
 
-	private static volatile boolean _connected = false;
+	private static volatile boolean _is_connected = false;
 	private static volatile boolean _first_conn = false;
 
 	private static HashMap<String, String> _types_keys = null;
@@ -87,7 +84,7 @@ public abstract class conn extends parent_static
 	
 	public static boolean start(int id_, String type_)
 	{
-		_connected = false;
+		update_is_connected(false);
 		
 		String error = null;
 
@@ -115,32 +112,28 @@ public abstract class conn extends parent_static
 	public static boolean connect()
 	{	
 		if (_wrapper == null || _client == null || !id_is_ok() || !type_is_ok() || !port_is_ok()) return start();
-		if (_connected) return true;
+		if (_is_connected) return true;
 		
-		_connected = false;
+		update_is_connected(false);
 		
-		while (!_connected)
+		while (!_is_connected)
 		{
-			if (!ib_is_running()) errors.manage(ERROR_IB);
-			else connect_internal();	
+			connect_internal();	
 
-			if (_connected) break;
+			if (_is_connected) break;
 			if (!_first_conn) misc.pause_secs(1);
 			
 			update_port();
 		}
 		
-		return _connected;
+		if (_is_connected) apps.update_is_connected(true);
+		
+		return _is_connected;
 	}
 
 	public static void end() { disconnect(); }
 
-	public static void disconnect() 
-	{			
-		calls.eDisconnect(); 
-		
-		_connected = false;
-	}
+	public static void disconnect() { calls.eDisconnect(); }
 
 	public static boolean id_is_ok() { return id_is_ok(_id); }
 
@@ -173,24 +166,6 @@ public abstract class conn extends parent_static
 		return message;	
 	}
 	
-	public static boolean ib_is_running() { return ib_is_running(get_conn_type()); }
-	
-	public static boolean ib_is_running(String type_)
-	{	
-		boolean output = false;
-		
-		String type = check_type(type_);
-		if (!strings.is_ok(type)) return output;
-		
-		boolean is_gateway = type_is_gateway(type);
-		boolean is_real = type_is_real(type);
-		
-		if (os.is_linux()) output = ib_is_running_linux(is_gateway, is_real);
-		else output = true;
-		
-		return output;
-	}
-	
 	static boolean type_is_real() { return type_is_real(get_conn_type()); }
 	
 	static boolean type_is_real(String type_) { return (strings.matches_any(type_, new String[] { TYPE_TWS_REAL, TYPE_GATEWAY_REAL }, false)); }
@@ -198,38 +173,6 @@ public abstract class conn extends parent_static
 	private static boolean type_is_gateway() { return type_is_gateway(get_conn_type()); }
 	
 	private static boolean type_is_gateway(String type_) { return (strings.matches_any(type_, new String[] { TYPE_GATEWAY_PAPER, TYPE_GATEWAY_REAL }, false)); }
-	
-	private static boolean ib_is_running_linux(boolean is_gateway_, boolean is_real_)
-	{
-		boolean output = false;
-
-		ArrayList<String> keywords = new ArrayList<String>();
-		
-		keywords.add("twslaunch");
-		if (is_gateway_) keywords.add("ibgateway");
-		else keywords.add("tws");
-		
-		output = os.app_is_running(null, arrays.to_array(keywords), null);
-	
-		if (output)
-		{
-			String[] keywords2 = null;
-			String[] keywords_ignore = null;
-	
-			if (is_gateway_) keywords2 = new String[] { "ib gateway" };
-			else
-			{
-				String account = basic.get_account_ib();
-			
-				keywords2 = new String[] { (strings.is_ok(account) ? account + " " : "") + "interactive brokers" + (is_real_ ? "" : " (simulated trading)") };
-				keywords_ignore = (is_real_ ? new String[] { "login", "simulated trading" } : new String[] { "login" });				
-			}
-			
-			output = arrays.is_ok(os.get_running_windows(keywords2, keywords_ignore, false));
-		}
-		
-		return output;
-	}
 	
 	private static void update_port() { update_port(get_conn_type()); }
 	
@@ -283,7 +226,8 @@ public abstract class conn extends parent_static
 	{
 		while (_client.isConnected()) 
 		{
-			_connected = true;
+			update_is_connected(true);
+			
 			_first_conn = true;
 			
 			signal_.waitForSignal();
@@ -296,7 +240,7 @@ public abstract class conn extends parent_static
 			}
 		}
 
-		_connected = false;
+		update_is_connected(false);
 	}
 	
 	private static void populate_type_keys()
@@ -318,5 +262,12 @@ public abstract class conn extends parent_static
 		else if (type_.equals(TYPE_GATEWAY_PAPER)) port = PORT_GATEWAY_PAPER;
 
 		return port;
+	}
+	
+	private static void update_is_connected(boolean is_connected_)
+	{
+		_is_connected = is_connected_;
+		
+		apps.update_is_connected(is_connected_);
 	}
 }

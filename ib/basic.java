@@ -168,7 +168,7 @@ public abstract class basic extends parent_static
 	public static String get_currency() 
 	{
 		String currency = contracts.get_currency();
-		
+
 		db_ib.basic.update_currency(currency); 
 		
 		return currency;

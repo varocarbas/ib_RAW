@@ -276,6 +276,7 @@ public class _ini_db extends parent_ini_db
 		info.put(apps.USER, common.get_field_user());
 		info.put(apps.CONN_ID, db_common.get_field_tiny(false));
 		info.put(apps.CONN_TYPE, db_common.get_field_string(conn.get_max_length_type_key()));
+		info.put(apps.CONN_IS_ON, db_common.get_field_boolean(false));
 		info.put(apps.STATUS, common.get_field_status_type(apps.get_key_from_status(ib.apps.DEFAULT_STATUS)));
 		info.put(apps.ERROR, db_common.get_field_error());
 		info.put(apps.ADDITIONAL, db_common.get_field_string(db_ib.common.MAX_SIZE_ADDITIONAL));

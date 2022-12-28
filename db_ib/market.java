@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
+import accessory.db_common;
 import accessory_ib.logs;
 
 public abstract class market 
@@ -27,6 +28,12 @@ public abstract class market
 	public static final String HALTED_TOT = common.FIELD_HALTED_TOT;
 	public static final String ENABLED = common.FIELD_ENABLED;
 
+	static String[] _fields = null;
+	static String[] _cols = null;
+	static HashMap<String, String> _fields_cols = null;
+	
+	static boolean _is_quick = db_common.DEFAULT_IS_QUICK;
+
 	public static void __truncate() { common.__truncate(SOURCE); }
 	
 	public static void __backup() { common.__backup(SOURCE); }	
@@ -40,17 +47,15 @@ public abstract class market
 		for (String symbol: symbols_)
 		{
 			if (async_data.exists(SOURCE, symbol)) continue;
-			if (!async_data.insert(SOURCE, symbol)) return false;
+			if (!async_data.insert_new(SOURCE, symbol)) return false;
 			
 			logs.update_screen(symbol, true);
 		}
 		
 		return true; 
 	}
-	
-	public static HashMap<String, String> get_vals(String symbol_, String[] field_cols_, boolean is_quick_) { return common.get_vals(SOURCE, field_cols_, common.get_where_symbol(SOURCE, symbol_), is_quick_); }
-	
-	public static String[] get_fields() { return new String[] { SYMBOL, PRICE, SIZE, TIME, OPEN, CLOSE, LOW, HIGH, VOLUME, ASK, ASK_SIZE, BID, BID_SIZE, HALTED, HALTED_TOT, ENABLED }; }
 
 	public static String get_where_enabled() { return common.get_where(SOURCE, ENABLED, "1"); }
+	
+	static void populate_fields() { _fields = new String[] { SYMBOL, PRICE, SIZE, TIME, OPEN, CLOSE, LOW, HIGH, VOLUME, ASK, ASK_SIZE, BID, BID_SIZE, HALTED, HALTED_TOT, ENABLED }; }
 }

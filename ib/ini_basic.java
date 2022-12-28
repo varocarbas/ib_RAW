@@ -45,14 +45,14 @@ public abstract class ini_basic
 		if (!strings.is_ok(account_ib)) account_ib = strings.DEFAULT;
 		
 		String current = get_account_ib(true);
-	
+		
 		if (strings.is_ok(account_ib) && !account_ib.equals(current))
 		{
 			account_ib = encrypt_account_ib(account_ib);
-			
-			db_ib.basic.update_account_ib(account_ib);
+
+			db_ib.basic.update_account_ib(account_ib); 
 		}
-	
+
 		_account_ib = get_account_ib(false);
 	}
 

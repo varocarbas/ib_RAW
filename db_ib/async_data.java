@@ -6,7 +6,6 @@ import java.util.HashMap;
 import accessory.arrays;
 import accessory.dates;
 import accessory.db;
-import accessory.db_common;
 import accessory.strings;
 import external_ib.data;
 
@@ -45,9 +44,7 @@ public abstract class async_data
 	public static final String FLU2_MIN = common.FIELD_FLU2_MIN;
 	public static final String FLU2_MAX = common.FIELD_FLU2_MAX;
 	public static final String VAR_TOT = common.FIELD_VAR_TOT;
-	public static final String FLUS_PRICE = common.FIELD_FLUS_PRICE;
-	
-	private static HashMap<String, String> _cols = new HashMap<String, String>();
+	public static final String FLUS_PRICE = common.FIELD_FLUS_PRICE;	
 
 	public static boolean contains_active(String source_, int max_mins_inactive_) { return (common.get_count(source_, get_where_active(source_, max_mins_inactive_)) > 0); }
 
@@ -68,185 +65,75 @@ public abstract class async_data
 		if (max_mins_inactive_ > 0) where = get_where_active(source_, max_mins_inactive_);
 		if (strings.is_ok(where_)) where = (strings.is_ok(where) ? common.join_wheres(where, where_) : where_);
 		
-		return common.get_all_strings(source_, (is_quick_ ? get_col(SYMBOL) : SYMBOL), where, is_quick_); 
+		return common.get_all_strings(source_, SYMBOL, where); 
 	}
 
 	public static boolean symbol_is_active(String source_, String symbol_, int max_mins_inactive_) { return common.exists(source_, common.join_wheres(common.get_where_symbol(source_, symbol_), get_where_active(source_, max_mins_inactive_))); } 
 
 	public static String get_where_active(String source_, int max_mins_inactive_) { return common.get_where_timestamp(source_, max_mins_inactive_); }
 
-	public static boolean is_halted(String source_, String symbol_, boolean is_quick_)
-	{
-		int temp = common.get_int(source_, (is_quick_ ? get_col(HALTED) : HALTED), common.get_where_symbol(source_, symbol_), is_quick_);
+	public static boolean is_halted(String source_, String symbol_) { return data.is_halted(common.get_int(source_, HALTED, common.get_where_symbol(source_, symbol_), data.WRONG_HALTED)); }
 	
-		return data.is_halted(temp);
-	}
+	public static int get_halted_tot(String source_, String symbol_, boolean is_quick_) { return common.get_int(source_, HALTED_TOT, common.get_where_symbol(source_, symbol_)); }
 	
-	public static int get_halted_tot(String source_, String symbol_, boolean is_quick_) 
-	{ 
-		int output = common.get_int(source_, (is_quick_ ? get_col(HALTED_TOT) : HALTED_TOT), common.get_where_symbol(source_, symbol_), is_quick_); 
-	
-		return (output == db.WRONG_INT ? 0 : output);
-	}
-	
-	public static long get_elapsed_ini(String source_, String symbol_, boolean is_quick_) 
-	{ 
-		long output = common.get_long(source_, (is_quick_ ? get_col(ELAPSED_INI) : ELAPSED_INI), common.get_where_symbol(source_, symbol_), is_quick_); 
-	
-		return (output == db.WRONG_LONG ? dates.ELAPSED_START : output);
-	}
+	public static long get_elapsed_ini(String source_, String symbol_, boolean is_quick_) { return common.get_long(source_, ELAPSED_INI, common.get_where_symbol(source_, symbol_), dates.ELAPSED_START); }
 
-	public static boolean update(String source_, Object vals_, String symbol_, boolean is_quick_) { return common.update(source_, vals_, symbol_, is_quick_); }
+	public static boolean update(String source_, Object vals_, String symbol_, boolean is_quick_) { return common.update(source_, vals_, common.get_where_symbol(source_, symbol_)); }
 
 	public static boolean update_halted_tot(String source_, String symbol_, boolean is_quick_) 
 	{ 
-		boolean output = false;
-		
 		int val = get_halted_tot(source_, symbol_, is_quick_);
 		
 		if (val < 0) val = 0;
 		val++;
 		
-		if (is_quick_) output = update_quick(source_, symbol_, get_col(HALTED_TOT), Integer.toString(val));
-		else output = update(source_, symbol_, HALTED_TOT, val);
-		
-		return output;
+		return update(source_, symbol_, HALTED_TOT, val, true);
 	}
 
-	public static boolean update(String source_, String symbol_, String field_col_, Object val_, boolean is_quick_) { return (is_quick_ ? update_quick(source_, symbol_, field_col_, db.adapt_input(val_)) : update(source_, symbol_, field_col_, val_)); } 
+	public static boolean update(String source_, String symbol_, String field_col_, Object val_, boolean is_field_) { return update(source_, symbol_, common.add_to_vals(source_, field_col_, common.get_input(source_, val_), null, is_field_)); }
 
-	public static boolean update(String source_, String symbol_, String field_, Object val_) 
-	{ 
-		HashMap<String, Object> vals = new HashMap<String, Object>();
-		vals.put(field_, val_);
-		
-		return update(source_, symbol_, vals); 
-	}
+	public static boolean update(String source_, String symbol_, Object vals_) { return common.update(source_, vals_, common.get_where_symbol(source_, symbol_)); }
 
-	public static <x> boolean update(String source_, String symbol_, HashMap<String, x> vals_) { return common.update(source_, vals_, common.get_where_symbol(source_, symbol_)); }
-
-	public static boolean update_quick(String source_, String symbol_, String col_, String val_) 
-	{ 
-		HashMap<String, String> vals = new HashMap<String, String>();
-		vals.put(col_, val_);
-		
-		return update_quick(source_, symbol_, vals); 
-	}
+	public static boolean update_timestamp(String source_, String symbol_, boolean is_quick_) { return common.update(source_, accessory.db.FIELD_TIMESTAMP, dates.get_now_string(ib.common.FORMAT_TIMESTAMP, 0), common.get_where_symbol(source_, symbol_)); }
 	
-	public static boolean update_quick(String source_, String symbol_, HashMap<String, String> vals_) { return common.update_quick(source_, vals_, common.get_where_symbol(source_, symbol_)); }
-
-	public static boolean update_timestamp(String source_, String symbol_, boolean is_quick_) { return common.update(source_, (is_quick_ ? db_common.get_col(source_, accessory.db.FIELD_TIMESTAMP) : accessory.db.FIELD_TIMESTAMP), dates.get_now_string(ib.common.FORMAT_TIMESTAMP, 0), common.get_where_symbol(source_, symbol_), is_quick_); }
-	
-	public static boolean insert(String source_, String symbol_) { return common.insert(source_, get_default_vals(source_, symbol_)); }
-
-	public static boolean insert_quick(String source_, String symbol_) { return common.insert_quick(source_, get_default_vals_quick(source_, symbol_)); }
+	public static boolean insert_new(String source_, String symbol_) { return common.insert(source_, get_default_vals_new(source_, symbol_)); }
 
 	public static boolean delete(String source_, String symbol_) { return common.delete(source_, common.get_where_symbol(source_, symbol_)); }
 
-	public static HashMap<String, Object> get_default_vals(String source_, String symbol_) 
+	public static Object get_default_vals_new(String source_, String symbol_) 
 	{ 
-		HashMap<String, Object> vals = new HashMap<String, Object>(); 
-		vals.put(SYMBOL, symbol_);
+		Object vals = common.add_to_vals(source_, SYMBOL, symbol_, null); 
 		
-		if (arrays.value_exists(common.get_all_sources_elapsed(), source_)) vals.put(ELAPSED_INI, dates.start_elapsed());
+		if (arrays.value_exists(common.get_all_sources_elapsed(), source_)) vals = common.add_to_vals(source_, ELAPSED_INI, dates.start_elapsed(), vals);
 		
 		return vals;
 	}
-	
-	public static HashMap<String, String> get_default_vals_quick(String source_, String symbol_) 
-	{ 
-		HashMap<String, String> vals = new HashMap<String, String>();
-		vals.put(get_col(SYMBOL), symbol_);
 
-		if (arrays.value_exists(common.get_all_sources_elapsed(), source_)) vals.put(get_col(ELAPSED_INI), Long.toString(dates.start_elapsed()));
+	public static double get_in_vals_number(String source_, String field_col_, Object vals_, boolean is_field_) { return get_vals_number(source_, field_col_, vals_, is_field_, false); } 
 
-		return vals;
-	}
-
-	public static double get_in_vals_number(String field_, Object vals_, boolean is_quick_) { return get_vals_number(field_, vals_, false, is_quick_); } 
-
-	public static double get_out_vals_number(String field_, HashMap<String, String> vals_, boolean is_quick_) { return get_vals_number(field_, vals_, true, is_quick_); } 
-	
-	@SuppressWarnings("unchecked")
-	public static Object add_to_vals(String field_, Object val_, Object vals_, boolean is_quick_) 
-	{ 
-		Object output = null;
-		
-		if (is_quick_)
-		{
-			HashMap<String, String> vals = (HashMap<String, String>)arrays.get_new_hashmap_xx((HashMap<String, String>)vals_);	
-			vals.put(get_col(field_), accessory.db.adapt_input(val_));
-		
-			output = vals;
-		}
-		else
-		{
-			HashMap<String, Object> vals = (HashMap<String, Object>)arrays.get_new_hashmap_xy((HashMap<String, Object>)vals_);
-			vals.put(field_, val_);
-			
-			output = vals;
-		}
-		
-		return output;
-	}
-
-	public static String get_col(String field_) 
-	{ 
-		if (_cols.size() == 0) populate_cols();
-		
-		return (_cols.containsKey(field_) ? _cols.get(field_) : strings.DEFAULT);
-	}
+	public static double get_out_vals_number(String source_, String field_col_, HashMap<String, String> vals_, boolean is_field_) { return get_vals_number(source_, field_col_, vals_, is_field_, true); } 
 
 	@SuppressWarnings("unchecked")
-	private static double get_vals_number(String field_, Object vals_, boolean is_out_, boolean is_quick_) 
+	private static double get_vals_number(String source_, String field_col_, Object vals_, boolean is_field_, boolean is_out_) 
 	{ 
 		double output = ib.common.WRONG_VALUE;
-		if (!arrays.is_ok(vals_)) return output;
+		if (!common.vals_are_ok(source_, vals_)) return output;
 		
-		String key = (is_quick_ ? get_col(field_) : field_);
+		boolean is_quick = common.is_quick(source_);
 		
-		if (is_out_ || is_quick_) 
+		String field_col = common.get_field_col(source_, field_col_, is_field_);
+		
+		if (is_out_ || is_quick) 
 		{
 			HashMap<String, String> vals = arrays.get_new_hashmap_xx((HashMap<String, String>)vals_);			
-			if (vals.containsKey(key)) output = Double.parseDouble(vals.get(key));
+			if (vals.containsKey(field_col)) output = Double.parseDouble(vals.get(field_col));
 		}
 		else
 		{
 			HashMap<String, Object> vals = arrays.get_new_hashmap_xy((HashMap<String, Object>)vals_);			
-			if (vals.containsKey(key)) output = (double)vals.get(key);	
+			if (vals.containsKey(field_col)) output = (double)vals.get(field_col);	
 		}
 		
 		return output;
-	}
-
-	private static String[] get_all_fields() 
-	{ 
-		return new String[]
-		{
-			ENABLED, SYMBOL, PRICE, OPEN, CLOSE, LOW, HIGH, ASK, BID, HALTED, VOLUME,
-			SIZE, ASK_SIZE, BID_SIZE, HALTED_TOT, TIME, TIME_ELAPSED, ELAPSED_INI,
-			PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME_INI, VOLUME_MIN, VOLUME_MAX,
-			FLU, FLU2, FLU2_MIN, FLU2_MAX, FLUS_PRICE, VAR_TOT
-		};
-	}
-	
-	private static String[] get_all_sources() { return new String[] { watchlist.SOURCE, trades.SOURCE, market.SOURCE }; }
-
-	private static void populate_cols() 
-	{ 
-		String[] sources = get_all_sources();
-		
-		for (String field: get_all_fields())
-		{			
-			for (String source: sources)
-			{
-				String col = db_common.get_col(source, field);	
-				if (!strings.is_ok(col)) continue;
-				
-				_cols.put(field, col);
-				
-				break;
-			}
-		}
 	}
 }

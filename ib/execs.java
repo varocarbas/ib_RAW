@@ -8,6 +8,8 @@ import external_ib.orders;
 
 public abstract class execs 
 {
+	public static final String DB_SOURCE = db_ib.execs.SOURCE;
+
 	public static final String PRICE = db_ib.execs.PRICE;
 	public static final String QUANTITY = db_ib.execs.QUANTITY;
 	public static final String FEES = db_ib.execs.FEES;
@@ -23,9 +25,9 @@ public abstract class execs
 	
 	private static final String INVESTMENT = "investment";
 	
-	private static boolean _is_quick = DEFAULT_IS_QUICK;
-
-	public static boolean is_quick() { return _is_quick; }
+	public static boolean is_quick() { return db_ib.common.is_quick(DB_SOURCE); }
+	
+	public static void is_quick(boolean is_quick_) { db_ib.common.is_quick(DB_SOURCE, is_quick_); }
 
 	public static boolean is_ok() { return enabled(); }
 
@@ -53,35 +55,35 @@ public abstract class execs
 
 	public static String get_side(boolean is_main_) { return (is_main_ ? SIDE_BOUGHT : SIDE_SOLD); }
 
-	public static String get_symbol(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(db_ib.execs.SYMBOL, vals_, _is_quick); }
+	public static String get_symbol(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(db_ib.execs.SYMBOL, vals_, is_quick()); }
 
-	public static String get_exec_id(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(db_ib.execs.EXEC_ID, vals_, _is_quick); }
+	public static String get_exec_id(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(db_ib.execs.EXEC_ID, vals_, is_quick()); }
 
-	public static int get_order_id(HashMap<String, String> vals_) { return (int)db_ib.execs.get_val(db_ib.execs.ORDER_ID, vals_, _is_quick); }
+	public static int get_order_id(HashMap<String, String> vals_) { return (int)db_ib.execs.get_val(db_ib.execs.ORDER_ID, vals_, is_quick()); }
 
-	public static String get_side(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(db_ib.execs.SIDE, vals_, _is_quick); }
+	public static String get_side(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(db_ib.execs.SIDE, vals_, is_quick()); }
 
-	public static double get_price(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(db_ib.execs.PRICE, vals_, _is_quick); }
+	public static double get_price(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(db_ib.execs.PRICE, vals_, is_quick()); }
 
-	public static double get_quantity(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(db_ib.execs.QUANTITY, vals_, _is_quick); }
+	public static double get_quantity(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(db_ib.execs.QUANTITY, vals_, is_quick()); }
 
-	public static double get_fees(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(db_ib.execs.FEES, vals_, _is_quick); }
+	public static double get_fees(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(db_ib.execs.FEES, vals_, is_quick()); }
 
 	public static boolean side_is_main(String side_) { return get_side(true).equals(side_); }
 
 	public static boolean is_filled(int order_id_main_) { return db_ib.execs.is_filled(order_id_main_); }
 
-	public static boolean is_filled(String symbol_) { return arrays.is_ok(db_ib.execs.get_order_ids_filled(symbol_, _is_quick)); }
+	public static boolean is_filled(String symbol_) { return arrays.is_ok(db_ib.execs.get_order_ids_filled(symbol_, is_quick())); }
 
 	public static boolean is_completed(int order_id_main_) { return db_ib.execs.is_completed(order_id_main_); }
 
-	public static boolean is_completed(String symbol_) { return arrays.is_ok(db_ib.execs.get_order_ids_completed(symbol_, _is_quick)); }
+	public static boolean is_completed(String symbol_) { return arrays.is_ok(db_ib.execs.get_order_ids_completed(symbol_, is_quick())); }
 
-	public static ArrayList<Integer> get_order_ids_filled(String symbol_) { return db_ib.execs.get_order_ids_filled(symbol_, _is_quick); }
+	public static ArrayList<Integer> get_order_ids_filled(String symbol_) { return db_ib.execs.get_order_ids_filled(symbol_, is_quick()); }
 
-	public static ArrayList<Integer> get_order_ids_completed(String symbol_) { return db_ib.execs.get_order_ids_completed(symbol_, _is_quick); }
+	public static ArrayList<Integer> get_order_ids_completed(String symbol_) { return db_ib.execs.get_order_ids_completed(symbol_, is_quick()); }
 
-	public static ArrayList<HashMap<String, String>> get_all_filled() { return db_ib.execs.get_all_filled(_is_quick); }
+	public static ArrayList<HashMap<String, String>> get_all_filled() { return db_ib.execs.get_all_filled(is_quick()); }
 
 	public static double get_start_price(int order_id_main_) { return (db_ib.execs.order_id_exists(order_id_main_, true) ? get_start_end_price(order_id_main_) : common.WRONG_PRICE); }
 

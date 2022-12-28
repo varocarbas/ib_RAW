@@ -338,11 +338,7 @@ public abstract class async_data extends parent_static
 		String source = async_data_apps.get_source(app_);
 		boolean is_quick = async_data_apps.is_quick(app_);
 		
-		if (!db_ib.async_data.exists(source, symbol_)) 
-		{
-			if (is_quick) db_ib.async_data.insert_quick(source, symbol_);
-			else db_ib.async_data.insert(source, symbol_);
-		}
+		if (!db_ib.async_data.exists(source, symbol_)) db_ib.async_data.insert_new(source, symbol_);
 		else if (!db_ib.async_data.is_enabled(source, symbol_)) return id;
 		else db_ib.async_data.update_timestamp(source, symbol_, is_quick);
 
@@ -392,7 +388,7 @@ public abstract class async_data extends parent_static
 		boolean is_quick = async_data_apps.is_quick(app_);
 		
 		boolean halted = data.is_halted(val);
-		boolean halted_db = db_ib.async_data.is_halted(source, symbol_, is_quick);
+		boolean halted_db = db_ib.async_data.is_halted(source, symbol_);
 	
 		if (halted == halted_db) return output;		
 		output = val;
@@ -416,7 +412,7 @@ public abstract class async_data extends parent_static
 	{	
 		int i = get_i(id_);
 		
-		if (is_quick_) _vals_quick[i].put(db_ib.async_data.get_col(field_), Double.toString(val_));
+		if (is_quick_) _vals_quick[i].put(db_ib.common.get_col(async_data_apps.get_source(app_), field_), Double.toString(val_));
 		else if (!is_quick_) _vals[i].put(field_, val_);			
 
 		to_screen_update(app_, id_, app_, false);
@@ -426,7 +422,7 @@ public abstract class async_data extends parent_static
 	{
 		String source = async_data_apps.get_source(app_);
 		
-		Object vals = db_ib.async_data.add_to_vals(field_, val_, null, is_quick_);	
+		Object vals = db_ib.common.add_to_vals(async_data_apps.get_source(app_), field_, val_, null);	
 
 		update_db_common(app_, id_, symbol_, vals, source, is_quick_);
 	}
@@ -441,11 +437,12 @@ public abstract class async_data extends parent_static
 
 	private static void update_db_common(String app_, int id_, String symbol_, Object vals_, String source_, boolean is_quick_)
 	{
-		Object vals = add_time(app_, symbol_, vals_, source_, is_quick_);
+		Object vals = add_time(app_, symbol_, vals_, source_, is_quick_);		
 		
 		if (symbol_is_running(app_, symbol_)) 
 		{
 			db_ib.async_data.update(source_, vals, symbol_, is_quick_);
+			
 			to_screen_update(app_, id_, symbol_, true);
 		}
 	}
@@ -456,17 +453,17 @@ public abstract class async_data extends parent_static
 		
 		if (async_data_apps.includes_time_elapsed(app_))
 		{
-			long ini = db_ib.async_data.get_elapsed_ini(source_, symbol_, is_quick_);			
+			long ini = db_ib.async_data.get_elapsed_ini(source_, symbol_, false);			
 			
-			if (ini <= dates.ELAPSED_START) db_ib.async_data.update_quick(source_, symbol_, db_ib.async_data.get_col(db_ib.async_data.ELAPSED_INI), Long.toString(dates.start_elapsed()));
+			if (ini <= dates.ELAPSED_START) db_ib.async_data.update(source_, symbol_, db_ib.async_data.ELAPSED_INI, dates.start_elapsed(), true);
 			else
 			{
 				String val = dates.seconds_to_time((int)dates.get_elapsed(ini));
-				if (strings.is_ok(val)) vals = db_ib.async_data.add_to_vals(db_ib.async_data.TIME_ELAPSED, val, vals, is_quick_);				
+				if (strings.is_ok(val)) vals = db_ib.common.add_to_vals(source_, db_ib.async_data.TIME_ELAPSED, val, vals);				
 			}
 		}
 				
-		if (async_data_apps.includes_time(app_)) vals = db_ib.async_data.add_to_vals(db_ib.async_data.TIME, ib.common.get_current_time(), vals, is_quick_);
+		if (async_data_apps.includes_time(app_)) vals = db_ib.common.add_to_vals(source_, db_ib.async_data.TIME, ib.common.get_current_time(), vals);
 	
 		return vals;
 	}
@@ -477,7 +474,7 @@ public abstract class async_data extends parent_static
 
 	private static int get_id_i(int i_id_, boolean is_id_) { return (i_id_ + (is_id_ ? 1 : -1) * common_xsync.MIN_REQ_ID_ASYNC); }
 	
-	private static void update_elapsed_ini(String source_, String symbol_, boolean is_quick_) { db_ib.async_data.update(source_, symbol_, (is_quick_ ? db_ib.async_data.get_col(db_ib.async_data.ELAPSED_INI) : db_ib.async_data.ELAPSED_INI), dates.start_elapsed(), is_quick_); }
+	private static void update_elapsed_ini(String source_, String symbol_, boolean is_quick_) { db_ib.async_data.update(source_, symbol_, db_ib.async_data.ELAPSED_INI, dates.start_elapsed(), true); }
 		
 	private static void end_common(String app_, int id_, String symbol_, boolean is_snapshot_, boolean to_screen_)
 	{

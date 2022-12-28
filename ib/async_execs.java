@@ -87,7 +87,7 @@ abstract class async_execs extends parent_static
 
 		if (vals.size() == TARGET_TOT_FIELDS) 
 		{
-			db_ib.execs.update(exec_id_, vals, ib.execs.is_ok());
+			db_ib.execs.update(exec_id_, vals);
 			
 			update_others(vals);
 		

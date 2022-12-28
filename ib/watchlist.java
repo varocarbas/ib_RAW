@@ -8,6 +8,12 @@ import accessory.strings;
 
 public abstract class watchlist extends parent_static
 {
+	public static final String DB_SOURCE = db_ib.watchlist.SOURCE;
+
+	public static boolean is_quick() { return db_ib.common.is_quick(DB_SOURCE); }
+	
+	public static void is_quick(boolean is_quick_) { db_ib.common.is_quick(DB_SOURCE, is_quick_); }
+
 	public static boolean logs_to_screen() { return async_data_watchlist.logs_to_screen(); }
 
 	public static void logs_to_screen(boolean logs_to_screen_) { async_data_watchlist.logs_to_screen(logs_to_screen_); }
