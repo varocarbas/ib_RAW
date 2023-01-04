@@ -41,17 +41,17 @@ public abstract class execs
 
 	public static boolean order_id_exists(int order_id_, boolean is_main_) { return common.exists(SOURCE, get_where_order_id(order_id_, is_main_)); }
 
-	public static ArrayList<Integer> get_order_ids_filled(String symbol_, boolean is_quick_) { return get_order_ids_common(symbol_, true, is_quick_); }
+	public static ArrayList<Integer> get_order_ids_filled(String symbol_) { return get_order_ids_common(symbol_, true); }
 
-	public static ArrayList<Integer> get_order_ids_completed(String symbol_, boolean is_quick_) { return get_order_ids_common(symbol_, false, is_quick_); }
+	public static ArrayList<Integer> get_order_ids_completed(String symbol_) { return get_order_ids_common(symbol_, false); }
 
 	public static boolean is_filled(int order_id_main_) { return is_filled(order_id_main_, true); }
 
 	public static boolean is_completed(int order_id_main_) { return is_completed(order_id_main_, true); }
 
-	public static ArrayList<Integer> get_all_order_ids_main(boolean is_quick_) { return get_all_order_ids_main(null, is_quick_); }
+	public static ArrayList<Integer> get_all_order_ids_main() { return get_all_order_ids_main(null); }
 
-	public static ArrayList<Integer> get_all_order_ids_main(String symbol_, boolean is_quick_) 
+	public static ArrayList<Integer> get_all_order_ids_main(String symbol_) 
 	{ 
 		String where = get_where_side(true);
 		if (strings.is_ok(symbol_)) where = common.join_wheres(where, common.get_where_symbol(SOURCE, symbol_));
@@ -74,13 +74,13 @@ public abstract class execs
 		return false; 
 	}
 
-	public static ArrayList<HashMap<String, String>> get_all_filled(boolean is_quick_) { return get_all_filled(null, is_quick_); }
+	public static ArrayList<HashMap<String, String>> get_all_filled() { return get_all_filled(null); }
 
-	public static ArrayList<HashMap<String, String>> get_all_filled(String symbol_, boolean is_quick_) { return get_all_common(symbol_, true, is_quick_); }
+	public static ArrayList<HashMap<String, String>> get_all_filled(String symbol_) { return get_all_common(symbol_, true); }
 
-	public static ArrayList<HashMap<String, String>> get_all_completed(boolean is_quick_) { return get_all_completed(null, is_quick_); }
+	public static ArrayList<HashMap<String, String>> get_all_completed() { return get_all_completed(null); }
 
-	public static ArrayList<HashMap<String, String>> get_all_completed(String symbol_, boolean is_quick_) { return get_all_common(symbol_, false, is_quick_); }
+	public static ArrayList<HashMap<String, String>> get_all_completed(String symbol_) { return get_all_common(symbol_, false); }
 	
 	public static boolean update(String exec_id_, HashMap<String, Object> vals_) 
 	{
@@ -114,7 +114,7 @@ public abstract class execs
 
 	public static ArrayList<HashMap<String, String>> get_order_ids(String symbol_) { return common.get_all_vals(SOURCE, new String[] { db.FIELD_TIMESTAMP, ORDER_ID, SIDE }, common.get_where_symbol(SOURCE, symbol_)); }
 	
-	public static Object get_val(String field_, HashMap<String, String> vals_, boolean is_quick_)
+	public static Object get_val(String field_, HashMap<String, String> vals_)
 	{
 		Object val = null;
 		
@@ -132,14 +132,12 @@ public abstract class execs
 	private static boolean field_is_decimal(String field_) { return (field_.equals(PRICE) || field_.equals(FEES) || field_.equals(QUANTITY)); }
 	
 	private static boolean field_is_int(String field_) { return (field_.equals(ORDER_ID)); }
-		
-	private static ArrayList<Integer> get_all_order_ids_main() { return get_all_order_ids_main(false); }
 
-	private static ArrayList<HashMap<String, String>> get_all_common(String symbol_, boolean is_filled_, boolean is_quick_)
+	private static ArrayList<HashMap<String, String>> get_all_common(String symbol_, boolean is_filled_)
 	{
 		ArrayList<HashMap<String, String>> output = new ArrayList<HashMap<String, String>>();
 		
-		ArrayList<Integer> ids_main = get_all_order_ids_main(symbol_, is_quick_);
+		ArrayList<Integer> ids_main = get_all_order_ids_main(symbol_);
 		if (!arrays.is_ok(ids_main)) return output;
 		
 		String[] fields = new String[] { SYMBOL, ORDER_ID };
@@ -179,11 +177,11 @@ public abstract class execs
 		return ((is_filled_ && !exists) || (!is_filled_ && exists));
 	}
 
-	private static ArrayList<Integer> get_order_ids_common(String symbol_, boolean is_filled_, boolean is_quick_) 
+	private static ArrayList<Integer> get_order_ids_common(String symbol_, boolean is_filled_) 
 	{ 
 		ArrayList<Integer> output = new ArrayList<Integer>();
 
-		ArrayList<Integer> all = get_all_order_ids_main(symbol_, is_quick_);
+		ArrayList<Integer> all = get_all_order_ids_main(symbol_);
 		if (!arrays.is_ok(all)) return output;
 		
 		for (int id_main: all)

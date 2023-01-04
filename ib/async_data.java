@@ -200,11 +200,11 @@ public abstract class async_data extends parent_static
 	
 	static ArrayList<String> get_all_symbols(String app_, boolean is_quick_) { return get_all_symbols(app_, accessory.db.DEFAULT_WHERE, is_quick_); }
 	
-	static ArrayList<String> get_all_symbols(String app_, String where_, boolean is_quick_) { return db_ib.async_data.get_all_symbols(async_data_apps.get_source(app_), where_, is_quick_); }
+	static ArrayList<String> get_all_symbols(String app_, String where_, boolean is_quick_) { return db_ib.async_data.get_all_symbols(async_data_apps.get_source(app_), where_); }
 	
 	static ArrayList<String> get_active_symbols(String app_, boolean is_quick_) { return get_active_symbols(app_, accessory.db.DEFAULT_WHERE, is_quick_); }
 	
-	static ArrayList<String> get_active_symbols(String app_, String where_, boolean is_quick_) { return db_ib.async_data.get_active_symbols(async_data_apps.get_source(app_), async_data_apps.get_max_mins_inactive(app_), where_, is_quick_); }
+	static ArrayList<String> get_active_symbols(String app_, String where_, boolean is_quick_) { return db_ib.async_data.get_active_symbols(async_data_apps.get_source(app_), async_data_apps.get_max_mins_inactive(app_), where_); }
 	
 	static boolean symbol_is_running(String app_, String symbol_) { return (!async_data_apps.is_stopping(app_, symbol_) && db_ib.async_data.symbol_is_active(async_data_apps.get_source(app_), symbol_, async_data_apps.get_max_mins_inactive(app_))); }
 
@@ -340,7 +340,7 @@ public abstract class async_data extends parent_static
 		
 		if (!db_ib.async_data.exists(source, symbol_)) db_ib.async_data.insert_new(source, symbol_);
 		else if (!db_ib.async_data.is_enabled(source, symbol_)) return id;
-		else db_ib.async_data.update_timestamp(source, symbol_, is_quick);
+		else db_ib.async_data.update_timestamp(source, symbol_);
 
 		id = async.get_req_id();
 		
@@ -384,16 +384,13 @@ public abstract class async_data extends parent_static
 		
 		int val = (int)val_;
 
-		String source = async_data_apps.get_source(app_);
-		boolean is_quick = async_data_apps.is_quick(app_);
-		
 		boolean halted = data.is_halted(val);
-		boolean halted_db = db_ib.async_data.is_halted(source, symbol_);
+		boolean halted_db = db_ib.async_data.is_halted(symbol_);
 	
 		if (halted == halted_db) return output;		
 		output = val;
 		
-		if (async_data_apps.includes_halted_tot(app_) && halted && !halted_db) db_ib.async_data.update_halted_tot(source, symbol_, is_quick);		
+		if (async_data_apps.includes_halted_tot(app_) && halted && !halted_db) db_ib.async_data.update_halted_tot(symbol_);		
 
 		return output;
 	}
@@ -441,7 +438,7 @@ public abstract class async_data extends parent_static
 		
 		if (symbol_is_running(app_, symbol_)) 
 		{
-			db_ib.async_data.update(source_, vals, symbol_, is_quick_);
+			db_ib.async_data.update(source_, symbol_, vals);
 			
 			to_screen_update(app_, id_, symbol_, true);
 		}
@@ -453,7 +450,7 @@ public abstract class async_data extends parent_static
 		
 		if (async_data_apps.includes_time_elapsed(app_))
 		{
-			long ini = db_ib.async_data.get_elapsed_ini(source_, symbol_, false);			
+			long ini = db_ib.async_data.get_elapsed_ini(source_, symbol_);			
 			
 			if (ini <= dates.ELAPSED_START) db_ib.async_data.update(source_, symbol_, db_ib.async_data.ELAPSED_INI, dates.start_elapsed(), true);
 			else

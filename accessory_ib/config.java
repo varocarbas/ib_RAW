@@ -15,4 +15,10 @@ public abstract class config
 	public static Object get_db(String key_) { return accessory.config.get(types.CONFIG_DB_IB, key_); }
 
 	public static boolean update_db(String key_, Object val_) { return accessory.config.update(types.CONFIG_DB_IB, key_, val_); }
+	
+	public static Object get_conn(String key_) { return accessory.config.get(types.CONFIG_CONN, key_); }
+
+	public static boolean get_conn_boolean(String key_) { return accessory.config.get_boolean(types.CONFIG_CONN, key_); }
+
+	public static boolean update_conn(String key_, Object val_) { return accessory.config.update(types.CONFIG_CONN, key_, val_); }
 }

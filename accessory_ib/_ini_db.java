@@ -213,7 +213,6 @@ public class _ini_db extends parent_ini_db
 		info.put(trades.TIME_ELAPSED, common.get_field_time_elapsed());
 		info.put(trades.START, common.get_field_price());
 		info.put(trades.STOP, common.get_field_price());
-		info.put(trades.HALTED, common.get_field_halted());
 		info.put(trades.UNREALISED, common.get_field_money());
 		info.put(trades.IS_ACTIVE, db_common.get_field_boolean(true));
 		info.put(trades.INVESTMENT, common.get_field_money());
@@ -253,8 +252,6 @@ public class _ini_db extends parent_ini_db
 		info.put(watchlist.VOLUME_MIN, common.get_field_size_volume());
 		info.put(watchlist.VOLUME_MAX, common.get_field_size_volume());
 		info.put(watchlist.TIME_ELAPSED, common.get_field_time_elapsed());
-		info.put(watchlist.HALTED, common.get_field_halted());
-		info.put(watchlist.HALTED_TOT, common.get_field_halted_tot());
 		info.put(watchlist.FLU, db_common.get_field_decimal_tiny());
 		info.put(watchlist.FLU2, db_common.get_field_decimal_tiny());
 		info.put(watchlist.FLU2_MIN, db_common.get_field_decimal_tiny());

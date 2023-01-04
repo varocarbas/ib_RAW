@@ -8,6 +8,21 @@ import accessory_ib.types;
 
 public abstract class orders 
 {
+	public static final String DB_SOURCE = db_ib.orders.SOURCE;
+
+	public static final String DB_SYMBOL = db_ib.orders.SYMBOL;
+	public static final String DB_ORDER_ID_MAIN = db_ib.orders.ORDER_ID_MAIN;
+	public static final String DB_ORDER_ID_SEC = db_ib.orders.ORDER_ID_SEC;
+	public static final String DB_STATUS = db_ib.orders.STATUS;
+	public static final String DB_START = db_ib.orders.START;
+	public static final String DB_START2 = db_ib.orders.START2;
+	public static final String DB_STOP = db_ib.orders.STOP;
+	public static final String DB_IS_MARKET = db_ib.orders.IS_MARKET;
+	public static final String DB_TYPE_PLACE = db_ib.orders.TYPE_PLACE;
+	public static final String DB_TYPE_MAIN = db_ib.orders.TYPE_MAIN;
+	public static final String DB_TYPE_SEC = db_ib.orders.TYPE_SEC;
+	public static final String DB_QUANTITY = db_ib.orders.QUANTITY;
+	
 	public static final String ORDERS = types.ORDERS;
 
 	public static final String PLACE = types.ORDERS_PLACE;
@@ -39,9 +54,9 @@ public abstract class orders
 	public static final String DEFAULT_STATUS = STATUS_SUBMITTED;
 	public static final boolean DEFAULT_IS_QUICK = true;
 	
-	private static boolean _is_quick = DEFAULT_IS_QUICK;
-
-	public static boolean is_quick() { return _is_quick; }
+	public static boolean is_quick() { return db_ib.common.is_quick(DB_SOURCE); }
+	
+	public static void is_quick(boolean is_quick_) { db_ib.common.is_quick(DB_SOURCE, is_quick_); }
 
 	public static boolean place_market(String symbol_, double quantity_, double stop_) { return sync_orders.place(PLACE_MARKET, symbol_, quantity_, stop_, common.WRONG_PRICE); }
 
@@ -116,7 +131,7 @@ public abstract class orders
 
 	public static int get_last_id_sec() { return sync_orders._last_id_sec; }
 	
-	public static int get_order_id_main(int order_id_sec_) { return db_ib.orders.get_order_id_main(order_id_sec_, _is_quick); }
+	public static int get_order_id_main(int order_id_sec_) { return db_ib.orders.get_order_id_main(order_id_sec_); }
 	
 	public static String get_type(String input_, boolean is_status_) { return (is_status_ ? db_ib.orders.get_status_from_key(input_) : db_ib.orders.get_type_place_from_key(input_)); }
 
@@ -213,22 +228,22 @@ public abstract class orders
 
 	public static boolean deactivate(int order_id_main_) 
 	{ 
-		boolean output = db_ib.orders.deactivate(order_id_main_, _is_quick); 
+		boolean output = db_ib.orders.deactivate(order_id_main_); 
 		
 		if (output) db_ib.remote.deactivate_order_id(order_id_main_);
 		
 		return output;
 	}
 	
-	public static boolean update_status(int order_id_main_, String status_) { return db_ib.orders.update_status(order_id_main_, status_, _is_quick); }
+	public static boolean update_status(int order_id_main_, String status_) { return db_ib.orders.update_status(order_id_main_, status_); }
 
-	public static boolean order_was_updated(int order_id_main_, String type_, double stop_, double start_, double start2_) { return db_ib.orders.order_was_updated(order_id_main_, type_, stop_, start_, start2_, _is_quick); }
+	public static boolean order_was_updated(int order_id_main_, String type_, double stop_, double start_, double start2_) { return db_ib.orders.order_was_updated(order_id_main_, type_, stop_, start_, start2_); }
 
-	public static String get_symbol(int order_id_main_) { return db_ib.orders.get_symbol(order_id_main_, _is_quick); }
+	public static String get_symbol(int order_id_main_) { return db_ib.orders.get_symbol(order_id_main_); }
 
-	public static double get_quantity(int order_id_main_) { return db_ib.orders.get_quantity(order_id_main_, _is_quick); }
+	public static double get_quantity(int order_id_main_) { return db_ib.orders.get_quantity(order_id_main_); }
 
-	public static int get_highest_order_id() { return db_ib.orders.get_highest_order_id(_is_quick); }
+	public static int get_highest_order_id() { return db_ib.orders.get_highest_order_id(); }
 
 	public static boolean exists(int order_id_main_) { return db_ib.orders.exists(order_id_main_, true); }
 
@@ -236,29 +251,29 @@ public abstract class orders
 
 	public static HashMap<Integer, String> __get_orders_ib() { return sync.__get_orders(); }
 
-	public static String get_symbol(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(db_ib.orders.SYMBOL, vals_, _is_quick); }
+	public static String get_symbol(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(DB_SYMBOL, vals_); }
 
-	public static int get_order_id_main(HashMap<String, String> vals_) { return (int)db_ib.orders.get_val(db_ib.orders.ORDER_ID_MAIN, vals_, _is_quick); }
+	public static int get_order_id_main(HashMap<String, String> vals_) { return (int)db_ib.orders.get_val(DB_ORDER_ID_MAIN, vals_); }
 
-	public static int get_order_id_sec(HashMap<String, String> vals_) { return (int)db_ib.orders.get_val(db_ib.orders.ORDER_ID_SEC, vals_, _is_quick); }
+	public static int get_order_id_sec(HashMap<String, String> vals_) { return (int)db_ib.orders.get_val(DB_ORDER_ID_SEC, vals_); }
 
-	public static String get_status(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(db_ib.orders.STATUS, vals_, _is_quick); }
+	public static String get_status(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(DB_STATUS, vals_); }
 
-	public static double get_start(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(db_ib.orders.START, vals_, _is_quick); }
+	public static double get_start(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(DB_START, vals_); }
 
-	public static double get_start2(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(db_ib.orders.START2, vals_, _is_quick); }
+	public static double get_start2(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(DB_START2, vals_); }
 
-	public static double get_stop(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(db_ib.orders.STOP, vals_, _is_quick); }
+	public static double get_stop(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(DB_STOP, vals_); }
 
-	public static boolean get_is_market(HashMap<String, String> vals_) { return (boolean)db_ib.orders.get_val(db_ib.orders.IS_MARKET, vals_, _is_quick); }
+	public static boolean get_is_market(HashMap<String, String> vals_) { return (boolean)db_ib.orders.get_val(DB_IS_MARKET, vals_); }
 
-	public static String get_type_place(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(db_ib.orders.TYPE_PLACE, vals_, _is_quick); }
+	public static String get_type_place(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(DB_TYPE_PLACE, vals_); }
 
-	public static String get_type_main(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(db_ib.orders.TYPE_MAIN, vals_, _is_quick); }
+	public static String get_type_main(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(DB_TYPE_MAIN, vals_); }
 
-	public static String get_type_sec(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(db_ib.orders.TYPE_SEC, vals_, _is_quick); }
+	public static String get_type_sec(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(DB_TYPE_SEC, vals_); }
 
-	public static double get_quantity(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(db_ib.orders.QUANTITY, vals_, _is_quick); }
+	public static double get_quantity(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(DB_QUANTITY, vals_); }
 
 	static void order_status(int order_id_, String status_ib_) 
 	{ 

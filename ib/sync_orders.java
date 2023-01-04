@@ -43,7 +43,7 @@ abstract class sync_orders extends parent_static
 	{
 		if (perform_checks_) async_orders.__check_all();
 
-		return db_ib.orders.get_to_order(id_main_, orders.is_quick());
+		return db_ib.orders.get_to_order(id_main_);
 	}
 
 	public static boolean place_update(_order order_) { return place_update(order_, null, common.WRONG_VALUE); }
@@ -146,17 +146,17 @@ abstract class sync_orders extends parent_static
 	{
 		async_orders.__check_all();
 
-		return db_ib.orders.get_to_order(symbol_, orders.is_quick());
+		return db_ib.orders.get_to_order(symbol_);
 	}
 
-	private static void add_order(_order order_) { db_ib.orders.insert_update(order_, orders.is_quick()); }
+	private static void add_order(_order order_) { db_ib.orders.insert_update(order_); }
 
 	private static boolean update_order(int id_, double val_, boolean is_market_, String type_)
 	{
 		String type = orders.check_update(type_);
 		if (!strings.is_ok(type)) return false;
 		
-		_order order = db_ib.orders.get_to_order(id_, orders.is_quick());
+		_order order = db_ib.orders.get_to_order(id_);
 		if (order == null) return false;
 
 		if (is_market_) order.update_type(_order.TYPE_MARKET, orders.is_update_start_start2(type));
@@ -164,6 +164,6 @@ abstract class sync_orders extends parent_static
 		else if (type.equals(orders.UPDATE_START_VALUE)) order.update_start(val_);
 		else if (type.equals(orders.UPDATE_START2_VALUE)) order.update_start2(val_);
 		
-		return db_ib.orders.update(order, orders.is_quick());
+		return db_ib.orders.update(order);
 	}
 }

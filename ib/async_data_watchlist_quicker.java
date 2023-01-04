@@ -20,7 +20,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
 	static final boolean INCLUDES_TIME = false;
 	static final boolean INCLUDES_TIME_ELAPSED = true;
-	static final boolean INCLUDES_HALTED = true;
+	static final boolean INCLUDES_HALTED = false;
 	static final boolean INCLUDES_HALTED_TOT = false;
 	
 	static volatile String[] _symbols = new String[SIZE_GLOBALS];
@@ -31,7 +31,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = false;
 	
-	private static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.VOLUME_IB, async_data_quicker.HALTED_IB };
+	private static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.VOLUME_IB };
 
 	private static final boolean ONLY_ESSENTIAL = true;
 	private static final double MAX_VAR = 30.0;
@@ -96,7 +96,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	{
 		if (field_ib_ != async_data_quicker.PRICE_IB) return;
 	
-		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol_, true);
+		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol_);
 		HashMap<String, String> vals = new HashMap<String, String>();
 
 		vals = tick_price_basic(symbol_, price_, db, vals);
@@ -112,7 +112,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	{
 		if (field_ib_ != async_data_quicker.VOLUME_IB) return;
 		
-		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol_, true);
+		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol_);
 		
 		HashMap<String, String> vals = tick_size_basic(symbol_, size_, db);
 		if (!arrays.is_ok(vals)) return;
@@ -322,13 +322,13 @@ abstract class async_data_watchlist_quicker extends parent_static
 	{
 		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_);
 
-		String field_min = db_ib.async_data.FLU2_MIN;
-		String field_max = db_ib.async_data.FLU2_MAX;
+		String col_min = db_ib.common.get_col(SOURCE, db_ib.async_data.FLU2_MIN);
+		String col_max = db_ib.common.get_col(SOURCE, db_ib.async_data.FLU2_MAX);
 		
-		HashMap<String, String> db = db_ib.common.get_vals(SOURCE, new String[] { field_min, field_max }, db_ib.common.get_where_symbol(SOURCE, symbol_));
+		HashMap<String, String> db = db_ib.common.get_vals(SOURCE, new String[] { col_min, col_max }, db_ib.common.get_where_symbol(SOURCE, symbol_), accessory.db.DEFAULT_ORDER, false);
 		
-		if (var_ < 0.0 && var_ < Double.parseDouble(db.get(field_min))) vals.put(field_min, Double.toString(numbers.round(var_)));
-		else if (var_ > 0.0 && var_ > Double.parseDouble(db.get(field_max))) vals.put(field_max, Double.toString(numbers.round(var_)));
+		if (var_ < 0.0 && var_ < Double.parseDouble(db.get(col_min))) vals.put(col_min, Double.toString(numbers.round(var_)));
+		else if (var_ > 0.0 && var_ > Double.parseDouble(db.get(col_max))) vals.put(col_max, Double.toString(numbers.round(var_)));
 				
 		return vals;
 	}

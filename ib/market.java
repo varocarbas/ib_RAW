@@ -13,6 +13,23 @@ import accessory.strings;
 public abstract class market 
 {	
 	public static final String DB_SOURCE = db_ib.market.SOURCE;
+	
+	public static final String DB_SYMBOL = db_ib.market.SYMBOL;
+	public static final String DB_PRICE = db_ib.market.PRICE;
+	public static final String DB_SIZE = db_ib.market.SIZE;
+	public static final String DB_TIME = db_ib.market.TIME;
+	public static final String DB_OPEN = db_ib.market.OPEN;
+	public static final String DB_CLOSE = db_ib.market.CLOSE;
+	public static final String DB_LOW = db_ib.market.LOW;
+	public static final String DB_HIGH = db_ib.market.HIGH;
+	public static final String DB_VOLUME = db_ib.market.VOLUME;		
+	public static final String DB_ASK = db_ib.market.ASK;
+	public static final String DB_ASK_SIZE = db_ib.market.ASK_SIZE;
+	public static final String DB_BID = db_ib.market.BID;
+	public static final String DB_BID_SIZE = db_ib.market.BID_SIZE;
+	public static final String DB_HALTED = db_ib.market.HALTED;
+	public static final String DB_HALTED_TOT = db_ib.market.HALTED_TOT;
+	public static final String DB_ENABLED = db_ib.market.ENABLED;
 
 	public static final LocalTime TIME_OPEN = dates.time_from_string("09:30:00");
 	public static final LocalTime TIME_CLOSE = dates.time_from_string("16:00:00");
@@ -59,7 +76,7 @@ public abstract class market
 	{ 
 		String symbol = ib.common.normalise_symbol(symbol_);
 		
-		return (strings.is_ok(symbol) ? db_ib.async_data.get_price(db_ib.market.SOURCE, symbol) : common.WRONG_PRICE); 
+		return (strings.is_ok(symbol) ? db_ib.async_data.get_price(DB_SOURCE, symbol) : common.WRONG_PRICE); 
 	}
 	
 	public static ArrayList<String> get_active_symbols() { return async_data_market.get_active_symbols(); }

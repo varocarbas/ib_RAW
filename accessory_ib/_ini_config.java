@@ -5,6 +5,7 @@ import java.util.HashMap;
 import accessory.parent_ini_config;
 import external_ib.contracts;
 import ib.basic;
+import ib.conn;
 import ib._order;
 
 public class _ini_config extends parent_ini_config 
@@ -18,8 +19,12 @@ public class _ini_config extends parent_ini_config
 	protected void populate_all_internal()
 	{
 		load_config_basic();
+		
 		load_config_order();
+		
 		load_config_contract();
+		
+		load_config_conn();
 	}
 
 	private boolean load_config_basic()
@@ -55,6 +60,17 @@ public class _ini_config extends parent_ini_config
 		vals.put(contracts.CONFIG_EXCHANGE, contracts.DEFAULT_EXCHANGE);
 		vals.put(contracts.CONFIG_EXCHANGE_PRIMARY, contracts.DEFAULT_EXCHANGE_PRIMARY);
 		vals.put(contracts.CONFIG_EXCHANGE_COUNTRY, contracts.DEFAULT_EXCHANGE_COUNTRY);
+
+		return populate(type, null, vals);
+	}
+
+	private boolean load_config_conn()
+	{
+		String type = types.CONFIG_CONN;
+
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		
+		vals.put(conn.CONFIG_CHECK_RUNNING, conn.DEFAULT_CHECK_RUNNING);
 
 		return populate(type, null, vals);
 	}

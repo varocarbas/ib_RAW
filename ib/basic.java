@@ -16,12 +16,17 @@ import external_ib.contracts;
 
 public abstract class basic extends parent_static 
 {
+	public static final String DB_SOURCE = db_ib.basic.SOURCE;
+
+	public static final String DB_USER = db_ib.basic.USER;
+	public static final String DB_ACCOUNT_IB = db_ib.basic.ACCOUNT_IB;
+	public static final String DB_MONEY = db_ib.basic.MONEY;
+	public static final String DB_MONEY_INI = db_ib.basic.MONEY_INI;
+	public static final String DB_CURRENCY = db_ib.basic.CURRENCY;
+	public static final String DB_MONEY_FREE = db_ib.basic.MONEY_FREE;
+
 	public static final String CONFIG_ID_MAIN = types.CONFIG_BASIC_ID_MAIN;
 
-	public static final String MONEY = db_ib.basic.MONEY;
-	public static final String MONEY_FREE = db_ib.basic.MONEY_FREE;
-	public static final String MONEY_INI = db_ib.basic.MONEY_INI;
-	
 	public static final String SEPARATOR = misc.SEPARATOR_NAME;
 
 	public static final double WRONG_MONEY2 = common.WRONG_MONEY2;
@@ -29,6 +34,10 @@ public abstract class basic extends parent_static
 	public static final String DEFAULT_USER = _defaults.USER;
 	
 	private static final String ID_ACCOUNT_IB = "account_ib";
+	
+	public static boolean is_quick() { return db_ib.common.is_quick(DB_SOURCE); }
+	
+	public static void is_quick(boolean is_quick_) { db_ib.common.is_quick(DB_SOURCE, is_quick_); }
 
 	public static void __start() { __start(trades.DEFAULT_SYNCED_WITH_EXECS); }
 	
@@ -115,7 +124,7 @@ public abstract class basic extends parent_static
 	public static HashMap<String, Double> __get_money_ib()
 	{
 		HashMap<String, Double> money = sync_basic.__get_money();	
-		if (!arrays.is_ok(money) || !money.containsKey(MONEY) || !money.containsKey(MONEY_FREE)) return null;
+		if (!arrays.is_ok(money) || !money.containsKey(DB_MONEY) || !money.containsKey(DB_MONEY_FREE)) return null;
 		
 		update_money(money, false);
 		
@@ -203,10 +212,10 @@ public abstract class basic extends parent_static
 	private static boolean update_money(HashMap<String, Double> money_, boolean ini_too_)
 	{
 		HashMap<String, Double> money = arrays.get_new_hashmap_xy(money_);
-		if (!money.containsKey(MONEY) || !money.containsKey(MONEY_FREE)) return false;
+		if (!money.containsKey(DB_MONEY) || !money.containsKey(DB_MONEY_FREE)) return false;
 		
 		HashMap<String, Double> vals = new HashMap<String, Double>(money);
-		if (ini_too_) vals.put(MONEY_INI, money.get(MONEY));
+		if (ini_too_) vals.put(DB_MONEY_INI, money.get(DB_MONEY));
 
 		return db_ib.basic.update_money_common(vals);
 	}

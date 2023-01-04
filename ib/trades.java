@@ -10,6 +10,20 @@ public abstract class trades extends parent_static
 {	
 	public static final String DB_SOURCE = db_ib.trades.SOURCE;
 
+	public static final String DB_ORDER_ID_MAIN = db_ib.trades.ORDER_ID_MAIN;
+	public static final String DB_ORDER_ID_SEC = db_ib.trades.ORDER_ID_SEC;
+	public static final String DB_SYMBOL = db_ib.trades.SYMBOL;
+	public static final String DB_PRICE = db_ib.trades.PRICE;
+	public static final String DB_TIME_ELAPSED = db_ib.trades.TIME_ELAPSED;
+	public static final String DB_ELAPSED_INI = db_ib.trades.ELAPSED_INI;
+	public static final String DB_START = db_ib.trades.START;
+	public static final String DB_STOP = db_ib.trades.STOP;
+	public static final String DB_UNREALISED = db_ib.trades.UNREALISED;	
+	public static final String DB_IS_ACTIVE = db_ib.trades.IS_ACTIVE;
+	public static final String DB_INVESTMENT = db_ib.trades.INVESTMENT;
+	public static final String DB_END = db_ib.trades.END;
+	public static final String DB_REALISED = db_ib.trades.REALISED;
+	
 	public static final boolean DEFAULT_SYNCED_WITH_EXECS = true;
 	
 	private static boolean _synced_with_execs = DEFAULT_SYNCED_WITH_EXECS; 
@@ -59,7 +73,7 @@ public abstract class trades extends parent_static
 	{ 
 		String symbol = ib.common.normalise_symbol(symbol_);
 		
-		return (strings.is_ok(symbol) ? async_data.get_price(db_ib.trades.SOURCE, symbol) : common.WRONG_PRICE); 
+		return (strings.is_ok(symbol) ? async_data.get_price(DB_SOURCE, symbol) : common.WRONG_PRICE); 
 	}
 
 	public static double get_start(String symbol_) 

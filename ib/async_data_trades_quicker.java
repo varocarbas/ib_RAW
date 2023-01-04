@@ -17,7 +17,7 @@ abstract class async_data_trades_quicker extends parent_static
 	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
 	static final boolean INCLUDES_TIME = false;
 	static final boolean INCLUDES_TIME_ELAPSED = true;
-	static final boolean INCLUDES_HALTED = true;
+	static final boolean INCLUDES_HALTED = false;
 	static final boolean INCLUDES_HALTED_TOT = false;
 
 	static volatile String[] _symbols = new String[SIZE_GLOBALS];	
@@ -28,7 +28,7 @@ abstract class async_data_trades_quicker extends parent_static
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = false;
 
-	private static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.HALTED_IB };
+	private static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB };
 
 	private static final boolean ONLY_ESSENTIAL = true;
 

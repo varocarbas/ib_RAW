@@ -19,7 +19,7 @@ abstract class remote_execute
 
 	public static void __execute_all()
 	{
-		ArrayList<HashMap<String, String>> all = db_ib.remote.get_all_pending(remote.is_quick());
+		ArrayList<HashMap<String, String>> all = db_ib.remote.get_all_pending();
 		if (!arrays.is_ok(all)) return;
 		
 		for (HashMap<String, String> vals: all) { __execute(vals); }	
@@ -114,7 +114,7 @@ abstract class remote_execute
 				double val = Double.parseDouble(vals_.get(field_col));	
 				executed = __update(request, order_id, type, val);
 				
-				if (!executed) update_error_update(request, db_ib.remote.get_symbol(request, remote.is_quick()), type, order_id, val);
+				if (!executed) update_error_update(request, db_ib.remote.get_symbol(request), type, order_id, val);
 			}			
 		}
 
@@ -129,7 +129,6 @@ abstract class remote_execute
 		if (!order.is_ok()) return false;
 
 		boolean is_ok = sync_orders.place_update(order);
-		boolean is_quick = remote.is_quick();		
 
 		Object vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_MAIN, order.get_id_main(), null);
 		vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_SEC, order.get_id_sec(), vals);
@@ -138,7 +137,7 @@ abstract class remote_execute
 
 		if (ib.common.price_is_ok(price_)) vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.PRICE, price_, vals);
 
-		db_ib.remote.update(request_, vals, is_quick);
+		db_ib.remote.update(request_, vals);
 		
 		return is_ok;
 	}
@@ -164,8 +163,6 @@ abstract class remote_execute
 		else if (type_update.equals(remote.UPDATE_START2_VALUE)) start2 = val_;
 		else if (type_update.equals(remote.UPDATE_STOP_VALUE)) stop = val_;
 
-		boolean is_quick = remote.is_quick();
-		
 		Object vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.IS_MARKET, is_market, null);
 
 		if (stop != common.WRONG_PRICE) vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.STOP, stop, vals);
@@ -173,9 +170,9 @@ abstract class remote_execute
 		if (start2 != common.WRONG_PRICE) vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.START2, start2, vals);
 
 		is_ok = sync_orders.place_update(order, type_update, val_);
-		vals = db_ib.remote.get_vals_common(db_ib.remote.get_status2_key_execute(is_ok), vals, is_quick);
+		vals = db_ib.remote.get_vals_common(db_ib.remote.get_status2_key_execute(is_ok), vals);
 		
-		db_ib.remote.update(request_, vals, is_quick);
+		db_ib.remote.update(request_, vals);
 		
 		return is_ok;
 	}

@@ -16,6 +16,10 @@ public abstract class types
 	public static final String CONFIG_CONTRACT_EXCHANGE_COUNTRY = "config_contract_exchange_country";
 	public static final String CONFIG_CONTRACT_EXCHANGE_COUNTRY_US = "config_contract_exchange_country_us";
 
+	public static final String CONFIG_CONN = "config_conn";
+	public static final String CONFIG_CONN_CHECK = "config_conn_check";
+	public static final String CONFIG_CONN_CHECK_RUNNING = "config_conn_check_running";
+	
 	public static final String CONFIG_DB_IB = "config_db_ib";
 	public static final String CONFIG_DB_IB_MARKET = "config_db_ib_market";
 	public static final String CONFIG_DB_IB_MARKET_SOURCE = "config_db_ib_market_source";
@@ -248,6 +252,10 @@ public abstract class types
 			CONFIG_CONTRACT_EXCHANGE_PRIMARY, 
 			CONFIG_CONTRACT_EXCHANGE_COUNTRY,
 			CONFIG_CONTRACT_EXCHANGE_COUNTRY_US,
+
+			CONFIG_CONN,
+			CONFIG_CONN_CHECK,
+			CONFIG_CONN_CHECK_RUNNING,
 			
 			CONFIG_DB_IB,		
 			CONFIG_DB_IB_MARKET,
@@ -302,7 +310,7 @@ public abstract class types
 			CONN,
 			CONN_TYPE,
 			CONN_TYPE_TWS_REAL, CONN_TYPE_TWS_PAPER, CONN_TYPE_GATEWAY_REAL, CONN_TYPE_GATEWAY_PAPER,
-	
+			
 			ORDERS,
 			ORDERS_CANCEL, ORDERS_PLACE, ORDERS_PLACE_MARKET, ORDERS_PLACE_STOP, ORDERS_PLACE_LIMIT, ORDERS_PLACE_STOP_LIMIT, ORDERS_UPDATE,
 			ORDERS_UPDATE_START, ORDERS_UPDATE_START_VALUE, ORDERS_UPDATE_START2, ORDERS_UPDATE_START2_VALUE, ORDERS_UPDATE_START_MARKET,

@@ -258,110 +258,114 @@ public abstract class common
 
 	public static String[] get_fields(String source_) 
 	{
+		String[] output = null;
+		
 		if (source_.equals(SOURCE_MARKET))
 		{
 			if (market._fields == null) market.populate_fields();
 			
-			return market._fields;
+			output = (String[])arrays.get_new(market._fields);
 		}
 		else if (source_.equals(SOURCE_EXECS)) 
 		{
 			if (execs._fields == null) execs.populate_fields();
 			
-			return execs._fields;
+			output = (String[])arrays.get_new(execs._fields);
 		}
 		else if (source_.equals(SOURCE_BASIC))
 		{
 			if (basic._fields == null) basic.populate_fields();
 			
-			return basic._fields;
+			output = (String[])arrays.get_new(basic._fields);
 		}
 		else if (source_.equals(SOURCE_REMOTE))
 		{
 			if (remote._fields == null) remote.populate_fields();
 			
-			return remote._fields;
+			output = (String[])arrays.get_new(remote._fields);
 		}
 		else if (source_.equals(SOURCE_ORDERS))
 		{
 			if (orders._fields == null) orders.populate_fields();
 			
-			return orders._fields;
+			output = (String[])arrays.get_new(orders._fields);
 		}
 		else if (source_.equals(SOURCE_TRADES))
 		{
 			if (trades._fields == null) trades.populate_fields();
 			
-			return trades._fields;
+			output = (String[])arrays.get_new(trades._fields);
 		}
 		else if (source_.equals(SOURCE_WATCHLIST))
 		{
 			if (watchlist._fields == null) watchlist.populate_fields();
 			
-			return watchlist._fields;
+			output = (String[])arrays.get_new(watchlist._fields);
 		}
 		else if (source_.equals(SOURCE_APPS))
 		{
 			if (apps._fields == null) apps.populate_fields();
 			
-			return apps._fields;
+			output = (String[])arrays.get_new(apps._fields);
 		}
 		
-		return null;
+		return output;
 	}
 
 	public static String[] get_cols(String source_) 
 	{ 
+		String[] output = null;
+		
 		if (source_.equals(SOURCE_MARKET))
 		{
-			if (market._cols == null) market._cols = get_cols_internal(source_);
+			if (market._cols == null) market._cols = (String[])arrays.get_new(get_cols_internal(source_));
 			
-			return market._cols;
+			output = (String[])arrays.get_new(market._cols);
 		}
 		else if (source_.equals(SOURCE_EXECS)) 
 		{
-			if (execs._cols == null) execs._cols = get_cols_internal(source_);
+			if (execs._cols == null) execs._cols = (String[])arrays.get_new(get_cols_internal(source_));
 			
-			return execs._cols;
+			output = (String[])arrays.get_new(execs._cols);
 		}
 		else if (source_.equals(SOURCE_BASIC))
 		{
-			if (basic._cols == null) basic._cols = get_cols_internal(source_);
+			if (basic._cols == null) basic._cols = (String[])arrays.get_new(get_cols_internal(source_));
 			
-			return basic._cols;
+			output = (String[])arrays.get_new(basic._cols);
 		}
 		else if (source_.equals(SOURCE_REMOTE))
 		{
-			if (remote._cols == null) remote._cols = get_cols_internal(source_);
+			if (remote._cols == null) remote._cols = (String[])arrays.get_new(get_cols_internal(source_));
 			
-			return remote._cols;
+			output = (String[])arrays.get_new(remote._cols);
 		}
 		else if (source_.equals(SOURCE_ORDERS))
 		{
-			if (orders._cols == null) orders._cols = get_cols_internal(source_);
+			if (orders._cols == null) orders._cols = (String[])arrays.get_new(get_cols_internal(source_));
 			
-			return orders._cols;
+			output = (String[])arrays.get_new(orders._cols);
 		}
 		else if (source_.equals(SOURCE_TRADES))
 		{
-			if (trades._cols == null) trades._cols = get_cols_internal(source_);
+			if (trades._cols == null) trades._cols = (String[])arrays.get_new(get_cols_internal(source_));
 			
-			return trades._cols;
+			output = (String[])arrays.get_new(trades._cols);
 		}
 		else if (source_.equals(SOURCE_WATCHLIST))
 		{
-			if (watchlist._cols == null) watchlist._cols = get_cols_internal(source_);
+			if (watchlist._cols == null) watchlist._cols = (String[])arrays.get_new(get_cols_internal(source_));
 			
-			return watchlist._cols;
+			output = (String[])arrays.get_new(watchlist._cols);
 		}
 		else if (source_.equals(SOURCE_APPS))
 		{
-			if (apps._cols == null) apps._cols = get_cols_internal(source_);
+			if (apps._cols == null) apps._cols = (String[])arrays.get_new(get_cols_internal(source_));
 			
-			return apps._cols;
+			output = (String[])arrays.get_new(apps._cols);
 		}
 		
-		return null;
+		return output;
 	}
 
 	public static String[] get_cols(String source_, String[] fields_) 
@@ -383,56 +387,58 @@ public abstract class common
 
 	public static HashMap<String, String> get_fields_cols(String source_) 
 	{ 
+		HashMap<String, String> output = null;
+		
 		if (source_.equals(SOURCE_MARKET))
 		{
-			if (market._fields_cols == null) market._fields_cols = get_fields_cols_internal(source_);
+			if (market._fields_cols == null) market._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
 			
-			return market._fields_cols;
+			output = arrays.get_new_hashmap_xx(market._fields_cols);
 		}
 		else if (source_.equals(SOURCE_EXECS)) 
 		{
-			if (execs._fields_cols == null) execs._fields_cols = get_fields_cols_internal(source_);
+			if (execs._fields_cols == null) execs._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
 			
-			return execs._fields_cols;
+			output = arrays.get_new_hashmap_xx(execs._fields_cols);
 		}
 		else if (source_.equals(SOURCE_BASIC))
 		{
-			if (basic._fields_cols == null) basic._fields_cols = get_fields_cols_internal(source_);
+			if (basic._fields_cols == null) basic._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
 			
-			return basic._fields_cols;
+			output = arrays.get_new_hashmap_xx(basic._fields_cols);
 		}
 		else if (source_.equals(SOURCE_REMOTE))
 		{
-			if (remote._fields_cols == null) remote._fields_cols = get_fields_cols_internal(source_);
+			if (remote._fields_cols == null) remote._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
 			
-			return remote._fields_cols;
+			output = arrays.get_new_hashmap_xx(remote._fields_cols);
 		}
 		else if (source_.equals(SOURCE_ORDERS))
 		{
-			if (orders._fields_cols == null) orders._fields_cols = get_fields_cols_internal(source_);
+			if (orders._fields_cols == null) orders._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
 			
-			return orders._fields_cols;
+			output = arrays.get_new_hashmap_xx(orders._fields_cols);
 		}
 		else if (source_.equals(SOURCE_TRADES))
 		{
-			if (trades._fields_cols == null) trades._fields_cols = get_fields_cols_internal(source_);
+			if (trades._fields_cols == null) trades._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
 			
-			return trades._fields_cols;
+			output = arrays.get_new_hashmap_xx(trades._fields_cols);
 		}
 		else if (source_.equals(SOURCE_WATCHLIST))
 		{
-			if (watchlist._fields_cols == null) watchlist._fields_cols = get_fields_cols_internal(source_);
+			if (watchlist._fields_cols == null) watchlist._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
 			
-			return watchlist._fields_cols;
+			output = arrays.get_new_hashmap_xx(watchlist._fields_cols);
 		}
 		else if (source_.equals(SOURCE_APPS))
 		{
-			if (apps._fields_cols == null) apps._fields_cols = get_fields_cols_internal(source_);
+			if (apps._fields_cols == null) apps._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
 			
-			return apps._fields_cols;
+			output = arrays.get_new_hashmap_xx(apps._fields_cols);
 		}
 		
-		return null;
+		return output;
 	} 
 
 	public static boolean vals_are_ok(String source_, Object vals_) { return (arrays.is_ok(vals_) && (is_quick(source_) ? db_quick.input_is_ok(vals_) : db.input_is_ok(vals_))); }
@@ -471,7 +477,7 @@ public abstract class common
 	{ 
 		String output = (is_quick(source_) ? db_quick.select_one_string(source_, (is_field_ ? get_col(source_, field_col_) : field_col_), where_, db.DEFAULT_ORDER) : db.select_one_string(source_, field_col_, where_, db.DEFAULT_ORDER)); 
 	
-		return (db.WRONG_STRING.equals(output) ? wrong_ : output);
+		return (!db.WRONG_STRING.equals(output) ? output : wrong_);
 	}
 
 	public static int get_int(String source_, String field_, String where_) { return get_int(source_, field_, where_, DEFAULT_WRONG_INT); }
@@ -482,7 +488,7 @@ public abstract class common
 	{ 
 		int output = (is_quick(source_) ? db_quick.select_one_int(source_, (is_field_ ? get_col(source_, field_col_) : field_col_), where_, db.DEFAULT_ORDER) : db.select_one_int(source_, field_col_, where_, db.DEFAULT_ORDER)); 
 	
-		return (output == db.WRONG_INT ? output : wrong_);
+		return (output != db.WRONG_INT ? output : wrong_);
 	}
 
 	public static double get_decimal(String source_, String field_, String where_) { return get_decimal(source_, field_, where_, DEFAULT_WRONG_DECIMAL); }
@@ -493,7 +499,7 @@ public abstract class common
 	{ 
 		double output = (is_quick(source_) ? db_quick.select_one_decimal(source_, (is_field_ ? get_col(source_, field_col_) : field_col_), where_, db.DEFAULT_ORDER) : db.select_one_decimal(source_, field_col_, where_, db.DEFAULT_ORDER)); 
 	
-		return (output == db.WRONG_DECIMAL ? wrong_ : output);
+		return (output != db.WRONG_DECIMAL ? output : wrong_);
 	}
 
 	public static long get_long(String source_, String field_, String where_) { return get_long(source_, field_, where_, DEFAULT_WRONG_LONG); }
@@ -504,7 +510,7 @@ public abstract class common
 	{ 
 		long output = (is_quick(source_) ? db_quick.select_one_long(source_, (is_field_ ? get_col(source_, field_col_) : field_col_), where_, db.DEFAULT_ORDER) : db.select_one_long(source_, field_col_, where_, db.DEFAULT_ORDER)); 
 	
-		return (output == db.WRONG_LONG ? wrong_ : output);
+		return (output != db.WRONG_LONG ? output : wrong_);
 	}
 	
 	public static boolean get_boolean(String source_, String field_, String where_) { return get_boolean(source_, field_, where_, DEFAULT_IS_FIELD); }
@@ -560,7 +566,7 @@ public abstract class common
 		return output;
 	}
 
-	public static HashMap<String, String> get_vals_old(String source_old_, String[] fields_cols_, String date_, boolean is_quick_, boolean are_fields_) 
+	public static HashMap<String, String> get_vals_old(String source_old_, String[] fields_cols_, String date_, boolean are_fields_) 
 	{ 
 		String[] fields_cols = get_fields_old(source_old_, fields_cols_, are_fields_);
 		

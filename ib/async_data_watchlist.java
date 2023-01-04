@@ -40,8 +40,8 @@ abstract class async_data_watchlist extends parent_static
 
 	public static boolean _includes_time = false;
 	public static boolean _includes_time_elapsed = true;
-	public static boolean _includes_halted = true;
-	public static boolean _includes_halted_tot = true;
+	public static boolean _includes_halted = false;
+	public static boolean _includes_halted_tot = false;
 	public static boolean _disable_asap = true;
 	public static boolean _only_essential = true;
 	
@@ -78,20 +78,20 @@ abstract class async_data_watchlist extends parent_static
 
 	public static void tick_price(int id_, double price_, String symbol_)
 	{
-		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol_, is_quick());
+		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol_);
 		Object vals = (is_quick() ? new HashMap<String, String>() : new HashMap<String, Object>());
 
 		vals = tick_price_basic(symbol_, price_, db, vals);
 		vals = tick_price_flus(symbol_, price_, db, vals);
 
-		db_ib.watchlist.update(vals, symbol_, is_quick());
+		db_ib.watchlist.update(vals, symbol_);
 	}
 
 	public static void tick_volume(int id_, double volume_, String symbol_)
 	{
-		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol_, is_quick());
+		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol_);
 		
-		db_ib.watchlist.update(tick_volume_basic(symbol_, volume_, db), symbol_, is_quick());
+		db_ib.watchlist.update(tick_volume_basic(symbol_, volume_, db), symbol_);
 	}
 	
 	public static void populate_fields()
@@ -100,7 +100,6 @@ abstract class async_data_watchlist extends parent_static
 		
 		_fields.add(async_data.PRICE_IB);
 		_fields.add(async_data.VOLUME_IB);
-		_fields.add(async_data.HALTED_IB);
 	}
 
 	public static boolean start(String symbol_) { return start(symbol_, DEFAULT_TYPE, DEFAULT_DATA_TYPE); }

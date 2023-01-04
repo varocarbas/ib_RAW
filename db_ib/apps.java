@@ -144,14 +144,14 @@ public abstract class apps
 		return (vals != null ? insert_update(vals) : false); 
 	}
 	
-	public static boolean update_time(boolean is_quick_) 
+	public static boolean update_time() 
 	{
 		String where = get_where_app();
 
 		return (strings.is_ok(where) ? common.update(SOURCE, TIME2, ib.common.get_current_time2(), where) : false); 
 	}
 
-	public static String get_time(String app_, String status_, boolean is_quick_) 
+	public static String get_time(String app_, String status_) 
 	{
 		String where = get_where_app(app_);
 		if (strings.is_ok(status_)) where = common.join_wheres(where, get_where_status(status_));

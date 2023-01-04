@@ -10,11 +10,13 @@ public abstract class execs
 {
 	public static final String DB_SOURCE = db_ib.execs.SOURCE;
 
-	public static final String PRICE = db_ib.execs.PRICE;
-	public static final String QUANTITY = db_ib.execs.QUANTITY;
-	public static final String FEES = db_ib.execs.FEES;
-	public static final String ORDER_ID = db_ib.execs.ORDER_ID;
-	public static final String SIDE = db_ib.execs.SIDE;
+	public static final String DB_SYMBOL = db_ib.execs.SYMBOL;
+	public static final String DB_EXEC_ID = db_ib.execs.EXEC_ID;
+	public static final String DB_ORDER_ID = db_ib.execs.ORDER_ID;
+	public static final String DB_SIDE = db_ib.execs.SIDE;
+	public static final String DB_PRICE = db_ib.execs.PRICE;
+	public static final String DB_QUANTITY = db_ib.execs.QUANTITY;
+	public static final String DB_FEES = db_ib.execs.FEES;
 	
 	public static final String SIDE_BOUGHT = orders.EXEC_SIDE_BOUGHT;
 	public static final String SIDE_SOLD = orders.EXEC_SIDE_SOLD;
@@ -55,35 +57,35 @@ public abstract class execs
 
 	public static String get_side(boolean is_main_) { return (is_main_ ? SIDE_BOUGHT : SIDE_SOLD); }
 
-	public static String get_symbol(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(db_ib.execs.SYMBOL, vals_, is_quick()); }
+	public static String get_symbol(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(DB_SYMBOL, vals_); }
 
-	public static String get_exec_id(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(db_ib.execs.EXEC_ID, vals_, is_quick()); }
+	public static String get_exec_id(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(DB_EXEC_ID, vals_); }
 
-	public static int get_order_id(HashMap<String, String> vals_) { return (int)db_ib.execs.get_val(db_ib.execs.ORDER_ID, vals_, is_quick()); }
+	public static int get_order_id(HashMap<String, String> vals_) { return (int)db_ib.execs.get_val(DB_ORDER_ID, vals_); }
 
-	public static String get_side(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(db_ib.execs.SIDE, vals_, is_quick()); }
+	public static String get_side(HashMap<String, String> vals_) { return (String)db_ib.execs.get_val(DB_SIDE, vals_); }
 
-	public static double get_price(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(db_ib.execs.PRICE, vals_, is_quick()); }
+	public static double get_price(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(DB_PRICE, vals_); }
 
-	public static double get_quantity(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(db_ib.execs.QUANTITY, vals_, is_quick()); }
+	public static double get_quantity(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(DB_QUANTITY, vals_); }
 
-	public static double get_fees(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(db_ib.execs.FEES, vals_, is_quick()); }
+	public static double get_fees(HashMap<String, String> vals_) { return (double)db_ib.execs.get_val(DB_FEES, vals_); }
 
 	public static boolean side_is_main(String side_) { return get_side(true).equals(side_); }
 
 	public static boolean is_filled(int order_id_main_) { return db_ib.execs.is_filled(order_id_main_); }
 
-	public static boolean is_filled(String symbol_) { return arrays.is_ok(db_ib.execs.get_order_ids_filled(symbol_, is_quick())); }
+	public static boolean is_filled(String symbol_) { return arrays.is_ok(db_ib.execs.get_order_ids_filled(symbol_)); }
 
 	public static boolean is_completed(int order_id_main_) { return db_ib.execs.is_completed(order_id_main_); }
 
-	public static boolean is_completed(String symbol_) { return arrays.is_ok(db_ib.execs.get_order_ids_completed(symbol_, is_quick())); }
+	public static boolean is_completed(String symbol_) { return arrays.is_ok(db_ib.execs.get_order_ids_completed(symbol_)); }
 
-	public static ArrayList<Integer> get_order_ids_filled(String symbol_) { return db_ib.execs.get_order_ids_filled(symbol_, is_quick()); }
+	public static ArrayList<Integer> get_order_ids_filled(String symbol_) { return db_ib.execs.get_order_ids_filled(symbol_); }
 
-	public static ArrayList<Integer> get_order_ids_completed(String symbol_) { return db_ib.execs.get_order_ids_completed(symbol_, is_quick()); }
+	public static ArrayList<Integer> get_order_ids_completed(String symbol_) { return db_ib.execs.get_order_ids_completed(symbol_); }
 
-	public static ArrayList<HashMap<String, String>> get_all_filled() { return db_ib.execs.get_all_filled(is_quick()); }
+	public static ArrayList<HashMap<String, String>> get_all_filled() { return db_ib.execs.get_all_filled(); }
 
 	public static double get_start_price(int order_id_main_) { return (db_ib.execs.order_id_exists(order_id_main_, true) ? get_start_end_price(order_id_main_) : common.WRONG_PRICE); }
 
@@ -137,15 +139,15 @@ public abstract class execs
 		
 		int tot = arrays.get_size(info);
 		if (tot < 1) return output;
-		if (tot == 1) return get_val(info.get(0), PRICE);
+		if (tot == 1) return get_val(info.get(0), DB_PRICE);
 		
 		double sum = 0.0;
 		double quantity_tot = 0.0;
 		
 		for (HashMap<String, String> item: info)
 		{
-			double price = get_val(item, PRICE);
-			double quantity = get_val(item, QUANTITY);
+			double price = get_val(item, DB_PRICE);
+			double quantity = get_val(item, DB_QUANTITY);
 			
 			sum += get_investment(price, quantity);
 			quantity_tot += quantity;
@@ -156,11 +158,11 @@ public abstract class execs
 
 	private static double get_fees(int order_id_) { return db_ib.execs.get_fees(order_id_); }
 	
-	private static double get_fees(ArrayList<HashMap<String, String>> info_) { return get_common(info_, FEES); }
+	private static double get_fees(ArrayList<HashMap<String, String>> info_) { return get_common(info_, DB_FEES); }
 
 	private static double get_quantity(int order_id_) { return db_ib.execs.get_quantity(order_id_); }
 	
-	private static double get_quantity(ArrayList<HashMap<String, String>> info_) { return get_common(info_, QUANTITY); }
+	private static double get_quantity(ArrayList<HashMap<String, String>> info_) { return get_common(info_, DB_QUANTITY); }
 
 	private static double get_investment(int order_id_) { return get_common(order_id_, INVESTMENT); }
 	
@@ -172,11 +174,11 @@ public abstract class execs
 	{
 		double output = WRONG_MONEY;
 
-		boolean is_price = what_.equals(PRICE);
+		boolean is_price = what_.equals(DB_PRICE);
 		boolean is_investment = what_.equals(INVESTMENT);
 			
 		if (is_price) output = common.WRONG_PRICE;
-		else if (what_.equals(QUANTITY)) output = common.WRONG_QUANTITY;
+		else if (what_.equals(DB_QUANTITY)) output = common.WRONG_QUANTITY;
 		
 		int tot = arrays.get_size(info_);
 		if (tot < 1) return output;
@@ -189,9 +191,9 @@ public abstract class execs
 		{
 			if (is_price || is_investment)
 			{
-				double price = get_val(item, PRICE);
-				double quantity = get_val(item, QUANTITY);			
-				double fees = (is_price ? 0.0 : get_val(item, FEES));
+				double price = get_val(item, DB_PRICE);
+				double quantity = get_val(item, DB_QUANTITY);			
+				double fees = (is_price ? 0.0 : get_val(item, DB_FEES));
 				
 				sum += get_investment(price, quantity, fees);
 				
@@ -203,7 +205,7 @@ public abstract class execs
 		return (is_price ? (sum / quantity_tot) : sum);
 	}
 
-	private static double get_investment(HashMap<String, String> item_) { return get_investment(get_val(item_, PRICE), get_val(item_, QUANTITY), get_val(item_, FEES)); }
+	private static double get_investment(HashMap<String, String> item_) { return get_investment(get_val(item_, DB_PRICE), get_val(item_, DB_QUANTITY), get_val(item_, DB_FEES)); }
 
 	private static double get_investment(double price_, double quantity_) { return get_investment(price_, quantity_, 0.0); }
 	

@@ -21,8 +21,6 @@ public abstract class watchlist
 	public static final String VOLUME_MAX = common.FIELD_VOLUME_MAX;
 	public static final String TIME_ELAPSED = common.FIELD_TIME_ELAPSED;
 	public static final String ELAPSED_INI = common.FIELD_ELAPSED_INI;
-	public static final String HALTED = common.FIELD_HALTED;
-	public static final String HALTED_TOT = common.FIELD_HALTED_TOT;	
 	public static final String FLU = common.FIELD_FLU;
 	public static final String FLU2 = common.FIELD_FLU2;
 	public static final String FLU2_MIN = common.FIELD_FLU2_MIN;
@@ -40,13 +38,13 @@ public abstract class watchlist
 	
 	public static void __backup() { common.__backup(SOURCE); }	
 	
-	public static boolean update(Object vals_, String symbol_, boolean is_quick_) { return async_data.update(SOURCE, vals_, symbol_, is_quick_); }
+	public static boolean update(Object vals_, String symbol_) { return async_data.update(SOURCE, symbol_, vals_); }
 
-	public static ArrayList<HashMap<String, String>> get_all_vals(boolean is_quick_) { return common.get_all_vals(SOURCE, common.get_fields(SOURCE), db.DEFAULT_WHERE); }
+	public static ArrayList<HashMap<String, String>> get_all_vals() { return common.get_all_vals(SOURCE, common.get_fields(SOURCE), db.DEFAULT_WHERE); }
 	
-	public static HashMap<String, String> get_vals(String symbol_, boolean is_quick_) { return common.get_vals(SOURCE, common.get_fields(SOURCE), common.get_where_symbol(SOURCE, symbol_)); }
+	public static HashMap<String, String> get_vals(String symbol_) { return common.get_vals(SOURCE, common.get_fields(SOURCE), common.get_where_symbol(SOURCE, symbol_)); }
 	
 	public static boolean delete(String symbol_) { return common.delete(SOURCE, common.get_where_symbol(SOURCE, symbol_)); }
 
-	static void populate_fields() { _fields = db_common.add_default_fields(SOURCE, new String[] { SYMBOL, PRICE, PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME, VOLUME_INI, VOLUME_MIN, VOLUME_MAX, TIME_ELAPSED, ELAPSED_INI, HALTED, HALTED_TOT, FLU, FLU2, FLU2_MIN, FLU2_MAX, FLUS_PRICE, VAR_TOT }); }	
+	static void populate_fields() { _fields = db_common.add_default_fields(SOURCE, new String[] { SYMBOL, PRICE, PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME, VOLUME_INI, VOLUME_MIN, VOLUME_MAX, TIME_ELAPSED, ELAPSED_INI, FLU, FLU2, FLU2_MIN, FLU2_MAX, FLUS_PRICE, VAR_TOT }); }	
 }

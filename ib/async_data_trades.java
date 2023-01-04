@@ -30,7 +30,7 @@ abstract class async_data_trades
 
 	public static boolean _includes_time = false;
 	public static boolean _includes_time_elapsed = true;
-	public static boolean _includes_halted = true;
+	public static boolean _includes_halted = false;
 	public static boolean _includes_halted_tot = false;
 	public static boolean _disable_asap = true;
 	public static boolean _only_essential = true;
@@ -60,7 +60,6 @@ abstract class async_data_trades
 		if (_fields.size() > 0) return;
 		
 		_fields.add(async_data.PRICE_IB);
-		_fields.add(async_data.HALTED_IB);
 	}
 	
 	public static ArrayList<String> get_all_symbols() { return async_data.get_all_symbols(_APP, is_quick()); }

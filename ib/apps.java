@@ -9,6 +9,16 @@ public abstract class apps
 {
 	public static final String DB_SOURCE = db_ib.apps.SOURCE;
 
+	public static final String DB_USER = db_ib.apps.USER;
+	public static final String DB_APP = db_ib.apps.APP;
+	public static final String DB_CONN_ID = db_ib.apps.CONN_ID;
+	public static final String DB_CONN_TYPE = db_ib.apps.CONN_TYPE;
+	public static final String DB_CONN_IS_ON = db_ib.apps.CONN_IS_ON;
+	public static final String DB_STATUS = db_ib.apps.STATUS;
+	public static final String DB_ERROR = db_ib.apps.ERROR;
+	public static final String DB_ADDITIONAL = db_ib.apps.ADDITIONAL;
+	public static final String DB_TIME2 = db_ib.apps.TIME2;
+	
 	public static final String STATUS = types.APPS_STATUS;
 	public static final String STATUS_STOPPED = types.APPS_STATUS_STOPPED;
 	public static final String STATUS_RUNNING = types.APPS_STATUS_RUNNING;
@@ -35,7 +45,7 @@ public abstract class apps
 		if (is_running) logs.update_screen(app + " already running");
 		else 
 		{
-			db_ib.apps.update_status(ib.apps.STATUS_RUNNING);
+			db_ib.apps.update_status(STATUS_RUNNING);
 			
 			logs.update_screen(app + " started");
 		}
@@ -58,13 +68,13 @@ public abstract class apps
 	
 	public static boolean update_is_connected(boolean is_connected_) { return db_ib.apps.update_is_connected(null, is_connected_); }
 	
-	public static void update_time() { db_ib.apps.update_time(is_quick()); }
+	public static void update_time() { db_ib.apps.update_time(); }
 
 	public static boolean app_running_ok() { return app_running_ok(get_app_name()); }
 
 	public static boolean app_running_ok(String app_) { return app_running_ok(app_, DEFAULT_APP_OK_DELAY_SECS); }
 
-	public static boolean app_running_ok(String app_, long delay_secs_) { return common.time2_is_ok(db_ib.apps.get_time(app_, STATUS_RUNNING, is_quick()), delay_secs_); }
+	public static boolean app_running_ok(String app_, long delay_secs_) { return common.time2_is_ok(db_ib.apps.get_time(app_, STATUS_RUNNING), delay_secs_); }
 	
 	public static String get_app_name() { return get_app_name(false); }
 	

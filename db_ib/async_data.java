@@ -11,6 +11,8 @@ import external_ib.data;
 
 public abstract class async_data 
 {
+	public static final String MAIN_SOURCE_HALTED = market.SOURCE;
+	
 	public static final String ENABLED = common.FIELD_ENABLED;
 	public static final String SYMBOL = common.FIELD_SYMBOL;
 	public static final String PRICE = common.FIELD_PRICE;
@@ -45,7 +47,7 @@ public abstract class async_data
 	public static final String FLU2_MAX = common.FIELD_FLU2_MAX;
 	public static final String VAR_TOT = common.FIELD_VAR_TOT;
 	public static final String FLUS_PRICE = common.FIELD_FLUS_PRICE;	
-
+	
 	public static boolean contains_active(String source_, int max_mins_inactive_) { return (common.get_count(source_, get_where_active(source_, max_mins_inactive_)) > 0); }
 
 	public static boolean exists(String source_, String symbol_) { return common.exists(source_, common.get_where_symbol(source_, symbol_)); }
@@ -54,11 +56,11 @@ public abstract class async_data
 	
 	public static boolean is_enabled(String source_, String symbol_) { return common.is_enabled(source_, common.get_where_symbol(source_, symbol_)); }
 
-	public static ArrayList<String> get_all_symbols(String source_, boolean is_quick_) { return get_all_symbols(source_, db.DEFAULT_WHERE, is_quick_); }
+	public static ArrayList<String> get_all_symbols(String source_) { return get_all_symbols(source_, db.DEFAULT_WHERE); }
 
-	public static ArrayList<String> get_all_symbols(String source_, String where_, boolean is_quick_) { return get_active_symbols(source_, 0, where_, is_quick_); }
+	public static ArrayList<String> get_all_symbols(String source_, String where_) { return get_active_symbols(source_, 0, where_); }
 	
-	public static ArrayList<String> get_active_symbols(String source_, int max_mins_inactive_, String where_, boolean is_quick_) 
+	public static ArrayList<String> get_active_symbols(String source_, int max_mins_inactive_, String where_) 
 	{ 
 		String where = null;
 		
@@ -72,29 +74,27 @@ public abstract class async_data
 
 	public static String get_where_active(String source_, int max_mins_inactive_) { return common.get_where_timestamp(source_, max_mins_inactive_); }
 
-	public static boolean is_halted(String source_, String symbol_) { return data.is_halted(common.get_int(source_, HALTED, common.get_where_symbol(source_, symbol_), data.WRONG_HALTED)); }
+	public static boolean is_halted(String symbol_) { return data.is_halted(common.get_int(MAIN_SOURCE_HALTED, HALTED, common.get_where_symbol(MAIN_SOURCE_HALTED, symbol_), data.WRONG_HALTED)); }
 	
-	public static int get_halted_tot(String source_, String symbol_, boolean is_quick_) { return common.get_int(source_, HALTED_TOT, common.get_where_symbol(source_, symbol_)); }
+	public static int get_halted_tot(String symbol_) { return common.get_int(MAIN_SOURCE_HALTED, HALTED_TOT, common.get_where_symbol(MAIN_SOURCE_HALTED, symbol_)); }
 	
-	public static long get_elapsed_ini(String source_, String symbol_, boolean is_quick_) { return common.get_long(source_, ELAPSED_INI, common.get_where_symbol(source_, symbol_), dates.ELAPSED_START); }
+	public static long get_elapsed_ini(String source_, String symbol_) { return common.get_long(source_, ELAPSED_INI, common.get_where_symbol(source_, symbol_), dates.ELAPSED_START); }
 
-	public static boolean update(String source_, Object vals_, String symbol_, boolean is_quick_) { return common.update(source_, vals_, common.get_where_symbol(source_, symbol_)); }
-
-	public static boolean update_halted_tot(String source_, String symbol_, boolean is_quick_) 
+	public static boolean update_halted_tot(String symbol_) 
 	{ 
-		int val = get_halted_tot(source_, symbol_, is_quick_);
+		int val = get_halted_tot(symbol_);
 		
 		if (val < 0) val = 0;
 		val++;
 		
-		return update(source_, symbol_, HALTED_TOT, val, true);
+		return update(MAIN_SOURCE_HALTED, symbol_, HALTED_TOT, val, true);
 	}
 
 	public static boolean update(String source_, String symbol_, String field_col_, Object val_, boolean is_field_) { return update(source_, symbol_, common.add_to_vals(source_, field_col_, common.get_input(source_, val_), null, is_field_)); }
 
 	public static boolean update(String source_, String symbol_, Object vals_) { return common.update(source_, vals_, common.get_where_symbol(source_, symbol_)); }
 
-	public static boolean update_timestamp(String source_, String symbol_, boolean is_quick_) { return common.update(source_, accessory.db.FIELD_TIMESTAMP, dates.get_now_string(ib.common.FORMAT_TIMESTAMP, 0), common.get_where_symbol(source_, symbol_)); }
+	public static boolean update_timestamp(String source_, String symbol_) { return common.update(source_, accessory.db.FIELD_TIMESTAMP, dates.get_now_string(ib.common.FORMAT_TIMESTAMP, 0), common.get_where_symbol(source_, symbol_)); }
 	
 	public static boolean insert_new(String source_, String symbol_) { return common.insert(source_, get_default_vals_new(source_, symbol_)); }
 

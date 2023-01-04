@@ -22,7 +22,6 @@ public abstract class trades
 	public static final String ELAPSED_INI = common.FIELD_ELAPSED_INI;
 	public static final String START = common.FIELD_START;
 	public static final String STOP = common.FIELD_STOP;
-	public static final String HALTED = common.FIELD_HALTED;
 	public static final String UNREALISED = common.FIELD_UNREALISED;	
 	public static final String IS_ACTIVE = common.FIELD_IS_ACTIVE;
 	public static final String INVESTMENT = common.FIELD_INVESTMENT;
@@ -117,7 +116,7 @@ public abstract class trades
 
 	public static void update_realised(int order_id_main_, double realised_) { update(REALISED, common.adapt_money(realised_), order_id_main_); }
 	
-	static void populate_fields() { _fields = db_common.add_default_fields(SOURCE, new String[] { ORDER_ID_MAIN, ORDER_ID_SEC, SYMBOL, PRICE, TIME_ELAPSED, ELAPSED_INI, START, STOP, HALTED, UNREALISED, IS_ACTIVE, INVESTMENT, END, REALISED }); }	
+	static void populate_fields() { _fields = db_common.add_default_fields(SOURCE, new String[] { ORDER_ID_MAIN, ORDER_ID_SEC, SYMBOL, PRICE, TIME_ELAPSED, ELAPSED_INI, START, STOP, UNREALISED, IS_ACTIVE, INVESTMENT, END, REALISED }); }	
 	
 	static boolean update_stop(int order_id_main_, double stop_) { return update(STOP, common.adapt_price(stop_), order_id_main_); }
 

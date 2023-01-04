@@ -108,14 +108,14 @@ abstract class remote_request extends parent_static
 			return REQUEST_ERROR;
 		}
 		
-		if (!db_ib.remote.request_update_type_order(request_, remote.CANCEL, remote.is_quick()))
+		if (!db_ib.remote.request_update_type_order(request_, remote.CANCEL))
 		{
 			update_error(request_, null, ERROR_CANCEL, remote.CANCEL);
 			
 			return REQUEST_ERROR;
 		}
 				
-		String symbol = db_ib.remote.get_symbol(request_, remote.is_quick());
+		String symbol = db_ib.remote.get_symbol(request_);
 		
 		remote.log(remote.get_ok_message_default(remote.CANCEL, request_, symbol, common.WRONG_ORDER_ID, true)); 
 		
@@ -147,9 +147,9 @@ abstract class remote_request extends parent_static
 		String type_update = remote.check_type_update(type_update_);
 		if (!strings.is_ok(type_update) || !(remote.is_update_market(type_update) || common.price_is_ok(val))) return REQUEST_ERROR;
 		
-		String symbol = db_ib.remote.get_symbol(request_, remote.is_quick());
+		String symbol = db_ib.remote.get_symbol(request_);
 
-		if (!db_ib.remote.request_update_type_order_values(request_, type_update, db_ib.orders.get_field_update(type_update), val, remote.is_quick()))
+		if (!db_ib.remote.request_update_type_order_values(request_, type_update, db_ib.orders.get_field_update(type_update), val))
 		{
 			update_error_update(request_, symbol, type_update, val_);
 			
@@ -204,7 +204,7 @@ abstract class remote_request extends parent_static
 		_order order = new _order(type_place_, symbol_, quantity, stop_, start_, start2_);
 
 		int output = common.WRONG_REQUEST;
-		if (order.is_ok()) output = db_ib.remote.__request_start(order, perc_money, price, remote.is_quick());
+		if (order.is_ok()) output = db_ib.remote.__request_start(order, perc_money, price);
 	
 		if (output != common.WRONG_REQUEST) remote.log(remote.get_ok_message_default(type_place_, output, symbol_, order.get_id_main(), true));
 	

@@ -88,7 +88,7 @@ public class async_data_quicker extends parent_static
 		}
 	}
 	
-	static ArrayList<String> get_all_symbols(String source_) { return db_ib.async_data.get_all_symbols(source_, true); }
+	static ArrayList<String> get_all_symbols(String source_) { return db_ib.async_data.get_all_symbols(source_); }
 	
 	static void __tick_price(int id_, int field_ib_, double price_)
 	{
@@ -225,7 +225,7 @@ public class async_data_quicker extends parent_static
 		{			
 			col_ini = db_ib.common.get_col(source_, db_ib.async_data.ELAPSED_INI);
 
-			ini = db_ib.async_data.get_elapsed_ini(source_, symbol_, true);
+			ini = db_ib.async_data.get_elapsed_ini(source_, symbol_);
 		}
 
 		if (ini <= dates.ELAPSED_START) reset_elapsed_ini(source_, symbol_, col_ini);
@@ -275,7 +275,7 @@ public class async_data_quicker extends parent_static
 		int id = __get_new_id(symbol_); 
 		
 		if (!db_ib.async_data.exists(source, symbol_)) db_ib.async_data.insert_new(source, symbol_);
-		else if (!async_data_apps_quicker.__checks_enabled() || db_ib.async_data.is_enabled(source, symbol_)) db_ib.async_data.update_timestamp(source, symbol_, true);
+		else if (!async_data_apps_quicker.__checks_enabled() || db_ib.async_data.is_enabled(source, symbol_)) db_ib.async_data.update_timestamp(source, symbol_);
 		else return output;			
 
 		if (!async_data_apps_quicker.id_is_ok(id)) return output;
@@ -407,14 +407,12 @@ public class async_data_quicker extends parent_static
 	{
 		__lock();
 		
-		String source = async_data_apps_quicker.get_source();
-
 		int val = (int)val_;			
 		
 		boolean halted = data.is_halted(val);
-		boolean halted_db = db_ib.async_data.is_halted(source, symbol_);
+		boolean halted_db = db_ib.async_data.is_halted(symbol_);
 			
-		if (async_data_apps_quicker.includes_halted_tot() && (halted && !halted_db)) db_ib.async_data.update_halted_tot(source, symbol_, true);		
+		if (async_data_apps_quicker.includes_halted_tot() && (halted && !halted_db)) db_ib.async_data.update_halted_tot(symbol_);		
 		
 		val = ((async_data_apps_quicker.includes_halted() && (halted != halted_db)) ? val : WRONG_HALTED);
 	
