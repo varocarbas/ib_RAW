@@ -9,7 +9,6 @@ import accessory.misc;
 import accessory.parent_static;
 import accessory.strings;
 import accessory_ib.logs;
-import accessory_ib.types;
 import external_ib.calls;
 import external_ib.data;
 
@@ -28,8 +27,8 @@ public abstract class async_data extends parent_static
 	public static final int ASK_SIZE_IB = external_ib.data.TICK_ASK_SIZE;
 	public static final int BID_SIZE_IB = external_ib.data.TICK_BID_SIZE;
 	
-	public static final String TYPE_SNAPSHOT = types.ASYNC_DATA_SNAPSHOT;
-	public static final String TYPE_STREAM = types.ASYNC_DATA_STREAM;
+	public static final String TYPE_SNAPSHOT = accessory_ib._types.ASYNC_DATA_SNAPSHOT;
+	public static final String TYPE_STREAM = accessory_ib._types.ASYNC_DATA_STREAM;
 
 	public static final double FACTOR_VOLUME = 1.0 / 1000.0;
 

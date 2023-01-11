@@ -14,14 +14,14 @@ import accessory.arrays;
 import accessory.dates;
 import accessory_ib._alls;
 import accessory_ib.errors;
-import accessory_ib.types;
+import accessory_ib._types;
 import external_ib.calls;
 
 public abstract class sync extends parent_static 
 {
-	public static final String GET_ORDER_ID = types.SYNC_GET_ORDER_ID;
-	public static final String GET_ORDERS = types.SYNC_GET_ORDERS;
-	public static final String GET_FUNDS = types.SYNC_GET_FUNDS;
+	public static final String GET_ORDER_ID = _types.SYNC_GET_ORDER_ID;
+	public static final String GET_ORDERS = _types.SYNC_GET_ORDERS;
+	public static final String GET_FUNDS = _types.SYNC_GET_FUNDS;
 	
 	public static final String ORDER_PLACE = orders.PLACE;
 	public static final String ORDER_UPDATE = orders.UPDATE;
@@ -32,14 +32,14 @@ public abstract class sync extends parent_static
 	public static final String ORDER_STATUS_INACTIVE = orders.STATUS_INACTIVE;
 	public static final String ORDER_STATUS_IN_PROGRESS = orders.STATUS_IN_PROGRESS;
 
-	public static final String OUT_INT = types.SYNC_OUT_INT;
-	public static final String OUT_ORDERS = types.SYNC_OUT_ORDERS;
-	public static final String OUT_FUNDS = types.SYNC_OUT_FUNDS;
+	public static final String OUT_INT = _types.SYNC_OUT_INT;
+	public static final String OUT_ORDERS = _types.SYNC_OUT_ORDERS;
+	public static final String OUT_FUNDS = _types.SYNC_OUT_FUNDS;
 	
 	public static final long TIMEOUT_GET_ORDERS = 3l;
 	public static final long TIMEOUT_EXECUTE_ORDER = 3l;
 	
-	public static final String ERROR_TIMEOUT = types.ERROR_IB_SYNC_TIMEOUT;
+	public static final String ERROR_TIMEOUT = _types.ERROR_IB_SYNC_TIMEOUT;
 	
 	public static final int WRONG_REQ_ID = common.WRONG_ID;
 	public static final int WRONG_ORDER_ID = common.WRONG_ORDER_ID;
@@ -92,11 +92,11 @@ public abstract class sync extends parent_static
 	
 	public static boolean is_get(String type_) { return strings.is_ok(check_get(type_)); }
 	
-	public static String check_get(String type_) { return accessory.types.check_type(type_, types.SYNC_GET); }
+	public static String check_get(String type_) { return accessory._types.check_type(type_, _types.SYNC_GET); }
 	
-	public static String check_out(String type_) { return accessory.types.check_type(type_, types.SYNC_OUT); }
+	public static String check_out(String type_) { return accessory._types.check_type(type_, _types.SYNC_OUT); }
 	
-	public static String check_error(String type_) { return accessory.types.check_type(type_, types.ERROR_IB_SYNC); }
+	public static String check_error(String type_) { return accessory._types.check_type(type_, _types.ERROR_IB_SYNC); }
 
 	public static String get_error_message(String type_)
 	{

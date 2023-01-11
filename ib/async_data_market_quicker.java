@@ -17,7 +17,7 @@ abstract class async_data_market_quicker extends parent_static
 	static final boolean INCLUDES_TIME = true;
 	static final boolean INCLUDES_TIME_ELAPSED = false;
 	static final boolean INCLUDES_HALTED = true;
-	static final boolean INCLUDES_HALTED_TOT = false;
+	static final boolean INCLUDES_HALTED_TOT = true;
 
 	static volatile String[] _symbols = new String[SIZE_GLOBALS];
 	@SuppressWarnings("unchecked")

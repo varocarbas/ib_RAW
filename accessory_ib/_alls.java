@@ -43,8 +43,6 @@ public class _alls extends parent_first
 	{ 
 		if (_populated) return;
 		
-		accessory._alls.populate_types(types.populate_all_types());
-		
 		SYNC_GET_OUTS = sync.populate_all_get_outs();
 		
 		CALLS_KEYS_FUNDS = calls.populate_all_keys_funds();

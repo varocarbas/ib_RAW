@@ -16,7 +16,7 @@ public abstract class errors
 {
 	public static final String MESSAGE = accessory.errors.MESSAGE;
 	
-	public static final String ERROR_GENERIC = types.ERROR_IB_GENERIC;
+	public static final String ERROR_GENERIC = _types.ERROR_IB_GENERIC;
 	
 	public static final String DEFAULT_WARNING = "WARNING";
 	public static final String DEFAULT_MESSAGE = accessory.errors.DEFAULT_MESSAGE;
@@ -53,7 +53,7 @@ public abstract class errors
 		logs.update_screen(message);
 	}
 
-	public static String check(String type_) { return accessory.types.check_type(type_, types.ERROR_IB); }
+	public static String check(String type_) { return accessory._types.check_type(type_, _types.ERROR_IB); }
 	
 	private static HashMap<String, Object> wrapper_error_info(int id_, int code_, String message_)
 	{

@@ -5,17 +5,17 @@ import java.util.HashMap;
 
 import accessory.arrays;
 import accessory.strings;
-import accessory_ib.types;
+import accessory_ib._types;
 
 abstract class remote_execute
 {
-	public static final String ERROR = types.ERROR_IB_REMOTE_EXECUTE;
-	public static final String ERROR_TYPE = types.ERROR_IB_REMOTE_EXECUTE_TYPE;
-	public static final String ERROR_QUANTITY = types.ERROR_IB_REMOTE_EXECUTE_QUANTITY;
-	public static final String ERROR_ORDER_ID = types.ERROR_IB_REMOTE_EXECUTE_ORDER_ID;
-	public static final String ERROR_PLACE = types.ERROR_IB_REMOTE_EXECUTE_PLACE;
-	public static final String ERROR_CANCEL = types.ERROR_IB_REMOTE_EXECUTE_CANCEL;
-	public static final String ERROR_UPDATE = types.ERROR_IB_REMOTE_EXECUTE_UPDATE;
+	public static final String ERROR = _types.ERROR_IB_REMOTE_EXECUTE;
+	public static final String ERROR_TYPE = _types.ERROR_IB_REMOTE_EXECUTE_TYPE;
+	public static final String ERROR_QUANTITY = _types.ERROR_IB_REMOTE_EXECUTE_QUANTITY;
+	public static final String ERROR_ORDER_ID = _types.ERROR_IB_REMOTE_EXECUTE_ORDER_ID;
+	public static final String ERROR_PLACE = _types.ERROR_IB_REMOTE_EXECUTE_PLACE;
+	public static final String ERROR_CANCEL = _types.ERROR_IB_REMOTE_EXECUTE_CANCEL;
+	public static final String ERROR_UPDATE = _types.ERROR_IB_REMOTE_EXECUTE_UPDATE;
 
 	public static void __execute_all()
 	{
@@ -209,7 +209,7 @@ abstract class remote_execute
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
 		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_MAIN), order_id_);
-		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.TYPE_ORDER), db_ib.remote.get_key_from_type_order(type_));
+		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.TYPE_ORDER), db_ib.remote.store_order_type(type_));
 		
 		remote.update_error(request_, ERROR_ORDER_ID, vals, type_);		
 	}

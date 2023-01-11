@@ -10,7 +10,7 @@ import accessory.misc;
 import accessory.parent_static;
 import accessory.strings;
 import accessory_ib._defaults;
-import accessory_ib.types;
+import accessory_ib._types;
 import external_ib.calls;
 import external_ib.contracts;
 
@@ -25,7 +25,7 @@ public abstract class basic extends parent_static
 	public static final String DB_CURRENCY = db_ib.basic.CURRENCY;
 	public static final String DB_MONEY_FREE = db_ib.basic.MONEY_FREE;
 
-	public static final String CONFIG_ID_MAIN = types.CONFIG_BASIC_ID_MAIN;
+	public static final String CONFIG_ID_MAIN = _types.CONFIG_BASIC_ID_MAIN;
 
 	public static final String SEPARATOR = misc.SEPARATOR_NAME;
 

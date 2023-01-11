@@ -7,23 +7,23 @@ import accessory.dates;
 import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
-import accessory_ib.types;
+import accessory_ib._types;
 
 abstract class remote_request extends parent_static 
 {
 	public static final long TIMEOUT = 10l;
 
-	public static final String REQUEST_OK = types.REMOTE_REQUEST_OK;
-	public static final String REQUEST_ERROR = types.REMOTE_REQUEST_ERROR;
-	public static final String REQUEST_IGNORED = types.REMOTE_REQUEST_IGNORED;
+	public static final String REQUEST_OK = _types.REMOTE_REQUEST_OK;
+	public static final String REQUEST_ERROR = _types.REMOTE_REQUEST_ERROR;
+	public static final String REQUEST_IGNORED = _types.REMOTE_REQUEST_IGNORED;
 	
-	public static final String ERROR = types.ERROR_IB_REMOTE_REQUEST; 
-	public static final String ERROR_REQUEST = types.ERROR_IB_REMOTE_REQUEST_REQUEST; 
-	public static final String ERROR_PLACE = types.ERROR_IB_REMOTE_REQUEST_PLACE; 
-	public static final String ERROR_CANCEL = types.ERROR_IB_REMOTE_REQUEST_CANCEL;
-	public static final String ERROR_UPDATE = types.ERROR_IB_REMOTE_REQUEST_UPDATE;
-	public static final String ERROR_WAIT = types.ERROR_IB_REMOTE_REQUEST_WAIT;
-	public static final String ERROR_FAIL = types.ERROR_IB_REMOTE_REQUEST_FAIL;
+	public static final String ERROR = _types.ERROR_IB_REMOTE_REQUEST; 
+	public static final String ERROR_REQUEST = _types.ERROR_IB_REMOTE_REQUEST_REQUEST; 
+	public static final String ERROR_PLACE = _types.ERROR_IB_REMOTE_REQUEST_PLACE; 
+	public static final String ERROR_CANCEL = _types.ERROR_IB_REMOTE_REQUEST_CANCEL;
+	public static final String ERROR_UPDATE = _types.ERROR_IB_REMOTE_REQUEST_UPDATE;
+	public static final String ERROR_WAIT = _types.ERROR_IB_REMOTE_REQUEST_WAIT;
+	public static final String ERROR_FAIL = _types.ERROR_IB_REMOTE_REQUEST_FAIL;
 	
 	public static int __place(String type_place_, String symbol_, double stop_, double start_, double quantity_, boolean wait_for_execution_) 
 	{ 
@@ -217,7 +217,7 @@ abstract class remote_request extends parent_static
 	{ 
 		boolean is_ok = _is_executed(request_, true, false, false); 
 	
-		if (is_ok) db_ib.remote.update_status2(request_, db_ib.remote.get_key_from_status2(ib.remote.STATUS2_EXECUTED));
+		if (is_ok) db_ib.remote.update_status2(request_, db_ib.remote.store_status2_type(ib.remote.STATUS2_EXECUTED));
 		
 		return is_ok;
 	}

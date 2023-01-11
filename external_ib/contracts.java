@@ -8,16 +8,16 @@ import accessory.arrays;
 import accessory.strings;
 import accessory_ib._alls;
 import accessory_ib.config;
-import accessory_ib.types;
+import accessory_ib._types;
 
 public abstract class contracts 
 {
-	public static final String CONFIG_SECURITY_TYPE = types.CONFIG_CONTRACT_SECURITY_TYPE;
-	public static final String CONFIG_CURRENCY = types.CONFIG_CONTRACT_CURRENCY;
-	public static final String CONFIG_EXCHANGE = types.CONFIG_CONTRACT_EXCHANGE;
-	public static final String CONFIG_EXCHANGE_PRIMARY = types.CONFIG_CONTRACT_EXCHANGE_PRIMARY;
-	public static final String CONFIG_EXCHANGE_COUNTRY = types.CONFIG_CONTRACT_EXCHANGE_COUNTRY;
-	public static final String CONFIG_EXCHANGE_COUNTRY_US = types.CONFIG_CONTRACT_EXCHANGE_COUNTRY_US;
+	public static final String CONFIG_SECURITY_TYPE = _types.CONFIG_CONTRACT_SECURITY_TYPE;
+	public static final String CONFIG_CURRENCY = _types.CONFIG_CONTRACT_CURRENCY;
+	public static final String CONFIG_EXCHANGE = _types.CONFIG_CONTRACT_EXCHANGE;
+	public static final String CONFIG_EXCHANGE_PRIMARY = _types.CONFIG_CONTRACT_EXCHANGE_PRIMARY;
+	public static final String CONFIG_EXCHANGE_COUNTRY = _types.CONFIG_CONTRACT_EXCHANGE_COUNTRY;
+	public static final String CONFIG_EXCHANGE_COUNTRY_US = _types.CONFIG_CONTRACT_EXCHANGE_COUNTRY_US;
 
 	//--- To be synced with the contract.SecType values (https://interactivebrokers.github.io/tws-api/classIBApi_1_1Contract.html).
 	public static final String SECURITY_STOCK_ETF = "STK";
@@ -43,7 +43,7 @@ public abstract class contracts
 	public static final String DEFAULT_EXCHANGE = "SMART";
 	public static final String DEFAULT_EXCHANGE_PRIMARY = "ISLAND";
 	
-	public static final String ERROR_INFO_STOCK_ETF = types.ERROR_IB_CONTRACTS_INFO_STOCK_ETF;
+	public static final String ERROR_INFO_STOCK_ETF = _types.ERROR_IB_CONTRACTS_INFO_STOCK_ETF;
 
 	public static int get_max_length_currency() { return DEFAULT_CURRENCY.length(); }
 

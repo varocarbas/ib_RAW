@@ -128,7 +128,7 @@ public abstract class apps
 	
 	public static boolean update_status(String app_, String status_) 
 	{
-		String key = get_key_from_status(status_);
+		String key = store_status_type(status_);
 
 		return (strings.is_ok(key) ? update(STATUS, key, app_) : false);
 	}
@@ -161,9 +161,9 @@ public abstract class apps
 		return (strings.are_equal(output, db.WRONG_STRING) ? strings.DEFAULT : output);
 	}
 	
-	public static String get_key_from_status(String status_) { return common.get_key_from_type(status_, ib.apps.STATUS); }
+	public static String store_status_type(String status_type_) { return ib.apps.get_status_key(status_type_); }
 
-	public static String get_status_from_key(String key_) { return common.get_type_from_key(key_, ib.apps.STATUS); }
+	public static String get_status_type(String status_key_) { return ib.apps.get_status_type(status_key_); }
 	
 	static void populate_fields() { _fields = db_common.add_default_fields(SOURCE, new String[] { USER, APP, CONN_ID, CONN_TYPE, CONN_IS_ON, STATUS, ERROR, ADDITIONAL, TIME2 }); }
 	
@@ -225,7 +225,7 @@ public abstract class apps
 		return output; 
 	}
 
-	private static String get_where_status(String status_) { return common.get_where(SOURCE, STATUS, get_key_from_status(status_), false); }
+	private static String get_where_status(String status_) { return common.get_where(SOURCE, STATUS, store_status_type(status_), false); }
 	
 	private static String get_where_app() { return get_where_app(ini_apps.get_app_name()); }
 

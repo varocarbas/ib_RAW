@@ -16,113 +16,113 @@ import accessory.db_where;
 import accessory.generic;
 import accessory.strings;
 import accessory_ib._alls;
-import accessory_ib.types;
+import accessory_ib._types;
 import external_ib.contracts;
 
 public abstract class common 
 {
-	public static final String SOURCE_MARKET = types.CONFIG_DB_IB_MARKET_SOURCE;
-	public static final String SOURCE_EXECS = types.CONFIG_DB_IB_EXECS_SOURCE;
-	public static final String SOURCE_BASIC = types.CONFIG_DB_IB_BASIC_SOURCE;
-	public static final String SOURCE_REMOTE = types.CONFIG_DB_IB_REMOTE_SOURCE;
-	public static final String SOURCE_ORDERS = types.CONFIG_DB_IB_ORDERS_SOURCE;
-	public static final String SOURCE_TRADES = types.CONFIG_DB_IB_TRADES_SOURCE;
-	public static final String SOURCE_WATCHLIST = types.CONFIG_DB_IB_WATCHLIST_SOURCE;
-	public static final String SOURCE_APPS = types.CONFIG_DB_IB_APPS_SOURCE;
+	public static final String SOURCE_MARKET = _types.CONFIG_DB_IB_MARKET_SOURCE;
+	public static final String SOURCE_EXECS = _types.CONFIG_DB_IB_EXECS_SOURCE;
+	public static final String SOURCE_BASIC = _types.CONFIG_DB_IB_BASIC_SOURCE;
+	public static final String SOURCE_REMOTE = _types.CONFIG_DB_IB_REMOTE_SOURCE;
+	public static final String SOURCE_ORDERS = _types.CONFIG_DB_IB_ORDERS_SOURCE;
+	public static final String SOURCE_TRADES = _types.CONFIG_DB_IB_TRADES_SOURCE;
+	public static final String SOURCE_WATCHLIST = _types.CONFIG_DB_IB_WATCHLIST_SOURCE;
+	public static final String SOURCE_APPS = _types.CONFIG_DB_IB_APPS_SOURCE;
 	
-	public static final String SOURCE_EXECS_OLD = types.CONFIG_DB_IB_EXECS_OLD_SOURCE;
-	public static final String SOURCE_BASIC_OLD = types.CONFIG_DB_IB_BASIC_OLD_SOURCE;
-	public static final String SOURCE_REMOTE_OLD = types.CONFIG_DB_IB_REMOTE_OLD_SOURCE;
-	public static final String SOURCE_ORDERS_OLD = types.CONFIG_DB_IB_ORDERS_OLD_SOURCE;
-	public static final String SOURCE_TRADES_OLD = types.CONFIG_DB_IB_TRADES_OLD_SOURCE;
-	public static final String SOURCE_APPS_OLD = types.CONFIG_DB_IB_APPS_OLD_SOURCE;
+	public static final String SOURCE_EXECS_OLD = _types.CONFIG_DB_IB_EXECS_OLD_SOURCE;
+	public static final String SOURCE_BASIC_OLD = _types.CONFIG_DB_IB_BASIC_OLD_SOURCE;
+	public static final String SOURCE_REMOTE_OLD = _types.CONFIG_DB_IB_REMOTE_OLD_SOURCE;
+	public static final String SOURCE_ORDERS_OLD = _types.CONFIG_DB_IB_ORDERS_OLD_SOURCE;
+	public static final String SOURCE_TRADES_OLD = _types.CONFIG_DB_IB_TRADES_OLD_SOURCE;
+	public static final String SOURCE_APPS_OLD = _types.CONFIG_DB_IB_APPS_OLD_SOURCE;
 	
-	public static final String FIELD_SYMBOL = types.CONFIG_DB_IB_FIELD_SYMBOL;
-	public static final String FIELD_PRICE = types.CONFIG_DB_IB_FIELD_PRICE;
-	public static final String FIELD_SIZE = types.CONFIG_DB_IB_FIELD_SIZE;
-	public static final String FIELD_TIME = types.CONFIG_DB_IB_FIELD_TIME;
-	public static final String FIELD_OPEN = types.CONFIG_DB_IB_FIELD_OPEN;
-	public static final String FIELD_CLOSE = types.CONFIG_DB_IB_FIELD_CLOSE;
-	public static final String FIELD_LOW = types.CONFIG_DB_IB_FIELD_LOW;
-	public static final String FIELD_HIGH = types.CONFIG_DB_IB_FIELD_HIGH;
-	public static final String FIELD_VOLUME = types.CONFIG_DB_IB_FIELD_VOLUME;		
-	public static final String FIELD_ASK = types.CONFIG_DB_IB_FIELD_ASK;
-	public static final String FIELD_ASK_SIZE = types.CONFIG_DB_IB_FIELD_ASK_SIZE;
-	public static final String FIELD_BID = types.CONFIG_DB_IB_FIELD_BID;
-	public static final String FIELD_BID_SIZE = types.CONFIG_DB_IB_FIELD_BID_SIZE;
-	public static final String FIELD_HALTED = types.CONFIG_DB_IB_FIELD_HALTED;
-	public static final String FIELD_HALTED_TOT = types.CONFIG_DB_IB_FIELD_HALTED_TOT;
-	public static final String FIELD_ENABLED = types.CONFIG_DB_IB_FIELD_ENABLED;
+	public static final String FIELD_SYMBOL = _types.CONFIG_DB_IB_FIELD_SYMBOL;
+	public static final String FIELD_PRICE = _types.CONFIG_DB_IB_FIELD_PRICE;
+	public static final String FIELD_SIZE = _types.CONFIG_DB_IB_FIELD_SIZE;
+	public static final String FIELD_TIME = _types.CONFIG_DB_IB_FIELD_TIME;
+	public static final String FIELD_OPEN = _types.CONFIG_DB_IB_FIELD_OPEN;
+	public static final String FIELD_CLOSE = _types.CONFIG_DB_IB_FIELD_CLOSE;
+	public static final String FIELD_LOW = _types.CONFIG_DB_IB_FIELD_LOW;
+	public static final String FIELD_HIGH = _types.CONFIG_DB_IB_FIELD_HIGH;
+	public static final String FIELD_VOLUME = _types.CONFIG_DB_IB_FIELD_VOLUME;		
+	public static final String FIELD_ASK = _types.CONFIG_DB_IB_FIELD_ASK;
+	public static final String FIELD_ASK_SIZE = _types.CONFIG_DB_IB_FIELD_ASK_SIZE;
+	public static final String FIELD_BID = _types.CONFIG_DB_IB_FIELD_BID;
+	public static final String FIELD_BID_SIZE = _types.CONFIG_DB_IB_FIELD_BID_SIZE;
+	public static final String FIELD_HALTED = _types.CONFIG_DB_IB_FIELD_HALTED;
+	public static final String FIELD_HALTED_TOT = _types.CONFIG_DB_IB_FIELD_HALTED_TOT;
+	public static final String FIELD_ENABLED = _types.CONFIG_DB_IB_FIELD_ENABLED;
 
-	public static final String FIELD_USER = types.CONFIG_DB_IB_FIELD_USER;
-	public static final String FIELD_ORDER_ID = types.CONFIG_DB_IB_FIELD_ORDER_ID;
-	public static final String FIELD_QUANTITY = types.CONFIG_DB_IB_FIELD_QUANTITY;
-	public static final String FIELD_SIDE = types.CONFIG_DB_IB_FIELD_SIDE;
-	public static final String FIELD_FEES = types.CONFIG_DB_IB_FIELD_FEES;
-	public static final String FIELD_EXEC_ID = types.CONFIG_DB_IB_FIELD_EXEC_ID;
+	public static final String FIELD_USER = _types.CONFIG_DB_IB_FIELD_USER;
+	public static final String FIELD_ORDER_ID = _types.CONFIG_DB_IB_FIELD_ORDER_ID;
+	public static final String FIELD_QUANTITY = _types.CONFIG_DB_IB_FIELD_QUANTITY;
+	public static final String FIELD_SIDE = _types.CONFIG_DB_IB_FIELD_SIDE;
+	public static final String FIELD_FEES = _types.CONFIG_DB_IB_FIELD_FEES;
+	public static final String FIELD_EXEC_ID = _types.CONFIG_DB_IB_FIELD_EXEC_ID;
 	
-	public static final String FIELD_MONEY = types.CONFIG_DB_IB_FIELD_MONEY;
-	public static final String FIELD_MONEY_INI = types.CONFIG_DB_IB_FIELD_MONEY_INI;
-	public static final String FIELD_ACCOUNT_IB = types.CONFIG_DB_IB_FIELD_ACCOUNT_IB;
-	public static final String FIELD_CURRENCY = types.CONFIG_DB_IB_FIELD_CURRENCY;
-	public static final String FIELD_MONEY_FREE = types.CONFIG_DB_IB_FIELD_MONEY_FREE;
+	public static final String FIELD_MONEY = _types.CONFIG_DB_IB_FIELD_MONEY;
+	public static final String FIELD_MONEY_INI = _types.CONFIG_DB_IB_FIELD_MONEY_INI;
+	public static final String FIELD_ACCOUNT_IB = _types.CONFIG_DB_IB_FIELD_ACCOUNT_IB;
+	public static final String FIELD_CURRENCY = _types.CONFIG_DB_IB_FIELD_CURRENCY;
+	public static final String FIELD_MONEY_FREE = _types.CONFIG_DB_IB_FIELD_MONEY_FREE;
 	
-	public static final String FIELD_START = types.CONFIG_DB_IB_FIELD_START;
-	public static final String FIELD_START2 = types.CONFIG_DB_IB_FIELD_START2;
-	public static final String FIELD_STOP = types.CONFIG_DB_IB_FIELD_STOP;
-	public static final String FIELD_ORDER_ID_MAIN = types.CONFIG_DB_IB_FIELD_ORDER_ID_MAIN;
-	public static final String FIELD_ORDER_ID_SEC = types.CONFIG_DB_IB_FIELD_ORDER_ID_SEC;
-	public static final String FIELD_STATUS = types.CONFIG_DB_IB_FIELD_STATUS;
-	public static final String FIELD_STATUS2 = types.CONFIG_DB_IB_FIELD_STATUS2;
-	public static final String FIELD_IS_MARKET = types.CONFIG_DB_IB_FIELD_IS_MARKET;
-	public static final String FIELD_PERC_MONEY = types.CONFIG_DB_IB_FIELD_PERC_MONEY;
-	public static final String FIELD_REQUEST = types.CONFIG_DB_IB_FIELD_REQUEST;
-	public static final String FIELD_TYPE_ORDER = types.CONFIG_DB_IB_FIELD_TYPE_ORDER;
+	public static final String FIELD_START = _types.CONFIG_DB_IB_FIELD_START;
+	public static final String FIELD_START2 = _types.CONFIG_DB_IB_FIELD_START2;
+	public static final String FIELD_STOP = _types.CONFIG_DB_IB_FIELD_STOP;
+	public static final String FIELD_ORDER_ID_MAIN = _types.CONFIG_DB_IB_FIELD_ORDER_ID_MAIN;
+	public static final String FIELD_ORDER_ID_SEC = _types.CONFIG_DB_IB_FIELD_ORDER_ID_SEC;
+	public static final String FIELD_STATUS = _types.CONFIG_DB_IB_FIELD_STATUS;
+	public static final String FIELD_STATUS2 = _types.CONFIG_DB_IB_FIELD_STATUS2;
+	public static final String FIELD_IS_MARKET = _types.CONFIG_DB_IB_FIELD_IS_MARKET;
+	public static final String FIELD_PERC_MONEY = _types.CONFIG_DB_IB_FIELD_PERC_MONEY;
+	public static final String FIELD_REQUEST = _types.CONFIG_DB_IB_FIELD_REQUEST;
+	public static final String FIELD_TYPE_ORDER = _types.CONFIG_DB_IB_FIELD_TYPE_ORDER;
 	
-	public static final String FIELD_TYPE_PLACE = types.CONFIG_DB_IB_FIELD_TYPE_PLACE;
-	public static final String FIELD_TYPE_MAIN = types.CONFIG_DB_IB_FIELD_TYPE_MAIN;
-	public static final String FIELD_TYPE_SEC = types.CONFIG_DB_IB_FIELD_TYPE_SEC;
+	public static final String FIELD_TYPE_PLACE = _types.CONFIG_DB_IB_FIELD_TYPE_PLACE;
+	public static final String FIELD_TYPE_MAIN = _types.CONFIG_DB_IB_FIELD_TYPE_MAIN;
+	public static final String FIELD_TYPE_SEC = _types.CONFIG_DB_IB_FIELD_TYPE_SEC;
 
-	public static final String FIELD_TIME_ELAPSED = types.CONFIG_DB_IB_FIELD_TIME_ELAPSED;
-	public static final String FIELD_ELAPSED_INI = types.CONFIG_DB_IB_FIELD_ELAPSED_INI;
-	public static final String FIELD_UNREALISED = types.CONFIG_DB_IB_FIELD_UNREALISED;
-	public static final String FIELD_IS_ACTIVE = types.CONFIG_DB_IB_FIELD_IS_ACTIVE;
-	public static final String FIELD_INVESTMENT = types.CONFIG_DB_IB_FIELD_INVESTMENT;
-	public static final String FIELD_END = types.CONFIG_DB_IB_FIELD_END;
-	public static final String FIELD_REALISED = types.CONFIG_DB_IB_FIELD_REALISED;
+	public static final String FIELD_TIME_ELAPSED = _types.CONFIG_DB_IB_FIELD_TIME_ELAPSED;
+	public static final String FIELD_ELAPSED_INI = _types.CONFIG_DB_IB_FIELD_ELAPSED_INI;
+	public static final String FIELD_UNREALISED = _types.CONFIG_DB_IB_FIELD_UNREALISED;
+	public static final String FIELD_IS_ACTIVE = _types.CONFIG_DB_IB_FIELD_IS_ACTIVE;
+	public static final String FIELD_INVESTMENT = _types.CONFIG_DB_IB_FIELD_INVESTMENT;
+	public static final String FIELD_END = _types.CONFIG_DB_IB_FIELD_END;
+	public static final String FIELD_REALISED = _types.CONFIG_DB_IB_FIELD_REALISED;
 
-	public static final String FIELD_PRICE_INI = types.CONFIG_DB_IB_FIELD_PRICE_INI;
-	public static final String FIELD_PRICE_MIN = types.CONFIG_DB_IB_FIELD_PRICE_MIN;
-	public static final String FIELD_PRICE_MAX = types.CONFIG_DB_IB_FIELD_PRICE_MAX;
-	public static final String FIELD_VOLUME_INI = types.CONFIG_DB_IB_FIELD_VOLUME_INI;
-	public static final String FIELD_VOLUME_MIN = types.CONFIG_DB_IB_FIELD_VOLUME_MIN;
-	public static final String FIELD_VOLUME_MAX = types.CONFIG_DB_IB_FIELD_VOLUME_MAX;
+	public static final String FIELD_PRICE_INI = _types.CONFIG_DB_IB_FIELD_PRICE_INI;
+	public static final String FIELD_PRICE_MIN = _types.CONFIG_DB_IB_FIELD_PRICE_MIN;
+	public static final String FIELD_PRICE_MAX = _types.CONFIG_DB_IB_FIELD_PRICE_MAX;
+	public static final String FIELD_VOLUME_INI = _types.CONFIG_DB_IB_FIELD_VOLUME_INI;
+	public static final String FIELD_VOLUME_MIN = _types.CONFIG_DB_IB_FIELD_VOLUME_MIN;
+	public static final String FIELD_VOLUME_MAX = _types.CONFIG_DB_IB_FIELD_VOLUME_MAX;
 
-	public static final String FIELD_FLU = types.CONFIG_DB_IB_FIELD_FLU;
-	public static final String FIELD_FLU2 = types.CONFIG_DB_IB_FIELD_FLU2;
-	public static final String FIELD_FLU2_MIN = types.CONFIG_DB_IB_FIELD_FLU2_MIN;
-	public static final String FIELD_FLU2_MAX = types.CONFIG_DB_IB_FIELD_FLU2_MAX;
-	public static final String FIELD_FLUS_PRICE = types.CONFIG_DB_IB_FIELD_FLUS_PRICE;
-	public static final String FIELD_VAR_TOT = types.CONFIG_DB_IB_FIELD_VAR_TOT;
+	public static final String FIELD_FLU = _types.CONFIG_DB_IB_FIELD_FLU;
+	public static final String FIELD_FLU2 = _types.CONFIG_DB_IB_FIELD_FLU2;
+	public static final String FIELD_FLU2_MIN = _types.CONFIG_DB_IB_FIELD_FLU2_MIN;
+	public static final String FIELD_FLU2_MAX = _types.CONFIG_DB_IB_FIELD_FLU2_MAX;
+	public static final String FIELD_FLUS_PRICE = _types.CONFIG_DB_IB_FIELD_FLUS_PRICE;
+	public static final String FIELD_VAR_TOT = _types.CONFIG_DB_IB_FIELD_VAR_TOT;
 	
-	public static final String FIELD_APP = types.CONFIG_DB_IB_FIELD_APP;
-	public static final String FIELD_CONN_ID = types.CONFIG_DB_IB_FIELD_CONN_ID;
-	public static final String FIELD_CONN_TYPE = types.CONFIG_DB_IB_FIELD_CONN_TYPE;
-	public static final String FIELD_CONN_IS_ON = types.CONFIG_DB_IB_FIELD_CONN_IS_ON;
-	public static final String FIELD_ERROR = types.CONFIG_DB_IB_FIELD_ERROR;
-	public static final String FIELD_ADDITIONAL = types.CONFIG_DB_IB_FIELD_ADDITIONAL;
-	public static final String FIELD_TIME2 = types.CONFIG_DB_IB_FIELD_TIME2;
+	public static final String FIELD_APP = _types.CONFIG_DB_IB_FIELD_APP;
+	public static final String FIELD_CONN_ID = _types.CONFIG_DB_IB_FIELD_CONN_ID;
+	public static final String FIELD_CONN_TYPE = _types.CONFIG_DB_IB_FIELD_CONN_TYPE;
+	public static final String FIELD_CONN_IS_ON = _types.CONFIG_DB_IB_FIELD_CONN_IS_ON;
+	public static final String FIELD_ERROR = _types.CONFIG_DB_IB_FIELD_ERROR;
+	public static final String FIELD_ADDITIONAL = _types.CONFIG_DB_IB_FIELD_ADDITIONAL;
+	public static final String FIELD_TIME2 = _types.CONFIG_DB_IB_FIELD_TIME2;
 
-	public static final String FIELD_ID = types.CONFIG_DB_IB_FIELD_ID;
-	public static final String FIELD_TYPE = types.CONFIG_DB_IB_FIELD_TYPE;
-	public static final String FIELD_DATA_TYPE = types.CONFIG_DB_IB_FIELD_DATA_TYPE;
+	public static final String FIELD_ID = _types.CONFIG_DB_IB_FIELD_ID;
+	public static final String FIELD_TYPE = _types.CONFIG_DB_IB_FIELD_TYPE;
+	public static final String FIELD_DATA_TYPE = _types.CONFIG_DB_IB_FIELD_DATA_TYPE;
 
-	public static final String FIELD_DATE = types.CONFIG_DB_IB_FIELD_DATE;
+	public static final String FIELD_DATE = _types.CONFIG_DB_IB_FIELD_DATE;
 	
-	public static final String FIELD_KEY = types.CONFIG_DB_IB_FIELD_KEY;
-	public static final String FIELD_VALUE = types.CONFIG_DB_IB_FIELD_VALUE;
+	public static final String FIELD_KEY = _types.CONFIG_DB_IB_FIELD_KEY;
+	public static final String FIELD_VALUE = _types.CONFIG_DB_IB_FIELD_VALUE;
 
-	public static final String SEPARATOR = accessory.types.SEPARATOR;
+	public static final String SEPARATOR = accessory._types.SEPARATOR;
 
 	public static final String BACKUP_ENDING = SEPARATOR + "last";
 
@@ -137,7 +137,7 @@ public abstract class common
 	
 	public static final double WRONG_MAX_VAL = 0.0;
 	
-	public static final String DEFAULT_DB = types.CONFIG_DB_IB;
+	public static final String DEFAULT_DB = _types.CONFIG_DB_IB;
 	public static final String DEFAULT_DB_NAME = accessory.db.DEFAULT_DB_NAME;
 	public static final boolean DEFAULT_IS_FIELD = true;
 	public static final String DEFAULT_WRONG_STRING = strings.DEFAULT;
@@ -577,7 +577,7 @@ public abstract class common
 	{
 		String key = get_string(source_, field_, where_);
 		
-		return (strings.is_ok(key) ? get_type_from_key(key, root_) : strings.DEFAULT);
+		return (strings.is_ok(key) ? get_type(key, root_) : strings.DEFAULT);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -609,7 +609,7 @@ public abstract class common
 
 	public static boolean update_type(String source_, String field_, String type_, String root_, String where_) 
 	{ 
-		String type = get_key_from_type(type_, root_);
+		String type = store_type(type_, root_);
 		if (!strings.is_ok(type)) return false;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
@@ -785,15 +785,9 @@ public abstract class common
 		return (max <= db_common.WRONG_MAX_SIZE ? val_ : db_common.adapt_string(db.sanitise_string(val_), max));
 	}
 
-	public static String get_type_from_key(String key_, String root_) { return ((strings.is_ok(key_) && strings.is_ok(root_)) ? (root_ + SEPARATOR + key_) : strings.DEFAULT); }
+	public static String store_type(String type_, String root_) { return ib.common.get_key(type_, root_); }
 
-	public static String get_key_from_type(String type_, String root_) { return get_key(type_, root_); }
-
-	public static String get_type_from_key(String key_, HashMap<String, String> array_) { return ((strings.is_ok(key_) && array_.containsValue(key_)) ? (String)arrays.get_key(array_, key_) : strings.DEFAULT); }
-
-	public static String get_key_from_type(String type_, HashMap<String, String> array_) { return ((strings.is_ok(type_) && array_.containsKey(type_)) ? array_.get(type_) : strings.DEFAULT); }
-
-	public static String get_key(String type_, String root_) { return accessory._keys.get_key(type_, root_); }
+	public static String get_type(String key_, String root_) { return ib.common.get_type(key_, root_); }
 	
 	public static String adapt_user(String val_) { return adapt_string(val_, FIELD_USER); }
 
@@ -855,16 +849,23 @@ public abstract class common
 		return output;
 	}
 
-	public static boolean timestamp_is_today(String source_, String where_) 
+	public static boolean timestamp_is_today(String source_, String where_) { return timestamp_is_today(source_, where_, true); }
+
+	public static boolean timestamp_is_today(String source_, String where_, boolean is_today_) 
 	{ 
 		String timestamp = get_string(source_, db.FIELD_TIMESTAMP, where_);
+		if (db.WRONG_STRING.equals(timestamp)) return false;
 		
-		return (db.WRONG_STRING.equals(timestamp) ? false : dates.is_today(timestamp, ib.common.FORMAT_TIMESTAMP)); 
+		boolean is_today = dates.is_today(timestamp, ib.common.FORMAT_TIMESTAMP);
+		
+		return (is_today_ ? is_today : !is_today); 
 	}
 
-	public static String get_where_timestamp_today(String source_, String where_) 
+	public static String get_where_timestamp_today(String source_, String where_) { return get_where_timestamp_today(source_, where_, true); }
+	
+	public static String get_where_timestamp_today(String source_, String where_, boolean is_today_) 
 	{ 
-		String where = "(DATE(" + db.get_variable(source_, db.get_col(source_, db.FIELD_TIMESTAMP)) + ") = CURDATE())"; 
+		String where = "(DATE(" + db.get_variable(source_, db.get_col(source_, db.FIELD_TIMESTAMP)) + ") " + (is_today_ ? "=" : "!=") + " CURDATE())"; 
 	
 		if (strings.is_ok(where_)) where = join_wheres(where_, where);
 	

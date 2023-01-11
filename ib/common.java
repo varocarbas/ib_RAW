@@ -1,7 +1,7 @@
 package ib;
 
 import accessory.strings;
-
+import accessory._keys;
 import accessory.arrays;
 import accessory.dates;
 import accessory.misc;
@@ -147,6 +147,10 @@ public abstract class common
 		return quantity;
 	}	
 	
+	public static String get_key(String type_, String root_) { return _keys.get_startup_key(type_, root_); }
+
+	public static String get_type(String key_, String root_) { return _keys.get_startup_type(key_, root_); }
+
 	static String get_log_file_id(String id_) 
 	{
 		String output = apps.get_app_name();	

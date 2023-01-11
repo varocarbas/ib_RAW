@@ -3,11 +3,12 @@ package ib;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import accessory._keys;
 import accessory.arrays;
 import accessory.logs;
 import accessory.strings;
 import accessory_ib.errors;
-import accessory_ib.types;
+import accessory_ib._types;
 
 public abstract class remote 
 {
@@ -36,30 +37,30 @@ public abstract class remote
 	public static final String REQUEST_ERROR = remote_request.REQUEST_ERROR;
 	public static final String REQUEST_IGNORED = remote_request.REQUEST_IGNORED;
 	
-	public static final String STATUS = types.REMOTE_STATUS;
-	public static final String STATUS_ACTIVE = types.REMOTE_STATUS_ACTIVE;
-	public static final String STATUS_INACTIVE = types.REMOTE_STATUS_INACTIVE;
-	public static final String STATUS_ERROR = types.REMOTE_STATUS_ERROR;
+	public static final String STATUS = _types.REMOTE_STATUS;
+	public static final String STATUS_ACTIVE = _types.REMOTE_STATUS_ACTIVE;
+	public static final String STATUS_INACTIVE = _types.REMOTE_STATUS_INACTIVE;
+	public static final String STATUS_ERROR = _types.REMOTE_STATUS_ERROR;
 
-	public static final String STATUS2 = types.REMOTE_STATUS2;
-	public static final String STATUS2_PENDING = types.REMOTE_STATUS2_PENDING;
-	public static final String STATUS2_EXECUTED = types.REMOTE_STATUS2_EXECUTED;
-	public static final String STATUS2_ERROR = types.REMOTE_STATUS2_ERROR;
+	public static final String STATUS2 = _types.REMOTE_STATUS2;
+	public static final String STATUS2_PENDING = _types.REMOTE_STATUS2_PENDING;
+	public static final String STATUS2_EXECUTED = _types.REMOTE_STATUS2_EXECUTED;
+	public static final String STATUS2_ERROR = _types.REMOTE_STATUS2_ERROR;
 
-	public static final String ORDERS = types.ORDERS;
+	public static final String ORDERS = _types.REMOTE_ORDERS;
 
-	public static final String PLACE_MARKET = orders.PLACE_MARKET;
-	public static final String PLACE_STOP = orders.PLACE_STOP;
-	public static final String PLACE_LIMIT = orders.PLACE_LIMIT;
-	public static final String PLACE_STOP_LIMIT = orders.PLACE_STOP_LIMIT;
+	public static final String PLACE_MARKET = _types.REMOTE_ORDERS_PLACE_MARKET;
+	public static final String PLACE_STOP = _types.REMOTE_ORDERS_PLACE_STOP;
+	public static final String PLACE_LIMIT = _types.REMOTE_ORDERS_PLACE_LIMIT;
+	public static final String PLACE_STOP_LIMIT = _types.REMOTE_ORDERS_PLACE_STOP_LIMIT;
 
-	public static final String CANCEL = orders.CANCEL;
+	public static final String CANCEL = _types.REMOTE_ORDERS_CANCEL;
 
-	public static final String UPDATE_START_VALUE = orders.UPDATE_START_VALUE;
-	public static final String UPDATE_START_MARKET = orders.UPDATE_START_MARKET;
-	public static final String UPDATE_START2_VALUE = orders.UPDATE_START2_VALUE;
-	public static final String UPDATE_STOP_VALUE = orders.UPDATE_STOP_VALUE;
-	public static final String UPDATE_STOP_MARKET = orders.UPDATE_STOP_MARKET;
+	public static final String UPDATE_START_VALUE = _types.REMOTE_ORDERS_UPDATE_START_VALUE;
+	public static final String UPDATE_START_MARKET = _types.REMOTE_ORDERS_UPDATE_START_MARKET;
+	public static final String UPDATE_START2_VALUE = _types.REMOTE_ORDERS_UPDATE_START2_VALUE;
+	public static final String UPDATE_STOP_VALUE = _types.REMOTE_ORDERS_UPDATE_STOP_VALUE;
+	public static final String UPDATE_STOP_MARKET = _types.REMOTE_ORDERS_UPDATE_STOP_MARKET;
 
 	public static final double MAX_PERC_MONEY = 90.0;
 	
@@ -119,11 +120,11 @@ public abstract class remote
 
 	public static boolean status_is_ok(String type_) { return strings.is_ok(check_status(type_)); }
 
-	public static String check_status(String type_) { return accessory.types.check_type(type_, STATUS); }
+	public static String check_status(String type_) { return accessory._types.check_type(type_, STATUS); }
 
 	public static boolean status2_is_ok(String type_) { return strings.is_ok(check_status2(type_)); }
 
-	public static String check_status2(String type_) { return accessory.types.check_type(type_, STATUS2); }
+	public static String check_status2(String type_) { return accessory._types.check_type(type_, STATUS2); }
 
 	public static String check_type_place(String type_) { return orders.check_place(type_); }
 
@@ -219,6 +220,18 @@ public abstract class remote
 	public static double get_price(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(DB_PRICE, vals_); }
 
 	public static ArrayList<HashMap<String, String>> get_all_errors() { return db_ib.remote.get_all_errors(); }
+	
+	public static String get_status_key(String status_type_) { return _keys.get_startup_key(status_type_, STATUS); }
+
+	public static String get_status_type(String status_key_) { return _keys.get_startup_type(status_key_, STATUS); }
+	
+	public static String get_status2_key(String status2_type_) { return _keys.get_startup_key(status2_type_, STATUS2); }
+
+	public static String get_status2_type(String status2_key_) { return _keys.get_startup_type(status2_key_, STATUS2); }
+	
+	public static String get_order_key(String order_type_) { return _keys.get_startup_key(order_type_, ORDERS); }
+
+	public static String get_order_type(String order_key_) { return _keys.get_startup_type(order_key_, ORDERS); }
 
 	static boolean order_was_updated(HashMap<String, String> vals_)
 	{
@@ -283,7 +296,7 @@ public abstract class remote
 		String type = strings.to_string(type_);
 		
 		vals.put(db_ib.common.get_col(DB_SOURCE, DB_SYMBOL), strings.to_string(symbol_));
-		vals.put(db_ib.common.get_col(DB_SOURCE, DB_TYPE_ORDER), db_ib.orders.get_key_from_type_order(type));
+		vals.put(db_ib.common.get_col(DB_SOURCE, DB_TYPE_ORDER), db_ib.orders.store_order_type(type));
 		vals.put("val", val_);
 
 		if (order_id_ > common.WRONG_ORDER_ID) vals.put(db_ib.common.get_col(DB_SOURCE, DB_ORDER_ID_MAIN), order_id_);
@@ -299,7 +312,7 @@ public abstract class remote
 	
 		String message = Integer.toString(request_) + " (";
 		if (!temp.equals("")) message += temp + ", ";
-		message += db_ib.orders.get_key_from_type_order(type_) + ") ";
+		message += db_ib.orders.store_order_type(type_) + ") ";
 		
 		message += (is_request_ ? "requested" : "executed") + " successfully";
 		
@@ -332,7 +345,7 @@ public abstract class remote
 		String type = strings.to_string(type_);
 		
 		vals.put(db_ib.common.get_col(DB_SOURCE, DB_SYMBOL), strings.to_string(symbol_));
-		vals.put(db_ib.common.get_col(DB_SOURCE, DB_TYPE_ORDER), db_ib.orders.get_key_from_type_order(type));
+		vals.put(db_ib.common.get_col(DB_SOURCE, DB_TYPE_ORDER), db_ib.orders.store_order_type(type));
 		vals.put(db_ib.common.get_col(DB_SOURCE, DB_STOP), stop_);
 		vals.put(db_ib.common.get_col(DB_SOURCE, DB_START), start_);
 		vals.put(db_ib.common.get_col(DB_SOURCE, DB_START2), start2_);
@@ -376,12 +389,12 @@ public abstract class remote
 	{	
 		String message = strings.DEFAULT;
 	
-		String type = accessory.types.check_type(type_, remote_execute.ERROR);
+		String type = accessory._types.check_type(type_, remote_execute.ERROR);
 		
 		if (strings.is_ok(type)) message = remote_execute.get_error_message(type);
 		else
 		{
-			type = accessory.types.check_type(type_, remote_request.ERROR);
+			type = accessory._types.check_type(type_, remote_request.ERROR);
 
 			if (strings.is_ok(type)) message = remote_request.get_error_message(type);
 			else message = "ERROR";

@@ -1,9 +1,10 @@
 package ib;
 
+import accessory._keys;
 import accessory.logs;
 import accessory.strings;
 import accessory_ib._defaults;
-import accessory_ib.types;
+import accessory_ib._types;
 
 public abstract class apps 
 {
@@ -19,10 +20,10 @@ public abstract class apps
 	public static final String DB_ADDITIONAL = db_ib.apps.ADDITIONAL;
 	public static final String DB_TIME2 = db_ib.apps.TIME2;
 	
-	public static final String STATUS = types.APPS_STATUS;
-	public static final String STATUS_STOPPED = types.APPS_STATUS_STOPPED;
-	public static final String STATUS_RUNNING = types.APPS_STATUS_RUNNING;
-	public static final String STATUS_ERROR = types.APPS_STATUS_ERROR;
+	public static final String STATUS = _types.APPS_STATUS;
+	public static final String STATUS_STOPPED = _types.APPS_STATUS_STOPPED;
+	public static final String STATUS_RUNNING = _types.APPS_STATUS_RUNNING;
+	public static final String STATUS_ERROR = _types.APPS_STATUS_ERROR;
 
 	public static final String DEFAULT_APP_NAME = _defaults.APP_NAME;
 	public static final String DEFAULT_STATUS = STATUS_STOPPED;
@@ -106,7 +107,11 @@ public abstract class apps
 
 	public static boolean status_is_ok(String status_) { return strings.is_ok(check_status(status_)); }
 
-	public static String check_status(String status_) { return accessory.types.check_type(status_, STATUS); }
+	public static String check_status(String status_) { return accessory._types.check_type(status_, STATUS); }
+	
+	public static String get_status_key(String status_type_) { return _keys.get_startup_key(status_type_, STATUS); }
+
+	public static String get_status_type(String status_key_) { return _keys.get_startup_type(status_key_, STATUS); }
 
 	private static String get_app_name(boolean is_ini_) 
 	{

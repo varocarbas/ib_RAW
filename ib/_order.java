@@ -6,21 +6,21 @@ import accessory.numbers;
 import accessory.parent;
 import accessory.strings;
 import accessory_ib.config;
-import accessory_ib.types;
+import accessory_ib._types;
 
 public class _order extends parent
 {
-	public static final String CONFIG_TIF = types.CONFIG_ORDERS_TIF;
-	public static final String CONFIG_QUANTITIES_INT = types.CONFIG_ORDERS_QUANTITIES_INT;
+	public static final String CONFIG_TIF = _types.CONFIG_ORDERS_TIF;
+	public static final String CONFIG_QUANTITIES_INT = _types.CONFIG_ORDERS_QUANTITIES_INT;
 	
 	public static final String TYPE_MARKET = external_ib.orders.TYPE_MARKET;
 	public static final String TYPE_STOP = external_ib.orders.TYPE_STOP;
 	public static final String TYPE_LIMIT = external_ib.orders.TYPE_LIMIT;
 	public static final String TYPE_STOP_LIMIT = external_ib.orders.TYPE_STOP_LIMIT;
-	public static final String TYPE_PLACE_MARKET = types.ORDERS_PLACE_MARKET;
-	public static final String TYPE_PLACE_STOP = types.ORDERS_PLACE_STOP;
-	public static final String TYPE_PLACE_LIMIT = types.ORDERS_PLACE_LIMIT;
-	public static final String TYPE_PLACE_STOP_LIMIT = types.ORDERS_PLACE_STOP_LIMIT;
+	public static final String TYPE_PLACE_MARKET = _types.ORDERS_PLACE_MARKET;
+	public static final String TYPE_PLACE_STOP = _types.ORDERS_PLACE_STOP;
+	public static final String TYPE_PLACE_LIMIT = _types.ORDERS_PLACE_LIMIT;
+	public static final String TYPE_PLACE_STOP_LIMIT = _types.ORDERS_PLACE_STOP_LIMIT;
 
 	public static final int INC_ID_SEC = 1;
 	

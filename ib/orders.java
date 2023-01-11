@@ -3,8 +3,9 @@ package ib;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import accessory._keys;
 import accessory.strings;
-import accessory_ib.types;
+import accessory_ib._types;
 
 public abstract class orders 
 {
@@ -23,31 +24,31 @@ public abstract class orders
 	public static final String DB_TYPE_SEC = db_ib.orders.TYPE_SEC;
 	public static final String DB_QUANTITY = db_ib.orders.QUANTITY;
 	
-	public static final String ORDERS = types.ORDERS;
+	public static final String ORDERS = _types.ORDERS;
 
-	public static final String PLACE = types.ORDERS_PLACE;
-	public static final String PLACE_MARKET = types.ORDERS_PLACE_MARKET;
-	public static final String PLACE_STOP = types.ORDERS_PLACE_STOP;
-	public static final String PLACE_LIMIT = types.ORDERS_PLACE_LIMIT;
-	public static final String PLACE_STOP_LIMIT = types.ORDERS_PLACE_STOP_LIMIT;
+	public static final String PLACE = _types.ORDERS_PLACE;
+	public static final String PLACE_MARKET = _types.ORDERS_PLACE_MARKET;
+	public static final String PLACE_STOP = _types.ORDERS_PLACE_STOP;
+	public static final String PLACE_LIMIT = _types.ORDERS_PLACE_LIMIT;
+	public static final String PLACE_STOP_LIMIT = _types.ORDERS_PLACE_STOP_LIMIT;
 
-	public static final String CANCEL = types.ORDERS_CANCEL;
-	public static final String UPDATE = types.ORDERS_UPDATE;
-	public static final String UPDATE_START = types.ORDERS_UPDATE_START;
-	public static final String UPDATE_START_VALUE = types.ORDERS_UPDATE_START_VALUE;
-	public static final String UPDATE_START_MARKET = types.ORDERS_UPDATE_START_MARKET;
-	public static final String UPDATE_START2 = types.ORDERS_UPDATE_START2;
-	public static final String UPDATE_START2_VALUE = types.ORDERS_UPDATE_START2_VALUE;
-	public static final String UPDATE_STOP = types.ORDERS_UPDATE_STOP;
-	public static final String UPDATE_STOP_VALUE = types.ORDERS_UPDATE_STOP_VALUE;
-	public static final String UPDATE_STOP_MARKET = types.ORDERS_UPDATE_STOP_MARKET;
+	public static final String CANCEL = _types.ORDERS_CANCEL;
+	public static final String UPDATE = _types.ORDERS_UPDATE;
+	public static final String UPDATE_START = _types.ORDERS_UPDATE_START;
+	public static final String UPDATE_START_VALUE = _types.ORDERS_UPDATE_START_VALUE;
+	public static final String UPDATE_START_MARKET = _types.ORDERS_UPDATE_START_MARKET;
+	public static final String UPDATE_START2 = _types.ORDERS_UPDATE_START2;
+	public static final String UPDATE_START2_VALUE = _types.ORDERS_UPDATE_START2_VALUE;
+	public static final String UPDATE_STOP = _types.ORDERS_UPDATE_STOP;
+	public static final String UPDATE_STOP_VALUE = _types.ORDERS_UPDATE_STOP_VALUE;
+	public static final String UPDATE_STOP_MARKET = _types.ORDERS_UPDATE_STOP_MARKET;
 
-	public static final String STATUS = types.ORDERS_STATUS;
-	public static final String STATUS_SUBMITTED = types.ORDERS_STATUS_SUBMITTED;
-	public static final String STATUS_FILLED = types.ORDERS_STATUS_FILLED;
-	public static final String STATUS_ACTIVE = types.ORDERS_STATUS_ACTIVE;
-	public static final String STATUS_INACTIVE = types.ORDERS_STATUS_INACTIVE;
-	public static final String STATUS_IN_PROGRESS = types.ORDERS_STATUS_IN_PROGRESS;
+	public static final String STATUS = _types.ORDERS_STATUS;
+	public static final String STATUS_SUBMITTED = _types.ORDERS_STATUS_SUBMITTED;
+	public static final String STATUS_FILLED = _types.ORDERS_STATUS_FILLED;
+	public static final String STATUS_ACTIVE = _types.ORDERS_STATUS_ACTIVE;
+	public static final String STATUS_INACTIVE = _types.ORDERS_STATUS_INACTIVE;
+	public static final String STATUS_IN_PROGRESS = _types.ORDERS_STATUS_IN_PROGRESS;
 
 	public static final int MIN_ORDER_ID = 0;
 	
@@ -133,9 +134,9 @@ public abstract class orders
 	
 	public static int get_order_id_main(int order_id_sec_) { return db_ib.orders.get_order_id_main(order_id_sec_); }
 	
-	public static String get_type(String input_, boolean is_status_) { return (is_status_ ? db_ib.orders.get_status_from_key(input_) : db_ib.orders.get_type_place_from_key(input_)); }
+	public static String get_type(String status_place_key_, boolean is_status_) { return (is_status_ ? get_status_type(status_place_key_) : get_place_type(status_place_key_)); }
 
-	public static String get_key(String input_, boolean is_status_) { return (is_status_ ? db_ib.orders.get_key_from_status(input_) : db_ib.orders.get_key_from_type_place(input_)); }
+	public static String get_key(String status_place_type_, boolean is_status_) { return (is_status_ ? get_status_key(status_place_type_) : get_place_key(status_place_type_)); }
 
 	public static boolean is_status(String type_) { return strings.is_ok(check_status(type_)); }
 	
@@ -165,11 +166,11 @@ public abstract class orders
 
 	public static boolean is_update(String type_) { return strings.is_ok(check_update(type_)); }
 
-	public static boolean is_update_start(String type_) { return strings.is_ok(accessory.types.check_type(type_, UPDATE_START)); }
+	public static boolean is_update_start(String type_) { return strings.is_ok(accessory._types.check_type(type_, UPDATE_START)); }
 
-	public static boolean is_update_stop(String type_) { return strings.is_ok(accessory.types.check_type(type_, UPDATE_STOP)); }
+	public static boolean is_update_stop(String type_) { return strings.is_ok(accessory._types.check_type(type_, UPDATE_STOP)); }
 
-	public static boolean is_update_start2(String type_) { return strings.is_ok(accessory.types.check_type(type_, UPDATE_START2)); }
+	public static boolean is_update_start2(String type_) { return strings.is_ok(accessory._types.check_type(type_, UPDATE_START2)); }
 
 	public static boolean is_update_start_start2(String type_) { return (is_update_start(type_) || is_update_start2(type_)); }
 
@@ -183,13 +184,13 @@ public abstract class orders
 
 	public static boolean is_cancel(String type_) { return strings.is_ok(check_cancel(type_)); }
 
-	public static String check_place(String type_) { return accessory.types.check_type(type_, PLACE); }
+	public static String check_place(String type_) { return accessory._types.check_type(type_, PLACE); }
 
-	public static String check_update(String type_) { return accessory.types.check_type(type_, UPDATE); }
+	public static String check_update(String type_) { return accessory._types.check_type(type_, UPDATE); }
 
-	public static String check_cancel(String type_) { return accessory.types.check_type(type_, CANCEL); }
+	public static String check_cancel(String type_) { return accessory._types.check_type(type_, CANCEL); }
 
-	public static String check_status(String type_) { return accessory.types.check_type(type_, STATUS); }
+	public static String check_status(String type_) { return accessory._types.check_type(type_, STATUS); }
 	
 	public static String get_status(String status_ib_, boolean be_specific_)
 	{
@@ -274,6 +275,26 @@ public abstract class orders
 	public static String get_type_sec(HashMap<String, String> vals_) { return (String)db_ib.orders.get_val(DB_TYPE_SEC, vals_); }
 
 	public static double get_quantity(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(DB_QUANTITY, vals_); }
+	
+	public static String get_place_key(String place_type_) { return _keys.get_startup_key(place_type_, PLACE); }
+
+	public static String get_place_type(String place_key_) { return _keys.get_startup_type(place_key_, PLACE); }
+	
+	public static String get_update_key(String update_type_) { return _keys.get_startup_key(update_type_, UPDATE); }
+
+	public static String get_update_type(String update_key_) { return _keys.get_startup_type(update_key_, UPDATE); }
+	
+	public static String get_cancel_key(String cancel_type_) { return _keys.get_startup_key(cancel_type_, CANCEL); }
+
+	public static String get_cancel_type(String cancel_key_) { return _keys.get_startup_type(cancel_key_, CANCEL); }
+	
+	public static String get_order_key(String order_type_) { return _keys.get_startup_key(order_type_, ORDERS); }
+
+	public static String get_order_type(String order_key_) { return _keys.get_startup_type(order_key_, ORDERS); }
+	
+	public static String get_status_key(String status_type_) { return _keys.get_startup_key(status_type_, STATUS); }
+
+	public static String get_status_type(String status_key_) { return _keys.get_startup_type(status_key_, STATUS); }
 
 	static void order_status(int order_id_, String status_ib_) 
 	{ 

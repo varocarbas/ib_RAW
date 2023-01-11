@@ -29,7 +29,7 @@ public class _ini_config extends parent_ini_config
 
 	private boolean load_config_basic()
 	{
-		String type = accessory.types.CONFIG_BASIC;
+		String type = accessory._types.CONFIG_BASIC;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		vals.put(basic.CONFIG_ID_MAIN, _defaults.ID_MAIN);
@@ -39,7 +39,7 @@ public class _ini_config extends parent_ini_config
 
 	private boolean load_config_order()
 	{
-		String type = types.CONFIG_ORDERS;
+		String type = _types.CONFIG_ORDERS;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
@@ -51,7 +51,7 @@ public class _ini_config extends parent_ini_config
 
 	private boolean load_config_contract()
 	{
-		String type = types.CONFIG_CONTRACT;
+		String type = _types.CONFIG_CONTRACT;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
@@ -66,7 +66,7 @@ public class _ini_config extends parent_ini_config
 
 	private boolean load_config_conn()
 	{
-		String type = types.CONFIG_CONN;
+		String type = _types.CONFIG_CONN;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		

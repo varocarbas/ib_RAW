@@ -37,16 +37,16 @@ public class _ini extends parent_ini
 
 	//--- Keys for the dbs_setup_ args of the start() methods below. They define the default setup for all the DBs and are used in the _ini_db class.
 	
-	public static final String DBS_SETUP = accessory.types.CONFIG_DB_SETUP;
-	public static final String DBS_SETUP_NAME = accessory.types.CONFIG_DB_NAME;
-	public static final String DBS_SETUP_MAX_POOL = accessory.types.CONFIG_DB_SETUP_MAX_POOL;
-	public static final String DBS_SETUP_HOST = accessory.types.CONFIG_DB_SETUP_HOST;
-	public static final String DBS_SETUP_TYPE = accessory.types.CONFIG_DB_SETUP_TYPE;
-	public static final String DBS_SETUP_CREDENTIALS_USERNAME = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_USERNAME;
-	public static final String DBS_SETUP_CREDENTIALS_PASSWORD = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_PASSWORD;
-	public static final String DBS_SETUP_CREDENTIALS_USER = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_USER;
-	public static final String DBS_SETUP_CREDENTIALS_ENCRYPTED = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_ENCRYPTED;
-	public static final String DBS_SETUP_CREDENTIALS_MEMORY = accessory.types.CONFIG_DB_SETUP_CREDENTIALS_MEMORY;
+	public static final String DBS_SETUP = accessory._types.CONFIG_DB_SETUP;
+	public static final String DBS_SETUP_NAME = accessory._types.CONFIG_DB_NAME;
+	public static final String DBS_SETUP_MAX_POOL = accessory._types.CONFIG_DB_SETUP_MAX_POOL;
+	public static final String DBS_SETUP_HOST = accessory._types.CONFIG_DB_SETUP_HOST;
+	public static final String DBS_SETUP_TYPE = accessory._types.CONFIG_DB_SETUP_TYPE;
+	public static final String DBS_SETUP_CREDENTIALS_USERNAME = accessory._types.CONFIG_DB_SETUP_CREDENTIALS_USERNAME;
+	public static final String DBS_SETUP_CREDENTIALS_PASSWORD = accessory._types.CONFIG_DB_SETUP_CREDENTIALS_PASSWORD;
+	public static final String DBS_SETUP_CREDENTIALS_USER = accessory._types.CONFIG_DB_SETUP_CREDENTIALS_USER;
+	public static final String DBS_SETUP_CREDENTIALS_ENCRYPTED = accessory._types.CONFIG_DB_SETUP_CREDENTIALS_ENCRYPTED;
+	public static final String DBS_SETUP_CREDENTIALS_MEMORY = accessory._types.CONFIG_DB_SETUP_CREDENTIALS_MEMORY;
 	
 	//---
 	

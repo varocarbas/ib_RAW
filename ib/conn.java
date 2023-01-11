@@ -13,19 +13,19 @@ import accessory.parent_static;
 import accessory.strings;
 import accessory_ib.config;
 import accessory_ib.errors;
-import accessory_ib.types;
+import accessory_ib._types;
 import external_ib.calls;
 import external_ib.wrapper;
 
 public abstract class conn extends parent_static 
 {	
-	public static final String TYPE = types.CONN_TYPE;
-	public static final String TYPE_TWS_REAL = types.CONN_TYPE_TWS_REAL;
-	public static final String TYPE_TWS_PAPER = types.CONN_TYPE_TWS_PAPER;
-	public static final String TYPE_GATEWAY_REAL = types.CONN_TYPE_GATEWAY_REAL;
-	public static final String TYPE_GATEWAY_PAPER = types.CONN_TYPE_GATEWAY_PAPER;
+	public static final String TYPE = _types.CONN_TYPE;
+	public static final String TYPE_TWS_REAL = _types.CONN_TYPE_TWS_REAL;
+	public static final String TYPE_TWS_PAPER = _types.CONN_TYPE_TWS_PAPER;
+	public static final String TYPE_GATEWAY_REAL = _types.CONN_TYPE_GATEWAY_REAL;
+	public static final String TYPE_GATEWAY_PAPER = _types.CONN_TYPE_GATEWAY_PAPER;
 
-	public static final String CONFIG_CHECK_RUNNING = types.CONFIG_CONN_CHECK_RUNNING;
+	public static final String CONFIG_CHECK_RUNNING = _types.CONFIG_CONN_CHECK_RUNNING;
 	
 	public static final int MIN_ID = 0;
 	public static final int MAX_ID = 31;
@@ -42,12 +42,12 @@ public abstract class conn extends parent_static
 
 	public static final boolean DEFAULT_CHECK_RUNNING = false;	
 	
-	public static final String ERROR = types.ERROR_IB;
-	public static final String ERROR_NONE = types.ERROR_IB_CONN_NONE;
-	public static final String ERROR_ID = types.ERROR_IB_CONN_ID;
-	public static final String ERROR_TYPE = types.ERROR_IB_CONN_TYPE;
-	public static final String ERROR_GENERIC = types.ERROR_IB_CONN_GENERIC;
-	public static final String ERROR_IB = types.ERROR_IB_CONN_IB;
+	public static final String ERROR = _types.ERROR_IB;
+	public static final String ERROR_NONE = _types.ERROR_IB_CONN_NONE;
+	public static final String ERROR_ID = _types.ERROR_IB_CONN_ID;
+	public static final String ERROR_TYPE = _types.ERROR_IB_CONN_TYPE;
+	public static final String ERROR_GENERIC = _types.ERROR_IB_CONN_GENERIC;
+	public static final String ERROR_IB = _types.ERROR_IB_CONN_IB;
 	
 	public static volatile boolean _started = false; 
 	
@@ -176,13 +176,13 @@ public abstract class conn extends parent_static
 	
 	public static boolean type_is_ok(String type_) { return strings.is_ok(check_type(type_)); }
 	
-	public static String check_type(String type_) { return accessory.types.check_type(type_, TYPE); }
+	public static String check_type(String type_) { return accessory._types.check_type(type_, TYPE); }
 	
 	public static boolean port_is_ok() { return port_is_ok(_port); }
 	
 	public static boolean port_is_ok(int port_) { return (port_ == PORT_TWS_REAL || port_ == PORT_TWS_PAPER || port_ == PORT_GATEWAY_REAL || port_ == PORT_GATEWAY_PAPER); }
 	
-	public static String check_error(String type_) { return accessory.types.check_type(type_, ERROR); }
+	public static String check_error(String type_) { return accessory._types.check_type(type_, ERROR); }
 
 	public static String get_error_message(String type_)
 	{
