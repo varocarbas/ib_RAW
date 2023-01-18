@@ -142,8 +142,8 @@ public class _ini_db extends parent_ini_db
 		info.put(remote.ORDER_ID_MAIN, common.get_field_order_id(false));
 		info.put(remote.ORDER_ID_SEC, common.get_field_order_id(false));
 		info.put(remote.SYMBOL, common.get_field_symbol(false));
-		info.put(remote.STATUS, common.get_field_status_type(remote.store_status_type(ib.remote.DEFAULT_STATUS)));
-		info.put(remote.STATUS2, common.get_field_status_type(remote.store_status2_type(ib.remote.DEFAULT_STATUS2)));
+		info.put(remote.STATUS, common.get_field_status_type(_keys.get_key(ib.remote.DEFAULT_STATUS, ib.remote.STATUS)));
+		info.put(remote.STATUS2, common.get_field_status_type(_keys.get_key(ib.remote.DEFAULT_STATUS2, ib.remote.STATUS2)));
 		info.put(remote.START, common.get_field_price());
 		info.put(remote.START2, common.get_field_price());
 		info.put(remote.STOP, common.get_field_price());
@@ -176,7 +176,7 @@ public class _ini_db extends parent_ini_db
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
 		info.put(orders.SYMBOL, common.get_field_symbol(false));
-		info.put(orders.STATUS, common.get_field_status_type(orders.store_status_type(ib.orders.DEFAULT_STATUS)));
+		info.put(orders.STATUS, common.get_field_status_type(_keys.get_key(ib.orders.DEFAULT_STATUS, ib.orders.STATUS)));
 		info.put(orders.START, common.get_field_price());
 		info.put(orders.START2, common.get_field_price());
 		info.put(orders.STOP, common.get_field_price());
@@ -274,7 +274,7 @@ public class _ini_db extends parent_ini_db
 		info.put(apps.CONN_ID, db_common.get_field_tiny(false));
 		info.put(apps.CONN_TYPE, db_common.get_field_string(conn.get_max_length_type_key()));
 		info.put(apps.CONN_IS_ON, db_common.get_field_boolean(false));
-		info.put(apps.STATUS, common.get_field_status_type(apps.store_status_type(ib.apps.DEFAULT_STATUS)));
+		info.put(apps.STATUS, common.get_field_status_type(_keys.get_key(ib.apps.DEFAULT_STATUS, ib.apps.STATUS)));
 		info.put(apps.ERROR, db_common.get_field_error());
 		info.put(apps.ADDITIONAL, db_common.get_field_string(db_ib.common.MAX_SIZE_ADDITIONAL));
 		info.put(apps.TIME2, common.get_field_time2());

@@ -64,6 +64,7 @@ public abstract class remote
 
 	public static final double MAX_PERC_MONEY = 90.0;
 	
+	public static final int WRONG_REQUEST = common.WRONG_REQUEST;
 	public static final double WRONG_MONEY2 = common.WRONG_MONEY2;
 
 	public static final String DEFAULT_STATUS = STATUS_ACTIVE;

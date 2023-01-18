@@ -50,12 +50,13 @@ abstract class sync_orders extends parent_static
 
 	public static boolean place_update(_order order_, String update_type_, double update_val_) 
 	{
-		if (!_order.is_ok(order_)) return false;
+		boolean output = false;
+		if (!_order.is_ok(order_)) return output;
 		
 		boolean is_update = orders.is_update(update_type_);
 
 		Contract contract = contracts.get_contract(order_.get_symbol());
-		if (contract == null) return false; 
+		if (contract == null) return output; 
 
 		int main = order_.get_id_main();
 		int sec = order_.get_id_sec();
@@ -71,7 +72,7 @@ abstract class sync_orders extends parent_static
 			int id = order_.get_id(is_main);
 
 			Order order = (is_update ? external_ib.orders.get_order_update(order_, update_type_, update_val_, is_main) : external_ib.orders.get_order_new(order_, is_main));
-			if (order == null) return false;
+			if (order == null) return output;
 
 			boolean is_ok = true;
 
@@ -79,7 +80,7 @@ abstract class sync_orders extends parent_static
 			else 
 			{
 				is_ok = sync.place_order(id, contract, order);
-				if (!is_ok) return false;
+				if (!is_ok) return output;
 			}
 
 			if (!is_ok)
@@ -87,19 +88,21 @@ abstract class sync_orders extends parent_static
 				_last_id_main = common.WRONG_ORDER_ID;
 				_last_id_sec = common.WRONG_ORDER_ID;
 				
-				return false;				
+				return output;				
 			}
 		}
-
+		
+		output = true;
+		
 		if (is_update) update_order(main, update_val_, orders.is_update_market(update_type_), update_type_);
 		else
 		{
-			if (!sync.wait_orders(main, orders.PLACE)) return false;
-
-			add_order(order_);
+			if (!sync.wait_orders(main, orders.PLACE)) output = !cancel(main);
+			
+			if (output) add_order(order_);
 		}
 
-		return true;
+		return output;
 	}
 
 	public static boolean is_filled(int order_id_main_, HashMap<Integer, String> orders_) { return is_common(order_id_main_, orders.STATUS_FILLED, orders_); }	

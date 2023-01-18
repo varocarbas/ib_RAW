@@ -50,9 +50,11 @@ public abstract class remote extends parent_static
 	
 	public static ArrayList<HashMap<String, String>> get_all_errors() { return common.get_all_vals(SOURCE, common.get_fields(SOURCE), get_where_error()); }
 
-	public static boolean contains_active() { return (common.contains_active(SOURCE) || contains_active_requests()); }
+	public static boolean contains_active() { return (common.contains_active(SOURCE) || contains_active_requests(false)); }
 	
-	public static boolean contains_active_requests() { return common.exists(SOURCE, get_where_active()); }
+	public static boolean contains_active_requests() { return contains_active_requests(false); }
+	
+	public static boolean contains_active_requests(boolean only_active_status_) { return common.exists(SOURCE, get_where_active(only_active_status_)); }
 
 	public static boolean exists(int request_) { return common.exists(SOURCE, get_where_request(request_)); }
 
@@ -199,17 +201,17 @@ public abstract class remote extends parent_static
 	
 	public static boolean deactivate(int request_) { return update_status(request_, store_status_type(ib.remote.STATUS_INACTIVE)); }
 		
-	public static String store_status_type(String status_type_) { return ib.apps.get_status_key(status_type_); }
+	public static String store_status_type(String status_type_) { return ib.remote.get_status_key(status_type_); }
 
-	public static String get_status_type(String status_key_) { return ib.apps.get_status_type(status_key_); }
+	public static String get_status_type(String status_key_) { return ib.remote.get_status_type(status_key_); }
 	
-	public static String store_status2_type(String status2_type_) { return ib.apps.get_status_key(status2_type_); }
+	public static String store_status2_type(String status2_type_) { return ib.remote.get_status2_key(status2_type_); }
 
-	public static String get_status2_type(String status2_key_) { return ib.apps.get_status_type(status2_key_); }
+	public static String get_status2_type(String status2_key_) { return ib.remote.get_status2_type(status2_key_); }
 	
-	public static String store_order_type(String order_type_) { return ib.apps.get_status_key(order_type_); }
+	public static String store_order_type(String order_type_) { return ib.remote.get_order_key(order_type_); }
 
-	public static String get_order_type(String order_key_) { return ib.apps.get_status_type(order_key_); }
+	public static String get_order_type(String order_key_) { return ib.remote.get_order_type(order_key_); }
 
 	public static double get_start(int request_) { return common.get_decimal(SOURCE, START, get_where_request(request_), ib.common.WRONG_PRICE); }
 	
@@ -295,7 +297,21 @@ public abstract class remote extends parent_static
 
 	private static String get_where_order_id(int order_id_main_) { return common.get_where_order_id(SOURCE, order_id_main_); }
 
-	private static String get_where_active() { return (new db_where(SOURCE, STATUS, db_where.OPERAND_NOT_EQUAL, store_status_type(ib.remote.STATUS_INACTIVE))).toString(); }
+	private static String get_where_active() { return get_where_active(false); }
+
+	private static String get_where_active(boolean only_active_status_) 
+	{
+		String operand = db_where.OPERAND_NOT_EQUAL;
+		String status = ib.remote.STATUS_INACTIVE;
+		
+		if (only_active_status_)
+		{
+			operand = db_where.OPERAND_EQUAL;
+			status = ib.remote.STATUS_ACTIVE;		
+		}
+		
+		return (new db_where(SOURCE, STATUS, operand, store_status_type(status))).toString(); 
+	}
 
 	private static String get_where_pending() { return common.join_wheres(get_where_status2(store_status2_type(ib.remote.STATUS2_PENDING)), get_where_status(store_status_type(ib.remote.STATUS_ACTIVE))); }
 

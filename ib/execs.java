@@ -112,7 +112,7 @@ public abstract class execs
 		if (quantity == common.WRONG_QUANTITY) quantity = get_quantity(info);
 		if (quantity == common.WRONG_QUANTITY) return output;
 
-		double price = common.get_price(info.get(0).get(db_ib.execs.SYMBOL));
+		double price = common.get_price(get_symbol(info.get(0)));
 		if (!common.price_is_ok(price)) return output;
 
 		double fees = get_fees(info);
@@ -139,15 +139,15 @@ public abstract class execs
 		
 		int tot = arrays.get_size(info);
 		if (tot < 1) return output;
-		if (tot == 1) return get_val(info.get(0), DB_PRICE);
+		if (tot == 1) return get_price(info.get(0));
 		
 		double sum = 0.0;
 		double quantity_tot = 0.0;
 		
 		for (HashMap<String, String> item: info)
 		{
-			double price = get_val(item, DB_PRICE);
-			double quantity = get_val(item, DB_QUANTITY);
+			double price = get_price(item);
+			double quantity = get_quantity(item);
 			
 			sum += get_investment(price, quantity);
 			quantity_tot += quantity;
@@ -182,7 +182,7 @@ public abstract class execs
 		
 		int tot = arrays.get_size(info_);
 		if (tot < 1) return output;
-		if (tot == 1) return (is_investment ? get_investment(info_.get(0)) : get_val(info_.get(0), what_));
+		if (tot == 1) return (is_investment ? get_investment(info_.get(0)) : db_ib.execs.get_val(info_.get(0), what_));
 		
 		double sum = 0.0;
 		double quantity_tot = 0.0;
@@ -191,25 +191,23 @@ public abstract class execs
 		{
 			if (is_price || is_investment)
 			{
-				double price = get_val(item, DB_PRICE);
-				double quantity = get_val(item, DB_QUANTITY);			
-				double fees = (is_price ? 0.0 : get_val(item, DB_FEES));
+				double price = get_price(item);
+				double quantity = get_quantity(item);			
+				double fees = (is_price ? 0.0 : get_fees(item));
 				
 				sum += get_investment(price, quantity, fees);
 				
 				if (is_price) quantity_tot += quantity;				
 			}
-			else sum += get_val(item, what_); 
+			else sum += db_ib.execs.get_val(item, what_); 
 		}
 		
 		return (is_price ? (sum / quantity_tot) : sum);
 	}
 
-	private static double get_investment(HashMap<String, String> item_) { return get_investment(get_val(item_, DB_PRICE), get_val(item_, DB_QUANTITY), get_val(item_, DB_FEES)); }
+	private static double get_investment(HashMap<String, String> item_) { return get_investment(get_price(item_), get_quantity(item_), get_fees(item_)); }
 
 	private static double get_investment(double price_, double quantity_) { return get_investment(price_, quantity_, 0.0); }
 	
 	private static double get_investment(double price_, double quantity_, double fees_) { return ((price_ * quantity_) - fees_); }
-
-	private static double get_val(HashMap<String, String> item_, String field_) { return Double.parseDouble(item_.get(field_)); }
 }

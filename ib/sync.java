@@ -37,7 +37,7 @@ public abstract class sync extends parent_static
 	public static final String OUT_FUNDS = _types.SYNC_OUT_FUNDS;
 	
 	public static final long TIMEOUT_GET_ORDERS = 3l;
-	public static final long TIMEOUT_EXECUTE_ORDER = 3l;
+	public static final long TIMEOUT_EXECUTE_ORDER = 5l;
 	
 	public static final String ERROR_TIMEOUT = _types.ERROR_IB_SYNC_TIMEOUT;
 	

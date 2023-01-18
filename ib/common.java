@@ -94,6 +94,20 @@ public abstract class common
 		
 		return (((negative_too_ && val_ >= -1 * max_min) || (!negative_too_ && val_ > 0.0)) && (val_ <= max_min)); 
 	}
+
+	public static double _get_price(String symbol_, boolean check_ib_) 
+	{ 
+		double output = get_price(symbol_);
+		
+		if (check_ib_)
+		{
+			double temp = __get_price(symbol_);
+			
+			if (ib.common.price_is_ok(temp)) output = temp;
+		}
+		
+		return output; 
+	}
 	
 	public static double get_price(String symbol_)
 	{
@@ -113,7 +127,9 @@ public abstract class common
 				
 		return price;
 	}
-	
+
+	public static double __get_price(String symbol_) { return watchlist.__get_price(symbol_); }
+
 	public static String get_symbol(int order_id_main_)
 	{
 		String symbol = strings.DEFAULT;

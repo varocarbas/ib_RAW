@@ -586,10 +586,12 @@ public abstract class common
 		Object vals = get_insert_vals(source_, vals_);
 		if (!arrays.is_ok(vals)) return false;
 		
-		if (is_quick(source_)) db_quick.insert(source_, (HashMap<String, String>)vals_);
+		boolean is_quick = is_quick(source_);
+		
+		if (is_quick) db_quick.insert(source_, (HashMap<String, String>)vals_);
 		else db.insert(source_, (HashMap<String, Object>)vals);
 
-		return db.is_ok(source_);
+		return db.is_ok(source_, is_quick);
 	}
 
 	public static boolean update(String source_, String field_, Object val_, String where_) { return update(source_, field_, val_, where_, DEFAULT_IS_FIELD); }
@@ -601,10 +603,12 @@ public abstract class common
 	{	
 		if (!vals_are_ok(source_, vals_)) return false;
 		
-		if (is_quick(source_)) db_quick.update(source_, (HashMap<String, String>)vals_, where_);
+		boolean is_quick = is_quick(source_);
+		
+		if (is_quick) db_quick.update(source_, (HashMap<String, String>)vals_, where_);
 		else db.update(source_, (HashMap<String, Object>)vals_, where_);
 		
-		return db.is_ok(source_);
+		return db.is_ok(source_, is_quick);
 	}
 
 	public static boolean update_type(String source_, String field_, String type_, String root_, String where_) 
@@ -628,10 +632,12 @@ public abstract class common
 
 		Object vals = get_insert_vals(source_, vals_);
 
-		if (is_quick(source_)) db_quick.insert_update(source_, get_col(source_, db.FIELD_ID), (HashMap<String, String>)vals, where_);
+		boolean is_quick = is_quick(source_);
+		
+		if (is_quick) db_quick.insert_update(source_, get_col(source_, db.FIELD_ID), (HashMap<String, String>)vals, where_);
 		else db.insert_update_id(source_, (HashMap<String, Object>)vals, where_);
 		
-		return db.is_ok(source_);
+		return db.is_ok(source_, is_quick);
 	}
 
 	public static boolean update_all_old_quick()
@@ -670,9 +676,9 @@ public abstract class common
 
 	public static boolean delete(String source_, String where_)
 	{
-		accessory.db.delete(source_, where_);
+		db.delete(source_, where_);
 		
-		return accessory.db.is_ok(source_);
+		return db.is_ok(source_);
 	}
 
 	public static String join_wheres(String where1_, String where2_) { return join_wheres(where1_, where2_, db_where.LINK_AND); }

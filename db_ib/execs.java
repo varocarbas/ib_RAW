@@ -127,6 +127,8 @@ public abstract class execs
 		return val;
 	}
 
+	public static double get_val(HashMap<String, String> item_, String field_) { return Double.parseDouble(item_.get(db_ib.common.get_field_col(field_, field_))); }
+
 	static void populate_fields() { _fields = db_common.add_default_fields(SOURCE, new String[] { SYMBOL, EXEC_ID, ORDER_ID, SIDE, PRICE, QUANTITY, FEES }); }
 	
 	private static boolean field_is_decimal(String field_) { return (field_.equals(PRICE) || field_.equals(FEES) || field_.equals(QUANTITY)); }

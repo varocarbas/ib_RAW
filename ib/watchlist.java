@@ -3,6 +3,7 @@ package ib;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import accessory.misc;
 import accessory.parent_static;
 import accessory.strings;
 
@@ -57,11 +58,45 @@ public abstract class watchlist extends parent_static
 	public static ArrayList<HashMap<String, String>> get_all_vals() { return db_ib.watchlist.get_all_vals(); }	
 
 	public static HashMap<String, String> get_vals(String symbol_) { return db_ib.watchlist.get_vals(symbol_); }	
+	
+	public static double _get_price(String symbol_, boolean check_ib_) 
+	{ 
+		double output = get_price(symbol_);
+		
+		if (check_ib_)
+		{
+			double temp = __get_price(symbol_);
+			
+			if (ib.common.price_is_ok(temp)) output = temp;
+		}
+		
+		return output; 
+	}
 
 	public static double get_price(String symbol_) 
 	{ 
 		String symbol = ib.common.normalise_symbol(symbol_);
 		
 		return (strings.is_ok(symbol) ? db_ib.async_data.get_price(DB_SOURCE, symbol) : common.WRONG_PRICE); 
+	}
+
+	public static double __get_price(String symbol_) 
+	{ 
+		double output = common.WRONG_PRICE;
+		
+		String symbol = ib.common.normalise_symbol(symbol_);
+		if (!strings.is_ok(symbol)) return output;
+		
+		boolean is_quick = is_quick();
+
+		if (is_quick) watchlist_quicker.__add(symbol_);
+		else add(symbol_);
+		
+		misc.pause_secs(5);
+		
+		if (is_quick) watchlist_quicker.__remove(symbol_);
+		else remove(symbol_);
+		
+		return get_price(symbol_);
 	}
 }

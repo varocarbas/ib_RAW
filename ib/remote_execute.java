@@ -133,6 +133,7 @@ abstract class remote_execute
 		Object vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_MAIN, order.get_id_main(), null);
 		vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_SEC, order.get_id_sec(), vals);
 		vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.QUANTITY, quantity_, vals);
+		vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.STATUS, db_ib.remote.store_status_type(ib.remote.DEFAULT_STATUS), vals);		
 		vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.STATUS2, db_ib.remote.get_status2_key_execute(is_ok), vals);		
 
 		if (ib.common.price_is_ok(price_)) vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.PRICE, price_, vals);
@@ -168,10 +169,12 @@ abstract class remote_execute
 		if (stop != common.WRONG_PRICE) vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.STOP, stop, vals);
 		if (start != common.WRONG_PRICE) vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.START, start, vals);
 		if (start2 != common.WRONG_PRICE) vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.START2, start2, vals);
+		
+		vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ERROR, "", vals);
 
 		is_ok = sync_orders.place_update(order, type_update, val_);
 		vals = db_ib.remote.get_vals_common(db_ib.remote.get_status2_key_execute(is_ok), vals);
-		
+			
 		db_ib.remote.update(request_, vals);
 		
 		return is_ok;

@@ -9,6 +9,7 @@ import accessory.dates;
 import accessory.misc;
 import accessory.numbers;
 import accessory.parent_tests;
+import accessory.strings;
 import db_ib.common;
 import ib.apps;
 import ib.basic;
@@ -16,6 +17,7 @@ import ib.conn;
 import ib.market;
 import ib.market_quicker;
 import ib.orders;
+import ib.remote;
 import ib.sync;
 import ib.watchlist;
 import ib.watchlist_quicker;
@@ -92,7 +94,7 @@ public class tests extends parent_tests
 
 		outputs = run_sync(outputs);
 		
-		if (_orders_too) outputs = run_orders(outputs);
+		if (_orders_too) outputs = run_orders_both(outputs);
 		
 		outputs = run_data(outputs);
 		
@@ -107,10 +109,9 @@ public class tests extends parent_tests
 		return outputs;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static HashMap<String, HashMap<String, Boolean>> run_sync(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
-		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
+		HashMap<String, HashMap<String, Boolean>> outputs = arrays.get_new_hashmap_xy(outputs_);
 
 		Class<?> class0 = sync.class;
 		String name0 = class0.getName();
@@ -134,10 +135,21 @@ public class tests extends parent_tests
 		return outputs;
 	}
 
-	@SuppressWarnings("unchecked")
+	public static HashMap<String, HashMap<String, Boolean>> run_orders_both(HashMap<String, HashMap<String, Boolean>> outputs_)
+	{
+		HashMap<String, HashMap<String, Boolean>> outputs = arrays.get_new_hashmap_xy(outputs_);
+
+		numbers.update_round_decimals(2);
+		
+		outputs = run_orders(outputs);
+		outputs = run_orders_remote(outputs);
+		
+		return outputs;
+	}
+	
 	public static HashMap<String, HashMap<String, Boolean>> run_orders(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
-		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
+		HashMap<String, HashMap<String, Boolean>> outputs = arrays.get_new_hashmap_xy(outputs_);
 
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
 
@@ -149,7 +161,6 @@ public class tests extends parent_tests
 
 		update_screen(name0, true, 1);
 		
-		numbers.update_round_decimals(2);
 		String symbol = symbol_info.getKey(); 
 		
 		double quantity = 1;
@@ -261,11 +272,187 @@ public class tests extends parent_tests
 		
 		return outputs;
 	}
+	
+	public static HashMap<String, HashMap<String, Boolean>> run_orders_remote(HashMap<String, HashMap<String, Boolean>> outputs_)
+	{
+		HashMap<String, HashMap<String, Boolean>> outputs = arrays.get_new_hashmap_xy(outputs_);
 
-	@SuppressWarnings("unchecked")
+		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
+
+		Entry<String, Double> symbol_info = get_symbol(0);
+		
+		Class<?> class0 = remote.class;
+		String name0 = class0.getName();
+
+		update_screen(name0, true, 1);
+		
+		int pause = 1;
+		
+		String symbol = symbol_info.getKey(); 
+		
+		double perc = 50;
+		double price = symbol_info.getValue();
+		
+		double stop = numbers.apply_perc(price, -3, true);
+		double start = numbers.apply_perc(price, 2, true);
+		double start2 = numbers.apply_perc(price, 1, true);
+				
+		boolean wait_for_execution = false;
+		
+		String type = remote.PLACE_STOP_LIMIT;
+		
+		String name = "__request_place_perc";
+		
+		Class<?>[] params = new Class<?>[] { String.class, String.class, double.class, double.class, double.class, double.class, double.class, boolean.class };
+		
+		ArrayList<Object> args = new ArrayList<Object>();
+		args.add(type);
+		args.add(symbol);
+		args.add(stop);
+		args.add(start);
+		args.add(start2);
+		args.add(perc);
+		args.add(price);
+		args.add(wait_for_execution);
+				
+		boolean is_ok = _instance.run_method(class0, name, params, args, null);
+		
+		int request = (int)_instance._temp_output;
+		if (is_ok && request == ib.remote.WRONG_REQUEST) is_ok = false;
+
+		output.put(name, is_ok);
+		
+		if (!is_ok) 
+		{
+			outputs.put(name0, output);
+			
+			return outputs;
+		}
+		
+		outputs = run_orders_remote_execute(class0, name0, request, false, outputs);
+		if (!(boolean)_instance._temp_output) return outputs;
+
+		misc.pause_secs(pause);
+		
+		Object target = remote.REQUEST_OK;
+		
+		type = remote.UPDATE_STOP_VALUE;
+		
+		name = "__request_update";
+		
+		double stop_new = numbers.apply_perc(stop, -2, true);
+		
+		params = new Class<?>[] { int.class, String.class, double.class, boolean.class };
+		
+		args = new ArrayList<Object>();
+		args.add(request);
+		args.add(type);
+		args.add(stop_new);
+		args.add(wait_for_execution);
+				
+		is_ok = _instance.run_method(class0, name, params, args, target);
+
+		output.put(name, is_ok);
+		
+		if (!is_ok) 
+		{
+			outputs.put(name0, output);
+			
+			return outputs;
+		}
+		
+		outputs = run_orders_remote_execute(class0, name0, request, false, outputs);
+		if (!(boolean)_instance._temp_output) return outputs;
+
+		misc.pause_secs(pause);
+		
+		type = remote.CANCEL;
+		
+		name = "__request_cancel";
+		
+		params = new Class<?>[] { int.class, boolean.class };
+		
+		args = new ArrayList<Object>();
+		args.add(request);
+		args.add(wait_for_execution);
+				
+		is_ok = _instance.run_method(class0, name, params, args, target);
+
+		output.put(name, is_ok);
+		
+		if (!is_ok) 
+		{
+			outputs.put(name0, output);
+			
+			return outputs;
+		}
+		
+		outputs = run_orders_remote_execute(class0, name0, request, true, outputs);
+		
+		update_screen(name0, false, 1);
+		
+		return outputs;
+	}
+
+	public static HashMap<String, HashMap<String, Boolean>> run_orders_remote_execute(Class<?> class0_, String name0_, int request_, boolean is_cancel_, HashMap<String, HashMap<String, Boolean>> outputs_)
+	{
+		HashMap<String, HashMap<String, Boolean>> outputs = arrays.get_new_hashmap_xy(outputs_);
+
+		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
+		
+		String name = "__execute_all";
+		boolean is_ok = _instance.run_method(class0_, name, null, null, null);
+		
+		output.put(name, is_ok);
+		
+		if (!is_ok) 
+		{
+			outputs.put(name0_, output);
+			
+			_instance._temp_output = false;
+			
+			return outputs;
+		}
+		
+		name = "__wait_for_execution";
+		
+		ArrayList<Object> args = new ArrayList<Object>();
+		args.add(request_);
+		args.add(is_cancel_);
+		
+		Class<?>[] params = new Class<?>[] { int.class, boolean.class };
+		
+		is_ok = _instance.run_method(class0_, name, params, args, null);
+		
+		output.put(name, is_ok);
+		
+		if (!is_ok) 
+		{
+			outputs.put(name0_, output);
+			
+			_instance._temp_output = false;
+			
+			return outputs;
+		}
+
+		HashMap<String, String> vals = ib.remote.get_vals(request_);
+		is_ok = (strings.are_equal(ib.remote.get_status(vals), ib.remote.STATUS_ACTIVE) && strings.are_equal(ib.remote.get_status2(vals), ib.remote.STATUS2_EXECUTED));
+		
+		if (!is_ok)
+		{
+			name += "_DB"; 
+			output.put(name, false);
+			
+			_instance._temp_output = false;
+		}
+		else _instance._temp_output = true;
+		
+		return outputs;
+	}
+
 	public static HashMap<String, HashMap<String, Boolean>> run_starts(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
-		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
+		HashMap<String, HashMap<String, Boolean>> outputs = arrays.get_new_hashmap_xy(outputs_);
 
 		ArrayList<Object> args = null;
 		String name = "__start";
@@ -294,10 +481,9 @@ public class tests extends parent_tests
 		return outputs;
 	}
 		
-	@SuppressWarnings("unchecked")
 	public static HashMap<String, HashMap<String, Boolean>> run_data_market(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
-		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
+		HashMap<String, HashMap<String, Boolean>> outputs = arrays.get_new_hashmap_xy(outputs_);
 		
 		Class<?> class0 = market.class;
 		String name0 = class0.getName();
@@ -345,10 +531,9 @@ public class tests extends parent_tests
 		return outputs;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static HashMap<String, HashMap<String, Boolean>> run_data_watchlist(HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
-		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
+		HashMap<String, HashMap<String, Boolean>> outputs = arrays.get_new_hashmap_xy(outputs_);
 		
 		Class<?> class0 = watchlist.class;
 		String name0 = class0.getName();
@@ -395,10 +580,9 @@ public class tests extends parent_tests
 	
 	public static HashMap<String, HashMap<String, Boolean>> run_data_watchlist_quicker(HashMap<String, HashMap<String, Boolean>> outputs_) { return run_data_quicker(watchlist_quicker.class, outputs_); }	
 	
-	@SuppressWarnings("unchecked")
 	private static HashMap<String, HashMap<String, Boolean>> run_data_quicker(Class<?> class0_, HashMap<String, HashMap<String, Boolean>> outputs_)
 	{
-		HashMap<String, HashMap<String, Boolean>> outputs = (HashMap<String, HashMap<String, Boolean>>)arrays.get_new(outputs_);
+		HashMap<String, HashMap<String, Boolean>> outputs = arrays.get_new_hashmap_xy(outputs_);
 		
 		String name0 = class0_.getName();
 		
@@ -460,8 +644,14 @@ public class tests extends parent_tests
 	{ 
 		HashMap<String, Double> output = new HashMap<String, Double>();
 		
-		output.put("GOOG", 110.0);
-		output.put("AAPL", 150.0);
+		output.put("GOOG", 90.0);
+		output.put("AAPL", 130.0);
+
+		for (String symbol: output.keySet())
+		{
+			double price = ib.common._get_price(symbol, true);
+			if (ib.common.price_is_ok(price)) output.put(symbol, price);
+		}
 
 		return output;
 	}
