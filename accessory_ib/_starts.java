@@ -10,10 +10,5 @@ class _starts extends parent_first
 	public _starts() { }
 	public static void populate() { _instance.populate_internal_common(); }
 
-	protected void populate_internal() 
-	{
-		ini_common.start();
-		
-		db_ib.common.start(); 
-	}
+	protected void populate_internal() { ini_common.start(); }
 }

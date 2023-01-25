@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import accessory._keys;
 import accessory.arrays;
+import accessory.db_common;
+import accessory.db_quick;
 import accessory.logs;
 import accessory.strings;
 import accessory_ib.errors;
@@ -79,9 +81,9 @@ public abstract class remote
 	private static boolean _logs_to_file = DEFAULT_LOGS_TO_FILE;
 	private static String _path_logs = DEFAULT_PATH_LOGS;
 	
-	public static boolean is_quick() { return db_ib.common.is_quick(DB_SOURCE); }
+	public static boolean is_quick() { return db_common.is_quick(DB_SOURCE); }
 	
-	public static void is_quick(boolean is_quick_) { db_ib.common.is_quick(DB_SOURCE, is_quick_); }
+	public static void is_quick(boolean is_quick_) { db_common.is_quick(DB_SOURCE, is_quick_); }
 
 	public static boolean logs_to_file() { return _logs_to_file; }
 	
@@ -275,7 +277,7 @@ public abstract class remote
 	{
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
-		vals.put(db_ib.common.get_col(DB_SOURCE, DB_QUANTITY), quantity_);
+		vals.put(db_quick.get_col(DB_SOURCE, DB_QUANTITY), quantity_);
 		
 		update_error_place(request_, symbol_, type_, stop_, start_, start2_, is_request_, vals);
 	}
@@ -284,8 +286,8 @@ public abstract class remote
 	{
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
-		vals.put(db_ib.common.get_col(DB_SOURCE, DB_PRICE), price_);
-		vals.put(db_ib.common.get_col(DB_SOURCE, DB_PERC_MONEY), perc_);
+		vals.put(db_quick.get_col(DB_SOURCE, DB_PRICE), price_);
+		vals.put(db_quick.get_col(DB_SOURCE, DB_PERC_MONEY), perc_);
 		
 		update_error_place(request_, symbol_, type_, stop_, start_, start2_, is_request_, vals);
 	}
@@ -296,11 +298,11 @@ public abstract class remote
 
 		String type = strings.to_string(type_);
 		
-		vals.put(db_ib.common.get_col(DB_SOURCE, DB_SYMBOL), strings.to_string(symbol_));
-		vals.put(db_ib.common.get_col(DB_SOURCE, DB_TYPE_ORDER), db_ib.orders.store_order_type(type));
+		vals.put(db_quick.get_col(DB_SOURCE, DB_SYMBOL), strings.to_string(symbol_));
+		vals.put(db_quick.get_col(DB_SOURCE, DB_TYPE_ORDER), db_ib.orders.store_order_type(type));
 		vals.put("val", val_);
 
-		if (order_id_ > common.WRONG_ORDER_ID) vals.put(db_ib.common.get_col(DB_SOURCE, DB_ORDER_ID_MAIN), order_id_);
+		if (order_id_ > common.WRONG_ORDER_ID) vals.put(db_quick.get_col(DB_SOURCE, DB_ORDER_ID_MAIN), order_id_);
 		
 		update_error(request_, (is_request_ ? remote_request.ERROR_UPDATE : remote_execute.ERROR_UPDATE), vals, type);		
 	}
@@ -345,11 +347,11 @@ public abstract class remote
 
 		String type = strings.to_string(type_);
 		
-		vals.put(db_ib.common.get_col(DB_SOURCE, DB_SYMBOL), strings.to_string(symbol_));
-		vals.put(db_ib.common.get_col(DB_SOURCE, DB_TYPE_ORDER), db_ib.orders.store_order_type(type));
-		vals.put(db_ib.common.get_col(DB_SOURCE, DB_STOP), stop_);
-		vals.put(db_ib.common.get_col(DB_SOURCE, DB_START), start_);
-		vals.put(db_ib.common.get_col(DB_SOURCE, DB_START2), start2_);
+		vals.put(db_quick.get_col(DB_SOURCE, DB_SYMBOL), strings.to_string(symbol_));
+		vals.put(db_quick.get_col(DB_SOURCE, DB_TYPE_ORDER), db_ib.orders.store_order_type(type));
+		vals.put(db_quick.get_col(DB_SOURCE, DB_STOP), stop_);
+		vals.put(db_quick.get_col(DB_SOURCE, DB_START), start_);
+		vals.put(db_quick.get_col(DB_SOURCE, DB_START2), start2_);
 		
 		update_error(request_, (is_request_ ? remote_request.ERROR_PLACE : remote_execute.ERROR_PLACE), vals, type);		
 	}

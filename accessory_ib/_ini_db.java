@@ -31,7 +31,7 @@ public class _ini_db extends parent_ini_db
 	public static void populate(HashMap<String, Object> dbs_setup_) { _instance.populate_all(dbs_setup_); }
 
 	public static String get_table_old(String table_) { return (table_ + misc.SEPARATOR_NAME + "old"); }
-
+	
 	@SuppressWarnings("unchecked")
 	protected boolean populate_all_dbs(HashMap<String, Object> dbs_setup_)
 	{

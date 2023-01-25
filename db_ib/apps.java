@@ -27,12 +27,6 @@ public abstract class apps
 	public static final String TIME2 = common.FIELD_TIME2;
 	
 	public static final int MIN_COUNT = 1;
-	
-	static String[] _fields = null;
-	static String[] _cols = null;
-	static HashMap<String, String> _fields_cols = null;
-	
-	static boolean _is_quick = db_common.DEFAULT_IS_QUICK;
 
 	public static void __truncate() { __truncate(false); }
 	
@@ -40,13 +34,13 @@ public abstract class apps
 	
 	public static void __backup() { common.__backup(SOURCE); }	
 
-	public static boolean exists() { return common.exists(SOURCE, get_where_app()); }
+	public static boolean exists() { return db_common.exists(SOURCE, get_where_app()); }
 
 	public static ArrayList<HashMap<String, String>> get_all_active() { return get_all_active(true, true); }
 
-	public static ArrayList<HashMap<String, String>> get_all_active(boolean errors_too_, boolean any_user_) { return common.get_all_vals(SOURCE, null, get_where_active(errors_too_, any_user_)); }
+	public static ArrayList<HashMap<String, String>> get_all_active(boolean errors_too_, boolean any_user_) { return db_common.get_all_vals(SOURCE, null, get_where_active(errors_too_, any_user_)); }
 
-	public static boolean contains_active() { return (common.contains_active(SOURCE) || common.exists(SOURCE, get_where_active(true, true))); }
+	public static boolean contains_active() { return (common.contains_active(SOURCE) || db_common.exists(SOURCE, get_where_active(true, true))); }
 	
 	public static String get_app_name_ini() { return common.get_string(SOURCE, APP, common.get_where_user(SOURCE)); }
 
@@ -64,7 +58,7 @@ public abstract class apps
 	
 	public static boolean is_stopped(String app_) { return is_common(ib.apps.STATUS_STOPPED, app_); }
 	
-	public static boolean is_connected(String app_) { return common.exists(SOURCE, common.join_wheres(get_where_app(app_), get_where_connected(true))); }
+	public static boolean is_connected(String app_) { return db_common.exists(SOURCE, db_common.join_wheres(get_where_app(app_), get_where_connected(true))); }
 	
 	public static boolean update_app_name() { return update(APP, ini_apps.get_app_name(), ini_apps.get_app_name()); }
 
@@ -82,12 +76,12 @@ public abstract class apps
 	{ 
 		Object vals = null;
 		
-		if (!exists()) vals = common.add_to_vals(SOURCE, APP, ini_apps.get_app_name(), null);
+		if (!exists()) vals = db_common.add_to_vals(SOURCE, APP, ini_apps.get_app_name(), null);
 		
 		int val0 = ini_apps.get_conn_id(); 
 		int val = (conn.id_is_ok(val0) ? val0 : val_);
 		
-		vals = common.add_to_vals(SOURCE, CONN_ID, val, vals);
+		vals = db_common.add_to_vals(SOURCE, CONN_ID, val, vals);
 		
 		return update(vals);
 	}
@@ -98,12 +92,12 @@ public abstract class apps
 	{ 
 		Object vals = null;
 				
-		if (!exists()) vals = common.add_to_vals(SOURCE, APP, ini_apps.get_app_name(), vals);
+		if (!exists()) vals = db_common.add_to_vals(SOURCE, APP, ini_apps.get_app_name(), vals);
 		
 		String val0 = ini_apps.get_conn_type(); 
 		String val = conn.get_type_key(conn.type_is_ok(val0) ? val0 : val_);
 		
-		vals = common.add_to_vals(SOURCE, CONN_TYPE, val, vals);
+		vals = db_common.add_to_vals(SOURCE, CONN_TYPE, val, vals);
 		
 		return update(vals);
 	}
@@ -137,9 +131,9 @@ public abstract class apps
 
 	public static boolean update(Object vals_) 
 	{ 
-		if (!common.vals_are_ok(SOURCE, vals_)) return false;
+		if (!db_common.vals_are_ok(SOURCE, vals_)) return false;
 		
-		Object vals = get_vals(vals_, (String)common.get_from_vals(SOURCE, APP, vals_));
+		Object vals = get_vals(vals_, (String)db_common.get_from_vals(SOURCE, APP, vals_));
 
 		return (vals != null ? insert_update(vals) : false); 
 	}
@@ -148,13 +142,13 @@ public abstract class apps
 	{
 		String where = get_where_app();
 
-		return (strings.is_ok(where) ? common.update(SOURCE, TIME2, ib.common.get_current_time2(), where) : false); 
+		return (strings.is_ok(where) ? db_common.update(SOURCE, TIME2, ib.common.get_current_time2(), where) : false); 
 	}
 
 	public static String get_time(String app_, String status_) 
 	{
 		String where = get_where_app(app_);
-		if (strings.is_ok(status_)) where = common.join_wheres(where, get_where_status(status_));
+		if (strings.is_ok(status_)) where = db_common.join_wheres(where, get_where_status(status_));
 		
 		String output = common.get_string(SOURCE, TIME2, where);
 		
@@ -165,9 +159,7 @@ public abstract class apps
 
 	public static String get_status_type(String status_key_) { return ib.apps.get_status_type(status_key_); }
 	
-	static void populate_fields() { _fields = db_common.add_default_fields(SOURCE, new String[] { USER, APP, CONN_ID, CONN_TYPE, CONN_IS_ON, STATUS, ERROR, ADDITIONAL, TIME2 }); }
-	
-	private static boolean is_common(String status_, String app_) { return common.exists(SOURCE, common.join_wheres(get_where_app(app_), get_where_status(status_))); }
+	private static boolean is_common(String status_, String app_) { return db_common.exists(SOURCE, db_common.join_wheres(get_where_app(app_), get_where_status(status_))); }
 
 	private static boolean update(String field_, Object val_) { return update(field_, val_, ini_apps.get_app_name()); }
 
@@ -180,9 +172,9 @@ public abstract class apps
 
 	private static boolean insert_update(Object vals_) 
 	{
-		String where = get_where_app((String)common.get_from_vals(SOURCE, APP, vals_));
+		String where = get_where_app((String)db_common.get_from_vals(SOURCE, APP, vals_));
 
-		return (common.exists(SOURCE, where) ? common.update(SOURCE, vals_, where) : common.insert(SOURCE, vals_)); 		
+		return (db_common.exists(SOURCE, where) ? db_common.update(SOURCE, vals_, where) : common.insert(SOURCE, vals_)); 		
 	}
 	
 	private static Object get_vals(Object vals_, String app_) { return get_vals_common(vals_, app_); }
@@ -191,7 +183,7 @@ public abstract class apps
 	{ 
 		Object vals = null;
 		
-		if (strings.is_ok(field_) && val_ != null) vals = common.add_to_vals(SOURCE, field_, db.adapt_input(val_), vals);
+		if (strings.is_ok(field_) && val_ != null) vals = db_common.add_to_vals(SOURCE, field_, db.adapt_input(val_), vals);
 
 		return get_vals_common(vals, app_);
 	}
@@ -199,7 +191,7 @@ public abstract class apps
 	@SuppressWarnings("unchecked")
 	private static Object get_vals_common(Object vals_, String app_) 
 	{ 
-		Object vals = (common.is_quick(SOURCE) ? arrays.get_new_hashmap_xx((HashMap<String, String>)vals_) : arrays.get_new_hashmap_xy((HashMap<String, Object>)vals_));
+		Object vals = (db_common.is_quick(SOURCE) ? arrays.get_new_hashmap_xx((HashMap<String, String>)vals_) : arrays.get_new_hashmap_xy((HashMap<String, Object>)vals_));
 		
 		if (strings.is_ok(app_) || !common.field_exists(SOURCE, APP, vals_))
 		{
@@ -208,10 +200,10 @@ public abstract class apps
 			app = ini_apps.get_app_name();
 			if (!strings.is_ok(app)) return null;
 			
-			vals = common.add_to_vals(SOURCE, APP, app, vals);
+			vals = db_common.add_to_vals(SOURCE, APP, app, vals);
 		}
 		
-		vals = common.add_to_vals(SOURCE, TIME2, ib.common.get_current_time2(), vals);
+		vals = db_common.add_to_vals(SOURCE, TIME2, ib.common.get_current_time2(), vals);
 		
 		return vals;
 	}
@@ -220,7 +212,7 @@ public abstract class apps
 	{ 
 		String output = get_where_status(ib.apps.STATUS_RUNNING);
 		
-		if (errors_too_) output = common.join_wheres(output, get_where_status(ib.apps.STATUS_ERROR), db_where.LINK_OR);
+		if (errors_too_) output = db_common.join_wheres(output, get_where_status(ib.apps.STATUS_ERROR), db_where.LINK_OR);
 		
 		return output; 
 	}

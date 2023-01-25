@@ -1,6 +1,7 @@
 package ib;
 
 import accessory._keys;
+import accessory.db_common;
 import accessory.logs;
 import accessory.strings;
 import accessory_ib._defaults;
@@ -29,9 +30,9 @@ public abstract class apps
 	public static final String DEFAULT_STATUS = STATUS_STOPPED;
 	public static final long DEFAULT_APP_OK_DELAY_SECS = 60l;
 	
-	public static boolean is_quick() { return db_ib.common.is_quick(DB_SOURCE); }
+	public static boolean is_quick() { return db_common.is_quick(DB_SOURCE); }
 	
-	public static void is_quick(boolean is_quick_) { db_ib.common.is_quick(DB_SOURCE, is_quick_); }
+	public static void is_quick(boolean is_quick_) { db_common.is_quick(DB_SOURCE, is_quick_); }
 
 	public static boolean start()
 	{

@@ -23,16 +23,15 @@ abstract class async_data_trades_quicker extends parent_static
 	static volatile String[] _symbols = new String[SIZE_GLOBALS];	
 	@SuppressWarnings("unchecked")
 	static volatile HashMap<String, String>[] _vals = (HashMap<String, String>[])new HashMap[SIZE_GLOBALS];
-
+	
 	static volatile int _last_id = async_data_quicker.MIN_ID;
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = false;
 
-	private static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB };
-
+	private static final int[] FIELDS0 = new int[] { async_data_quicker.PRICE_IB };
+	private static ArrayList<Integer> FIELDS = null;
+	
 	private static final boolean ONLY_ESSENTIAL = true;
-
-	private static volatile ArrayList<Integer> _fields = null;
 
 	private static boolean _log = async_data_quicker.DEFAULT_LOG;
 	
@@ -80,8 +79,8 @@ abstract class async_data_trades_quicker extends parent_static
 
 	public static ArrayList<Integer> _get_fields() 
 	{ 
-		if (_fields == null) _fields = async_data_quicker.__get_fields(FIELDS, ONLY_ESSENTIAL);
+		if (FIELDS == null) FIELDS = async_data_quicker.__get_fields(FIELDS0, ONLY_ESSENTIAL);
 		
-		return _fields; 
+		return FIELDS; 
 	}
 }

@@ -29,12 +29,6 @@ public abstract class orders
 	public static final String TYPE_MAIN = common.FIELD_TYPE_MAIN;
 	public static final String TYPE_SEC = common.FIELD_TYPE_SEC;
 	public static final String QUANTITY = common.FIELD_QUANTITY;
-
-	static String[] _fields = null;
-	static String[] _cols = null;
-	static HashMap<String, String> _fields_cols = null;
-	
-	static boolean _is_quick = db_common.DEFAULT_IS_QUICK;
 	
 	public static void __truncate() { __truncate(false); }
 	
@@ -42,13 +36,13 @@ public abstract class orders
 	
 	public static void __backup() { common.__backup(SOURCE); }	
 
-	public static boolean exists(String symbol_) { return common.exists(SOURCE, common.get_where_symbol(SOURCE, symbol_)); }
+	public static boolean exists(String symbol_) { return db_common.exists(SOURCE, common.get_where_symbol(SOURCE, symbol_)); }
 
-	public static boolean exists_status(String status_) { return common.exists(SOURCE, get_where_status(status_)); }
+	public static boolean exists_status(String status_) { return db_common.exists(SOURCE, get_where_status(status_)); }
 	
 	public static boolean exists(int order_id_, boolean is_main_) { return exists_internal(order_id_, is_main_, null); }
 
-	public static boolean contains_active() { return (common.contains_active(SOURCE) || common.exists(SOURCE, get_where_active())); }
+	public static boolean contains_active() { return (common.contains_active(SOURCE) || db_common.exists(SOURCE, get_where_active())); }
 	
 	public static boolean is_active(int order_id_, boolean is_main_) { return exists_internal(order_id_, is_main_, get_where_active()); }
 
@@ -58,11 +52,11 @@ public abstract class orders
 	{
 		String where = orders.get_where_active();
 		
-		if (ib.common.price_is_ok(stop_)) where = common.join_wheres(where, common.get_where(SOURCE, STOP, Double.toString(ib.common.adapt_price(stop_)), false));
-		if (ib.common.price_is_ok(start_)) where = common.join_wheres(where, common.get_where(SOURCE, START, Double.toString(ib.common.adapt_price(start_)), false));
-		if (ib.common.price_is_ok(start2_)) where = common.join_wheres(where, common.get_where(SOURCE, START2, Double.toString(ib.common.adapt_price(start2_)), false));
+		if (ib.common.price_is_ok(stop_)) where = db_common.join_wheres(where, common.get_where(SOURCE, STOP, Double.toString(ib.common.adapt_price(stop_)), false));
+		if (ib.common.price_is_ok(start_)) where = db_common.join_wheres(where, common.get_where(SOURCE, START, Double.toString(ib.common.adapt_price(start_)), false));
+		if (ib.common.price_is_ok(start2_)) where = db_common.join_wheres(where, common.get_where(SOURCE, START2, Double.toString(ib.common.adapt_price(start2_)), false));
 			
-		return common.exists(SOURCE, where);
+		return db_common.exists(SOURCE, where);
 	}
 
 	public static boolean is_inactive(int order_id_, boolean is_main_) { return exists_internal(order_id_, is_main_, get_where_inactive()); }
@@ -71,13 +65,13 @@ public abstract class orders
 	
 	public static _order get_to_order(String symbol_) { return to_order(get(symbol_)); }
 
-	public static String get_symbol(int order_id_main_) { return common.get_string(SOURCE, common.get_field_col(SOURCE, SYMBOL), get_where_order_id(order_id_main_)); }
+	public static String get_symbol(int order_id_main_) { return common.get_string(SOURCE, db_common.get_field_quick_col(SOURCE, SYMBOL), get_where_order_id(order_id_main_)); }
 
-	public static int get_order_id(String symbol_, boolean is_main_) { return common.get_int(SOURCE, (is_main_ ? ORDER_ID_MAIN : ORDER_ID_SEC), common.get_where_symbol(SOURCE, symbol_), ib.common.WRONG_ORDER_ID); }
+	public static int get_order_id(String symbol_, boolean is_main_) { return db_common.get_int(SOURCE, (is_main_ ? ORDER_ID_MAIN : ORDER_ID_SEC), common.get_where_symbol(SOURCE, symbol_), ib.common.WRONG_ORDER_ID); }
 
-	public static double get_quantity(int order_id_main_) { return common.get_decimal(SOURCE, QUANTITY, get_where_order_id(order_id_main_), ib.common.WRONG_PRICE); }
+	public static double get_quantity(int order_id_main_) { return db_common.get_decimal(SOURCE, QUANTITY, get_where_order_id(order_id_main_), ib.common.WRONG_PRICE); }
 
-	public static int get_order_id_main(int order_id_sec_) { return common.get_int(SOURCE, ORDER_ID_MAIN, get_where_order_id(order_id_sec_, false), ib.common.WRONG_ORDER_ID); }
+	public static int get_order_id_main(int order_id_sec_) { return db_common.get_int(SOURCE, ORDER_ID_MAIN, get_where_order_id(order_id_sec_, false), ib.common.WRONG_ORDER_ID); }
 
 	public static String get_field_update(String type_update_) 
 	{
@@ -94,9 +88,9 @@ public abstract class orders
 		return field; 
 	}
 
-	public static HashMap<String, String> get(int order_id_main_) { return common.get_vals(SOURCE, common.get_fields(SOURCE), get_where_order_id(order_id_main_, true)); }
+	public static HashMap<String, String> get(int order_id_main_) { return db_common.get_vals(SOURCE, db_common.get_fields(SOURCE), get_where_order_id(order_id_main_, true)); }
 
-	public static HashMap<String, String> get(String symbol_) { return common.get_vals(SOURCE, common.get_fields(SOURCE), common.get_where_symbol(SOURCE, symbol_)); }
+	public static HashMap<String, String> get(String symbol_) { return db_common.get_vals(SOURCE, db_common.get_fields(SOURCE), common.get_where_symbol(SOURCE, symbol_)); }
 
 	public static String get_status(String symbol_) { return get_status_common(common.get_where_symbol(SOURCE, symbol_)); }
 	
@@ -119,7 +113,7 @@ public abstract class orders
 		boolean output = false;
 		if (order_ == null) return output;
 
-		output = common.update(SOURCE, to_hashmap(order_, false), get_where_order_id(order_.get_id_main()));
+		output = db_common.update(SOURCE, to_hashmap(order_, false), get_where_order_id(order_.get_id_main()));
 
 		sync_tables(order_);
 		
@@ -140,16 +134,16 @@ public abstract class orders
 
 	public static _order to_order(HashMap<String, String> db_)
 	{
-		String type_place = get_place_type((String)arrays.get_value(db_, common.get_field_col(SOURCE, TYPE_PLACE)));
-		String symbol = (String)arrays.get_value(db_, common.get_field_col(SOURCE, SYMBOL));
+		String type_place = get_place_type((String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, TYPE_PLACE)));
+		String symbol = (String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, SYMBOL));
 		
-		double quantity = strings.to_number_decimal((String)arrays.get_value(db_, common.get_field_col(SOURCE, QUANTITY)));
-		double stop = strings.to_number_decimal((String)arrays.get_value(db_, common.get_field_col(SOURCE, STOP))); 
+		double quantity = strings.to_number_decimal((String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, QUANTITY)));
+		double stop = strings.to_number_decimal((String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, STOP))); 
 
-		double start = strings.to_number_decimal((String)arrays.get_value(db_, common.get_field_col(SOURCE, START)));
-		double start2 = strings.to_number_decimal((String)arrays.get_value(db_, common.get_field_col(SOURCE, START2)));
+		double start = strings.to_number_decimal((String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, START)));
+		double start2 = strings.to_number_decimal((String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, START2)));
 		
-		int id_main = strings.to_number_int((String)arrays.get_value(db_, common.get_field_col(SOURCE, ORDER_ID_MAIN)));
+		int id_main = strings.to_number_int((String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, ORDER_ID_MAIN)));
 
 		return new _order(type_place, symbol, quantity, stop, start, start2, id_main);
 	}
@@ -159,28 +153,28 @@ public abstract class orders
 	
 	public static Object to_hashmap(_order order_, boolean only_basic_)
 	{
-		if (order_ == null) return (common.is_quick(SOURCE) ? new HashMap<String, String>() : new HashMap<String, Object>());
+		if (order_ == null) return (db_common.is_quick(SOURCE) ? new HashMap<String, String>() : new HashMap<String, Object>());
 
-		Object db = common.add_to_vals(SOURCE, ORDER_ID_MAIN, order_.get_id_main(), null);
-		db = common.add_to_vals(SOURCE, ORDER_ID_SEC, order_.get_id_sec(), db);
-		db = common.add_to_vals(SOURCE, TYPE_PLACE, store_place_type(order_.get_type_place()), db);
-		db = common.add_to_vals(SOURCE, SYMBOL, order_.get_symbol(), db);
-		db = common.add_to_vals(SOURCE, QUANTITY, order_.get_quantity(), db);
-		db = common.add_to_vals(SOURCE, STOP, order_.get_stop(), db);
+		Object db = db_common.add_to_vals(SOURCE, ORDER_ID_MAIN, order_.get_id_main(), null);
+		db = db_common.add_to_vals(SOURCE, ORDER_ID_SEC, order_.get_id_sec(), db);
+		db = db_common.add_to_vals(SOURCE, TYPE_PLACE, store_place_type(order_.get_type_place()), db);
+		db = db_common.add_to_vals(SOURCE, SYMBOL, order_.get_symbol(), db);
+		db = db_common.add_to_vals(SOURCE, QUANTITY, order_.get_quantity(), db);
+		db = db_common.add_to_vals(SOURCE, STOP, order_.get_stop(), db);
 		
 		boolean is_market = _order.is_market(order_);
 		
-		if (is_market) db = common.add_to_vals(SOURCE, IS_MARKET, is_market, db);
+		if (is_market) db = db_common.add_to_vals(SOURCE, IS_MARKET, is_market, db);
 		else 
 		{
-			if (ib.common.price_is_ok(order_.get_start())) db = common.add_to_vals(SOURCE, START, order_.get_start(), db);
-			if (ib.common.price_is_ok(order_.get_start2())) db = common.add_to_vals(SOURCE, START2, order_.get_start2(), db);
+			if (ib.common.price_is_ok(order_.get_start())) db = db_common.add_to_vals(SOURCE, START, order_.get_start(), db);
+			if (ib.common.price_is_ok(order_.get_start2())) db = db_common.add_to_vals(SOURCE, START2, order_.get_start2(), db);
 		}
 		
 		if (!only_basic_)
 		{
-			db = common.add_to_vals(SOURCE, TYPE_MAIN, order_.get_type_main(), db);
-			db = common.add_to_vals(SOURCE, TYPE_SEC, order_.get_type_sec(), db);
+			db = db_common.add_to_vals(SOURCE, TYPE_MAIN, order_.get_type_main(), db);
+			db = db_common.add_to_vals(SOURCE, TYPE_SEC, order_.get_type_sec(), db);
 		}
 		
 		return db;
@@ -218,14 +212,14 @@ public abstract class orders
 		HashMap<String, String> vals = get(order_id_main_);
 		if (!arrays.is_ok(vals)) return output;
 
-		if (ib.orders.is_update_market(type_)) output = (boolean)db.adapt_output(vals.get(common.get_field_col(SOURCE, db_ib.orders.IS_MARKET)), data.BOOLEAN);
+		if (ib.orders.is_update_market(type_)) output = (boolean)db.adapt_output(vals.get(db_common.get_field_quick_col(SOURCE, db_ib.orders.IS_MARKET)), data.BOOLEAN);
 		else
 		{
 			String field_col = strings.DEFAULT;
 			
-			if (ib.orders.is_update_stop(type_)) field_col = common.get_field_col(SOURCE, STOP);
-			else if (ib.orders.is_update_start(type_)) field_col = common.get_field_col(SOURCE, START);
-			else if (ib.orders.is_update_start2(type_)) field_col = common.get_field_col(SOURCE, START2);
+			if (ib.orders.is_update_stop(type_)) field_col = db_common.get_field_quick_col(SOURCE, STOP);
+			else if (ib.orders.is_update_start(type_)) field_col = db_common.get_field_quick_col(SOURCE, START);
+			else if (ib.orders.is_update_start2(type_)) field_col = db_common.get_field_quick_col(SOURCE, START2);
 
 			output = (ib.orders.get_update_val(type_, stop_, start_, start2_) == common.adapt_price(Double.parseDouble(vals.get(field_col))));
 		}
@@ -248,7 +242,7 @@ public abstract class orders
 		if (status.equals(ib.orders.STATUS_ACTIVE)) where = get_where_active();
 		else where = get_where_status(status);
 		
-		return common.get_all_vals(SOURCE, fields_, where); 
+		return db_common.get_all_vals(SOURCE, fields_, where); 
 	}
 
 	public static int get_highest_order_id()
@@ -257,14 +251,14 @@ public abstract class orders
 		
 		String[] fields = new String[] { orders.SOURCE, ORDER_ID_SEC };
 			
-		ArrayList<HashMap<String, String>> all = common.get_all_vals(SOURCE, fields, null);
+		ArrayList<HashMap<String, String>> all = db_common.get_all_vals(SOURCE, fields, null);
 		if (!arrays.is_ok(all)) return output;
 		
 		for (HashMap<String, String> item: all)
 		{
 			for (String field: fields) 
 			{ 
-				int order_id = Integer.parseInt(item.get(common.get_field_col(SOURCE, field)));
+				int order_id = Integer.parseInt(item.get(db_common.get_field_quick_col(SOURCE, field)));
 				if (order_id > output) output = order_id; 
 			}
 		}
@@ -277,7 +271,7 @@ public abstract class orders
 		Object val = null;
 		if (!arrays.is_ok(vals_)) return val;
 		
-		String field_col = common.get_field_col(SOURCE, field_);
+		String field_col = db_common.get_field_quick_col(SOURCE, field_);
 		
 		String val0 = vals_.get(field_col);
 		
@@ -293,15 +287,13 @@ public abstract class orders
 		return val;
 	}
 	
-	static void populate_fields() { _fields = db_common.add_default_fields(SOURCE, new String[] { SYMBOL, ORDER_ID_MAIN, ORDER_ID_SEC, STATUS, START, START2, STOP, IS_MARKET, TYPE_PLACE, TYPE_MAIN, TYPE_SEC, QUANTITY }); }	
-	
 	private static boolean field_is_decimal(String field_) { return (field_.equals(START) || field_.equals(START2) || field_.equals(STOP) || field_.equals(QUANTITY)); }
 	
 	private static boolean field_is_int(String field_) { return (field_.equals(ORDER_ID_MAIN) || field_.equals(ORDER_ID_SEC)); }
 	
 	private static boolean field_is_boolean(String field_) { return (field_.equals(IS_MARKET)); }
 
-	private static boolean update_status_internal(int order_id_main_, String status_key_) { return common.update(SOURCE, STATUS, status_key_, get_where_order_id(order_id_main_)); }
+	private static boolean update_status_internal(int order_id_main_, String status_key_) { return db_common.update(SOURCE, STATUS, status_key_, get_where_order_id(order_id_main_)); }
 
 	private static String get_status_common(String where_) { return common.get_type(SOURCE, STATUS, ib.orders.STATUS, where_); }
 
@@ -313,7 +305,7 @@ public abstract class orders
 
 	private static void sync_tables_remote(_order order_)
 	{	
-		Object vals = common.add_to_vals(SOURCE, remote.IS_MARKET, _order.is_market(order_), null);
+		Object vals = db_common.add_to_vals(SOURCE, remote.IS_MARKET, _order.is_market(order_), null);
 		
 		HashMap<String, Double> items = new HashMap<String, Double>();
 		
@@ -326,7 +318,7 @@ public abstract class orders
 			double val = item.getValue();
 			if (!ib.common.price_is_ok(val)) continue;
 		
-			vals = common.add_to_vals(SOURCE, item.getKey(), val, vals);
+			vals = db_common.add_to_vals(SOURCE, item.getKey(), val, vals);
 		}
 		
 		remote.update_order_id(order_.get_id_main(), vals);
@@ -341,9 +333,9 @@ public abstract class orders
 	{ 
 		String where = get_where_order_id(order_id_, is_main_);
 		
-		if (strings.is_ok(where_)) where = common.join_wheres(where, where_);
+		if (strings.is_ok(where_)) where = db_common.join_wheres(where, where_);
 		
-		return common.exists(SOURCE, where_); 
+		return db_common.exists(SOURCE, where_); 
 	}
 
 	private static String get_where_order_id(int order_id_main_) { return get_where_order_id(order_id_main_, true); }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import accessory.arrays;
+import accessory.db_common;
 import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
@@ -58,7 +59,7 @@ abstract class async_data_watchlist extends parent_static
 
 	private static volatile int _last_i = -1;
 	
-	public static boolean is_quick() { return db_ib.common.is_quick(SOURCE); }
+	public static boolean is_quick() { return db_common.is_quick(SOURCE); }
 
 	public static boolean is_ok() { return _enabled; }
 	
@@ -132,7 +133,7 @@ abstract class async_data_watchlist extends parent_static
 
 	private static Object tick_price_flus(String symbol_, double price_, HashMap<String, String> db_, Object vals_)
 	{
-		Object vals = db_ib.common.add_to_vals(SOURCE, db_ib.async_data.FLUS_PRICE, price_, arrays.get_new(vals_));
+		Object vals = db_common.add_to_vals(SOURCE, db_ib.async_data.FLUS_PRICE, price_, arrays.get_new(vals_));
 		
 		double price_db = db_ib.async_data.get_out_vals_number(SOURCE, db_ib.async_data.FLUS_PRICE, db_, true);			
 		
@@ -170,7 +171,7 @@ abstract class async_data_watchlist extends parent_static
 
 		flu /= (double)tot;
 
-		return db_ib.common.add_to_vals(SOURCE, db_ib.async_data.FLU, numbers.round(flu), vals);
+		return db_common.add_to_vals(SOURCE, db_ib.async_data.FLU, numbers.round(flu), vals);
 	}
 
 	private static Object tick_price_flus_flu2(String symbol_, Object vals_, double var_)
@@ -266,7 +267,7 @@ abstract class async_data_watchlist extends parent_static
 			else if (tot_plus == 0) flu2 = Math.pow(FACTOR_FLU2_ZERO, -1.0 * (double)tot_minus);
 		}
 		
-		return db_ib.common.add_to_vals(SOURCE, db_ib.async_data.FLU2, numbers.round(flu2), vals);
+		return db_common.add_to_vals(SOURCE, db_ib.async_data.FLU2, numbers.round(flu2), vals);
 	}
 
 	private static Object tick_price_flus_flu2_min_max(String symbol_, Object vals_, double var_)
@@ -290,8 +291,8 @@ abstract class async_data_watchlist extends parent_static
 			else if (val > max) max = val;
 		}
 
-		vals = db_ib.common.add_to_vals(SOURCE, db_ib.async_data.FLU2_MIN, numbers.round(min), vals);
-		vals = db_ib.common.add_to_vals(SOURCE, db_ib.async_data.FLU2_MAX, numbers.round(max), vals);
+		vals = db_common.add_to_vals(SOURCE, db_ib.async_data.FLU2_MIN, numbers.round(min), vals);
+		vals = db_common.add_to_vals(SOURCE, db_ib.async_data.FLU2_MAX, numbers.round(max), vals);
 		
 		return vals;
 	}
@@ -306,13 +307,13 @@ abstract class async_data_watchlist extends parent_static
 		double val_db = db_ib.async_data.get_out_vals_number(SOURCE, field, db_, false);
 		
 		boolean is_ok_db = tick_app_val_is_ok(val_db, is_price_);
-		if (!is_ok_db || val_ < val_db) vals = db_ib.common.add_to_vals(SOURCE, field, val_, vals);
+		if (!is_ok_db || val_ < val_db) vals = db_common.add_to_vals(SOURCE, field, val_, vals);
 		
 		field = (is_price_ ? db_ib.async_data.PRICE_MAX : db_ib.async_data.VOLUME_MAX);
 		val_db = db_ib.async_data.get_out_vals_number(SOURCE, field, db_, false);
 		
 		is_ok_db = tick_app_val_is_ok(val_db, is_price_);
-		if (!is_ok_db || val_ > val_db) vals = db_ib.common.add_to_vals(SOURCE, field, val_, vals);
+		if (!is_ok_db || val_ > val_db) vals = db_common.add_to_vals(SOURCE, field, val_, vals);
 		
 		return vals;
 	}
@@ -339,13 +340,13 @@ abstract class async_data_watchlist extends parent_static
 			
 			if (!tick_app_val_is_ok(val_db, is_price_)) 
 			{
-				vals = db_ib.common.add_to_vals(SOURCE, field, val_, vals);
+				vals = db_common.add_to_vals(SOURCE, field, val_, vals);
 				if (is_price_ini) price_ini = val_;
 			}
 			else if (is_price_ini) price_ini = val_db;
 		}
 
-		if (is_price_) vals = db_ib.common.add_to_vals(SOURCE, db_ib.async_data.VAR_TOT, numbers.get_perc_hist(val_, price_ini), vals);
+		if (is_price_) vals = db_common.add_to_vals(SOURCE, db_ib.async_data.VAR_TOT, numbers.get_perc_hist(val_, price_ini), vals);
 		
 		return vals;
 	}

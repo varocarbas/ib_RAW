@@ -22,12 +22,6 @@ public abstract class basic
 	
 	public static final double WRONG_MONEY = ib.common.WRONG_MONEY;
 	
-	static String[] _fields = null;
-	static String[] _cols = null;
-	static HashMap<String, String> _fields_cols = null;
-	
-	static boolean _is_quick = db_common.DEFAULT_IS_QUICK;
-	
 	public static void __truncate() { common.__truncate(SOURCE); }
 	
 	public static void __backup() { common.__backup(SOURCE); }	
@@ -45,17 +39,17 @@ public abstract class basic
 		trades.__truncate(only_if_not_active_);		
 	}
 	
-	public static boolean exists() { return common.exists(SOURCE, get_where_user()); }
+	public static boolean exists() { return db_common.exists(SOURCE, get_where_user()); }
 
 	public static String get_user() { return common.get_string(SOURCE, USER, get_where_user()); }
 
 	public static String get_account_ib() { return common.get_string(SOURCE, ACCOUNT_IB, get_where_user()); }
 
-	public static double get_money() { return common.get_decimal(SOURCE, MONEY, get_where_user(), WRONG_MONEY); }
+	public static double get_money() { return db_common.get_decimal(SOURCE, MONEY, get_where_user(), WRONG_MONEY); }
 
-	public static double get_money_ini() { return common.get_decimal(SOURCE, MONEY_INI, get_where_user(), WRONG_MONEY); }
+	public static double get_money_ini() { return db_common.get_decimal(SOURCE, MONEY_INI, get_where_user(), WRONG_MONEY); }
 
-	public static double get_money_free() { return common.get_decimal(SOURCE, MONEY_FREE, get_where_user(), WRONG_MONEY); }
+	public static double get_money_free() { return db_common.get_decimal(SOURCE, MONEY_FREE, get_where_user(), WRONG_MONEY); }
 
 	public static HashMap<String, Double> get_money_and_free()
 	{
@@ -63,10 +57,10 @@ public abstract class basic
 		
 		String[] fields = new String[] { MONEY, MONEY_FREE };
 		
-		HashMap<String, String> temp = common.get_vals(SOURCE, fields, get_where_user());
+		HashMap<String, String> temp = db_common.get_vals(SOURCE, fields, get_where_user());
 		if (!arrays.is_ok(temp)) return output;
 		
-		for (String field: fields) { output.put(field, Double.parseDouble(temp.get(common.get_field_col(SOURCE, field)))); }
+		for (String field: fields) { output.put(field, Double.parseDouble(temp.get(db_common.get_field_quick_col(SOURCE, field)))); }
 		
 		return output;
 	}
@@ -83,12 +77,12 @@ public abstract class basic
 	{ 
 		Object vals = null;
 
-		if (!exists()) vals = common.add_to_vals(SOURCE, USER, common.adapt_string(ini_basic.get_user(), USER), vals);
+		if (!exists()) vals = db_common.add_to_vals(SOURCE, USER, common.adapt_string(ini_basic.get_user(), USER), vals);
 
 		String val0 = ini_basic.get_account_ib(); 
 		String val = (strings.is_ok(val0) ? val0 : val_);
 		
-		vals = common.add_to_vals(SOURCE, ACCOUNT_IB, val, vals);
+		vals = db_common.add_to_vals(SOURCE, ACCOUNT_IB, val, vals);
 		
 		return update(vals);
 	}
@@ -99,7 +93,7 @@ public abstract class basic
 	
 		Object vals = null;
 		
-		for (Entry<String, Double> item: vals_.entrySet()) { vals = common.add_to_vals(SOURCE, item.getKey(), adapt_money(item.getValue()), vals); }
+		for (Entry<String, Double> item: vals_.entrySet()) { vals = db_common.add_to_vals(SOURCE, item.getKey(), adapt_money(item.getValue()), vals); }
 
 		return update(vals);
 	}
@@ -109,10 +103,8 @@ public abstract class basic
 	public static boolean update_currency(String val_) { return update(CURRENCY, val_); }
 	
 	public static boolean update(Object vals_) { return common.insert_update(SOURCE, vals_, get_where_user()); }
-
-	static void populate_fields() { _fields = new String[] { USER, ACCOUNT_IB, MONEY, MONEY_INI, CURRENCY, MONEY_FREE }; }
 	
-	private static boolean update(String field_, Object val_) { return update(common.add_to_vals(SOURCE, field_, val_, null)); }
+	private static boolean update(String field_, Object val_) { return update(db_common.add_to_vals(SOURCE, field_, val_, null)); }
 	
 	private static double adapt_money(double val_)
 	{

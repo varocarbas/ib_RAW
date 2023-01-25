@@ -2,6 +2,7 @@ package ib;
 
 import java.util.ArrayList;
 
+import accessory.db_common;
 import accessory.strings;
 import db_ib.trades;
 
@@ -35,7 +36,7 @@ abstract class async_data_trades
 	public static boolean _disable_asap = true;
 	public static boolean _only_essential = true;
 	
-	public static boolean is_quick() { return db_ib.common.is_quick(SOURCE); }
+	public static boolean is_quick() { return db_common.is_quick(SOURCE); }
 
 	public static boolean is_ok() { return _enabled; }
 	

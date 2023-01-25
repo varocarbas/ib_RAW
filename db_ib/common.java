@@ -139,7 +139,7 @@ public abstract class common
 	
 	public static final String DEFAULT_DB = _types.CONFIG_DB_IB;
 	public static final String DEFAULT_DB_NAME = accessory.db.DEFAULT_DB_NAME;
-	public static final boolean DEFAULT_IS_FIELD = true;
+
 	public static final String DEFAULT_WRONG_STRING = strings.DEFAULT;
 	public static final int DEFAULT_WRONG_INT = 0;
 	public static final long DEFAULT_WRONG_LONG = 0l;
@@ -148,47 +148,6 @@ public abstract class common
 	private static HashMap<String, String> _sources_old = new HashMap<String, String>();
 	
 	private static boolean _sources_old_populated = false;
-	private static boolean _sources_quicker_populated = false;
-	
-	public static db_field get_field_symbol(boolean is_unique_) { return db_common.get_field_string(contracts.MAX_LENGTH_SYMBOL_US_ANY, is_unique_); }
-	
-	public static db_field get_field_order_id(boolean is_unique_) { return (is_unique_ ? new db_field(data.INT, db_field.DEFAULT_SIZE, db_field.WRONG_DECIMALS, ib.common.WRONG_ORDER_ID, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.INT)); }
-	
-	public static db_field get_field_money() { return db_common.get_field_decimal(common.MAX_SIZE_MONEY); }
-	
-	public static db_field get_field_quantity() { return db_common.get_field_decimal(); }
-	
-	public static db_field get_field_size_volume() { return db_common.get_field_decimal(common.MAX_SIZE_VOLUME); }
-	
-	public static db_field get_field_price() { return new db_field(data.DECIMAL, common.MAX_SIZE_PRICE, 2); }
-	
-	public static db_field get_field_halted() { return db_common.get_field_tiny(); }
-	
-	public static db_field get_field_halted_tot() { return db_common.get_field_tiny(); }
-	
-	public static db_field get_field_time() { return db_common.get_field_time(ib.common.FORMAT_TIME); }
-	
-	public static db_field get_field_time2() { return db_common.get_field_time(ib.common.FORMAT_TIME2); }
-
-	public static db_field get_field_time_elapsed() { return db_common.get_field_time(ib.common.FORMAT_TIME_ELAPSED); }
-	
-	public static db_field get_field_elapsed_ini() { return new db_field(data.LONG); }
-	
-	public static db_field get_field_user() { return get_field_user(false); }
-	
-	public static db_field get_field_user(boolean is_unique_) { return db_common.get_field_string(common.MAX_SIZE_USER, is_unique_); }
-	
-	public static db_field get_field_status_type() { return get_field_status_type(null); }
-	
-	public static db_field get_field_status_type(String default_) { return db_common.get_field_string(db_common.DEFAULT_SIZE_STRING, false, default_); }
-	
-	public static db_field get_field_app(boolean is_unique_) { return get_field_name(db_ib.common.MAX_SIZE_APP_NAME, is_unique_); }
-	
-	public static db_field get_field_name(int size_, boolean is_unique_) { return db_common.get_field_string(size_, is_unique_); }
-
-	public static db_field get_field_request() { return db_common.get_field_int(true); }	
-	
-	public static db_field get_field_date() { return db_common.get_field_date(ib.common.FORMAT_DATE); }
 	
 	public static void add_to_sources_old(String source_main_, String source_old_)
 	{
@@ -207,241 +166,6 @@ public abstract class common
 	public static String[] get_all_sources() { return _alls.DB_SOURCES; }
 	
 	public static String[] get_all_sources_new() { return _alls.DB_SOURCES_NEW; }
-
-	public static Object get_input(String source_, Object input_) { return (is_quick(source_) ? db.adapt_input(input_) : input_); }
-
-	public static boolean is_quick(String source_) 
-	{
-		boolean output = db_common.DEFAULT_IS_QUICK;
-		
-		if (source_.equals(SOURCE_MARKET)) output = market._is_quick;
-		else if (source_.equals(SOURCE_EXECS)) output = execs._is_quick;
-		else if (source_.equals(SOURCE_BASIC)) output = basic._is_quick;
-		else if (source_.equals(SOURCE_REMOTE)) output = remote._is_quick;
-		else if (source_.equals(SOURCE_ORDERS)) output = orders._is_quick;
-		else if (source_.equals(SOURCE_TRADES)) output = trades._is_quick;
-		else if (source_.equals(SOURCE_WATCHLIST)) output = watchlist._is_quick;
-		else if (source_.equals(SOURCE_APPS)) output = apps._is_quick;
-		
-		if (!_sources_quicker_populated)
-		{
-			db_quick.add_sources_quicker(get_all_sources()); 
-
-			_sources_quicker_populated = true;
-		}
-		
-		return output; 
-	}
-	
-	public static void is_quick(String source_, boolean is_quick_) 
-	{ 
-		if (source_.equals(SOURCE_MARKET)) market._is_quick = is_quick_;
-		else if (source_.equals(SOURCE_EXECS)) execs._is_quick = is_quick_;
-		else if (source_.equals(SOURCE_BASIC)) basic._is_quick = is_quick_;
-		else if (source_.equals(SOURCE_REMOTE)) remote._is_quick = is_quick_;
-		else if (source_.equals(SOURCE_ORDERS)) orders._is_quick = is_quick_;
-		else if (source_.equals(SOURCE_TRADES)) trades._is_quick = is_quick_;
-		else if (source_.equals(SOURCE_WATCHLIST)) watchlist._is_quick = is_quick_;
-		else if (source_.equals(SOURCE_APPS)) apps._is_quick = is_quick_;
-	}
-	
-	public static String get_field_col(String source_, String field_) { return get_field_col(source_, field_, DEFAULT_IS_FIELD); }
-	
-	public static String get_field_col(String source_, String field_col_, boolean is_field_) { return ((is_field_ && is_quick(source_)) ? get_col(source_, field_col_) : field_col_); }
-
-	public static String get_col(String source_, String field_) 
-	{ 
-		HashMap<String, String> fields_cols = get_fields_cols(source_);
-		
-		return ((fields_cols != null && fields_cols.containsKey(field_)) ? fields_cols.get(field_) : db_common.get_col(source_, field_)); 
-	}
-
-	public static String[] get_fields(String source_) 
-	{
-		String[] output = null;
-		
-		if (source_.equals(SOURCE_MARKET))
-		{
-			if (market._fields == null) market.populate_fields();
-			
-			output = (String[])arrays.get_new(market._fields);
-		}
-		else if (source_.equals(SOURCE_EXECS)) 
-		{
-			if (execs._fields == null) execs.populate_fields();
-			
-			output = (String[])arrays.get_new(execs._fields);
-		}
-		else if (source_.equals(SOURCE_BASIC))
-		{
-			if (basic._fields == null) basic.populate_fields();
-			
-			output = (String[])arrays.get_new(basic._fields);
-		}
-		else if (source_.equals(SOURCE_REMOTE))
-		{
-			if (remote._fields == null) remote.populate_fields();
-			
-			output = (String[])arrays.get_new(remote._fields);
-		}
-		else if (source_.equals(SOURCE_ORDERS))
-		{
-			if (orders._fields == null) orders.populate_fields();
-			
-			output = (String[])arrays.get_new(orders._fields);
-		}
-		else if (source_.equals(SOURCE_TRADES))
-		{
-			if (trades._fields == null) trades.populate_fields();
-			
-			output = (String[])arrays.get_new(trades._fields);
-		}
-		else if (source_.equals(SOURCE_WATCHLIST))
-		{
-			if (watchlist._fields == null) watchlist.populate_fields();
-			
-			output = (String[])arrays.get_new(watchlist._fields);
-		}
-		else if (source_.equals(SOURCE_APPS))
-		{
-			if (apps._fields == null) apps.populate_fields();
-			
-			output = (String[])arrays.get_new(apps._fields);
-		}
-		
-		return output;
-	}
-
-	public static String[] get_cols(String source_) 
-	{ 
-		String[] output = null;
-		
-		if (source_.equals(SOURCE_MARKET))
-		{
-			if (market._cols == null) market._cols = (String[])arrays.get_new(get_cols_internal(source_));
-			
-			output = (String[])arrays.get_new(market._cols);
-		}
-		else if (source_.equals(SOURCE_EXECS)) 
-		{
-			if (execs._cols == null) execs._cols = (String[])arrays.get_new(get_cols_internal(source_));
-			
-			output = (String[])arrays.get_new(execs._cols);
-		}
-		else if (source_.equals(SOURCE_BASIC))
-		{
-			if (basic._cols == null) basic._cols = (String[])arrays.get_new(get_cols_internal(source_));
-			
-			output = (String[])arrays.get_new(basic._cols);
-		}
-		else if (source_.equals(SOURCE_REMOTE))
-		{
-			if (remote._cols == null) remote._cols = (String[])arrays.get_new(get_cols_internal(source_));
-			
-			output = (String[])arrays.get_new(remote._cols);
-		}
-		else if (source_.equals(SOURCE_ORDERS))
-		{
-			if (orders._cols == null) orders._cols = (String[])arrays.get_new(get_cols_internal(source_));
-			
-			output = (String[])arrays.get_new(orders._cols);
-		}
-		else if (source_.equals(SOURCE_TRADES))
-		{
-			if (trades._cols == null) trades._cols = (String[])arrays.get_new(get_cols_internal(source_));
-			
-			output = (String[])arrays.get_new(trades._cols);
-		}
-		else if (source_.equals(SOURCE_WATCHLIST))
-		{
-			if (watchlist._cols == null) watchlist._cols = (String[])arrays.get_new(get_cols_internal(source_));
-			
-			output = (String[])arrays.get_new(watchlist._cols);
-		}
-		else if (source_.equals(SOURCE_APPS))
-		{
-			if (apps._cols == null) apps._cols = (String[])arrays.get_new(get_cols_internal(source_));
-			
-			output = (String[])arrays.get_new(apps._cols);
-		}
-		
-		return output;
-	}
-
-	public static String[] get_cols(String source_, String[] fields_) 
-	{ 
-		if (!arrays.is_ok(fields_)) return null;
-		
-		HashMap<String, String> fields_cols = arrays.get_new_hashmap_xx(get_fields_cols(source_));
-		if (!arrays.is_ok(fields_cols)) return null;
-		
-		ArrayList<String> temp = new ArrayList<String>();
-		
-		for (String field: fields_) 
-		{ 
-			if (fields_cols.containsKey(field)) temp.add(fields_cols.get(field));
-		}
-		
-		return arrays.to_array(temp);
-	}
-
-	public static HashMap<String, String> get_fields_cols(String source_) 
-	{ 
-		HashMap<String, String> output = null;
-		
-		if (source_.equals(SOURCE_MARKET))
-		{
-			if (market._fields_cols == null) market._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
-			
-			output = arrays.get_new_hashmap_xx(market._fields_cols);
-		}
-		else if (source_.equals(SOURCE_EXECS)) 
-		{
-			if (execs._fields_cols == null) execs._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
-			
-			output = arrays.get_new_hashmap_xx(execs._fields_cols);
-		}
-		else if (source_.equals(SOURCE_BASIC))
-		{
-			if (basic._fields_cols == null) basic._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
-			
-			output = arrays.get_new_hashmap_xx(basic._fields_cols);
-		}
-		else if (source_.equals(SOURCE_REMOTE))
-		{
-			if (remote._fields_cols == null) remote._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
-			
-			output = arrays.get_new_hashmap_xx(remote._fields_cols);
-		}
-		else if (source_.equals(SOURCE_ORDERS))
-		{
-			if (orders._fields_cols == null) orders._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
-			
-			output = arrays.get_new_hashmap_xx(orders._fields_cols);
-		}
-		else if (source_.equals(SOURCE_TRADES))
-		{
-			if (trades._fields_cols == null) trades._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
-			
-			output = arrays.get_new_hashmap_xx(trades._fields_cols);
-		}
-		else if (source_.equals(SOURCE_WATCHLIST))
-		{
-			if (watchlist._fields_cols == null) watchlist._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
-			
-			output = arrays.get_new_hashmap_xx(watchlist._fields_cols);
-		}
-		else if (source_.equals(SOURCE_APPS))
-		{
-			if (apps._fields_cols == null) apps._fields_cols = arrays.get_new_hashmap_xx(get_fields_cols_internal(source_));
-			
-			output = arrays.get_new_hashmap_xx(apps._fields_cols);
-		}
-		
-		return output;
-	} 
-
-	public static boolean vals_are_ok(String source_, Object vals_) { return (arrays.is_ok(vals_) && (is_quick(source_) ? db_quick.input_is_ok(vals_) : db.input_is_ok(vals_))); }
 	
 	public static void __truncate(String source_) 
 	{
@@ -452,94 +176,28 @@ public abstract class common
 	
 	public static void __backup(String source_) 
 	{ 
-		if (is_empty(source_)) return;
+		if (db_common.is_empty(source_)) return;
 		
 		String backup_table = db.get_table(source_) + BACKUP_ENDING;
 		
 		db.__backup_table(source_, backup_table); 
 	}	
 	
-	public static boolean contains_active(String source_) { return (!is_empty(source_) && timestamp_is_today(source_, null)); }
-	
-	public static boolean is_empty(String source_) { return (get_count(source_, db.DEFAULT_WHERE) == 0); }
-
-	public static int get_count(String source_, String where_) { return db_quick.select_count(source_, where_); }
-
-	public static boolean exists(String source_, String where_) { return db_quick.exists(source_, where_); }
+	public static boolean contains_active(String source_) { return (!db_common.is_empty(source_) && timestamp_is_today(source_, null)); }
 	
 	public static boolean is_enabled(String source_, String where_) { return (!arrays.value_exists(get_all_sources_enabled(), source_) || get_boolean(source_, FIELD_ENABLED, where_)); }
 
-	public static String get_string(String source_, String field_, String where_) { return get_string(source_, field_, where_, DEFAULT_WRONG_STRING); }
+	public static String get_string(String source_, String field_, String where_) { return db_common.get_string(source_, field_, where_, DEFAULT_WRONG_STRING, db_common.DEFAULT_IS_FIELD, db_common.is_quick(source_)); }
 
-	public static String get_string(String source_, String field_, String where_, String wrong_) { return get_string(source_, field_, where_, wrong_, DEFAULT_IS_FIELD); }
+	public static int get_int(String source_, String field_, String where_) { return db_common.get_int(source_, field_, where_, DEFAULT_WRONG_INT, db_common.DEFAULT_IS_FIELD, db_common.is_quick(source_)); }
 
-	public static String get_string(String source_, String field_col_, String where_, String wrong_, boolean is_field_) 
-	{ 
-		String output = (is_quick(source_) ? db_quick.select_one_string(source_, (is_field_ ? get_col(source_, field_col_) : field_col_), where_, db.DEFAULT_ORDER) : db.select_one_string(source_, field_col_, where_, db.DEFAULT_ORDER)); 
+	public static double get_decimal(String source_, String field_, String where_) { return db_common.get_decimal(source_, field_, where_, DEFAULT_WRONG_DECIMAL, db_common.DEFAULT_IS_FIELD, db_common.is_quick(source_)); }
+
+	public static long get_long(String source_, String field_, String where_) { return db_common.get_long(source_, field_, where_, DEFAULT_WRONG_LONG, db_common.DEFAULT_IS_FIELD, db_common.is_quick(source_)); }
 	
-		return (!db.WRONG_STRING.equals(output) ? output : wrong_);
-	}
-
-	public static int get_int(String source_, String field_, String where_) { return get_int(source_, field_, where_, DEFAULT_WRONG_INT); }
+	public static boolean get_boolean(String source_, String field_, String where_) { return db_common.get_boolean(source_, field_, where_, db_common.DEFAULT_IS_FIELD, db_common.is_quick(source_)); }
 	
-	public static int get_int(String source_, String field_, String where_, int wrong_) { return get_int(source_, field_, where_, wrong_, DEFAULT_IS_FIELD); }	
-	
-	public static int get_int(String source_, String field_col_, String where_, int wrong_, boolean is_field_) 
-	{ 
-		int output = (is_quick(source_) ? db_quick.select_one_int(source_, (is_field_ ? get_col(source_, field_col_) : field_col_), where_, db.DEFAULT_ORDER) : db.select_one_int(source_, field_col_, where_, db.DEFAULT_ORDER)); 
-	
-		return (output != db.WRONG_INT ? output : wrong_);
-	}
-
-	public static double get_decimal(String source_, String field_, String where_) { return get_decimal(source_, field_, where_, DEFAULT_WRONG_DECIMAL); }
-
-	public static double get_decimal(String source_, String field_, String where_, double wrong_) { return get_decimal(source_, field_, where_, wrong_, DEFAULT_IS_FIELD); }
-	
-	public static double get_decimal(String source_, String field_col_, String where_, double wrong_, boolean is_field_) 
-	{ 
-		double output = (is_quick(source_) ? db_quick.select_one_decimal(source_, (is_field_ ? get_col(source_, field_col_) : field_col_), where_, db.DEFAULT_ORDER) : db.select_one_decimal(source_, field_col_, where_, db.DEFAULT_ORDER)); 
-	
-		return (output != db.WRONG_DECIMAL ? output : wrong_);
-	}
-
-	public static long get_long(String source_, String field_, String where_) { return get_long(source_, field_, where_, DEFAULT_WRONG_LONG); }
-
-	public static long get_long(String source_, String field_, String where_, long wrong_) { return get_long(source_, field_, where_, wrong_, DEFAULT_IS_FIELD); }
-	
-	public static long get_long(String source_, String field_col_, String where_, long wrong_, boolean is_field_) 
-	{ 
-		long output = (is_quick(source_) ? db_quick.select_one_long(source_, (is_field_ ? get_col(source_, field_col_) : field_col_), where_, db.DEFAULT_ORDER) : db.select_one_long(source_, field_col_, where_, db.DEFAULT_ORDER)); 
-	
-		return (output != db.WRONG_LONG ? output : wrong_);
-	}
-	
-	public static boolean get_boolean(String source_, String field_, String where_) { return get_boolean(source_, field_, where_, DEFAULT_IS_FIELD); }
-	
-	public static boolean get_boolean(String source_, String field_col_, String where_, boolean is_field_) { return (is_quick(source_) ? db_quick.select_one_boolean(source_, (is_field_ ? get_col(source_, field_col_) : field_col_), where_, db.DEFAULT_ORDER) : db.select_one_boolean(source_, field_col_, where_, db.DEFAULT_ORDER)); }
-
-	public static ArrayList<Double> get_all_decimals(String source_, String field_, String where_) { return get_all_decimals(source_, field_, where_, DEFAULT_IS_FIELD); }
-
-	public static ArrayList<Double> get_all_decimals(String source_, String field_col_, String where_, boolean is_field_) { return (is_quick(source_) ? db_quick.select_some_decimals(source_, (is_field_ ? get_col(source_, field_col_) : field_col_), where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER) : db.select_some_decimals(source_, field_col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
-	
-	public static ArrayList<String> get_all_strings(String source_, String field_, String where_) { return get_all_strings(source_, field_, where_, DEFAULT_IS_FIELD); }
-
-	public static ArrayList<String> get_all_strings(String source_, String field_col_, String where_, boolean is_field_) { return (is_quick(source_) ? db_quick.select_some_strings(source_, (is_field_ ? get_col(source_, field_col_) : field_col_), where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER) : db.select_some_strings(source_, field_col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
-
-	public static ArrayList<Integer> get_all_ints(String source_, String field_, String where_) { return get_all_ints(source_, field_, where_, DEFAULT_IS_FIELD); }
-
-	public static ArrayList<Integer> get_all_ints(String source_, String field_col_, String where_, boolean is_field_) { return (is_quick(source_) ? db_quick.select_some_ints(source_, (is_field_ ? get_col(source_, field_col_) : field_col_), where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER) : db.select_some_ints(source_, field_col_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
-
-	public static ArrayList<HashMap<String, String>> get_all_vals(String source_, String[] fields_, String where_) { return get_all_vals(source_, fields_, where_, DEFAULT_IS_FIELD); }
-
-	public static ArrayList<HashMap<String, String>> get_all_vals(String source_, String[] fields_cols_, String where_, boolean are_fields_) { return (is_quick(source_) ? db_quick.select(source_, (are_fields_ ? get_cols(source_, fields_cols_) : fields_cols_), where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER) : accessory.db.select(source_, fields_cols_, where_, db.DEFAULT_MAX_ROWS, db.DEFAULT_ORDER)); }
-
-	public static HashMap<String, String> get_vals(String source_, String[] fields_, String where_) { return get_vals(source_, fields_, where_, db.DEFAULT_ORDER); }
-
-	public static HashMap<String, String> get_vals(String source_, String[] fields_, String where_, String order_) { return get_vals(source_, fields_, where_, order_, DEFAULT_IS_FIELD); }
-
-	public static HashMap<String, String> get_vals(String source_, String[] fields_cols_, String where_, String order_, boolean are_fields_) { return (is_quick(source_) ? db_quick.select_one(source_, (are_fields_ ? get_cols(source_, fields_cols_) : fields_cols_), where_, order_) : db.select_one(source_, fields_cols_, where_, order_)); }
-	
-	public static HashMap<String, String> get_vals_old(String source_old_, String[] fields_) { return get_vals_old(source_old_, fields_, DEFAULT_IS_FIELD); }
+	public static HashMap<String, String> get_vals_old(String source_old_, String[] fields_cols_) { return get_vals_old(source_old_, fields_cols_, db_common.DEFAULT_IS_FIELD); }
 	
 	public static HashMap<String, String> get_vals_old(String source_old_, String[] fields_cols_, boolean are_fields_) 
 	{ 
@@ -547,10 +205,10 @@ public abstract class common
 		
 		String[] fields_cols = get_fields_old(source_old_, fields_cols_, are_fields_);
 		
-		ArrayList<HashMap<String, String>> all = get_all_vals(source_old_, fields_cols, db.DEFAULT_WHERE, are_fields_);
+		ArrayList<HashMap<String, String>> all = db_common.get_all_vals(source_old_, fields_cols, db.DEFAULT_WHERE, are_fields_, db_common.is_quick(source_old_));
 		if (!arrays.is_ok(all)) return output;
 		
-		String field_col_date = get_field_col(source_old_, FIELD_DATE, are_fields_);
+		String field_col_date = db_common.get_field_quick_col(source_old_, FIELD_DATE, are_fields_, db_common.is_quick(source_old_));
 		
 		LocalDate date = null;
 		
@@ -570,7 +228,7 @@ public abstract class common
 	{ 
 		String[] fields_cols = get_fields_old(source_old_, fields_cols_, are_fields_);
 		
-		return (arrays.is_ok(fields_cols) ? get_vals(source_old_, fields_cols, (strings.is_ok(date_) ? get_where(source_old_, FIELD_DATE, date_) : null), db.DEFAULT_ORDER, are_fields_) : null); 
+		return (arrays.is_ok(fields_cols) ? db_common.get_vals(source_old_, fields_cols, (strings.is_ok(date_) ? get_where(source_old_, FIELD_DATE, date_) : null), db.DEFAULT_ORDER, are_fields_, db_common.is_quick(source_old_)) : null); 
 	}
 
 	public static String get_type(String source_, String field_, String root_, String where_) 
@@ -580,35 +238,11 @@ public abstract class common
 		return (strings.is_ok(key) ? get_type(key, root_) : strings.DEFAULT);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static boolean insert(String source_, Object vals_) 
 	{ 
 		Object vals = get_insert_vals(source_, vals_);
-		if (!arrays.is_ok(vals)) return false;
 		
-		boolean is_quick = is_quick(source_);
-		
-		if (is_quick) db_quick.insert(source_, (HashMap<String, String>)vals_);
-		else db.insert(source_, (HashMap<String, Object>)vals);
-
-		return db.is_ok(source_, is_quick);
-	}
-
-	public static boolean update(String source_, String field_, Object val_, String where_) { return update(source_, field_, val_, where_, DEFAULT_IS_FIELD); }
-
-	public static boolean update(String source_, String field_col_, Object val_, String where_, boolean is_field_) { return update(source_, add_to_vals(source_, field_col_, val_, null, is_field_), where_); }
-	
-	@SuppressWarnings("unchecked")
-	public static boolean update(String source_, Object vals_, String where_)
-	{	
-		if (!vals_are_ok(source_, vals_)) return false;
-		
-		boolean is_quick = is_quick(source_);
-		
-		if (is_quick) db_quick.update(source_, (HashMap<String, String>)vals_, where_);
-		else db.update(source_, (HashMap<String, Object>)vals_, where_);
-		
-		return db.is_ok(source_, is_quick);
+		return (arrays.is_ok(vals) ? db_common.insert(source_, vals) : false);
 	}
 
 	public static boolean update_type(String source_, String field_, String type_, String root_, String where_) 
@@ -619,26 +253,12 @@ public abstract class common
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		vals.put(field_, type);
 
-		return update(source_, vals, where_);
+		return db_common.update(source_, vals, where_);
 	}
 	
-	public static boolean insert_update(String source_, String field_, Object val_, String where_) { return insert_update(source_, add_to_vals(source_, field_, val_, null), where_); }
+	public static boolean insert_update(String source_, String field_, Object val_, String where_) { return insert_update(source_, db_common.add_to_vals(source_, field_, val_, null), where_); }
 
-	@SuppressWarnings("unchecked")
-	public static boolean insert_update(String source_, Object vals_, String where_)
-	{	
-		boolean output = false;
-		if (!vals_are_ok(source_, vals_)) return output;
-
-		Object vals = get_insert_vals(source_, vals_);
-
-		boolean is_quick = is_quick(source_);
-		
-		if (is_quick) db_quick.insert_update(source_, get_col(source_, db.FIELD_ID), (HashMap<String, String>)vals, where_);
-		else db.insert_update_id(source_, (HashMap<String, Object>)vals, where_);
-		
-		return db.is_ok(source_, is_quick);
-	}
+	public static boolean insert_update(String source_, Object vals_, String where_) { return db_common.insert_update(source_, get_insert_vals(source_, vals_), where_, db.FIELD_ID); }
 
 	public static boolean update_all_old_quick()
 	{
@@ -653,7 +273,7 @@ public abstract class common
 			
 			String message = db.get_table(source_old);
 			
-			if (!exists(source_old, get_where(source_old, FIELD_DATE, dates.get_now_string(ib.common.FORMAT_DATE, dates.DEFAULT_OFFSET))))
+			if (!db_common.exists(source_old, get_where(source_old, FIELD_DATE, dates.get_now_string(ib.common.FORMAT_DATE, dates.DEFAULT_OFFSET))))
 			{
 				boolean temp = update_old_quick(source, source_old);
 				if (!temp) is_ok = false;		
@@ -673,41 +293,7 @@ public abstract class common
 		
 		return update_old_quick(source_, (String)arrays.get_value(_sources_old, source_)); 
 	}
-
-	public static boolean delete(String source_, String where_)
-	{
-		db.delete(source_, where_);
 		
-		return db.is_ok(source_);
-	}
-
-	public static String join_wheres(String where1_, String where2_) { return join_wheres(where1_, where2_, db_where.LINK_AND); }
-
-	public static String join_wheres(String where1_, String where2_, String link_) { return db_where.join(where1_, where2_, link_); }
-	
-	public static String get_where_user(String source_) { return get_where(source_, FIELD_USER, ib.basic.get_user()); }
-
-	public static String get_where_symbol(String source_, String symbol_) { return get_where(source_, FIELD_SYMBOL, symbol_); }
-	
-	public static String get_where(String source_, String field_, String val_) { return get_where(source_, field_, val_, true); }
-
-	public static String get_where(String source_, String field_, String val_, boolean add_user_) { return get_where_internal(source_, field_, val_, add_user_); }
-
-	public static String get_where_order_id(String source_, int order_id_main_) { return get_where_order_id(source_, order_id_main_, true); }
-	
-	public static String get_where_order_id(String source_, int order_id_, boolean is_main_) { return get_where(source_, (is_main_ ? FIELD_ORDER_ID_MAIN : FIELD_ORDER_ID_SEC), Integer.toString(order_id_)); }
-
-	public static String get_where_order_id(String source_, Integer[] ids_, boolean equal_) 
-	{ 
-		ArrayList<db_where> wheres = new ArrayList<db_where>();
-		
-		if (source_includes_user(source_)) wheres.add(new db_where(source_, FIELD_USER, db_where.OPERAND_EQUAL, ib.basic.get_user(), db_where.LINK_AND));
-		
-		for (int id: ids_) { wheres.add(new db_where(source_, FIELD_ORDER_ID_MAIN, (equal_ ? db_where.OPERAND_EQUAL : db_where.OPERAND_NOT_EQUAL), id, db_where.LINK_AND)); }
-		
-		return db_where.to_string(wheres); 
-	}
-	
 	public static boolean source_includes_user(String source_) { return arrays.value_exists(get_all_sources_user(), source_); }
 
 	public static String[] populate_all_sources_user() { return new String[] { SOURCE_BASIC, SOURCE_APPS }; }
@@ -797,63 +383,9 @@ public abstract class common
 	
 	public static String adapt_user(String val_) { return adapt_string(val_, FIELD_USER); }
 
-	public static Object add_to_vals(String source_, String field_, Object val_, Object vals_) { return add_to_vals(source_, field_, val_, vals_, DEFAULT_IS_FIELD); }
-	
-	@SuppressWarnings("unchecked")
-	public static Object add_to_vals(String source_, String field_col_, Object val_, Object vals_, boolean is_field_) 
-	{ 
-		Object output = null;
-		
-		String field_col = get_field_col(source_, field_col_, is_field_);
+	public static boolean field_exists(String source_, String field_, Object vals_) { return field_exists(source_, field_, vals_, db_common.DEFAULT_IS_FIELD); }
 
-		if (is_quick(source_))
-		{
-			HashMap<String, String> vals = (HashMap<String, String>)arrays.get_new_hashmap_xx((HashMap<String, String>)vals_);	
-			vals.put(field_col, accessory.db.adapt_input(val_));
-
-			output = new HashMap<String, String>(vals);
-		}
-		else
-		{
-			HashMap<String, Object> vals = (HashMap<String, Object>)arrays.get_new_hashmap_xy((HashMap<String, Object>)vals_);
-			vals.put(field_col, val_);
-			
-			output = new HashMap<String, Object>(vals);
-		}
-		
-		return output;
-	}
-
-	public static boolean field_exists(String source_, String field_, Object vals_) { return field_exists(source_, field_, vals_, DEFAULT_IS_FIELD); }
-
-	public static boolean field_exists(String source_, String field_col_, Object vals_, boolean is_field_) { return (get_from_vals(source_, field_col_, vals_, is_field_) != null); }
-
-	public static Object get_from_vals(String source_, String field_, Object vals_) { return get_from_vals(source_, field_, vals_, DEFAULT_IS_FIELD); }
-	
-	@SuppressWarnings("unchecked")
-	public static Object get_from_vals(String source_, String field_col_, Object vals_, boolean is_field_) 
-	{ 
-		Object output = null;
-		if (!vals_are_ok(source_, vals_)) return output;
-		
-		String field_col = common.get_field_col(source_, field_col_, is_field_);
-		
-		if (is_quick(source_))
-		{
-			HashMap<String, String> vals = arrays.get_new_hashmap_xx((HashMap<String, String>)vals_);	
-			
-			if (vals.containsKey(field_col)) output = vals.get(field_col);		
-
-		}
-		else
-		{
-			HashMap<String, Object> vals = arrays.get_new_hashmap_xy((HashMap<String, Object>)vals_);
-		
-			if (vals.containsKey(field_col)) output = vals.get(field_col);				
-		}
-		
-		return output;
-	}
+	public static boolean field_exists(String source_, String field_col_, Object vals_, boolean is_field_) { return (db_common.get_from_vals(source_, field_col_, vals_, is_field_, db_common.is_quick(source_)) != null); }
 
 	public static boolean timestamp_is_today(String source_, String where_) { return timestamp_is_today(source_, where_, true); }
 
@@ -873,7 +405,7 @@ public abstract class common
 	{ 
 		String where = "(DATE(" + db.get_variable(source_, db.get_col(source_, db.FIELD_TIMESTAMP)) + ") " + (is_today_ ? "=" : "!=") + " CURDATE())"; 
 	
-		if (strings.is_ok(where_)) where = join_wheres(where_, where);
+		if (strings.is_ok(where_)) where = db_common.join_wheres(where_, where);
 	
 		return where;
 	}
@@ -888,18 +420,73 @@ public abstract class common
 	{
 		String output = get_where_internal(source_, FIELD_USER, ib.basic.get_user(), false);
 		
-		if (strings.is_ok(where_)) output = join_wheres(output, where_);
+		if (strings.is_ok(where_)) output = db_common.join_wheres(output, where_);
 		
 		return output;
 	}
+	public static String get_where_user(String source_) { return get_where(source_, FIELD_USER, ib.basic.get_user()); }
+
+	public static String get_where_symbol(String source_, String symbol_) { return get_where(source_, FIELD_SYMBOL, symbol_); }
+
+	public static String get_where_order_id(String source_, int order_id_main_) { return get_where_order_id(source_, order_id_main_, true); }
 	
-	public static void start() 
-	{
-		for (String source: get_all_sources_new()) { get_fields_cols(source); }
+	public static String get_where_order_id(String source_, int order_id_, boolean is_main_) { return get_where(source_, (is_main_ ? FIELD_ORDER_ID_MAIN : FIELD_ORDER_ID_SEC), Integer.toString(order_id_)); }
+
+	public static String get_where_order_id(String source_, Integer[] ids_, boolean equal_) 
+	{ 
+		ArrayList<db_where> wheres = new ArrayList<db_where>();
+		
+		if (source_includes_user(source_)) wheres.add(new db_where(source_, FIELD_USER, db_where.OPERAND_EQUAL, ib.basic.get_user(), db_where.LINK_AND));
+		
+		for (int id: ids_) { wheres.add(new db_where(source_, FIELD_ORDER_ID_MAIN, (equal_ ? db_where.OPERAND_EQUAL : db_where.OPERAND_NOT_EQUAL), id, db_where.LINK_AND)); }
+		
+		return db_where.to_string(wheres); 
+	}
 	
-		get_fields_cols(SOURCE_APPS_OLD);
-	};
+	public static String get_where(String source_, String field_, String val_) { return get_where(source_, field_, val_, true); }
+
+	public static String get_where(String source_, String field_, String val_, boolean add_user_) { return get_where_internal(source_, field_, val_, add_user_); }
+
+	public static db_field get_field_symbol(boolean is_unique_) { return db_common.get_field_string(contracts.MAX_LENGTH_SYMBOL_US_ANY, is_unique_); }
 	
+	public static db_field get_field_order_id(boolean is_unique_) { return (is_unique_ ? new db_field(data.INT, db_field.DEFAULT_SIZE, db_field.WRONG_DECIMALS, ib.common.WRONG_ORDER_ID, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.INT)); }
+	
+	public static db_field get_field_money() { return db_common.get_field_decimal(common.MAX_SIZE_MONEY); }
+	
+	public static db_field get_field_quantity() { return db_common.get_field_decimal(); }
+	
+	public static db_field get_field_size_volume() { return db_common.get_field_decimal(common.MAX_SIZE_VOLUME); }
+	
+	public static db_field get_field_price() { return new db_field(data.DECIMAL, common.MAX_SIZE_PRICE, 2); }
+	
+	public static db_field get_field_halted() { return db_common.get_field_tiny(); }
+	
+	public static db_field get_field_halted_tot() { return db_common.get_field_tiny(); }
+	
+	public static db_field get_field_time() { return db_common.get_field_time(ib.common.FORMAT_TIME); }
+	
+	public static db_field get_field_time2() { return db_common.get_field_time(ib.common.FORMAT_TIME2); }
+
+	public static db_field get_field_time_elapsed() { return db_common.get_field_time(ib.common.FORMAT_TIME_ELAPSED); }
+	
+	public static db_field get_field_elapsed_ini() { return new db_field(data.LONG); }
+	
+	public static db_field get_field_user() { return get_field_user(false); }
+	
+	public static db_field get_field_user(boolean is_unique_) { return db_common.get_field_string(common.MAX_SIZE_USER, is_unique_); }
+	
+	public static db_field get_field_status_type() { return get_field_status_type(null); }
+	
+	public static db_field get_field_status_type(String default_) { return db_common.get_field_string(db_common.DEFAULT_SIZE_STRING, false, default_); }
+	
+	public static db_field get_field_app(boolean is_unique_) { return get_field_name(db_ib.common.MAX_SIZE_APP_NAME, is_unique_); }
+	
+	public static db_field get_field_name(int size_, boolean is_unique_) { return db_common.get_field_string(size_, is_unique_); }
+
+	public static db_field get_field_request() { return db_common.get_field_int(true); }	
+	
+	public static db_field get_field_date() { return db_common.get_field_date(ib.common.FORMAT_DATE); }
+
 	private static void populate_sources_old() 
 	{ 
 		add_to_sources_old(SOURCE_EXECS, SOURCE_EXECS_OLD);
@@ -917,13 +504,13 @@ public abstract class common
 	{	
 		boolean output = true;
 		
-		ArrayList<HashMap<String, String>> all_vals = common.get_all_vals(source_, null, null);
+		ArrayList<HashMap<String, String>> all_vals = db_common.get_all_vals(source_, null, null, true, true);
 		if (!arrays.is_ok(all_vals)) return output;
 
 		String date = dates.get_now_string(ib.common.FORMAT_DATE, dates.DEFAULT_OFFSET);
 
-		String col_date = db_common.get_col(source_old_, FIELD_DATE);
-		String col_id = db_common.get_col(source_, db.FIELD_ID);
+		String col_date = db_quick.get_col(source_old_, FIELD_DATE);
+		String col_id = db_quick.get_col(source_, db.FIELD_ID);
 
 		for (HashMap<String, String> vals: all_vals)
 		{
@@ -942,17 +529,13 @@ public abstract class common
 	private static String[] get_fields_old(String source_, String[] fields_cols_, boolean are_fields_)
 	{
 		String field_col_date = FIELD_DATE;
-		if (!are_fields_) field_col_date = get_field_col(source_, FIELD_DATE, true);
+		if (!are_fields_) field_col_date = db_common.get_field_quick_col(source_, FIELD_DATE, true, db_common.is_quick(source_));
 		
 		ArrayList<String> temp = arrays.to_arraylist(fields_cols_);
 		if (!temp.contains(field_col_date)) temp.add(field_col_date);
 		
 		return arrays.to_array(temp);
 	}
-
-	private static String[] get_cols_internal(String source_) { return db.get_cols(get_fields_cols(source_)); }
-
-	private static HashMap<String, String> get_fields_cols_internal(String source_) { return db.get_fields_cols(source_, get_fields(source_)); }
 
 	private static long get_timestamp_elapsed(String source_, String where_, String unit_) { return dates.get_diff(get_string(source_, db.FIELD_TIMESTAMP, where_), ib.common.FORMAT_TIMESTAMP, dates.get_now_string(ib.common.FORMAT_TIMESTAMP, 0), ib.common.FORMAT_TIMESTAMP, unit_); }
 	
@@ -965,7 +548,7 @@ public abstract class common
 		if (source_includes_user(source_) && !common.field_exists(source_, FIELD_USER, vals)) 
 		{
 			String user = ib.basic.get_user();
-			if (strings.is_ok(user)) vals = common.add_to_vals(source_, FIELD_USER, user, vals_);
+			if (strings.is_ok(user)) vals = db_common.add_to_vals(source_, FIELD_USER, user, vals_);
 		}
 		
 		return vals;
@@ -990,7 +573,7 @@ public abstract class common
 	
 	private static String get_where_internal(String source_, String field_, String val_, boolean add_user_) 
 	{
-		String where = accessory.db.get_variable(db_common.get_col(source_, field_)) + "=" + accessory.db.get_value(val_);
+		String where = db_common.get_where(source_, field_, val_);
 		
 		if (!strings.are_equal(field_, FIELD_USER) && add_user_ && source_includes_user(source_)) where = get_where_user(source_, where);
 	

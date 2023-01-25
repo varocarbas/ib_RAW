@@ -27,9 +27,9 @@ abstract class async_data_market_quicker extends parent_static
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = true;
 
-	private static final int[] FIELDS = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.OPEN_IB, async_data_quicker.CLOSE_IB, async_data_quicker.LOW_IB, async_data_quicker.HIGH_IB, async_data_quicker.ASK_IB, async_data_quicker.BID_IB, async_data_quicker.VOLUME_IB, async_data_quicker.SIZE_IB, async_data_quicker.ASK_SIZE_IB, async_data_quicker.BID_SIZE_IB, async_data_quicker.HALTED_IB };
+	private static final int[] FIELDS0 = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.OPEN_IB, async_data_quicker.CLOSE_IB, async_data_quicker.LOW_IB, async_data_quicker.HIGH_IB, async_data_quicker.ASK_IB, async_data_quicker.BID_IB, async_data_quicker.VOLUME_IB, async_data_quicker.SIZE_IB, async_data_quicker.ASK_SIZE_IB, async_data_quicker.BID_SIZE_IB, async_data_quicker.HALTED_IB };
 
-	private static volatile ArrayList<Integer> _fields = null;
+	private static ArrayList<Integer> _fields = null;
 
 	private static volatile boolean _only_essential = false;
 
@@ -69,7 +69,7 @@ abstract class async_data_market_quicker extends parent_static
 		
 		_only_essential = only_essential_; 
 	
-		_fields = async_data_quicker._get_fields(FIELDS, only_essential_, false);
+		_fields = async_data_quicker._get_fields(FIELDS0, only_essential_, false);
 
 		__unlock();
 	}	
@@ -92,7 +92,7 @@ abstract class async_data_market_quicker extends parent_static
 
 	public static ArrayList<Integer> _get_fields() 
 	{ 
-		if (_fields == null) _fields = async_data_quicker.__get_fields(FIELDS, _only_essential);
+		if (_fields == null) _fields = async_data_quicker.__get_fields(FIELDS0, _only_essential);
 		
 		return _fields; 
 	}

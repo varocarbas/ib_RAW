@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import accessory.arrays;
 import accessory.config;
 import accessory.credentials;
+import accessory.db_common;
 import accessory.misc;
 import accessory.parent_static;
 import accessory.strings;
@@ -35,9 +36,9 @@ public abstract class basic extends parent_static
 	
 	private static final String ID_ACCOUNT_IB = "account_ib";
 	
-	public static boolean is_quick() { return db_ib.common.is_quick(DB_SOURCE); }
+	public static boolean is_quick() { return db_common.is_quick(DB_SOURCE); }
 	
-	public static void is_quick(boolean is_quick_) { db_ib.common.is_quick(DB_SOURCE, is_quick_); }
+	public static void is_quick(boolean is_quick_) { db_common.is_quick(DB_SOURCE, is_quick_); }
 
 	public static void __start() { __start(trades.DEFAULT_SYNCED_WITH_EXECS); }
 	

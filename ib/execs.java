@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
+import accessory.db_common;
 import external_ib.orders;
 
 public abstract class execs 
@@ -27,9 +28,9 @@ public abstract class execs
 	
 	private static final String INVESTMENT = "investment";
 	
-	public static boolean is_quick() { return db_ib.common.is_quick(DB_SOURCE); }
+	public static boolean is_quick() { return db_common.is_quick(DB_SOURCE); }
 	
-	public static void is_quick(boolean is_quick_) { db_ib.common.is_quick(DB_SOURCE, is_quick_); }
+	public static void is_quick(boolean is_quick_) { db_common.is_quick(DB_SOURCE, is_quick_); }
 
 	public static boolean is_ok() { return enabled(); }
 

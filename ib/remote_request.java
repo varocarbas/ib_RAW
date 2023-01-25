@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import accessory.arrays;
 import accessory.dates;
+import accessory.db_quick;
 import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
@@ -292,7 +293,7 @@ abstract class remote_request extends parent_static
 		if (strings.is_ok(symbol_))
 		{
 			HashMap<String, Object> vals2 = new HashMap<String, Object>();
-			vals2.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.SYMBOL), strings.to_string(symbol_));
+			vals2.put(db_quick.get_col(db_ib.remote.SOURCE, db_ib.remote.SYMBOL), strings.to_string(symbol_));
 			
 			vals = vals2;
 		}

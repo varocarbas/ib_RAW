@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
+import accessory.db_common;
+import accessory.db_quick;
 import accessory.strings;
 import accessory_ib._types;
 
@@ -109,7 +111,7 @@ abstract class remote_execute
 			else if (remote.is_update(type)) 
 			{				
 				String field_col = db_ib.orders.get_field_update(type);
-				if (remote.is_quick()) field_col = db_ib.common.get_col(db_ib.remote.SOURCE, field_col);
+				if (remote.is_quick()) field_col = db_quick.get_col(db_ib.remote.SOURCE, field_col);
 
 				double val = Double.parseDouble(vals_.get(field_col));	
 				executed = __update(request, order_id, type, val);
@@ -130,13 +132,13 @@ abstract class remote_execute
 
 		boolean is_ok = sync_orders.place_update(order);
 
-		Object vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_MAIN, order.get_id_main(), null);
-		vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_SEC, order.get_id_sec(), vals);
-		vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.QUANTITY, quantity_, vals);
-		vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.STATUS, db_ib.remote.store_status_type(ib.remote.DEFAULT_STATUS), vals);		
-		vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.STATUS2, db_ib.remote.get_status2_key_execute(is_ok), vals);		
+		Object vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_MAIN, order.get_id_main(), null);
+		vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_SEC, order.get_id_sec(), vals);
+		vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.QUANTITY, quantity_, vals);
+		vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.STATUS, db_ib.remote.store_status_type(ib.remote.DEFAULT_STATUS), vals);		
+		vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.STATUS2, db_ib.remote.get_status2_key_execute(is_ok), vals);		
 
-		if (ib.common.price_is_ok(price_)) vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.PRICE, price_, vals);
+		if (ib.common.price_is_ok(price_)) vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.PRICE, price_, vals);
 
 		db_ib.remote.update(request_, vals);
 		
@@ -164,13 +166,13 @@ abstract class remote_execute
 		else if (type_update.equals(remote.UPDATE_START2_VALUE)) start2 = val_;
 		else if (type_update.equals(remote.UPDATE_STOP_VALUE)) stop = val_;
 
-		Object vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.IS_MARKET, is_market, null);
+		Object vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.IS_MARKET, is_market, null);
 
-		if (stop != common.WRONG_PRICE) vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.STOP, stop, vals);
-		if (start != common.WRONG_PRICE) vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.START, start, vals);
-		if (start2 != common.WRONG_PRICE) vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.START2, start2, vals);
+		if (stop != common.WRONG_PRICE) vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.STOP, stop, vals);
+		if (start != common.WRONG_PRICE) vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.START, start, vals);
+		if (start2 != common.WRONG_PRICE) vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.START2, start2, vals);
 		
-		vals = db_ib.common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ERROR, "", vals);
+		vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ERROR, "", vals);
 
 		is_ok = sync_orders.place_update(order, type_update, val_);
 		vals = db_ib.remote.get_vals_common(db_ib.remote.get_status2_key_execute(is_ok), vals);
@@ -200,9 +202,9 @@ abstract class remote_execute
 	{
 		HashMap<String, Double> vals = new HashMap<String, Double>();
 		
-		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.QUANTITY), quantity_);
-		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.PERC_MONEY), perc_);
-		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.PRICE), price_);
+		vals.put(db_quick.get_col(db_ib.remote.SOURCE, db_ib.remote.QUANTITY), quantity_);
+		vals.put(db_quick.get_col(db_ib.remote.SOURCE, db_ib.remote.PERC_MONEY), perc_);
+		vals.put(db_quick.get_col(db_ib.remote.SOURCE, db_ib.remote.PRICE), price_);
 		
 		remote.update_error(request_, ERROR_QUANTITY, vals, orders.UPDATE);		
 	}
@@ -211,8 +213,8 @@ abstract class remote_execute
 	{
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
-		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_MAIN), order_id_);
-		vals.put(db_ib.common.get_col(db_ib.remote.SOURCE, db_ib.remote.TYPE_ORDER), db_ib.remote.store_order_type(type_));
+		vals.put(db_quick.get_col(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_MAIN), order_id_);
+		vals.put(db_quick.get_col(db_ib.remote.SOURCE, db_ib.remote.TYPE_ORDER), db_ib.remote.store_order_type(type_));
 		
 		remote.update_error(request_, ERROR_ORDER_ID, vals, type_);		
 	}

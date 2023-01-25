@@ -3,6 +3,7 @@ package ib;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import accessory.db_common;
 import accessory.misc;
 import accessory.parent_static;
 import accessory.strings;
@@ -29,9 +30,9 @@ public abstract class watchlist extends parent_static
 	public static final String DB_FLUS_PRICE = db_ib.watchlist.FLUS_PRICE;
 	public static final String DB_VAR_TOT = db_ib.watchlist.VAR_TOT;
 	
-	public static boolean is_quick() { return db_ib.common.is_quick(DB_SOURCE); }
+	public static boolean is_quick() { return db_common.is_quick(DB_SOURCE); }
 	
-	public static void is_quick(boolean is_quick_) { db_ib.common.is_quick(DB_SOURCE, is_quick_); }
+	public static void is_quick(boolean is_quick_) { db_common.is_quick(DB_SOURCE, is_quick_); }
 
 	public static boolean logs_to_screen() { return async_data_watchlist.logs_to_screen(); }
 

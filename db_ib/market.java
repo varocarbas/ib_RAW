@@ -1,7 +1,6 @@
 package db_ib;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import accessory.arrays;
 import accessory.db_common;
@@ -28,17 +27,11 @@ public abstract class market
 	public static final String HALTED_TOT = common.FIELD_HALTED_TOT;
 	public static final String ENABLED = common.FIELD_ENABLED;
 
-	static String[] _fields = null;
-	static String[] _cols = null;
-	static HashMap<String, String> _fields_cols = null;
-	
-	static boolean _is_quick = db_common.DEFAULT_IS_QUICK;
-
 	public static void __truncate() { common.__truncate(SOURCE); }
 	
 	public static void __backup() { common.__backup(SOURCE); }	
 
-	public static ArrayList<String> get_all_symbols() { return common.get_all_strings(SOURCE, SYMBOL, get_where_enabled()); }
+	public static ArrayList<String> get_all_symbols() { return db_common.get_all_strings(SOURCE, SYMBOL, get_where_enabled()); }
 
 	public static boolean insert_all(ArrayList<String> symbols_) 
 	{ 
@@ -56,6 +49,4 @@ public abstract class market
 	}
 
 	public static String get_where_enabled() { return common.get_where(SOURCE, ENABLED, "1"); }
-	
-	static void populate_fields() { _fields = new String[] { SYMBOL, PRICE, SIZE, TIME, OPEN, CLOSE, LOW, HIGH, VOLUME, ASK, ASK_SIZE, BID, BID_SIZE, HALTED, HALTED_TOT, ENABLED }; }
 }

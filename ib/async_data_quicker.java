@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import accessory.arrays;
 import accessory.dates;
+import accessory.db_common;
+import accessory.db_quick;
 import accessory.generic;
 import accessory.parent_static;
 import accessory.strings;
@@ -14,9 +16,10 @@ import external_ib.data;
 public class async_data_quicker extends parent_static
 {	
 	public static final double FACTOR_VOLUME = 1.0 / 1000.0;
-
+	
 	public static final int MIN_ID = common_xsync.MIN_REQ_ID_ASYNC;	
-
+	public static final double MAX_VAR = 30.0;
+	
 	public static final int WRONG_ID = MIN_ID - 1;
 	public static final int WRONG_I = common.WRONG_I;
 	public static final int WRONG_HALTED = data.WRONG_HALTED;
@@ -38,7 +41,7 @@ public class async_data_quicker extends parent_static
 
 	static final int[] FIELDS_ESSENTIAL = new int[] { PRICE_IB, VOLUME_IB, HALTED_IB };
 
-	private static HashMap<Integer, String> _cols = new HashMap<Integer, String>();
+	private static HashMap<Integer, String> COLS = new HashMap<Integer, String>();
 
 	private static boolean _enabled = false;
 	
@@ -98,7 +101,7 @@ public class async_data_quicker extends parent_static
 		double price = adapt_val(price_, field_ib_);
 		if (!ib.common.price_is_ok(price)) return;
 		
-		async_data_apps_quicker.tick_price(id_, field_ib_, price, symbol);	
+		async_data_apps_quicker._tick_price(id_, field_ib_, price, symbol);	
 
 		_update(id_, symbol, field_ib_, price);
 	}
@@ -152,12 +155,12 @@ public class async_data_quicker extends parent_static
 	
 	static String get_col(int field_ib_) 
 	{
-		if (_cols.size() == 0) populate_cols();
+		if (COLS.size() == 0) populate_cols();
 		
-		return (_cols.containsKey(field_ib_) ? _cols.get(field_ib_) : strings.DEFAULT);
+		return (COLS.containsKey(field_ib_) ? COLS.get(field_ib_) : strings.DEFAULT);
 	}
 	
-	static void _update(int id_, String symbol_, HashMap<String, String> vals_) 
+	static void __update(int id_, String symbol_, HashMap<String, String> vals_) 
 	{ 
 		if (async_data_apps_quicker.__is_only_db()) update_db(id_, symbol_, vals_); 
 		else async_data_apps_quicker.__update_vals(id_, vals_);
@@ -220,10 +223,10 @@ public class async_data_quicker extends parent_static
 		
 		String col_ini = col_ini_;
 		
-		if (strings.is_ok(col_ini)) ini = db_ib.common.get_long(source_, col_ini, db_ib.common.get_where_symbol(source_, symbol_), dates.ELAPSED_START, false);
+		if (strings.is_ok(col_ini)) ini = db_common.get_long(source_, col_ini, db_ib.common.get_where_symbol(source_, symbol_), dates.ELAPSED_START, false, true);
 		else
 		{			
-			col_ini = db_ib.common.get_col(source_, db_ib.async_data.ELAPSED_INI);
+			col_ini = db_quick.get_col(source_, db_ib.async_data.ELAPSED_INI);
 
 			ini = db_ib.async_data.get_elapsed_ini(source_, symbol_);
 		}
@@ -250,7 +253,7 @@ public class async_data_quicker extends parent_static
 		
 		return output;
 	}
-	
+
 	private static void __complete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, true, false); }
 	
 	private static void __precomplete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, async_data_apps_quicker.__is_only_essential(), false); }
@@ -368,10 +371,10 @@ public class async_data_quicker extends parent_static
 		if (async_data_apps_quicker.includes_time_elapsed())
 		{
 			String val = dates.seconds_to_time((int)get_elapsed(async_data_apps_quicker.get_source(), symbol_, null));
-			if (strings.is_ok(val)) vals.put(db_ib.common.get_col(source, db_ib.async_data.TIME_ELAPSED), val);				
+			if (strings.is_ok(val)) vals.put(db_quick.get_col(source, db_ib.async_data.TIME_ELAPSED), val);				
 		}
 				
-		if (async_data_apps_quicker.includes_time()) vals.put(db_ib.common.get_col(source, db_ib.async_data.TIME), ib.common.get_current_time());
+		if (async_data_apps_quicker.includes_time()) vals.put(db_quick.get_col(source, db_ib.async_data.TIME), ib.common.get_current_time());
 	
 		return vals;
 	}
@@ -420,20 +423,20 @@ public class async_data_quicker extends parent_static
 	
 		return val;
 	}
-
+	
 	private static void populate_cols()
 	{
-		_cols.put(PRICE_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.PRICE));
-		_cols.put(OPEN_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.OPEN));
-		_cols.put(CLOSE_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.CLOSE));
-		_cols.put(LOW_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.LOW));
-		_cols.put(HIGH_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.HIGH));
-		_cols.put(ASK_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.ASK));
-		_cols.put(BID_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.BID));
-		_cols.put(HALTED_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.HALTED));
-		_cols.put(VOLUME_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.VOLUME));
-		_cols.put(SIZE_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.SIZE));
-		_cols.put(ASK_SIZE_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.ASK_SIZE));
-		_cols.put(BID_SIZE_IB, db_ib.common.get_col(db_ib.market.SOURCE, db_ib.async_data.BID_SIZE));
+		COLS.put(PRICE_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.PRICE));
+		COLS.put(OPEN_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.OPEN));
+		COLS.put(CLOSE_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.CLOSE));
+		COLS.put(LOW_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.LOW));
+		COLS.put(HIGH_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.HIGH));
+		COLS.put(ASK_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.ASK));
+		COLS.put(BID_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.BID));
+		COLS.put(HALTED_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.HALTED));
+		COLS.put(VOLUME_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.VOLUME));
+		COLS.put(SIZE_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.SIZE));
+		COLS.put(ASK_SIZE_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.ASK_SIZE));
+		COLS.put(BID_SIZE_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.BID_SIZE));
 	}
 }

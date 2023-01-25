@@ -27,12 +27,6 @@ public abstract class watchlist
 	public static final String FLU2_MAX = common.FIELD_FLU2_MAX;
 	public static final String FLUS_PRICE = common.FIELD_FLUS_PRICE;
 	public static final String VAR_TOT = common.FIELD_VAR_TOT;
-	
-	static String[] _fields = null;
-	static String[] _cols = null;
-	static HashMap<String, String> _fields_cols = null;
-	
-	static boolean _is_quick = db_common.DEFAULT_IS_QUICK;
 
 	public static void __truncate() { common.__truncate(SOURCE); }
 	
@@ -40,11 +34,9 @@ public abstract class watchlist
 	
 	public static boolean update(Object vals_, String symbol_) { return async_data.update(SOURCE, symbol_, vals_); }
 
-	public static ArrayList<HashMap<String, String>> get_all_vals() { return common.get_all_vals(SOURCE, common.get_fields(SOURCE), db.DEFAULT_WHERE); }
+	public static ArrayList<HashMap<String, String>> get_all_vals() { return db_common.get_all_vals(SOURCE, db_common.get_fields(SOURCE), db.DEFAULT_WHERE); }
 	
-	public static HashMap<String, String> get_vals(String symbol_) { return common.get_vals(SOURCE, common.get_fields(SOURCE), common.get_where_symbol(SOURCE, symbol_)); }
+	public static HashMap<String, String> get_vals(String symbol_) { return db_common.get_vals(SOURCE, db_common.get_fields(SOURCE), common.get_where_symbol(SOURCE, symbol_)); }
 	
-	public static boolean delete(String symbol_) { return common.delete(SOURCE, common.get_where_symbol(SOURCE, symbol_)); }
-
-	static void populate_fields() { _fields = db_common.add_default_fields(SOURCE, new String[] { SYMBOL, PRICE, PRICE_INI, PRICE_MIN, PRICE_MAX, VOLUME, VOLUME_INI, VOLUME_MIN, VOLUME_MAX, TIME_ELAPSED, ELAPSED_INI, FLU, FLU2, FLU2_MIN, FLU2_MAX, FLUS_PRICE, VAR_TOT }); }	
+	public static boolean delete(String symbol_) { return db_common.delete(SOURCE, common.get_where_symbol(SOURCE, symbol_)); }
 }

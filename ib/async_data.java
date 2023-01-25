@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import accessory.arrays;
 import accessory.dates;
+import accessory.db_common;
+import accessory.db_quick;
 import accessory.misc;
 import accessory.parent_static;
 import accessory.strings;
@@ -408,7 +410,7 @@ public abstract class async_data extends parent_static
 	{	
 		int i = get_i(id_);
 		
-		if (is_quick_) _vals_quick[i].put(db_ib.common.get_col(async_data_apps.get_source(app_), field_), Double.toString(val_));
+		if (is_quick_) _vals_quick[i].put(db_quick.get_col(async_data_apps.get_source(app_), field_), Double.toString(val_));
 		else if (!is_quick_) _vals[i].put(field_, val_);			
 
 		to_screen_update(app_, id_, app_, false);
@@ -418,7 +420,7 @@ public abstract class async_data extends parent_static
 	{
 		String source = async_data_apps.get_source(app_);
 		
-		Object vals = db_ib.common.add_to_vals(async_data_apps.get_source(app_), field_, val_, null);	
+		Object vals = db_common.add_to_vals(async_data_apps.get_source(app_), field_, val_, null);	
 
 		update_db_common(app_, id_, symbol_, vals, source, is_quick_);
 	}
@@ -455,11 +457,11 @@ public abstract class async_data extends parent_static
 			else
 			{
 				String val = dates.seconds_to_time((int)dates.get_elapsed(ini));
-				if (strings.is_ok(val)) vals = db_ib.common.add_to_vals(source_, db_ib.async_data.TIME_ELAPSED, val, vals);				
+				if (strings.is_ok(val)) vals = db_common.add_to_vals(source_, db_ib.async_data.TIME_ELAPSED, val, vals);				
 			}
 		}
 				
-		if (async_data_apps.includes_time(app_)) vals = db_ib.common.add_to_vals(source_, db_ib.async_data.TIME, ib.common.get_current_time(), vals);
+		if (async_data_apps.includes_time(app_)) vals = db_common.add_to_vals(source_, db_ib.async_data.TIME, ib.common.get_current_time(), vals);
 	
 		return vals;
 	}

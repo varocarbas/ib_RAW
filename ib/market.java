@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import accessory.arrays;
 import accessory.dates;
+import accessory.db_common;
 import accessory.io;
 import accessory.paths;
 import accessory.strings;
@@ -48,9 +49,9 @@ public abstract class market
 	private static String _path_market_early_closes = paths.build(new String[] { paths.get_dir(paths.DIR_INFO), ("market_early_closes" + paths.EXTENSION_TEXT) }, true);
 	//---
 	
-	public static boolean is_quick() { return db_ib.common.is_quick(DB_SOURCE); }
+	public static boolean is_quick() { return db_common.is_quick(DB_SOURCE); }
 	
-	public static void is_quick(boolean is_quick_) { db_ib.common.is_quick(DB_SOURCE, is_quick_); }
+	public static void is_quick(boolean is_quick_) { db_common.is_quick(DB_SOURCE, is_quick_); }
 
 	public static boolean logs_to_screen() { return async_data_market.logs_to_screen(); }
 
