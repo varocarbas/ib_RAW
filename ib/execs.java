@@ -122,6 +122,18 @@ public abstract class execs
 		return (get_investment(price, quantity, fees) - start);
 	}
 
+	public static double get_realised() 
+	{
+		double output = 0.0;
+		
+		ArrayList<Integer> order_ids = db_ib.execs.get_order_ids_completed(null);
+		if (!arrays.is_ok(order_ids)) return output;
+
+		for (int order_id: order_ids) { output += get_realised(_order.get_id_sec(order_id)); }
+		
+		return output;
+	}
+	
 	public static double get_realised(int order_id_sec_) 
 	{
 		int order_id_main = _order.get_id_main(order_id_sec_);

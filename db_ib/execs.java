@@ -44,6 +44,8 @@ public abstract class execs
 
 	public static boolean is_completed(int order_id_main_) { return is_completed(order_id_main_, true); }
 
+	public static ArrayList<Integer> get_all_order_ids() { return get_all_order_ids_main(); }
+
 	public static ArrayList<Integer> get_all_order_ids_main() { return get_all_order_ids_main(null); }
 
 	public static ArrayList<Integer> get_all_order_ids_main(String symbol_) 
