@@ -26,9 +26,13 @@ public abstract class apps
 	public static final String STATUS_RUNNING = _types.APPS_STATUS_RUNNING;
 	public static final String STATUS_ERROR = _types.APPS_STATUS_ERROR;
 
+	public static final long REGULAR_SECS = 60;
+	
 	public static final String DEFAULT_APP_NAME = _defaults.APP_NAME;
 	public static final String DEFAULT_STATUS = STATUS_STOPPED;
 	public static final long DEFAULT_APP_OK_DELAY_SECS = 60l;
+	
+	private static long _regular_elapsed = accessory.dates.ELAPSED_START;
 	
 	public static boolean is_quick() { return db_common.is_quick(DB_SOURCE); }
 	
@@ -72,6 +76,17 @@ public abstract class apps
 	
 	public static void update_time() { db_ib.apps.update_time(); }
 
+	public static void perform_regular_actions(boolean check_conn_)
+	{
+		if (_regular_elapsed != accessory.dates.ELAPSED_START && accessory.dates.get_elapsed(_regular_elapsed) <= REGULAR_SECS) return;
+		
+		ib.apps.update_time(); 
+	
+		if (check_conn_) conn.check_connection();
+		
+		_regular_elapsed = accessory.dates.start_elapsed();
+	}
+	
 	public static boolean app_running_ok() { return app_running_ok(get_app_name()); }
 
 	public static boolean app_running_ok(String app_) { return app_running_ok(app_, DEFAULT_APP_OK_DELAY_SECS); }

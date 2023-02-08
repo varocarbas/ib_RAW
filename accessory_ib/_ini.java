@@ -57,7 +57,7 @@ public class _ini extends parent_ini
 		
 	public _ini() { }
 	
-	public static String get_user() { return _instance._user; }
+	public static String get_user() { return _instance.USER; }
 
 	public static HashMap<String, Object> get_info(String app_name_, String user_, String account_ib_, String conn_type_ib_, int conn_id_ib_) { return get_info(app_name_, user_, DEFAULT_INFO_INCLUDES_LEGACY, account_ib_, conn_type_ib_, conn_id_ib_); }
 	
@@ -98,7 +98,9 @@ public class _ini extends parent_ini
 		populate_inis(info_);
 	}
 
-	public static void start(HashMap<String, Object> info_, HashMap<String, Object> dbs_setup_) 
+	public static void start(HashMap<String, Object> info_, HashMap<String, Object> dbs_setup_) { start(info_, dbs_setup_, null); }
+	
+	public static void start(HashMap<String, Object> info_, HashMap<String, Object> dbs_setup_, String[] types_to_ignore_) 
 	{ 
 		if (_instance._populated) return;
 
@@ -119,7 +121,7 @@ public class _ini extends parent_ini
 		
 		if (!accessory._ini.is_populated()) accessory._ini.start(name, (boolean)_ini.get_info_val(info, INFO_INCLUDES_LEGACY), dbs_setup);		
 		
-		_instance.populate_all(name, dbs_setup); 
+		_instance.populate_all(name, dbs_setup, types_to_ignore_); 
 
 		info.put(INFO_USER, user);
 		

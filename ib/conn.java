@@ -91,6 +91,17 @@ public abstract class conn extends parent_static
 	
 	public static boolean is_connected() { return _is_connected; }
 	
+	public static int check_connection() { return check_connection(_id); }
+	
+	public static int check_connection(int conn_id_)
+	{
+		if (!id_is_ok(conn_id_) || conn.is_connected()) return conn_id_;
+		
+		connect();
+		
+		return _id;
+	}
+	
 	public static boolean start() { return start(get_conn_id(), get_conn_type(), true); }
 
 	public static boolean start(int id_, String type_) { return start(id_, type_, true); }

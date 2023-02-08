@@ -6,7 +6,6 @@ import java.util.HashMap;
 import accessory.arrays;
 import accessory.dates;
 import accessory.db_common;
-import accessory.db_quick;
 import accessory.generic;
 import accessory.parent_static;
 import accessory.strings;
@@ -38,10 +37,10 @@ public class async_data_quicker extends parent_static
 	static final int SIZE_IB = external_ib.data.TICK_LAST_SIZE;
 	static final int ASK_SIZE_IB = external_ib.data.TICK_ASK_SIZE;
 	static final int BID_SIZE_IB = external_ib.data.TICK_BID_SIZE;
-
-	static final int[] FIELDS_ESSENTIAL = new int[] { PRICE_IB, VOLUME_IB, HALTED_IB };
-
-	private static HashMap<Integer, String> COLS = new HashMap<Integer, String>();
+	
+	static String COL_TIME = null;
+	static String COL_TIME_ELAPSED = null;
+	static String COL_ELAPSED_INI = null;
 
 	private static boolean _enabled = false;
 	
@@ -95,8 +94,18 @@ public class async_data_quicker extends parent_static
 	
 	static void __tick_price(int id_, int field_ib_, double price_)
 	{
-		String symbol = async_data_apps_quicker.__get_symbol(id_);		
-		if ((symbol == null) || !async_data_apps_quicker._field_is_ok(field_ib_)) return;		
+		__lock();
+		
+		String symbol = async_data_apps_quicker._get_symbol(id_, false);
+		
+		if (symbol == null || !async_data_apps_quicker._field_is_ok(field_ib_, false)) 
+		{
+			__unlock();
+			
+			return;
+		}
+		
+		__unlock();
 		
 		double price = adapt_val(price_, field_ib_);
 		if (!ib.common.price_is_ok(price)) return;
@@ -108,10 +117,22 @@ public class async_data_quicker extends parent_static
 
 	static void __tick_size(int id_, int field_ib_, int size_)
 	{
-		String symbol = async_data_apps_quicker.__get_symbol(id_);		
-		if (symbol == null) return;		
+		__lock();
+		
+		String symbol = async_data_apps_quicker._get_symbol(id_, false);		
+		
+		if (symbol == null) 
+		{
+			__unlock();
+			
+			return;
+		}
 
-		if (async_data_apps_quicker._field_is_ok(field_ib_))
+		boolean is_ok = async_data_apps_quicker._field_is_ok(field_ib_, false);
+		
+		__unlock();
+		
+		if (is_ok)
 		{
 			double size = adapt_val(size_, field_ib_);
 
@@ -128,21 +149,28 @@ public class async_data_quicker extends parent_static
 	
 	static void __tick_generic(int id_, int field_ib_, double value_)
 	{
-		String symbol = async_data_apps_quicker.__get_symbol(id_);		
-		if (symbol == null) return;		
+		__lock();
+		
+		String symbol = async_data_apps_quicker._get_symbol(id_, false);
+		
+		if (symbol == null || !async_data_apps_quicker._field_is_ok(field_ib_, false)) 
+		{
+			__unlock();
+			
+			return;	
+		}
+
+		__unlock();
 		
 		double value = value_;
-		boolean update = async_data_apps_quicker._field_is_ok(field_ib_);
 		
 		if (field_ib_ == HALTED_IB) 
 		{
 			value = __adapt_halted(id_, value, symbol);
 			if (value == WRONG_HALTED) return;
-			
-			if (!update && async_data_apps_quicker.includes_halted()) update = true;
 		}		
 		
-		if (update) _update(id_, symbol, field_ib_, value, true);
+		_update(id_, symbol, field_ib_, value, true);
 	}
 	
 	static void __tick_snapshot_end(int id_) 
@@ -152,13 +180,6 @@ public class async_data_quicker extends parent_static
 		
 		__complete_snapshot(id_, symbol);
 	}	
-	
-	static String get_col(int field_ib_) 
-	{
-		if (COLS.size() == 0) populate_cols();
-		
-		return (COLS.containsKey(field_ib_) ? COLS.get(field_ib_) : strings.DEFAULT);
-	}
 	
 	static void __update(int id_, String symbol_, HashMap<String, String> vals_) 
 	{ 
@@ -226,7 +247,7 @@ public class async_data_quicker extends parent_static
 		if (strings.is_ok(col_ini)) ini = db_common.get_long(source_, col_ini, db_ib.common.get_where_symbol(source_, symbol_), dates.ELAPSED_START, false, true);
 		else
 		{			
-			col_ini = db_quick.get_col(source_, db_ib.async_data.ELAPSED_INI);
+			col_ini = COL_ELAPSED_INI;
 
 			ini = db_ib.async_data.get_elapsed_ini(source_, symbol_);
 		}
@@ -241,18 +262,37 @@ public class async_data_quicker extends parent_static
 	
 	static void update_elapsed_ini(String source_, String symbol_, String col_ini_, long ini_) { db_ib.async_data.update(source_, symbol_, col_ini_, Long.toString(ini_ <= dates.ELAPSED_START ? dates.start_elapsed() : ini_), false); }
 
-	static ArrayList<Integer> __get_fields(int[] fields_, boolean only_essential_) { return _get_fields(fields_, only_essential_, true); }
+	static boolean id_is_ok(int id_) { return (id_ > WRONG_ID && id_ <= async_data_apps_quicker.get_max_id()); }
 	
-	static ArrayList<Integer> _get_fields(int[] fields_, boolean only_essential_, boolean lock_) 
+	static HashMap<Integer, String> get_field_equivalents(int[] fields_ib_)
 	{
-		if (lock_) __lock();
-		
-		ArrayList<Integer> output = arrays.to_arraylist(only_essential_ ? FIELDS_ESSENTIAL : fields_); 
-	
-		if (lock_) __unlock();
-		
-		return output;
+		HashMap<Integer, String> fields = new HashMap<Integer, String>();
+
+		for (int field_ib: fields_ib_) fields = get_field_equivalent(field_ib, fields);
+				
+		return fields;
 	}
+
+	private static HashMap<Integer, String> get_field_equivalent(int field_ib_, HashMap<Integer, String> fields_)
+	{
+		String field = null;
+		
+		if (field_ib_ == async_data_quicker.PRICE_IB) field = db_ib.async_data.PRICE;
+		else if (field_ib_ == async_data_quicker.OPEN_IB) field = db_ib.async_data.OPEN;
+		else if (field_ib_ == async_data_quicker.CLOSE_IB) field = db_ib.async_data.CLOSE;
+		else if (field_ib_ == async_data_quicker.LOW_IB) field = db_ib.async_data.LOW;
+		else if (field_ib_ == async_data_quicker.HIGH_IB) field = db_ib.async_data.HIGH;
+		else if (field_ib_ == async_data_quicker.ASK_IB) field = db_ib.async_data.ASK;
+		else if (field_ib_ == async_data_quicker.BID_IB) field = db_ib.async_data.BID;
+		else if (field_ib_ == async_data_quicker.VOLUME_IB) field = db_ib.async_data.VOLUME;
+		else if (field_ib_ == async_data_quicker.SIZE_IB) field = db_ib.async_data.SIZE;
+		else if (field_ib_ == async_data_quicker.ASK_SIZE_IB) field = db_ib.async_data.ASK_SIZE;
+		else if (field_ib_ == async_data_quicker.BID_SIZE_IB) field = db_ib.async_data.BID_SIZE;
+		
+		if (field != null) fields_.put(field_ib_, field);
+		
+		return fields_;
+	}	
 
 	private static void __complete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, true, false); }
 	
@@ -273,6 +313,8 @@ public class async_data_quicker extends parent_static
 	{
 		boolean output = false;
 
+		async_data_apps_quicker.__populate_fields_cols();
+		
 		String source = async_data_apps_quicker.get_source();
 
 		int id = __get_new_id(symbol_); 
@@ -281,7 +323,7 @@ public class async_data_quicker extends parent_static
 		else if (!async_data_apps_quicker.__checks_enabled() || db_ib.async_data.is_enabled(source, symbol_)) db_ib.async_data.update_timestamp(source, symbol_);
 		else return output;			
 
-		if (!async_data_apps_quicker.id_is_ok(id)) return output;
+		if (!id_is_ok(id)) return output;
 
 		return calls.reqMktData(id, symbol_, true);
 	}
@@ -324,7 +366,7 @@ public class async_data_quicker extends parent_static
 			}
 		}
 		
-		if (async_data_apps_quicker.id_is_ok(id)) async_data_apps_quicker.start(symbol_, id);
+		if (id_is_ok(id)) async_data_apps_quicker.start(symbol_, id);
 		
 		__unlock();
 		
@@ -343,7 +385,7 @@ public class async_data_quicker extends parent_static
 	
 	private static void _update(int id_, String symbol_, int field_ib_, double val_, boolean force_db_) 
 	{
-		String col = get_col(field_ib_);
+		String col = async_data_apps_quicker.get_col(field_ib_);
 
 		if (force_db_ || async_data_apps_quicker.__is_only_db()) update_db(id_, symbol_, col, val_); 
 		else async_data_apps_quicker.__update_vals(id_, col, val_);
@@ -366,15 +408,13 @@ public class async_data_quicker extends parent_static
 	{
 		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_); 
 		
-		String source = async_data_apps_quicker.get_source();
-		
 		if (async_data_apps_quicker.includes_time_elapsed())
 		{
 			String val = dates.seconds_to_time((int)get_elapsed(async_data_apps_quicker.get_source(), symbol_, null));
-			if (strings.is_ok(val)) vals.put(db_quick.get_col(source, db_ib.async_data.TIME_ELAPSED), val);				
+			if (strings.is_ok(val)) vals.put(COL_TIME_ELAPSED, val);				
 		}
 				
-		if (async_data_apps_quicker.includes_time()) vals.put(db_quick.get_col(source, db_ib.async_data.TIME), ib.common.get_current_time());
+		if (async_data_apps_quicker.includes_time()) vals.put(COL_TIME, ib.common.get_current_time());
 	
 		return vals;
 	}
@@ -422,21 +462,5 @@ public class async_data_quicker extends parent_static
 		__unlock();
 	
 		return val;
-	}
-	
-	private static void populate_cols()
-	{
-		COLS.put(PRICE_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.PRICE));
-		COLS.put(OPEN_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.OPEN));
-		COLS.put(CLOSE_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.CLOSE));
-		COLS.put(LOW_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.LOW));
-		COLS.put(HIGH_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.HIGH));
-		COLS.put(ASK_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.ASK));
-		COLS.put(BID_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.BID));
-		COLS.put(HALTED_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.HALTED));
-		COLS.put(VOLUME_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.VOLUME));
-		COLS.put(SIZE_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.SIZE));
-		COLS.put(ASK_SIZE_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.ASK_SIZE));
-		COLS.put(BID_SIZE_IB, db_quick.get_col(db_ib.market.SOURCE, db_ib.async_data.BID_SIZE));
 	}
 }

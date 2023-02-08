@@ -13,13 +13,16 @@ abstract class async_data_trades_quicker extends parent_static
 	public static final String SOURCE = db_ib.trades.SOURCE;
 	public static final int MAX_SIMULTANEOUS_SYMBOLS = 5;
 
+	static int[] FIELDS_IB = null;
+	
 	static final int SIZE_GLOBALS = 350;
 	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
 	static final boolean INCLUDES_TIME = false;
 	static final boolean INCLUDES_TIME_ELAPSED = true;
 	static final boolean INCLUDES_HALTED = false;
 	static final boolean INCLUDES_HALTED_TOT = false;
-
+	static final boolean ONLY_ESSENTIAL = true;
+	
 	static volatile String[] _symbols = new String[SIZE_GLOBALS];	
 	@SuppressWarnings("unchecked")
 	static volatile HashMap<String, String>[] _vals = (HashMap<String, String>[])new HashMap[SIZE_GLOBALS];
@@ -27,11 +30,6 @@ abstract class async_data_trades_quicker extends parent_static
 	static volatile int _last_id = async_data_quicker.MIN_ID;
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = false;
-
-	private static final int[] FIELDS0 = new int[] { async_data_quicker.PRICE_IB };
-	private static ArrayList<Integer> FIELDS = null;
-	
-	private static final boolean ONLY_ESSENTIAL = true;
 
 	private static boolean _log = async_data_quicker.DEFAULT_LOG;
 	
@@ -60,8 +58,6 @@ abstract class async_data_trades_quicker extends parent_static
 	
 		__unlock();
 	}	
-	
-	public static boolean is_only_essential() { return ONLY_ESSENTIAL; }
 
 	public static boolean __start(String symbol_) { return async_data_quicker.__start(_APP, symbol_); }
 	
@@ -76,11 +72,4 @@ abstract class async_data_trades_quicker extends parent_static
 	public static void start(String symbol_, boolean is_restart_) { }
 	
 	public static void stop(String symbol_, boolean remove_symbol_) { }	
-
-	public static ArrayList<Integer> _get_fields() 
-	{ 
-		if (FIELDS == null) FIELDS = async_data_quicker.__get_fields(FIELDS0, ONLY_ESSENTIAL);
-		
-		return FIELDS; 
-	}
 }

@@ -18,8 +18,6 @@ public abstract class watchlist_quicker
 	public static boolean checks_enabled() { return async_data_watchlist_quicker.checks_enabled(); }
 	
 	public static void __check_enabled(boolean check_enabled_) { async_data_watchlist_quicker.__check_enabled(check_enabled_); }	
-	
-	public static boolean is_only_essential() { return async_data_watchlist_quicker.is_only_essential(); }
 
 	public static void __add(ArrayList<String> symbols_) 
 	{ 

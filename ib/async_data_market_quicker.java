@@ -22,16 +22,12 @@ abstract class async_data_market_quicker extends parent_static
 	static volatile String[] _symbols = new String[SIZE_GLOBALS];
 	@SuppressWarnings("unchecked")
 	static volatile HashMap<String, String>[] _vals = (HashMap<String, String>[])new HashMap[SIZE_GLOBALS];
-
+	static volatile int[] _fields_ib = null;
+	
 	static volatile int _last_id = async_data_quicker.MIN_ID;
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = true;
-
-	private static final int[] FIELDS0 = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.OPEN_IB, async_data_quicker.CLOSE_IB, async_data_quicker.LOW_IB, async_data_quicker.HIGH_IB, async_data_quicker.ASK_IB, async_data_quicker.BID_IB, async_data_quicker.VOLUME_IB, async_data_quicker.SIZE_IB, async_data_quicker.ASK_SIZE_IB, async_data_quicker.BID_SIZE_IB, async_data_quicker.HALTED_IB };
-
-	private static ArrayList<Integer> _fields = null;
-
-	private static volatile boolean _only_essential = false;
+	static volatile boolean _only_essential = false;
 
 	private static boolean _log = async_data_quicker.DEFAULT_LOG;
 		
@@ -68,8 +64,10 @@ abstract class async_data_market_quicker extends parent_static
 		__lock();
 		
 		_only_essential = only_essential_; 
-	
-		_fields = async_data_quicker._get_fields(FIELDS0, only_essential_, false);
+		
+		async_data_apps_quicker.update_app(_APP);
+		
+		async_data_apps_quicker._populate_fields_cols(false);
 
 		__unlock();
 	}	
@@ -89,11 +87,4 @@ abstract class async_data_market_quicker extends parent_static
 	public static void start(String symbol_, boolean is_restart_) { }
 	
 	public static void stop(String symbol_, boolean remove_symbol_) { }
-
-	public static ArrayList<Integer> _get_fields() 
-	{ 
-		if (_fields == null) _fields = async_data_quicker.__get_fields(FIELDS0, _only_essential);
-		
-		return _fields; 
-	}
 }

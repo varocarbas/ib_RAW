@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 import accessory.arrays;
 import accessory.db_common;
-import accessory.db_quick;
 import accessory.numbers;
 import accessory.parent_static;
 import accessory.strings;
@@ -18,12 +17,30 @@ abstract class async_data_watchlist_quicker extends parent_static
 	public static final String SOURCE = db_ib.watchlist.SOURCE;
 	public static final int MAX_SIMULTANEOUS_SYMBOLS = 15;
 
+	static int[] FIELDS_IB = null;
+	
 	static final int SIZE_GLOBALS = 1000;
 	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
 	static final boolean INCLUDES_TIME = false;
 	static final boolean INCLUDES_TIME_ELAPSED = true;
 	static final boolean INCLUDES_HALTED = false;
 	static final boolean INCLUDES_HALTED_TOT = false;
+	static final boolean ONLY_ESSENTIAL = true;
+	
+	static String COL_FLU = null;
+	static String COL_FLUS_PRICE = null;
+	static String COL_FLU2 = null;
+	static String COL_FLU2_MIN = null;
+	static String COL_FLU2_MAX = null;
+	static String COL_PRICE = null;
+	static String COL_PRICE_INI = null;
+	static String COL_PRICE_MIN = null;
+	static String COL_PRICE_MAX = null;
+	static String COL_VOLUME = null;
+	static String COL_VOLUME_INI = null;
+	static String COL_VOLUME_MIN = null;
+	static String COL_VOLUME_MAX = null;
+	static String COL_VAR_TOT = null;
 	
 	static volatile String[] _symbols = new String[SIZE_GLOBALS];
 	@SuppressWarnings("unchecked")
@@ -32,17 +49,13 @@ abstract class async_data_watchlist_quicker extends parent_static
 	static volatile int _last_id = async_data_quicker.MIN_ID;
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = false;
-	
-	private static final int[] FIELDS0 = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.VOLUME_IB };
-	private static ArrayList<Integer> FIELDS = null;
-	
-	private static final boolean ONLY_ESSENTIAL = true;
+		
 	private static final double MAX_VAR = 30.0;
 	
 	private static final int SIZE_GLOBALS_FLUS = 2 * MAX_SIMULTANEOUS_SYMBOLS;
 	private static final int MAX_I_FLUS = SIZE_GLOBALS_FLUS - 1;
 	private static final int MIN_FLUS_TOT = 1;
-	private static final int MAX_FLUS_TOT = 10;
+	private static final int MAX_FLUS_TOT = 50;
 	private static final double FACTOR_FLU2_ZERO = 1.5;
 
 	private static volatile String[] _symbols_flus = new String[SIZE_GLOBALS_FLUS];
@@ -83,8 +96,6 @@ abstract class async_data_watchlist_quicker extends parent_static
 	
 		__unlock();
 	}	
-	
-	public static boolean is_only_essential() { return ONLY_ESSENTIAL; }
 
 	public static boolean __add(String symbol_) { return async_data_quicker.__start(_APP, symbol_); }
 	
@@ -125,13 +136,6 @@ abstract class async_data_watchlist_quicker extends parent_static
 	public static void start(String symbol_, boolean is_restart_) { start_globals(symbol_, is_restart_); }
 	
 	public static void stop(String symbol_, boolean remove_symbol_) { stop_globals(symbol_, remove_symbol_); }
-
-	public static ArrayList<Integer> _get_fields() 
-	{ 
-		if (FIELDS == null) FIELDS = async_data_quicker.__get_fields(FIELDS0, ONLY_ESSENTIAL);
-		
-		return FIELDS; 
-	}
 	
 	private static void start_globals(String symbol_, boolean is_restart_)
 	{
@@ -180,13 +184,11 @@ abstract class async_data_watchlist_quicker extends parent_static
 	private static HashMap<String, String> tick_price_basic(String symbol_, double price_, HashMap<String, String> db_, HashMap<String, String> vals_) { return tick_basic(symbol_, price_, db_, vals_, true); }
 
 	private static HashMap<String, String> tick_price_flus(String symbol_, double price_, HashMap<String, String> db_, HashMap<String, String> vals_)
-	{
-		String col_price = db_quick.get_col(SOURCE, db_ib.async_data.FLUS_PRICE);
-		
+	{	
 		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_);
-		vals.put(col_price, Double.toString(price_));
+		vals.put(COL_FLUS_PRICE, Double.toString(price_));
 
-		double price_old = Double.parseDouble(db_.get(col_price));	
+		double price_old = Double.parseDouble(db_.get(COL_FLUS_PRICE));	
 		
 		double var = (common.price_is_ok(price_old) ? numbers.get_perc_hist(price_, price_old) : 0.0);				
 		if (var == 0.0 || Math.abs(var) > MAX_VAR) return (var == 0.0 ? vals : null);		
@@ -223,7 +225,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		flu /= (double)tot;
 		
 		flu = numbers.round(flu);
-		if (flu != 0.0) vals.put(db_quick.get_col(SOURCE, db_ib.async_data.FLU), Double.toString(flu));
+		if (flu != 0.0) vals.put(COL_FLU, Double.toString(flu));
 
 		return vals;
 	}
@@ -315,7 +317,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		}
 		
 		flu2 = numbers.round(flu2);		
-		if (flu2 != 0.0) vals.put(db_quick.get_col(SOURCE, db_ib.async_data.FLU2), Double.toString(flu2));
+		if (flu2 != 0.0) vals.put(COL_FLU2, Double.toString(flu2));
 		
 		return vals;
 	}
@@ -323,14 +325,11 @@ abstract class async_data_watchlist_quicker extends parent_static
 	private static HashMap<String, String> tick_price_flus_flu2_min_max(String symbol_, HashMap<String, String> vals_, double var_)
 	{
 		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_);
-
-		String col_min = db_quick.get_col(SOURCE, db_ib.async_data.FLU2_MIN);
-		String col_max = db_quick.get_col(SOURCE, db_ib.async_data.FLU2_MAX);
 		
-		HashMap<String, String> db = db_common.get_vals(SOURCE, new String[] { col_min, col_max }, db_ib.common.get_where_symbol(SOURCE, symbol_), accessory.db.DEFAULT_ORDER, false, true);
+		HashMap<String, String> db = db_common.get_vals(SOURCE, new String[] { COL_FLU2_MIN, COL_FLU2_MAX }, db_ib.common.get_where_symbol(SOURCE, symbol_), accessory.db.DEFAULT_ORDER, false, true);
 		
-		if (var_ < 0.0 && var_ < Double.parseDouble(db.get(col_min))) vals.put(col_min, Double.toString(numbers.round(var_)));
-		else if (var_ > 0.0 && var_ > Double.parseDouble(db.get(col_max))) vals.put(col_max, Double.toString(numbers.round(var_)));
+		if (var_ < 0.0 && var_ < Double.parseDouble(db.get(COL_FLU2_MIN))) vals.put(COL_FLU2_MIN, Double.toString(numbers.round(var_)));
+		else if (var_ > 0.0 && var_ > Double.parseDouble(db.get(COL_FLU2_MAX))) vals.put(COL_FLU2_MAX, Double.toString(numbers.round(var_)));
 				
 		return vals;
 	}
@@ -342,13 +341,13 @@ abstract class async_data_watchlist_quicker extends parent_static
 		HashMap<String, String> vals = tick_basic_start(symbol_, val_, db_, vals_, is_price_);
 		if (!arrays.is_ok(vals)) return null;
 		
-		String col = db_quick.get_col(SOURCE, (is_price_ ? db_ib.async_data.PRICE_MIN : db_ib.async_data.VOLUME_MIN));
+		String col = (is_price_ ? COL_PRICE_MIN : COL_VOLUME_MIN);
 		double val_db = Double.parseDouble(db_.get(col));
 		
 		boolean is_ok_db = tick_app_val_is_ok(val_db, is_price_);
 		if (!is_ok_db || val_ < val_db) vals.put(col, Double.toString(val_));
 		
-		col = db_quick.get_col(SOURCE, (is_price_ ? db_ib.async_data.PRICE_MAX : db_ib.async_data.VOLUME_MAX));
+		col = (is_price_ ? COL_PRICE_MAX : COL_VOLUME_MAX);
 		val_db = Double.parseDouble(db_.get(col));
 		
 		is_ok_db = tick_app_val_is_ok(val_db, is_price_);
@@ -360,15 +359,12 @@ abstract class async_data_watchlist_quicker extends parent_static
 	private static HashMap<String, String> tick_basic_start(String symbol_, double val_, HashMap<String, String> db_, HashMap<String, String> vals_, boolean is_price_)
 	{
 		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_);		
-		
-		String col_price_ini = db_quick.get_col(SOURCE, db_ib.async_data.PRICE_INI);
-		String col_var_tot = db_quick.get_col(SOURCE, db_ib.async_data.VAR_TOT);
-		
+				
 		HashMap<String, String> items = new HashMap<String, String>();
 		
-		items.put(db_quick.get_col(SOURCE, db_ib.async_data.PRICE), db_quick.get_col(SOURCE, db_ib.async_data.VOLUME));
-		items.put(col_price_ini, db_quick.get_col(SOURCE, db_ib.async_data.VOLUME_INI));
-		items.put(db_quick.get_col(SOURCE, db_ib.async_data.FLUS_PRICE), strings.DEFAULT);
+		items.put(COL_PRICE, COL_VOLUME);
+		items.put(COL_PRICE_INI, COL_VOLUME_INI);
+		items.put(COL_FLUS_PRICE, strings.DEFAULT);
 
 		double price_ini = common.WRONG_PRICE;
 		
@@ -377,7 +373,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 			String col = (is_price_ ? item.getKey() : item.getValue());
 			if (!strings.is_ok(col)) continue;
 			
-			boolean is_price_ini = (is_price_ && col.equals(col_price_ini));			
+			boolean is_price_ini = (is_price_ && col.equals(COL_PRICE_INI));			
 			double val_db = Double.parseDouble(db_.get(col));
 			
 			if (!tick_app_val_is_ok(val_db, is_price_)) 
@@ -394,7 +390,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 			double var = numbers.get_perc_hist(val_, price_ini);
 			if (Math.abs(var) > async_data_quicker.MAX_VAR) return null;
 			
-			vals.put(col_var_tot, Double.toString(var));
+			vals.put(COL_VAR_TOT, Double.toString(var));
 		}
 		
 		return vals;

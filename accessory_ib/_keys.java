@@ -9,7 +9,10 @@ public class _keys extends parent_keys
 	private static _keys _instance = new _keys(); 
 
 	public _keys() { }
-	public static void populate() { _instance.populate_internal(); }
+	
+	public static void populate() { populate(null); }
+	
+	public static void populate(String[] roots_to_ignore_) { _instance.populate_internal(roots_to_ignore_); }
 	
 	protected HashMap<String, String> get_startup_roots() 
 	{ 
@@ -22,7 +25,7 @@ public class _keys extends parent_keys
 		output.put(_types.REMOTE_STATUS, _types.REMOTE_STATUS);
 		output.put(_types.REMOTE_STATUS2, _types.REMOTE_STATUS2);
 		output.put(_types.APPS_STATUS, _types.APPS_STATUS);
-	
+
 		return output;
 	}
 

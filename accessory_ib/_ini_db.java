@@ -28,7 +28,9 @@ public class _ini_db extends parent_ini_db
 	
 	public static void populate(String dbs_user_, String dbs_username_, String dbs_password_, String dbs_host_, boolean dbs_encrypted_) { _instance.populate_all(dbs_user_, dbs_username_, dbs_password_, dbs_host_, dbs_encrypted_); }
 
-	public static void populate(HashMap<String, Object> dbs_setup_) { _instance.populate_all(dbs_setup_); }
+	public static void populate(HashMap<String, Object> dbs_setup_) { _instance.populate_all(dbs_setup_, null); }
+
+	public static void populate(HashMap<String, Object> dbs_setup_, String[] types_to_ignore_) { _instance.populate_all(dbs_setup_, types_to_ignore_); }
 
 	public static String get_table_old(String table_) { return (table_ + misc.SEPARATOR_NAME + "old"); }
 	
