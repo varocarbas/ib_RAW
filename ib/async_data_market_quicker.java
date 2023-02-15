@@ -1,7 +1,6 @@
 package ib;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import accessory.parent_static;
 
@@ -11,8 +10,8 @@ abstract class async_data_market_quicker extends parent_static
 	
 	public static final String SOURCE = db_ib.market.SOURCE;
 	public static final int MAX_SIMULTANEOUS_SYMBOLS = 5000;
-
-	static final int SIZE_GLOBALS = 1000;
+	
+	static final int SIZE_GLOBALS = 1500;
 	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
 	static final boolean INCLUDES_TIME = true;
 	static final boolean INCLUDES_TIME_ELAPSED = false;
@@ -20,8 +19,7 @@ abstract class async_data_market_quicker extends parent_static
 	static final boolean INCLUDES_HALTED_TOT = true;
 
 	static volatile String[] _symbols = new String[SIZE_GLOBALS];
-	@SuppressWarnings("unchecked")
-	static volatile HashMap<String, String>[] _vals = (HashMap<String, String>[])new HashMap[SIZE_GLOBALS];
+	static volatile double[][] _vals = new double[SIZE_GLOBALS][];
 	static volatile int[] _fields_ib = null;
 	
 	static volatile int _last_id = async_data_quicker.MIN_ID;
@@ -67,7 +65,7 @@ abstract class async_data_market_quicker extends parent_static
 		
 		async_data_apps_quicker.update_app(_APP);
 		
-		async_data_apps_quicker._populate_fields_cols(false);
+		async_data_apps_quicker._populate_fields_cols(false, true);
 
 		__unlock();
 	}	

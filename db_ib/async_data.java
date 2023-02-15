@@ -95,6 +95,8 @@ public abstract class async_data
 
 	public static boolean update(String source_, String symbol_, Object vals_) { return db_common.update(source_, vals_, common.get_where_symbol(source_, symbol_)); }
 
+	public static boolean update(String source_, String symbol_, Object vals_, boolean is_quick_) { return db_common.update(source_, vals_, common.get_where_symbol(source_, symbol_), is_quick_); }
+
 	public static boolean update_timestamp(String source_, String symbol_) { return db_common.update(source_, accessory.db.FIELD_TIMESTAMP, dates.get_now_string(ib.common.FORMAT_TIMESTAMP, 0), common.get_where_symbol(source_, symbol_)); }
 	
 	public static boolean insert_new(String source_, String symbol_) { return common.insert(source_, get_default_vals_new(source_, symbol_)); }

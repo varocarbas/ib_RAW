@@ -38,6 +38,8 @@ public abstract class market
 	
 	public static final String TZ = dates.TZ_NY;
 	
+	public static final double MAX_VAR = 50.0;
+	
 	private static LocalTime _time_open = null;
 	private static LocalTime _time_close = null;
 	

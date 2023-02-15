@@ -7,6 +7,8 @@ import accessory.misc;
 
 public abstract class watchlist_quicker 
 {
+	public static final double MAX_VAR = watchlist.MAX_VAR;
+	
 	public static boolean log() { return async_data_watchlist_quicker.log(); }
 	
 	public static void log(boolean log_) { async_data_watchlist_quicker.log(log_); }	

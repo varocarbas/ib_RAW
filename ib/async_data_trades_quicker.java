@@ -1,7 +1,6 @@
 package ib;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import accessory.parent_static;
 import db_ib.trades;
@@ -15,7 +14,7 @@ abstract class async_data_trades_quicker extends parent_static
 
 	static int[] FIELDS_IB = null;
 	
-	static final int SIZE_GLOBALS = 350;
+	static final int SIZE_GLOBALS = 1000;
 	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
 	static final boolean INCLUDES_TIME = false;
 	static final boolean INCLUDES_TIME_ELAPSED = true;
@@ -24,8 +23,7 @@ abstract class async_data_trades_quicker extends parent_static
 	static final boolean ONLY_ESSENTIAL = true;
 	
 	static volatile String[] _symbols = new String[SIZE_GLOBALS];	
-	@SuppressWarnings("unchecked")
-	static volatile HashMap<String, String>[] _vals = (HashMap<String, String>[])new HashMap[SIZE_GLOBALS];
+	static volatile double[][] _vals = new double[SIZE_GLOBALS][];
 	
 	static volatile int _last_id = async_data_quicker.MIN_ID;
 	static volatile boolean _only_db = false;
