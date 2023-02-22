@@ -9,7 +9,7 @@ Required external dependencies:
 
 Tested with OpenJDK 11.0.15.
 
-Articles about this code:
+Articles about this code (["Everything is very normal"](https://www.codeproject.com/Articles/5352157/Friendliness-Safety-Efficiency-and-Adaptability#_comments)):
 - [Context, conventions, structure, evolution -- accessory_java](https://www.codeproject.com/Articles/5351092/Context-conventions-structure-evolution-accessory).
 - [Friendliness, safety, efficiency and adaptability -- accessory_java](https://www.codeproject.com/Articles/5352157/Friendliness-safety-efficiency-and-adaptability).
 - [Types and classes -- accessory_java](https://gist.github.com/varocarbas/dbc87154b96ef39b10cb7ce768794e66).

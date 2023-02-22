@@ -102,7 +102,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	
 	public static ArrayList<String> get_all_symbols() { return async_data_quicker.get_all_symbols(SOURCE); }
 	
-	public static void tick_price(int id_, int field_ib_, double price_, String symbol_)
+	public static void _tick_price(int id_, int field_ib_, double price_, String symbol_)
 	{
 		if (field_ib_ != async_data_quicker.PRICE_IB) return;
 	
@@ -115,10 +115,10 @@ abstract class async_data_watchlist_quicker extends parent_static
 		HashMap<String, String> temp = tick_price_flus(symbol_, price_, db, vals);
 		if (arrays.is_ok(temp)) vals = new HashMap<String, String>(temp);
 		
-		async_data_quicker.update_db(id_, symbol_, vals);
+		async_data_quicker.update_db(symbol_, vals);
 	}
 
-	public static void tick_size(int id_, int field_ib_, double size_, String symbol_)
+	public static void _tick_size(int id_, int field_ib_, double size_, String symbol_)
 	{
 		if (field_ib_ != async_data_quicker.VOLUME_IB) return;
 		
@@ -127,7 +127,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		HashMap<String, String> vals = tick_size_basic(symbol_, size_, db);
 		if (!arrays.is_ok(vals)) return;
 		
-		async_data_quicker.update_db(id_, symbol_, vals);
+		async_data_quicker.update_db(symbol_, vals);
 	}
 	
 	public static void start(String symbol_, boolean is_restart_) { start_globals(symbol_, is_restart_); }

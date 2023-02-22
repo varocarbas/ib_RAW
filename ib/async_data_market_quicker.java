@@ -65,7 +65,7 @@ abstract class async_data_market_quicker extends parent_static
 		
 		async_data_apps_quicker.update_app(_APP);
 		
-		async_data_apps_quicker._populate_fields_cols(false, true);
+		async_data_apps_quicker._populate_fields_cols_cache(false, true);
 
 		__unlock();
 	}	
