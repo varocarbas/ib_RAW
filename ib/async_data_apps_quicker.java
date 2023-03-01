@@ -34,16 +34,16 @@ abstract class async_data_apps_quicker extends parent_static
 
 	public static String get_source() { return SOURCE; }
 	
-	public static void _tick_price(int id_, int field_ib_, double price_, String symbol_)
+	public static void tick_price(int id_, int field_ib_, double price_, String symbol_)
 	{
-		if (APP.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker._tick_price(id_, field_ib_, price_, symbol_);
+		if (APP.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker.tick_price(id_, field_ib_, price_, symbol_);
 		else if (APP.equals(async_data_trades_quicker._APP)) async_data_trades_quicker.tick_price(id_, field_ib_, price_, symbol_);
 		else if (APP.equals(async_data_market_quicker._APP)) async_data_market_quicker.tick_price(id_, field_ib_, price_, symbol_);
 	}
 
-	public static void _tick_size(int id_, int field_ib_, double size_, String symbol_)
+	public static void tick_size(int id_, int field_ib_, double size_, String symbol_)
 	{
-		if (APP.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker._tick_size(id_, field_ib_, size_, symbol_);
+		if (APP.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker.tick_size(id_, field_ib_, size_, symbol_);
 		else if (APP.equals(async_data_trades_quicker._APP)) async_data_trades_quicker.tick_size(id_, field_ib_, size_, symbol_);
 		else if (APP.equals(async_data_market_quicker._APP)) async_data_market_quicker.tick_size(id_, field_ib_, size_, symbol_);
 	}
@@ -144,7 +144,22 @@ abstract class async_data_apps_quicker extends parent_static
 	}
 
 	public static boolean __is_only_db() { return _is_only_db(true); }
+	
+	public static boolean _is_only_db(boolean lock_)
+	{
+		if (lock_) __lock();
+		
+		boolean output = false;
+		
+		if (APP.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker.is_only_db();
+		else if (APP.equals(async_data_trades_quicker._APP)) output = async_data_trades_quicker.is_only_db();
+		else if (APP.equals(async_data_market_quicker._APP)) output = async_data_market_quicker.is_only_db();
 
+		if (lock_) __unlock();
+		
+		return output;
+	}
+	
 	public static boolean __checks_enabled()
 	{
 		__lock();
@@ -200,7 +215,25 @@ abstract class async_data_apps_quicker extends parent_static
 
 	public static void stop(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_) { _stop(id_, symbol_, snapshot_completed_, remove_symbol_, false); }
 	
-	public static void __update_vals(int id_, int field_ib_, double val_) { _update_vals(id_, field_ib_, val_, true); }
+	public static void _update_vals(int id_, int field_ib_, double val_, boolean lock_)
+	{
+		if (lock_) __lock();
+
+		if (!async_data_quicker.id_is_ok(id_)) 
+		{
+			if (lock_) __unlock();
+
+			return;
+		}
+
+		int i = async_data_quicker.get_i(id_, true);
+
+		if (APP.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker._vals[i][field_ib_] = val_;
+		else if (APP.equals(async_data_trades_quicker._APP)) async_data_trades_quicker._vals[i][field_ib_] = val_;
+		else if (APP.equals(async_data_market_quicker._APP)) async_data_market_quicker._vals[i][field_ib_] = val_; 
+
+		if (lock_) __unlock();		
+	}
 
 	public static double[] __get_vals(int id_)
 	{			
@@ -421,41 +454,6 @@ abstract class async_data_apps_quicker extends parent_static
 		async_data_quicker.populate_db_cache();
 		
 		if (lock_) __unlock();
-	}
-	
-	private static boolean _is_only_db(boolean lock_)
-	{
-		if (lock_) __lock();
-		
-		boolean output = false;
-		
-		if (APP.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker.is_only_db();
-		else if (APP.equals(async_data_trades_quicker._APP)) output = async_data_trades_quicker.is_only_db();
-		else if (APP.equals(async_data_market_quicker._APP)) output = async_data_market_quicker.is_only_db();
-
-		if (lock_) __unlock();
-		
-		return output;
-	}
-
-	private static void _update_vals(int id_, int field_ib_, double val_, boolean lock_)
-	{
-		if (lock_) __lock();
-
-		if (!async_data_quicker.id_is_ok(id_)) 
-		{
-			if (lock_) __unlock();
-
-			return;
-		}
-
-		int i = async_data_quicker.get_i(id_, true);
-
-		if (APP.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker._vals[i][field_ib_] = val_;
-		else if (APP.equals(async_data_trades_quicker._APP)) async_data_trades_quicker._vals[i][field_ib_] = val_;
-		else if (APP.equals(async_data_market_quicker._APP)) async_data_market_quicker._vals[i][field_ib_] = val_; 
-
-		if (lock_) __unlock();		
 	}	
 	
 	private static void _stop(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_, boolean lock_)

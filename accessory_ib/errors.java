@@ -32,7 +32,7 @@ public abstract class errors
 		}
 		
 		if (is_warning(code_)) manage_warning(message);
-		else manage_internal(ERROR_GENERIC, wrapper_error_info(id_, code_, message_));
+		else manage_internal(ERROR_GENERIC, wrapper_error_info(id_, code_, message));
 	}	
 
 	public static boolean is_warning(int code_) { return external_ib.errors.is_warning(code_); }
@@ -59,7 +59,7 @@ public abstract class errors
 	{
 		HashMap<String, Object> info = new HashMap<String, Object>();
 
-		info.put(_keys.ID, id_);
+		if (common_xsync.req_id_is_ok(id_)) info.put(_keys.ID, id_);
 		info.put("code", code_);
 		info.put(MESSAGE, message_);
 		

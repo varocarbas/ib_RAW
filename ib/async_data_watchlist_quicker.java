@@ -52,7 +52,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	private static final int SIZE_GLOBALS_FLUS = 2 * MAX_SIMULTANEOUS_SYMBOLS;
 	private static final int MAX_I_FLUS = SIZE_GLOBALS_FLUS - 1;
 	private static final int MIN_FLUS_TOT = 1;
-	private static final int MAX_FLUS_TOT = 100;
+	private static final int MAX_FLUS_TOT = 300;
 	private static final double FACTOR_FLU2_ZERO = 1.5;
 
 	private static volatile String[] _symbols_flus = new String[SIZE_GLOBALS_FLUS];
@@ -102,7 +102,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	
 	public static ArrayList<String> get_all_symbols() { return async_data_quicker.get_all_symbols(SOURCE); }
 	
-	public static void _tick_price(int id_, int field_ib_, double price_, String symbol_)
+	public static void tick_price(int id_, int field_ib_, double price_, String symbol_)
 	{
 		if (field_ib_ != async_data_quicker.PRICE_IB) return;
 	
@@ -118,7 +118,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		async_data_quicker.update_db(symbol_, vals);
 	}
 
-	public static void _tick_size(int id_, int field_ib_, double size_, String symbol_)
+	public static void tick_size(int id_, int field_ib_, double size_, String symbol_)
 	{
 		if (field_ib_ != async_data_quicker.VOLUME_IB) return;
 		

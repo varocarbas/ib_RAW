@@ -48,8 +48,12 @@ public class async_data_quicker extends parent_static
 	static String COL_ELAPSED_INI = null;
 
 	static String[] DB_CACHE_COLS = null;
+
+	private static final long MIN_SECS_HALT = 360l;
 	
-	private static int DB_CACHE_ID_UPDATE_MAIN = db_cache.WRONG_ID;
+	private static HashMap<String, Long> _halts = new HashMap<String, Long>();
+	
+	private static int _db_cache_update_main = db_cache.WRONG_ID;
 	
 	private static boolean _enabled = false;
 	
@@ -67,7 +71,7 @@ public class async_data_quicker extends parent_static
 	{
 		DB_CACHE_COLS = null;
 		
-		DB_CACHE_ID_UPDATE_MAIN = db_cache.WRONG_ID;
+		_db_cache_update_main = db_cache.WRONG_ID;
 	}
 	
 	static boolean __start(String app_, String symbol_) 
@@ -128,7 +132,7 @@ public class async_data_quicker extends parent_static
 		double price = adapt_val(price_, field_ib_);
 		if (!ib.common.price_is_ok(price)) return;
 		
-		async_data_apps_quicker._tick_price(id_, field_ib_, price, symbol);	
+		async_data_apps_quicker.tick_price(id_, field_ib_, price, symbol);	
 
 		_update(id_, symbol, field_ib_, price);
 	}
@@ -156,7 +160,7 @@ public class async_data_quicker extends parent_static
 
 			if (ib.common.size_is_ok(size))
 			{
-				async_data_apps_quicker._tick_size(id_, field_ib_, size, symbol);
+				async_data_apps_quicker.tick_size(id_, field_ib_, size, symbol);
 				
 				_update(id_, symbol, field_ib_, size);			
 			}
@@ -177,18 +181,21 @@ public class async_data_quicker extends parent_static
 			
 			return;	
 		}
-
-		__unlock();
+		
+		boolean update = true;
 		
 		double value = value_;
 		
 		if (field_ib_ == HALTED_IB) 
 		{
-			value = __adapt_halted(id_, value, symbol);
-			if (value == WRONG_HALTED) return;
+			value = adapt_halted(id_, value, symbol);
+
+			update = (value != WRONG_HALTED);
 		}		
 		
-		_update(id_, symbol, field_ib_, value, true);
+		if (update) _update(id_, symbol, field_ib_, value, true, false);
+		
+		__unlock();
 	}
 	
 	static void __tick_snapshot_end(int id_) 
@@ -200,20 +207,14 @@ public class async_data_quicker extends parent_static
 	}	
 	
 	static void update_db(String symbol_, HashMap<String, String> vals_) { db_ib.async_data.update(async_data_apps_quicker.get_source(), symbol_, vals_, true); }
-
-	static boolean execute_db_cache(int id_, String symbol_, HashMap<String, String> vals_)
-	{
-		boolean output = false;
-		
-		if (db_cache_is_enabled() && id_ > db_cache.WRONG_ID)
-		{
-			output = true;
-
-			db_cache.execute(id_, get_db_cache_cols(id_), get_db_cache_vals(symbol_, vals_));
-		} 
 	
-		return output;
+	static void __update_db(String symbol_, HashMap<String, String> vals_) 
+	{ 
+		if (db_cache_is_enabled()) execute_db_cache(_db_cache_update_main, symbol_, vals_);
+		else db_ib.async_data.update(async_data_apps_quicker.get_source(), symbol_, vals_, true); 
 	}
+	
+	private static ArrayList<HashMap<String, String>> execute_db_cache(int id_, String symbol_, HashMap<String, String> vals_) { return db_cache.execute(id_, get_db_cache_cols(id_), get_db_cache_vals(symbol_, vals_)); }
 
 	private static String[] get_db_cache_vals(String symbol_, HashMap<String, String> vals_)
 	{
@@ -383,7 +384,7 @@ public class async_data_quicker extends parent_static
 		
 		query = update_db_cache_query(source, query + " WHERE ", COL_SYMBOL);
 
-		DB_CACHE_ID_UPDATE_MAIN = db_cache.add(source, query, db_quicker_mysql.TYPE, false, true);
+		_db_cache_update_main = db_cache.add(source, query, db_quicker_mysql.TYPE, false, true);
 	}
 	
 	private static String update_db_cache_query(String source_, String query_, String col_)
@@ -483,14 +484,14 @@ public class async_data_quicker extends parent_static
 		update_db(symbol_, _start_db_vals(symbol_, vals));
 	}
 
-	private static void _update(int id_, String symbol_, int field_ib_, double val_) { _update(id_, symbol_, field_ib_, val_, false); }
+	private static void _update(int id_, String symbol_, int field_ib_, double val_) { _update(id_, symbol_, field_ib_, val_, false, true); }
 	
-	private static void _update(int id_, String symbol_, int field_ib_, double val_, boolean force_db_) 
+	private static void _update(int id_, String symbol_, int field_ib_, double val_, boolean force_db_, boolean lock_calls_) 
 	{
 		String col = async_data_apps_quicker.get_col(field_ib_);
 
-		if (force_db_ || async_data_apps_quicker.__is_only_db()) _update_db(symbol_, col, val_); 
-		else async_data_apps_quicker.__update_vals(id_, field_ib_, val_);
+		if (force_db_ || async_data_apps_quicker._is_only_db(lock_calls_)) _update_db(symbol_, col, val_); 
+		else async_data_apps_quicker._update_vals(id_, field_ib_, val_, lock_calls_);
 	
 		log(id_, symbol_, col, val_);
 	}
@@ -562,21 +563,31 @@ public class async_data_quicker extends parent_static
 		return output;
 	}
 
-	private static int __adapt_halted(int id_, double val_, String symbol_)
+	private static double adapt_halted(int id_, double val_, String symbol_)
 	{
-		__lock();
-		
-		int val = (int)val_;			
-		
-		boolean halted = data.is_halted(val);
+		boolean halted = data.is_halted((int)val_);
 		boolean halted_db = db_ib.async_data.is_halted(symbol_);
 			
-		if (async_data_apps_quicker.includes_halted_tot() && (halted && !halted_db)) db_ib.async_data.update_halted_tot(symbol_);		
+		if (async_data_apps_quicker.includes_halted_tot()) 
+		{
+			boolean update = false;
+			
+			if (halted && !halted_db)
+			{
+				update = true;
+				
+				if (_halts.containsKey(symbol_))
+				{
+					if (dates.get_elapsed(_halts.get(symbol_)) < MIN_SECS_HALT) update = false;
+					else _halts.remove(symbol_);
+				}
+				else _halts.put(symbol_, dates.start_elapsed());
+			}
+			else if (!halted) _halts.remove(symbol_);
+			
+			if (update) db_ib.async_data.update_halted_tot(symbol_);
+		}
 		
-		val = ((async_data_apps_quicker.includes_halted() && (halted != halted_db)) ? val : WRONG_HALTED);
-	
-		__unlock();
-	
-		return val;
+		return ((async_data_apps_quicker.includes_halted() && (halted != halted_db)) ? val_ : WRONG_HALTED);
 	}
 }
