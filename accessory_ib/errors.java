@@ -8,6 +8,7 @@ import accessory.logs;
 import accessory.misc;
 import accessory.strings;
 import ib.async_data;
+import ib.common;
 import ib.common_xsync;
 import ib.conn;
 import ib.sync;
@@ -21,17 +22,20 @@ public abstract class errors
 	public static final String DEFAULT_WARNING = "WARNING";
 	public static final String DEFAULT_MESSAGE = accessory.errors.DEFAULT_MESSAGE;
 	
-	public static void wrapper_error(int id_, int code_, String message_)
+	public static void wrapper_error(int id_, int code_, String message_, boolean is_warning_)
 	{
 		String message = (strings.is_ok(message_) ? message_ : strings.DEFAULT);
 		
-		if (common_xsync.req_id_is_ok(id_))
+		if (is_warning_) 
 		{
-			String id = Integer.toString(id_);
-			if (!message.contains(id)) message += misc.SEPARATOR_CONTENT + "id: " + id;			
+			if (common_xsync.req_id_is_ok(id_))
+			{
+				String id = Integer.toString(id_);
+				if (!message.contains(id)) message = get_message_warning(message) + misc.SEPARATOR_CONTENT + "id: " + id;			
+			}
+			
+			manage_warning(message);
 		}
-		
-		if (is_warning(code_)) manage_warning(message);
 		else manage_internal(ERROR_GENERIC, wrapper_error_info(id_, code_, message));
 	}	
 
@@ -45,14 +49,8 @@ public abstract class errors
 
 	public static void manage(String type_) { manage_internal(type_, null, null); }
 
-	public static void manage_warning(String message_) 
-	{ 
-		String message = message_;
-		if (!strings.is_ok(message_)) message = DEFAULT_WARNING;
-		
-		logs.update_screen(message);
-	}
-
+	public static void manage_warning(String message_) { logs.update_screen(get_message_warning(message_)); }
+	
 	public static String check(String type_) { return accessory._types.check_type(type_, _types.ERROR_IB); }
 	
 	private static HashMap<String, Object> wrapper_error_info(int id_, int code_, String message_)
@@ -66,7 +64,13 @@ public abstract class errors
 		if (code_ == external_ib.errors.ERROR_200)
 		{
 			String symbol = async_data.get_symbol(id_);
-			if (strings.is_ok(symbol)) info.put("symbol", symbol);
+			
+			if (strings.is_ok(symbol)) 
+			{
+				common.delete_symbol(symbol);
+				
+				info.put("symbol", symbol);
+			}
 		}
 
 		return info;
@@ -95,6 +99,14 @@ public abstract class errors
 		return get_message_common(message);
 	}
 
+	private static String get_message_warning(String message_)
+	{
+		String message = message_;
+		if (!strings.is_ok(message_)) message = DEFAULT_WARNING;
+		
+		return message;
+	}
+	
 	private static String get_message_common(String message_) 
 	{ 
 		String message = message_;
@@ -104,7 +116,7 @@ public abstract class errors
 		
 		return message; 
 	}
-	
+
 	private static boolean is_conn(String type_) { return strings.is_ok(conn.check_error(type_)); }
 
 	private static boolean is_sync(String type_) { return strings.is_ok(sync.check_error(type_)); }

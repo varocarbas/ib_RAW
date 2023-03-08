@@ -4,12 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
-import accessory.arrays_quick;
 import accessory.dates;
-import accessory.db;
-import accessory.db_cache;
 import accessory.db_common;
-import accessory.db_quicker_mysql;
 import accessory.generic;
 import accessory.parent_static;
 import accessory.strings;
@@ -21,7 +17,10 @@ public class async_data_quicker extends parent_static
 	public static final double FACTOR_VOLUME = 1.0 / 1000.0;
 	
 	public static final int MIN_ID = common_xsync.MIN_REQ_ID_ASYNC;	
+	public static final long MIN_SECS_HALT_BASIC = 300l;
+	
 	public static final double MAX_VAR = 30.0;
+	public static final long MAX_SECS_MAX_VAR = MIN_SECS_HALT_BASIC - 120l;
 	
 	public static final int WRONG_ID = MIN_ID - 1;
 	public static final int WRONG_I = common.WRONG_I;
@@ -46,14 +45,11 @@ public class async_data_quicker extends parent_static
 	static String COL_TIME = null;
 	static String COL_TIME_ELAPSED = null;
 	static String COL_ELAPSED_INI = null;
-
-	static String[] DB_CACHE_COLS = null;
-
-	private static final long MIN_SECS_HALT = 360l;
+	static String COL_TIMESTAMP = null;
+	
+	private static final long MIN_SECS_HALT = MIN_SECS_HALT_BASIC + 60l;
 	
 	private static HashMap<String, Long> _halts = new HashMap<String, Long>();
-	
-	private static int _db_cache_update_main = db_cache.WRONG_ID;
 	
 	private static boolean _enabled = false;
 	
@@ -62,17 +58,6 @@ public class async_data_quicker extends parent_static
 	public static void enable() { _enabled = true; }
 	
 	public static void disable() { _enabled = false; }
-
-	public static boolean db_cache_is_enabled() { return (DB_CACHE_COLS != null); }
-	
-	public static void enable_db_cache() { async_data_apps_quicker._populate_fields_cols_cache(false, true); }
-
-	public static void disable_db_cache()
-	{
-		DB_CACHE_COLS = null;
-		
-		_db_cache_update_main = db_cache.WRONG_ID;
-	}
 	
 	static boolean __start(String app_, String symbol_) 
 	{
@@ -208,50 +193,7 @@ public class async_data_quicker extends parent_static
 	
 	static void update_db(String symbol_, HashMap<String, String> vals_) { db_ib.async_data.update(async_data_apps_quicker.get_source(), symbol_, vals_, true); }
 	
-	static void __update_db(String symbol_, HashMap<String, String> vals_) 
-	{ 
-		if (db_cache_is_enabled()) execute_db_cache(_db_cache_update_main, symbol_, vals_);
-		else db_ib.async_data.update(async_data_apps_quicker.get_source(), symbol_, vals_, true); 
-	}
-	
-	private static ArrayList<HashMap<String, String>> execute_db_cache(int id_, String symbol_, HashMap<String, String> vals_) { return db_cache.execute(id_, get_db_cache_cols(id_), get_db_cache_vals(symbol_, vals_)); }
-
-	private static String[] get_db_cache_vals(String symbol_, HashMap<String, String> vals_)
-	{
-		int tot = DB_CACHE_COLS.length;
-		
-		String[] output = new String[tot];
-		
-		for (int i = 0; i < tot; i++)
-		{
-			String col = DB_CACHE_COLS[i];
-			if (!strings.is_ok(col)) continue;
-			
-			String val = "0";
-			if (col.equals(COL_SYMBOL)) val = symbol_;
-			else if (vals_.containsKey(col)) val = vals_.get(col);
-			else if (col.equals(COL_TIME)) val = get_time();
-			else if (col.equals(COL_TIME_ELAPSED)) val = get_time_elapsed(async_data_apps_quicker.get_source(), symbol_);
-		
-			output[i] = val;
-		}
-		
-		return output;
-	}
-	
-	private static int get_db_cache_id(String col_)
-	{
-		int output = arrays_quick.get_i(DB_CACHE_COLS, col_);
-		
-		return (output > arrays.WRONG_I ? output : db_cache.WRONG_ID);
-	}
-	
-	private static String[] get_db_cache_cols(int id_)
-	{
-		String[] cols = null;
-	
-		return cols;
-	}
+	static void __update_db(String symbol_, HashMap<String, String> vals_) { db_ib.async_data.update(async_data_apps_quicker.get_source(), symbol_, vals_, true); }
 	
 	static int _get_id(String symbol_, boolean lock_) 
 	{ 
@@ -359,43 +301,6 @@ public class async_data_quicker extends parent_static
 		
 		return fields_;
 	}	
-
-	static void populate_db_cache() { populate_db_cache_update(); }
-	
-	private static void populate_db_cache_update()
-	{
-		String source = async_data_apps_quicker.get_source();
-		
-		String query = "UPDATE " + db.get_variable(source, db.get_table(source)) + " SET ";
-		
-		int i = 0;
-		boolean first_time = true;
-		
-		for (i = 0; i < async_data_quicker.DB_CACHE_COLS.length; i++)
-		{
-			String col = async_data_quicker.DB_CACHE_COLS[i];
-			if (!strings.is_ok(col) || col.equals(COL_SYMBOL)) continue;
-			
-			if (first_time) first_time = false;
-			else query += ", ";
-			
-			query = update_db_cache_query(source, query, async_data_quicker.DB_CACHE_COLS[i]);
-		}
-		
-		query = update_db_cache_query(source, query + " WHERE ", COL_SYMBOL);
-
-		_db_cache_update_main = db_cache.add(source, query, db_quicker_mysql.TYPE, false, true);
-	}
-	
-	private static String update_db_cache_query(String source_, String query_, String col_)
-	{
-		String query = query_;
-
-		query += db.get_variable(col_) + "=''";
-		query = db_cache.add_placeholders(source_, query, col_, get_db_cache_id(col_));	
-
-		return query;
-	}
 	
 	private static void __complete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, true, false); }
 	
@@ -421,8 +326,8 @@ public class async_data_quicker extends parent_static
 		String source = async_data_apps_quicker.get_source();
 
 		int id = __get_new_id(symbol_); 
-		
-		if (!db_ib.async_data.exists(source, symbol_)) db_ib.async_data.insert_new(source, symbol_);
+
+		if (!async_data_cache_quicker.exists(symbol_)) db_ib.async_data.insert_new(source, symbol_);
 		else if (!async_data_apps_quicker.__checks_enabled() || db_ib.async_data.is_enabled(source, symbol_)) db_ib.async_data.update_timestamp(source, symbol_);
 		else return output;			
 
@@ -499,6 +404,7 @@ public class async_data_quicker extends parent_static
 	private static void _update_db(String symbol_, String col_, double val_)
 	{
 		HashMap<String, String> vals = _start_db_vals(symbol_, null);
+		if (vals == null) return;
 		
 		vals.put(col_, Double.toString(val_));
 
@@ -508,8 +414,10 @@ public class async_data_quicker extends parent_static
 	private static HashMap<String, String> _start_db_vals(String symbol_, double[] vals_)
 	{
 		HashMap<String, String> vals = new HashMap<String, String>(); 
+	
+		String source = async_data_apps_quicker.get_source();
 		
-		if (vals != null)
+		if (vals_ != null)
 		{
 			for (int i = 0; i < vals_.length; i++) 
 			{
@@ -518,15 +426,13 @@ public class async_data_quicker extends parent_static
 				vals.put(async_data_apps_quicker.get_col(i), Double.toString(vals_[i]));
 			}
 		}
-		
-		String source = async_data_apps_quicker.get_source();
-		
+				
 		if (async_data_apps_quicker.includes_time_elapsed())
 		{
 			String val = get_time_elapsed(source, symbol_);
 			if (strings.is_ok(val)) vals.put(COL_TIME_ELAPSED, val);				
 		}
-				
+						
 		if (async_data_apps_quicker.includes_time()) vals.put(COL_TIME, get_time());
 	
 		return vals;

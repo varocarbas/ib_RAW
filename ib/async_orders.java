@@ -13,7 +13,7 @@ abstract class async_orders extends parent_static
 	public static void order_status(int order_id_, String status_ib_) 
 	{ 
 		String status = orders.get_status(status_ib_, true);
-		if (!strings.is_ok(status) || strings.matches_any(status, new String[] { orders.STATUS_IN_PROGRESS, orders.STATUS_INACTIVE }, false) || !orders.exists(order_id_)) return;
+		if (!strings.is_ok(status) || strings.matches_any(new String[] { orders.STATUS_IN_PROGRESS, orders.STATUS_INACTIVE }, status, false) || !orders.exists(order_id_)) return;
 		
 		orders.update_status(order_id_, status);	
 	}
@@ -48,7 +48,7 @@ abstract class async_orders extends parent_static
 			else if (sync_orders.is_inactive(order_id, orders_)) status2 = orders.STATUS_INACTIVE;
 			else if (orders_.containsKey(order_id) && !external_ib.orders.status_in_progress(orders_.get(order_id))) status2 = orders.get_status(orders_.get(order_id), true);
 			
-			if (!strings.is_ok(status2) || status2.equals(ib.orders.STATUS_INACTIVE) || strings.matches_any(status, new String[] { status2, orders.STATUS_FILLED }, false)) continue;
+			if (!strings.is_ok(status2) || status2.equals(ib.orders.STATUS_INACTIVE) || strings.matches_any(new String[] { status2, orders.STATUS_FILLED }, status, false)) continue;
 			
 			orders.update_status(order_id, status2);
 		}
@@ -63,7 +63,7 @@ abstract class async_orders extends parent_static
 			int order_id = order.getKey();
 			String status = orders.get_status(order.getValue(), true);
 			
-			if (active_.contains(order_id) || !strings.is_ok(status) || strings.matches_any(status, new String[] { orders.STATUS_IN_PROGRESS, orders.STATUS_INACTIVE }, false)) continue;
+			if (active_.contains(order_id) || !strings.is_ok(status) || strings.matches_any(new String[] { orders.STATUS_IN_PROGRESS, orders.STATUS_INACTIVE }, status, false)) continue;
 					
 			if (orders.is_order_id_main(order_id)) orders.update_status(order_id, status);
 			else if (orders.is_order_id_sec(order_id))

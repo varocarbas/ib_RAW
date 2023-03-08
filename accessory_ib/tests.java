@@ -14,12 +14,10 @@ import db_ib.common;
 import ib.apps;
 import ib.basic;
 import ib.conn;
-import ib.market;
 import ib.market_quicker;
 import ib.orders;
 import ib.remote;
 import ib.sync;
-import ib.watchlist;
 import ib.watchlist_quicker;
 
 public class tests extends parent_tests 
@@ -127,8 +125,6 @@ public class tests extends parent_tests
 	{
 		HashMap<String, HashMap<String, Boolean>> outputs = new HashMap<String, HashMap<String, Boolean>>();
 
-		outputs = run_data_market(outputs);
-		outputs = run_data_watchlist(outputs);
 		outputs = run_data_watchlist_quicker(outputs);
 		outputs = run_data_market_quicker(outputs);
 		
@@ -478,101 +474,6 @@ public class tests extends parent_tests
 			update_screen(name0, false, 1);
 		}
 
-		return outputs;
-	}
-		
-	public static HashMap<String, HashMap<String, Boolean>> run_data_market(HashMap<String, HashMap<String, Boolean>> outputs_)
-	{
-		HashMap<String, HashMap<String, Boolean>> outputs = arrays.get_new_hashmap_xy(outputs_);
-		
-		Class<?> class0 = market.class;
-		String name0 = class0.getName();
-		
-		update_screen(name0, true, 1);
-
-		int pause1 = 5;
-		int pause2 = 2;
-		
-		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
-		String name = "start_snapshot";
-		
-		int symbol_i = 0;
-		ArrayList<Object> args = new ArrayList<Object>();
-		args.add(get_symbol(symbol_i).getKey());
-
-		boolean is_ok = _instance.run_method(class0, name, new Class<?>[] { String.class }, args, null);
-		output.put(name, is_ok);
-		
-		misc.pause_secs(pause1);
-
-		name = "start_stream";
-		
-		symbol_i++;
-		
-		args = new ArrayList<Object>();
-		args.add(get_symbol(symbol_i).getKey());
-
-		is_ok = _instance.run_method(class0, name, new Class<?>[] { String.class }, args, null);
-		output.put(name, is_ok);
-		
-		misc.pause_secs(pause1);
-
-		name = "stop_all";
-
-		is_ok = _instance.run_method(class0, name, null, null, null);
-		output.put(name, is_ok);
-		
-		misc.pause_secs(pause2);
-
-		outputs.put(name0, output);
-		
-		update_screen(name0, false, 1);		
-		
-		return outputs;
-	}
-
-	public static HashMap<String, HashMap<String, Boolean>> run_data_watchlist(HashMap<String, HashMap<String, Boolean>> outputs_)
-	{
-		HashMap<String, HashMap<String, Boolean>> outputs = arrays.get_new_hashmap_xy(outputs_);
-		
-		Class<?> class0 = watchlist.class;
-		String name0 = class0.getName();
-		
-		update_screen(name0, true, 1);
-
-		int pause1 = 5;
-		int pause2 = 2;
-		
-		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
-		String name = "add";
-		
-		String symbol = tests.get_symbol(0).getKey();
-		
-		ArrayList<Object> args = new ArrayList<Object>();
-		args.add(symbol);
-
-		boolean is_ok = _instance.run_method(class0, name, new Class<?>[] { String.class }, args, null);
-		
-		misc.pause_secs(pause1);
-		output.put(name, is_ok);
-
-		name = "remove";
-		
-		args = new ArrayList<Object>();
-		args.add(symbol);
-
-		is_ok = _instance.run_method(class0, name, new Class<?>[] { String.class }, args, null);
-		
-		misc.pause_secs(pause1);
-		output.put(name, is_ok);
-		
-		watchlist.remove_all();
-		misc.pause_secs(pause2);
-		
-		outputs.put(name0, output);
-		
-		update_screen(name0, false, 1);		
-		
 		return outputs;
 	}
 	

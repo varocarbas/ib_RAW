@@ -14,6 +14,8 @@ public abstract class async_data
 {
 	public static final String MAIN_SOURCE_HALTED = market.SOURCE;
 	
+	public static final String TIMESTAMP = db.FIELD_TIMESTAMP;
+	
 	public static final String ENABLED = common.FIELD_ENABLED;
 	public static final String SYMBOL = common.FIELD_SYMBOL;
 	public static final String PRICE = common.FIELD_PRICE;

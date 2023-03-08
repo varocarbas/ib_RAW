@@ -64,7 +64,16 @@ public abstract class async_data extends parent_static
 
 	private static HashMap<Integer, String> _fields = new HashMap<Integer, String>();
 
-	public static String get_symbol(int id_) { return get_string(id_, _symbols); }
+	public static String get_symbol(int id_) { return get_symbol(id_, false); }
+
+	public static String get_symbol(int id_, boolean quicker_too_) 
+	{ 
+		String output = get_string(id_, _symbols); 
+	
+		if (!strings.is_ok(output)) output = async_data_apps_quicker._get_symbol(id_, false);
+		
+		return output;
+	}
 	
 	static boolean start(String app_, String symbol_, String type_, int data_type_)
 	{

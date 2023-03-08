@@ -167,6 +167,8 @@ public abstract class common
 
 	public static String get_type(String key_, String root_) { return _keys.get_startup_type(key_, root_); }
 
+	public static void delete_symbol(String symbol_) { db_ib.common.delete_symbol(symbol_); }
+	
 	static String get_log_file_id(String id_) 
 	{
 		String output = apps.get_app_name();	

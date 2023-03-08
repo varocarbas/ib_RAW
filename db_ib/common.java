@@ -187,6 +187,10 @@ public abstract class common
 	
 	public static boolean is_enabled(String source_, String where_) { return (!arrays.value_exists(get_all_sources_enabled(), source_) || get_boolean(source_, FIELD_ENABLED, where_)); }
 
+	public static void delete_symbol(String symbol_) { delete_symbol(SOURCE_MARKET, symbol_); }
+	
+	public static void delete_symbol(String source_, String symbol_) { db_common.delete(source_, get_where_symbol(source_, symbol_)); }
+	
 	public static String get_string(String source_, String field_, String where_) { return db_common.get_string(source_, field_, where_, DEFAULT_WRONG_STRING, db_common.DEFAULT_IS_FIELD, db_common.is_quick(source_)); }
 
 	public static int get_int(String source_, String field_, String where_) { return db_common.get_int(source_, field_, where_, DEFAULT_WRONG_INT, db_common.DEFAULT_IS_FIELD, db_common.is_quick(source_)); }

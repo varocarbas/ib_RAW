@@ -212,11 +212,11 @@ public abstract class conn extends parent_static
 	
 	static boolean type_is_real() { return type_is_real(get_conn_type()); }
 	
-	static boolean type_is_real(String type_) { return (strings.matches_any(type_, new String[] { TYPE_TWS_REAL, TYPE_GATEWAY_REAL }, false)); }
+	static boolean type_is_real(String type_) { return (strings.matches_any(new String[] { TYPE_TWS_REAL, TYPE_GATEWAY_REAL }, type_, false)); }
 
 	private static boolean type_is_gateway() { return type_is_gateway(get_conn_type()); }
 	
-	private static boolean type_is_gateway(String type_) { return (strings.matches_any(type_, new String[] { TYPE_GATEWAY_PAPER, TYPE_GATEWAY_REAL }, false)); }
+	private static boolean type_is_gateway(String type_) { return (strings.matches_any(new String[] { TYPE_GATEWAY_PAPER, TYPE_GATEWAY_REAL }, type_, false)); }
 	
 	private static void update_port() { update_port(get_conn_type()); }
 	

@@ -139,6 +139,8 @@ public class _order extends parent
 		return true;
 	}
 	
+	public String serialise() { return toString(); }
+	
 	public String toString()
 	{
 		if (!is_ok(_type_place, _symbol, _quantity, _stop, _start, _start2, _id_main)) return strings.DEFAULT;

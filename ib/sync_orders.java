@@ -130,7 +130,7 @@ abstract class sync_orders extends parent_static
 		{
 			String status2 = ib.orders.get_status((String)arrays.get_value(orders_, _order.get_id_sec(order_id_main_)), true);
 			
-			is_filled = (strings.is_ok(status2) && !strings.matches_any(status2, new String[] { ib.orders.STATUS_FILLED, ib.orders.STATUS_INACTIVE }, false));
+			is_filled = (strings.is_ok(status2) && !strings.matches_any(new String[] { ib.orders.STATUS_FILLED, ib.orders.STATUS_INACTIVE }, status2, false));
 		} 
 				
 		if (is_filled) 

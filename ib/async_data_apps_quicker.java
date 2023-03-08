@@ -338,48 +338,48 @@ abstract class async_data_apps_quicker extends parent_static
 	{
 		if (COLS != null && !force_population_) return;
 
+		async_data_cache_quicker.COLS = new String[0];
+		
 		int[] fields_ib = null;
-
-		async_data_quicker.DB_CACHE_COLS = new String[0];
 		
 		if (APP.equals(async_data_watchlist_quicker._APP)) 
 		{	
 			async_data_watchlist_quicker.COL_FLU = db_quick.get_col(SOURCE, db_ib.watchlist.FLU);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_watchlist_quicker.COL_FLU);
-
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_watchlist_quicker.COL_FLU);
+			
 			async_data_watchlist_quicker.COL_FLUS_PRICE = db_quick.get_col(SOURCE, db_ib.watchlist.FLUS_PRICE);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_watchlist_quicker.COL_FLUS_PRICE);
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_watchlist_quicker.COL_FLUS_PRICE);
 
 			async_data_watchlist_quicker.COL_FLU2 = db_quick.get_col(SOURCE, db_ib.watchlist.FLU2);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_watchlist_quicker.COL_FLU2);
-
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_watchlist_quicker.COL_FLU2);
+			
 			async_data_watchlist_quicker.COL_FLU2_MIN = db_quick.get_col(SOURCE, db_ib.watchlist.FLU2_MIN);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_watchlist_quicker.COL_FLU2_MIN);
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_watchlist_quicker.COL_FLU2_MIN);
 
 			async_data_watchlist_quicker.COL_FLU2_MAX = db_quick.get_col(SOURCE, db_ib.watchlist.FLU2_MAX);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_watchlist_quicker.COL_FLU2_MAX);
-
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_watchlist_quicker.COL_FLU2_MAX);
+			
 			async_data_watchlist_quicker.COL_PRICE_INI = db_quick.get_col(SOURCE, db_ib.watchlist.PRICE_INI);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_watchlist_quicker.COL_PRICE_INI);
-
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_watchlist_quicker.COL_PRICE_INI);
+			
 			async_data_watchlist_quicker.COL_PRICE_MIN = db_quick.get_col(SOURCE, db_ib.watchlist.PRICE_MIN);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_watchlist_quicker.COL_PRICE_MIN);
-
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_watchlist_quicker.COL_PRICE_MIN);
+			
 			async_data_watchlist_quicker.COL_PRICE_MAX = db_quick.get_col(SOURCE, db_ib.watchlist.PRICE_MAX);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_watchlist_quicker.COL_PRICE_MAX);
-
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_watchlist_quicker.COL_PRICE_MAX);
+			
 			async_data_watchlist_quicker.COL_VOLUME_INI = db_quick.get_col(SOURCE, db_ib.watchlist.VOLUME_INI);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_watchlist_quicker.COL_VOLUME_INI);
-
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_watchlist_quicker.COL_VOLUME_INI);
+			
 			async_data_watchlist_quicker.COL_VOLUME_MIN = db_quick.get_col(SOURCE, db_ib.watchlist.VOLUME_MIN);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_watchlist_quicker.COL_VOLUME_MIN);
-
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_watchlist_quicker.COL_VOLUME_MIN);
+			
 			async_data_watchlist_quicker.COL_VOLUME_MAX = db_quick.get_col(SOURCE, db_ib.watchlist.VOLUME_MAX);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_watchlist_quicker.COL_VOLUME_MAX);
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_watchlist_quicker.COL_VOLUME_MAX);
 
 			async_data_watchlist_quicker.COL_VAR_TOT = db_quick.get_col(SOURCE, db_ib.watchlist.VAR_TOT);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_watchlist_quicker.COL_VAR_TOT);
-
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_watchlist_quicker.COL_VAR_TOT);
+			
 			fields_ib = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.VOLUME_IB };
 			
 			async_data_watchlist_quicker.FIELDS_IB = arrays_quick.get_new(fields_ib);
@@ -412,27 +412,30 @@ abstract class async_data_apps_quicker extends parent_static
 		}
 
 		async_data_quicker.COL_SYMBOL = db_quick.get_col(SOURCE, db_ib.async_data.SYMBOL);
-		async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_quicker.COL_SYMBOL);
+		async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_quicker.COL_SYMBOL);
 
+		async_data_quicker.COL_TIMESTAMP = db_quick.get_col(SOURCE, db_ib.async_data.TIMESTAMP);
+		async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_quicker.COL_TIMESTAMP);
+		
 		if (includes_time_elapsed())
 		{
-			async_data_quicker.COL_TIME_ELAPSED = db_quick.get_col(SOURCE, db_ib.async_data.TIME_ELAPSED);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_quicker.COL_TIME_ELAPSED);
+			async_data_quicker.COL_TIME_ELAPSED = db_quick.get_col(SOURCE, db_ib.async_data.TIME_ELAPSED);			
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_quicker.COL_TIME_ELAPSED);
 			
 			async_data_quicker.COL_ELAPSED_INI = db_quick.get_col(SOURCE, db_ib.async_data.ELAPSED_INI);			
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_quicker.COL_ELAPSED_INI);			
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_quicker.COL_ELAPSED_INI);
 		}
 
-		if (includes_time())
+		if (includes_time()) 
 		{
 			async_data_quicker.COL_TIME = db_quick.get_col(SOURCE, db_ib.async_data.TIME);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, async_data_quicker.COL_TIME);
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, async_data_quicker.COL_TIME);
 		}
 		
-		if (includes_halted())
+		if (includes_halted()) 
 		{
-			COL_HALTED = db_quick.get_col(SOURCE, db_ib.async_data.HALTED);		
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, COL_HALTED);
+			COL_HALTED = db_quick.get_col(SOURCE, db_ib.async_data.HALTED);
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, COL_HALTED);
 		}
 		
 		VALS_SIZE = 0;
@@ -446,12 +449,12 @@ abstract class async_data_apps_quicker extends parent_static
 			String col = db_quick.get_col(SOURCE, field);
 			
 			COLS = arrays_quick.add(COLS, field_ib, col);
-			async_data_quicker.DB_CACHE_COLS = arrays_quick.add(async_data_quicker.DB_CACHE_COLS, col);
+			async_data_cache_quicker.COLS = arrays_quick.add(async_data_cache_quicker.COLS, col);
 			
 			if (field_ib >= VALS_SIZE) VALS_SIZE = field_ib + 1;
 		}
-
-		async_data_quicker.populate_db_cache();
+		
+		async_data_cache_quicker.populate(SOURCE);
 		
 		if (lock_) __unlock();
 	}	

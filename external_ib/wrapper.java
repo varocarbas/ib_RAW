@@ -72,16 +72,16 @@ public class wrapper implements EWrapper
 	}
 
 	@Override
-	public void tickPrice(int id_, int field_ib_, double price_, TickAttrib attribs_) { common_wrapper._tick_price(id_, field_ib_, price_); }
+	public void tickPrice(int id_, int field_ib_, double price_, TickAttrib attribs_) { common_wrapper.__tick_price(id_, field_ib_, price_); }
 
 	@Override
-	public void tickSize(int id_, int field_ib_, int size_) { common_wrapper._tick_size(id_, field_ib_, size_); }
+	public void tickSize(int id_, int field_ib_, int size_) { common_wrapper.__tick_size(id_, field_ib_, size_); }
 
 	@Override
-	public void tickGeneric(int id_, int tick_, double value_) { common_wrapper._tick_generic(id_, tick_, value_); }
+	public void tickGeneric(int id_, int tick_, double value_) { common_wrapper.__tick_generic(id_, tick_, value_); }
 
 	@Override
-	public void tickSnapshotEnd(int id_) { common_wrapper._tick_snapshot_end(id_); }
+	public void tickSnapshotEnd(int id_) { common_wrapper.__tick_snapshot_end(id_); }
 
 	@Override
 	public void error(int id_, int code_, String message_) { common_wrapper.error(id_, code_, message_); }
