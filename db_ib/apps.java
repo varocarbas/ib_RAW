@@ -54,9 +54,9 @@ public abstract class apps
 
 	public static String get_additional() { return common.get_string(SOURCE, ADDITIONAL, get_where_app()); }
 	
-	public static boolean is_running(String app_) { return is_common(ib.apps.STATUS_RUNNING, app_); }
+	public static boolean is_running(String app_) { return apps_cache.is_running(app_); }
 	
-	public static boolean is_stopped(String app_) { return is_common(ib.apps.STATUS_STOPPED, app_); }
+	public static boolean is_stopped(String app_) { return  apps_cache.is_stopped(app_); }
 	
 	public static boolean is_connected(String app_) { return db_common.exists(SOURCE, db_common.join_wheres(get_where_app(app_), get_where_connected(true))); }
 	
@@ -159,8 +159,6 @@ public abstract class apps
 
 	public static String get_status_type(String status_key_) { return ib.apps.get_status_type(status_key_); }
 	
-	private static boolean is_common(String status_, String app_) { return db_common.exists(SOURCE, db_common.join_wheres(get_where_app(app_), get_where_status(status_))); }
-
 	private static boolean update(String field_, Object val_) { return update(field_, val_, ini_apps.get_app_name()); }
 
 	private static boolean update(String field_, Object val_, String app_) 
@@ -223,7 +221,7 @@ public abstract class apps
 
 	private static String get_where_app(String app_) 
 	{ 
-		String app = (strings.is_ok(app_) ? app_ : ini_apps.get_app_name());
+		String app = ib.apps.get_app(app_);
 				
 		return (strings.is_ok(app) ? common.get_where(SOURCE, APP, app, false) : strings.DEFAULT); 
 	}

@@ -1,30 +1,35 @@
 package ib;
 
 import accessory.arrays_quick;
+import accessory.db;
 import accessory.db_cache;
 import accessory.db_cache_mysql;
-import db_ib.cache;
 
 class async_data_cache_quicker 
-{
-	public static String[] COLS = null;
+{	
+	public static int _exists = db_cache.WRONG_ID;
+
+	private static String[] _cols = null;
 	
-	public static int EXISTS = db_cache.WRONG_ID;
+	public static boolean exists(String symbol_) { return db_cache_mysql.exists_simple(_exists, db_cache.add_changing_val(get_col_id(async_data_quicker._col_symbol), symbol_)); }
 	
-	public static boolean exists(String symbol_) { return db_cache_mysql.exists_simple(EXISTS, cache.add_changing_val(get_col_id(async_data_quicker.COL_SYMBOL), symbol_)); }
-	
-	public static void populate(String source_) { add_exists(source_); }
+	public static void populate(String source_) 
+	{ 
+		_cols = db.get_cols(source_);
+		
+		add_exists(source_); 
+	}
 	
 	private static void add_exists(String source_)
 	{
-		String col = async_data_quicker.COL_SYMBOL;
+		String col = async_data_quicker._col_symbol;
 		
-		String where = cache.get_variable(source_, col) + "=" + cache.get_value(source_);
+		String where = db_cache.get_variable(source_, col) + "=" + db_cache.get_value(source_);
 		
-		String query = cache.get_query_exists(source_, where);
+		String query = db_cache.get_query_select_count(source_, where);
 		
-		EXISTS = cache.add_query(source_, query, col, get_col_id(col), true);
+		_exists = db_cache.add_query(source_, query, col, get_col_id(col), true);
 	}
 	
-	private static int get_col_id(String col_) { return arrays_quick.get_i(COLS, col_); }
+	private static int get_col_id(String col_) { return arrays_quick.get_i(_cols, col_); }
 }

@@ -31,11 +31,11 @@ abstract class sync_orders extends parent_static
 	
 	public static boolean __update(String symbol_, String type_, double val_) { return update(__get_order(symbol_), orders.check_update(type_), val_); }
 
-	public static boolean update(_order order_, String type_, double val_) { return ((order_ != null && strings.is_ok(type_)) ? place_update(order_, type_, val_) : false); }
+	public static boolean update(_order order_, String type_, double val_) { return ((order_ != null && strings.is_ok(type_)) ? _place_update(order_, type_, val_) : false); }
 
-	public static boolean place(String type_place_, String symbol_, double quantity_, double stop_, double start_) { return place(type_place_, symbol_, quantity_, stop_, start_, common.WRONG_PRICE); }
+	public static boolean _place(String type_place_, String symbol_, double quantity_, double stop_, double start_) { return _place(type_place_, symbol_, quantity_, stop_, start_, common.WRONG_PRICE); }
 
-	public static boolean place(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_) { return (orders.is_inactive(symbol_) ? place_update(new _order(type_place_, symbol_, quantity_, stop_, start_, start2_)) : false); }
+	public static boolean _place(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_) { return (orders.is_inactive(symbol_) ? _place_update(new _order(type_place_, symbol_, quantity_, stop_, start_, start2_)) : false); }
 
 	public static _order __get_order(int id_main_) { return __get_order(id_main_, true); }
 
@@ -46,9 +46,9 @@ abstract class sync_orders extends parent_static
 		return db_ib.orders.get_to_order(id_main_);
 	}
 
-	public static boolean place_update(_order order_) { return place_update(order_, null, common.WRONG_VALUE); }
+	public static boolean _place_update(_order order_) { return _place_update(order_, null, common.WRONG_VALUE); }
 
-	public static boolean place_update(_order order_, String update_type_, double update_val_) 
+	public static boolean _place_update(_order order_, String update_type_, double update_val_) 
 	{
 		boolean output = false;
 		if (!_order.is_ok(order_)) return output;
@@ -97,7 +97,12 @@ abstract class sync_orders extends parent_static
 		if (is_update) update_order(main, update_val_, orders.is_update_market(update_type_), update_type_);
 		else
 		{
-			if (!sync.wait_orders(main, orders.PLACE)) output = !cancel(main);
+			if (!sync.wait_orders(main, orders.PLACE)) 
+			{
+				output = false;
+				
+				if (!orders.__cancel(main)) output = orders.is_active(main);
+			}
 			
 			if (output) add_order(order_);
 		}

@@ -130,7 +130,7 @@ abstract class remote_execute
 		_order order = new _order(type_place_, symbol_, quantity_, stop_, start_, start2_);
 		if (!order.is_ok()) return false;
 
-		boolean is_ok = sync_orders.place_update(order);
+		boolean is_ok = sync_orders._place_update(order);
 
 		Object vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_MAIN, order.get_id_main(), null);
 		vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_SEC, order.get_id_sec(), vals);
@@ -174,7 +174,7 @@ abstract class remote_execute
 		
 		vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ERROR, "", vals);
 
-		is_ok = sync_orders.place_update(order, type_update, val_);
+		is_ok = sync_orders._place_update(order, type_update, val_);
 		vals = db_ib.remote.get_vals_common(db_ib.remote.get_status2_key_execute(is_ok), vals);
 			
 		db_ib.remote.update(request_, vals);

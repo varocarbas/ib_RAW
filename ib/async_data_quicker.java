@@ -41,11 +41,11 @@ public class async_data_quicker extends parent_static
 	static final int ASK_SIZE_IB = external_ib.data.TICK_ASK_SIZE;
 	static final int BID_SIZE_IB = external_ib.data.TICK_BID_SIZE;
 
-	static String COL_SYMBOL = null;
-	static String COL_TIME = null;
-	static String COL_TIME_ELAPSED = null;
-	static String COL_ELAPSED_INI = null;
-	static String COL_TIMESTAMP = null;
+	static String _col_symbol = null;
+	static String _col_time = null;
+	static String _col_time_elapsed = null;
+	static String _col_elapsed_ini = null;
+	static String _col_timestamp = null;
 	
 	private static final long MIN_SECS_HALT = MIN_SECS_HALT_BASIC + 60l;
 	
@@ -255,7 +255,7 @@ public class async_data_quicker extends parent_static
 		if (strings.is_ok(col_ini)) ini = db_common.get_long(source_, col_ini, db_ib.common.get_where_symbol(source_, symbol_), dates.ELAPSED_START, false, true);
 		else
 		{			
-			col_ini = COL_ELAPSED_INI;
+			col_ini = _col_elapsed_ini;
 
 			ini = db_ib.async_data.get_elapsed_ini(source_, symbol_);
 		}
@@ -430,10 +430,10 @@ public class async_data_quicker extends parent_static
 		if (async_data_apps_quicker.includes_time_elapsed())
 		{
 			String val = get_time_elapsed(source, symbol_);
-			if (strings.is_ok(val)) vals.put(COL_TIME_ELAPSED, val);				
+			if (strings.is_ok(val)) vals.put(_col_time_elapsed, val);				
 		}
 						
-		if (async_data_apps_quicker.includes_time()) vals.put(COL_TIME, get_time());
+		if (async_data_apps_quicker.includes_time()) vals.put(_col_time, get_time());
 	
 		return vals;
 	}

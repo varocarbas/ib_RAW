@@ -1,71 +1,71 @@
 package db_ib;
 
+import accessory.arrays_quick;
 import accessory.db;
 import accessory.db_cache;
 import accessory.db_cache_mysql;
 
 abstract class apps_cache 
 {
-	private static String[] COLS = null;
-
-	private static String COL_APP = null;
-	private static String COL_STATUS = null;
+	private static String[] _cols = null;
 	
 	public static int IS_RUNNING = db_cache.WRONG_ID;
+	public static int IS_STOPPED = db_cache.WRONG_ID;
 	
-	public static boolean is_running(String app_) 
-	{ 
-		start(app_);
-		
-		return db_cache_mysql.exists_simple(IS_RUNNING, null);
+	public static boolean is_running(String app_) { return is_common(app_, true); }
+	
+	public static boolean is_stopped(String app_) { return is_common(app_, false); }
 
-		//return db_cache_mysql.exists_simple(IS_RUNNING, cache.add_changing_val(get_col_id(COL_APP), app_));
+	public static void reset_ids() { populate(true); }
+	
+	private static boolean is_common(String app_, boolean is_running_) 
+	{ 
+		populate(false);
+
+		int id = (is_running_ ? IS_RUNNING : IS_STOPPED);
+		
+		int col_id = get_col_id(db.get_col(apps.SOURCE, apps.APP));
+		String col_val = ib.apps.get_app(app_);
+		
+		return db_cache_mysql.exists_simple(id, db_cache.add_changing_val(col_id, col_val));
 	}
 	
-	private static void start(String app_)
+	private static void populate(boolean force_population_)
 	{
-		if (COLS != null) return;
+		if (!force_population_ && _cols != null) return;
+
+		_cols = db.get_cols(apps.SOURCE);
 		
-		populate_cols();
-		
-		add_queries(app_);
+		add_queries();
 	}
 	
-	private static void populate_cols()
+	private static void add_queries()
 	{
-		String[] fields = new String[] { apps.APP, apps.STATUS };
+		add_is_running();
 		
-		int tot = fields.length;
-		
-		COLS = new String[tot];
-		
-		for (int i = 0; i < tot; i++) 
-		{ 
-			String field = fields[i];
-			String col = db.get_col(apps.SOURCE, field); 
-			
-			if (field.equals(apps.APP)) COL_APP = col;
-			else if (field.equals(apps.STATUS)) COL_STATUS = col;
-			
-			COLS[i] = col; 
-		}
+		add_is_stopped();
 	}
 	
-	private static void add_queries(String app_)
-	{
-		add_is_running(app_);
-	}
+	private static void add_is_running() { add_is_common(true); }
 	
-	private static void add_is_running(String app_)
+	private static void add_is_stopped() { add_is_common(false); }
+	
+	private static void add_is_common(boolean is_running_)
 	{
 		String source = apps.SOURCE;
 		
-		String where = cache.get_variable(source, COL_APP) + "=" + cache.get_value(source, app_);
+		String col = db.get_col(source, apps.APP);
 		
-		where += " AND " + cache.get_variable(source, COL_STATUS) + "=" + cache.get_value(source, apps.store_status_type(ib.apps.STATUS_RUNNING));
+		String where = db_cache.get_variable(source, col) + "=" + db_cache.get_value(source);
+		where += " AND " + db_cache.get_variable(source, db.get_col(source, apps.STATUS)) + "=" + db_cache.get_value(source, apps.store_status_type((is_running_ ? ib.apps.STATUS_RUNNING : ib.apps.STATUS_STOPPED)));
 		
-		String query = cache.get_query_exists(source, where);
+		String query = db_cache.get_query_select_count(source, where);
 		
-		IS_RUNNING = cache.add_query(source, query, true);		
+		int id = db_cache.add_query(source, query, col, get_col_id(col), true);
+		
+		if (is_running_) IS_RUNNING = id;
+		else IS_STOPPED = id;
 	}
+	
+	private static int get_col_id(String col_) { return arrays_quick.get_i(_cols, col_); }
 }

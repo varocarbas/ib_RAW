@@ -174,11 +174,11 @@ public class tests extends parent_tests
 		Object target = true;
 		
 		HashMap<String, String> items = new HashMap<String, String>();
-		items.put(orders.PLACE_MARKET, "place_market");
-		items.put(orders.PLACE_STOP, "place_stop");
-		items.put(orders.PLACE_LIMIT, "place_limit");
-		items.put(orders.PLACE_STOP_LIMIT, "place_stop_limit");
-
+		items.put(orders.PLACE_MARKET, "_place_market");
+		items.put(orders.PLACE_STOP, "_place_stop");
+		items.put(orders.PLACE_LIMIT, "_place_limit");
+		items.put(orders.PLACE_STOP_LIMIT, "_place_stop_limit");
+		
 		double stop_new = numbers.apply_perc(stop, -2, true);
 		double start_new = numbers.apply_perc(start, 3, true);
 		double start2_new = numbers.apply_perc(start2, 2, true);
@@ -199,12 +199,12 @@ public class tests extends parent_tests
 				
 			boolean is_ok = false;
 						
-			if (name.equals("place_stop_limit")) 
+			if (name.equals(items.get(orders.PLACE_STOP_LIMIT))) 
 			{				
 				args.add(start2);	
 				params = new Class<?>[] { String.class, double.class, double.class, double.class, double.class };
 			}
-			else if (name.equals("place_market")) 
+			else if (name.equals(items.get(orders.PLACE_MARKET))) 
 			{
 				args.remove(3);
 				params = new Class<?>[] { String.class, double.class, double.class };

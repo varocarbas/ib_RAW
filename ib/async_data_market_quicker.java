@@ -11,7 +11,7 @@ abstract class async_data_market_quicker extends parent_static
 	public static final String SOURCE = db_ib.market.SOURCE;
 	public static final int MAX_SIMULTANEOUS_SYMBOLS = 5000;
 	
-	static final int SIZE_GLOBALS = 1000;
+	static final int SIZE_GLOBALS = 2000;
 	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
 	static final boolean INCLUDES_TIME = true;
 	static final boolean INCLUDES_TIME_ELAPSED = false;

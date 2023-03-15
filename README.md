@@ -15,6 +15,7 @@ Articles about this code (["Everything is very normal"](https://www.codeproject.
 - [Types and classes -- accessory_java](https://gist.github.com/varocarbas/dbc87154b96ef39b10cb7ce768794e66).
 - [Arrays -- accessory_java](https://gist.github.com/varocarbas/a234af99ff7f0b6862ae99726b5e232a).
 - [Database management (I): general approach -- accessory_java](https://gist.github.com/varocarbas/6d36332732bf30cda490fab075ef3ab9).
+- [Database management (II): main implementations -- accessory_java](https://gist.github.com/varocarbas/3e9c52fc4131b1c6f4b6bc0ef6b701ea).
 
 # \_RAW repositories
 All the \_RAW repositories include code which I use for personal purposes. The overall structure and used conventions are assumed to be more than enough for an experienced programmer to adequately understand and appreciate everything. 
