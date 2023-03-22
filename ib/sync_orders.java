@@ -74,16 +74,7 @@ abstract class sync_orders extends parent_static
 			Order order = (is_update ? external_ib.orders.get_order_update(order_, update_type_, update_val_, is_main) : external_ib.orders.get_order_new(order_, is_main));
 			if (order == null) return output;
 
-			boolean is_ok = true;
-
-			if (is_update) is_ok = sync.update_order(id, contract, order);
-			else 
-			{
-				is_ok = sync.place_order(id, contract, order);
-				if (!is_ok) return output;
-			}
-
-			if (!is_ok)
+			if (!(is_update ? sync.update_order(id, contract, order) : sync.place_order(id, contract, order)))
 			{
 				_last_id_main = common.WRONG_ORDER_ID;
 				_last_id_sec = common.WRONG_ORDER_ID;
@@ -94,22 +85,21 @@ abstract class sync_orders extends parent_static
 		
 		output = true;
 		
-		if (is_update) update_order(main, update_val_, orders.is_update_market(update_type_), update_type_);
+		if (!sync.wait_orders(main, (is_update ? orders.UPDATE : orders.PLACE))) 
+		{
+			output = false;
+			
+			if (!is_update && !orders.__cancel(main)) output = orders.is_active(main);
+		}
 		else
 		{
-			if (!sync.wait_orders(main, orders.PLACE)) 
-			{
-				output = false;
-				
-				if (!orders.__cancel(main)) output = orders.is_active(main);
-			}
-			
-			if (output) add_order(order_);
+			if (is_update) update_order(main, update_val_, orders.is_update_market(update_type_), update_type_);
+			else add_order(order_);
 		}
 
 		return output;
 	}
-
+	
 	public static boolean is_filled(int order_id_main_, HashMap<Integer, String> orders_) { return is_common(order_id_main_, orders.STATUS_FILLED, orders_); }	
 
 	public static boolean is_submitted(int order_id_main_, HashMap<Integer, String> orders_) { return is_common(order_id_main_, orders.STATUS_SUBMITTED, orders_); }
@@ -159,19 +149,19 @@ abstract class sync_orders extends parent_static
 
 	private static void add_order(_order order_) { db_ib.orders.insert_update(order_); }
 
-	private static boolean update_order(int id_, double val_, boolean is_market_, String type_)
+	private static void update_order(int id_, double val_, boolean is_market_, String type_)
 	{
 		String type = orders.check_update(type_);
-		if (!strings.is_ok(type)) return false;
+		if (!strings.is_ok(type)) return;
 		
 		_order order = db_ib.orders.get_to_order(id_);
-		if (order == null) return false;
+		if (order == null) return;
 
 		if (is_market_) order.update_type(_order.TYPE_MARKET, orders.is_update_start_start2(type));
 		else if (type.equals(orders.UPDATE_STOP_VALUE)) order.update_stop(val_);
 		else if (type.equals(orders.UPDATE_START_VALUE)) order.update_start(val_);
 		else if (type.equals(orders.UPDATE_START2_VALUE)) order.update_start2(val_);
 		
-		return db_ib.orders.update(order);
+		db_ib.orders.update(order);
 	}
 }

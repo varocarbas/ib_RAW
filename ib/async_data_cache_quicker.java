@@ -24,11 +24,9 @@ class async_data_cache_quicker
 	{
 		String col = async_data_quicker._col_symbol;
 		
-		String where = db_cache.get_variable(source_, col) + "=" + db_cache.get_value(source_);
-		
-		String query = db_cache.get_query_select_count(source_, where);
-		
-		_exists = db_cache.add_query(source_, query, col, get_col_id(col), true);
+		int col_id = get_col_id(col);
+
+		_exists = db_cache_mysql.add_select_count(source_, col, col_id, true);
 	}
 	
 	private static int get_col_id(String col_) { return arrays_quick.get_i(_cols, col_); }

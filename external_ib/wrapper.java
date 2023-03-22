@@ -34,7 +34,8 @@ import com.ib.client.TickAttribLast;
 import accessory.strings;
 import accessory_ib.logs;
 import ib.common;
-import ib.common_wrapper;
+import ib.wrapper_errors;
+import ib.wrapper_main;
 
 //Implementation of the IB's EWrapper interface (https://interactivebrokers.github.io/tws-api/interfaceIBApi_1_1EWrapper.html).
 
@@ -58,45 +59,45 @@ public class wrapper implements EWrapper
 	public int get_current_order_id() { return currentOrderId; }
 
 	@Override
-	public void accountSummary(int id_, String account_, String tag_, String value_, String currency_) { common_wrapper.account_summary(id_, account_, tag_, value_, currency_); }
+	public void accountSummary(int id_, String account_, String tag_, String value_, String currency_) { wrapper_main.account_summary(id_, account_, tag_, value_, currency_); }
 
 	@Override
-	public void accountSummaryEnd(int id_) { common_wrapper.account_summary_end(id_); }
+	public void accountSummaryEnd(int id_) { wrapper_main.account_summary_end(id_); }
 
 	@Override
 	public void nextValidId(int id_) 
 	{
 		currentOrderId = id_;
 
-		common_wrapper.next_valid_id(id_);
+		wrapper_main.next_valid_id(id_);
 	}
 
 	@Override
-	public void tickPrice(int id_, int field_ib_, double price_, TickAttrib attribs_) { common_wrapper.__tick_price(id_, field_ib_, price_); }
+	public void tickPrice(int id_, int field_ib_, double price_, TickAttrib attribs_) { wrapper_main.__tick_price(id_, field_ib_, price_); }
 
 	@Override
-	public void tickSize(int id_, int field_ib_, int size_) { common_wrapper.__tick_size(id_, field_ib_, size_); }
+	public void tickSize(int id_, int field_ib_, int size_) { wrapper_main.__tick_size(id_, field_ib_, size_); }
 
 	@Override
-	public void tickGeneric(int id_, int tick_, double value_) { common_wrapper.__tick_generic(id_, tick_, value_); }
+	public void tickGeneric(int id_, int tick_, double value_) { wrapper_main.__tick_generic(id_, tick_, value_); }
 
 	@Override
-	public void tickSnapshotEnd(int id_) { common_wrapper.__tick_snapshot_end(id_); }
+	public void tickSnapshotEnd(int id_) { wrapper_main.__tick_snapshot_end(id_); }
 
 	@Override
-	public void error(int id_, int code_, String message_) { common_wrapper.error(id_, code_, message_); }
+	public void error(int id_, int code_, String message_) { wrapper_errors.manage(id_, code_, message_); }
 
 	@Override
-	public void orderStatus(int order_id_, String status_ib_, double filled_, double remaining_, double avg_fill_price_, int perm_id_, int parent_id_, double last_fill_price_, int client_id_, String why_held_, double mkt_cap_price_) { common_wrapper.order_status(order_id_, status_ib_); }
+	public void orderStatus(int order_id_, String status_ib_, double filled_, double remaining_, double avg_fill_price_, int perm_id_, int parent_id_, double last_fill_price_, int client_id_, String why_held_, double mkt_cap_price_) { wrapper_main.order_status(order_id_, status_ib_); }
 
 	@Override
-	public void openOrderEnd() { common_wrapper.open_order_end(); }
+	public void openOrderEnd() { wrapper_main.open_order_end(); }
 
 	@Override
-	public void execDetails(int id_, Contract contract_, Execution execution_) { common_wrapper.__exec_details(id_, contract_, execution_); }
+	public void execDetails(int id_, Contract contract_, Execution execution_) { wrapper_main.__exec_details(id_, contract_, execution_); }
 
 	@Override
-	public void commissionReport(CommissionReport report_) { common_wrapper.__commission_report(report_); }
+	public void commissionReport(CommissionReport report_) { wrapper_main.__commission_report(report_); }
 	
 	@Override
 	public void connectAck() 

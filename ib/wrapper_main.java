@@ -4,10 +4,9 @@ import com.ib.client.CommissionReport;
 import com.ib.client.Contract;
 import com.ib.client.Execution;
 
-import accessory_ib.errors;
 import external_ib.calls;
 
-public abstract class common_wrapper
+public abstract class wrapper_main
 {
 	public static void account_summary(int id_, String account_, String tag_, String value_, String currency_) 
 	{ 
@@ -30,22 +29,13 @@ public abstract class common_wrapper
 		if (!sync.next_valid_id(id_)) conn._started = true;
 	}
 
-	public static void __tick_price(int id_, int field_ib_, double price_) { common_wrapper_quicker.__tick_price(id_, field_ib_, price_); }
+	public static void __tick_price(int id_, int field_ib_, double price_) { wrapper_ticks_quicker.__tick_price(id_, field_ib_, price_); }
 	
-	public static void __tick_size(int id_, int field_ib_, int size_) { common_wrapper_quicker.__tick_size(id_, field_ib_, size_); }
+	public static void __tick_size(int id_, int field_ib_, int size_) { wrapper_ticks_quicker.__tick_size(id_, field_ib_, size_); }
 	
-	public static void __tick_generic(int id_, int field_ib_, double value_) { common_wrapper_quicker.__tick_generic(id_, field_ib_, value_); }
+	public static void __tick_generic(int id_, int field_ib_, double value_) { wrapper_ticks_quicker.__tick_generic(id_, field_ib_, value_); }
 	
-	public static void __tick_snapshot_end(int id_) { common_wrapper_quicker.__tick_snapshot_end(id_); }	
-	
-	public static void error(int id_, int code_, String message_) 
-	{
-		boolean is_warning = external_ib.errors.is_warning(code_);
-		
-		if (!is_warning) sync.update_error_triggered(true);
-		
-		errors.wrapper_error(id_, code_, message_, is_warning); 
-	}
+	public static void __tick_snapshot_end(int id_) { wrapper_ticks_quicker.__tick_snapshot_end(id_); }	
 	
 	public static void order_status(int order_id_, String status_ib_) { orders.order_status(order_id_, status_ib_); }
 

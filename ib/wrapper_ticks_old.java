@@ -1,6 +1,6 @@
 package ib;
 
-abstract class common_wrapper_old 
+abstract class wrapper_ticks_old 
 {
 	public static void tick_price(int id_, int field_ib_, double price_) 
 	{ 

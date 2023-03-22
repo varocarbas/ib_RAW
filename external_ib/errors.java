@@ -25,12 +25,17 @@ public abstract class errors
 	public static final int ERROR_10186 = 10186; //Requested market data is not subscribed. Delayed market data is not enabled. See Market Data Types on how to enable delayed data.
 	public static final int ERROR_10197 = 10197; //Indicates that the user is logged into the paper account and live account simultaneously trying to request live market data using both the accounts. In such a scenario preference would be given to the live account, for more details please refer: https://ibkr.info/node/1719.
 
+	private static final int MIN = 100;
+	private static final int MAX = 10284;
+	
 	private static final int MIN_WARNING = 2000;
 	private static final int MAX_WARNING = 3000;
 	//---
 
 	//------
 
+	public static boolean is_ok(int code_) { return (code_ >= MIN && code_ <= MAX); }
+	
 	public static boolean is_warning(int code_) 
 	{ 
 		boolean is_warning = numbers.is_ok(code_, MIN_WARNING, MAX_WARNING); 

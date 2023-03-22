@@ -6,11 +6,11 @@ import accessory.db_cache;
 import accessory.db_cache_mysql;
 
 abstract class apps_cache 
-{
-	private static String[] _cols = null;
-	
+{	
 	public static int IS_RUNNING = db_cache.WRONG_ID;
 	public static int IS_STOPPED = db_cache.WRONG_ID;
+
+	private static String[] _cols = null;
 	
 	public static boolean is_running(String app_) { return is_common(app_, true); }
 	
@@ -26,7 +26,7 @@ abstract class apps_cache
 		
 		int col_id = get_col_id(db.get_col(apps.SOURCE, apps.APP));
 		String col_val = ib.apps.get_app(app_);
-		
+
 		return db_cache_mysql.exists_simple(id, db_cache.add_changing_val(col_id, col_val));
 	}
 	
@@ -55,14 +55,12 @@ abstract class apps_cache
 		String source = apps.SOURCE;
 		
 		String col = db.get_col(source, apps.APP);
+		int col_id = get_col_id(col);
 		
-		String where = db_cache.get_variable(source, col) + "=" + db_cache.get_value(source);
-		where += " AND " + db_cache.get_variable(source, db.get_col(source, apps.STATUS)) + "=" + db_cache.get_value(source, apps.store_status_type((is_running_ ? ib.apps.STATUS_RUNNING : ib.apps.STATUS_STOPPED)));
+		String where = db_cache.get_variable(source, db.get_col(source, apps.STATUS)) + "=" + db_cache.get_value(source, apps.store_status_type((is_running_ ? ib.apps.STATUS_RUNNING : ib.apps.STATUS_STOPPED)));
 		
-		String query = db_cache.get_query_select_count(source, where);
-		
-		int id = db_cache.add_query(source, query, col, get_col_id(col), true);
-		
+		int id = db_cache_mysql.add_select_count(source, col, col_id, where, true);
+
 		if (is_running_) IS_RUNNING = id;
 		else IS_STOPPED = id;
 	}

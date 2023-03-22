@@ -1,6 +1,6 @@
 package ib;
 
-abstract class common_wrapper_quicker 
+abstract class wrapper_ticks_quicker 
 {
 	public static void __tick_price(int id_, int field_ib_, double price_) { async_data_quicker.__tick_price(id_, field_ib_, price_); }
 	
