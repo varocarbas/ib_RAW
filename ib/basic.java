@@ -75,18 +75,23 @@ public abstract class basic extends parent_static
 		return (!strings.is_ok(account_ib) || strings.are_equal(account_ib_, account_ib));
 	}
 
-	public static String get_encryption_id(String id_) 
+	public static String get_encryption_id(String id_) { return get_encryption_id(new String[] { id_ }); }
+	
+	public static String get_encryption_id(String[] ids_) 
 	{
 		String output = strings.DEFAULT;
 		
 		String temp = get_id_main();
 		if (strings.is_ok(temp)) output = temp;
 		
-		if (strings.is_ok(id_)) 
+		if (!arrays.is_ok(ids_)) return output;
+		
+		for (String id: ids_)
 		{
+			if (!strings.is_ok(id)) continue;
 			if (!output.equals(strings.DEFAULT)) output += SEPARATOR;
 			
-			output += id_;
+			output += id;				
 		}
 		
 		return output;

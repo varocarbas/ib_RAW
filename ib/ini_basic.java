@@ -21,7 +21,19 @@ public abstract class ini_basic
 
 		populate_user(user_);
 		
-		populate_account_ib(account_ib_);
+		populate_account_ib(get_account_ib(account_ib_));
+	}
+	
+	private static String get_account_ib(String account_ib_)
+	{
+		String account_ib = account_ib_;
+		
+		if (!strings.is_ok(account_ib))
+		{
+			
+		}
+		
+		return account_ib;
 	}
 	
 	private static String populate_user(String user_) 

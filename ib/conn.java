@@ -18,7 +18,7 @@ import external_ib.calls;
 import external_ib.wrapper;
 
 public abstract class conn extends parent_static 
-{	
+{		
 	public static final String TYPE = _types.CONN_TYPE;
 	public static final String TYPE_TWS_REAL = _types.CONN_TYPE_TWS_REAL;
 	public static final String TYPE_TWS_PAPER = _types.CONN_TYPE_TWS_PAPER;
@@ -58,6 +58,12 @@ public abstract class conn extends parent_static
 	private static final int PORT_GATEWAY_REAL = DEFAULT_PORT_GATEWAY_REAL;
 	private static final int PORT_GATEWAY_PAPER = DEFAULT_PORT_GATEWAY_PAPER;
 
+	private static final int IS_TEST_MAX_ATTEMPTS = 5;
+
+	private static final int DEFAULT_MAX_ATTEMPTS = numbers.MAX_INT;
+	private static final boolean DEFAULT_FORCE_RUNNING = true;
+	private static final boolean DEFAULT_IS_TEST = false;
+	
 	private static volatile boolean _is_connected = false;
 	private static volatile boolean _first_conn = false;
 
@@ -102,13 +108,18 @@ public abstract class conn extends parent_static
 		return _id;
 	}
 	
-	public static boolean start() { return start(get_conn_id(), get_conn_type(), true); }
+	public static boolean ib_is_ok(int id_, String type_) { return start(id_, type_, DEFAULT_FORCE_RUNNING, true); }
+	
+	public static boolean start() { return start(get_conn_id(), get_conn_type(), DEFAULT_FORCE_RUNNING, DEFAULT_IS_TEST); }
 
-	public static boolean start(int id_, String type_) { return start(id_, type_, true); }
+	public static boolean start(int id_, String type_) { return start(id_, type_, DEFAULT_FORCE_RUNNING, DEFAULT_IS_TEST); }
 		
-	public static boolean start(int id_, String type_, boolean force_running_)
+	public static boolean start(int id_, String type_, boolean force_running_, boolean is_test_)
 	{
-		update_is_connected(false);
+		boolean output = false;
+		
+		if (is_test_) wrapper_errors.log_errors(false);
+		else update_is_connected(false);
 		
 		String error = null;
 
@@ -119,7 +130,7 @@ public abstract class conn extends parent_static
 		{
 			errors.manage(error);
 
-			return false;
+			return output;
 		}
 		
 		_id = id_;
@@ -130,48 +141,70 @@ public abstract class conn extends parent_static
 		_wrapper = new wrapper();
 		_client = _wrapper.get_client();
 
-		return connect(force_running_);
+		output = connect(force_running_, is_test_);
+		
+		if (is_test_) wrapper_errors.log_errors(wrapper_errors.DEFAULT_LOG_ERRORS);
+		
+		return output;
 	}
 	
-	public static boolean connect() { return connect(true); }
+	public static boolean connect() { return connect(DEFAULT_FORCE_RUNNING, DEFAULT_IS_TEST); }
 	
-	public static boolean connect(boolean force_running_)
+	public static boolean connect(boolean force_running_, boolean is_test_)
 	{	
-		if (_wrapper == null || _client == null || !id_is_ok() || !type_is_ok() || !port_is_ok()) return start();
+		if (_wrapper == null || _client == null || !id_is_ok() || !type_is_ok() || !port_is_ok()) return start(get_conn_id(), get_conn_type(), force_running_, is_test_);
 		if (_is_connected) return true;
 		
-		update_is_connected(false);
-		
 		String status = null;
-		boolean check_running = check_running();
+		boolean check_running = false;
 		
-		if (!_first_conn && check_running && force_running_) 
+		if (!is_test_)
 		{
-			status = db_ib.apps.get_status();
+			update_is_connected(false);
 			
-			if (!strings.are_equal(status, ib.apps.STATUS_RUNNING)) 
+			check_running = check_running();
+			
+			if (!_first_conn && check_running && force_running_) 
 			{
-				db_ib.apps.update_status(ib.apps.STATUS_RUNNING);
+				status = db_ib.apps.get_status();
 				
-				if (!strings.is_ok(status)) status = ib.apps.STATUS_STOPPED;
-			}
-			else status = null;
-		}		
+				if (!strings.are_equal(status, ib.apps.STATUS_RUNNING)) 
+				{
+					db_ib.apps.update_status(ib.apps.STATUS_RUNNING);
+					
+					if (!strings.is_ok(status)) status = ib.apps.STATUS_STOPPED;
+				}
+				else status = null;
+			}					
+		}
 	
-		while (!_is_connected && (!check_running || apps.is_running()))
+		int count = 0;
+		int max = (is_test_ ? IS_TEST_MAX_ATTEMPTS : DEFAULT_MAX_ATTEMPTS); 
+		
+		while (!_is_connected && (is_test_ || !check_running || apps.is_running()))
 		{
-			connect_internal();	
-
-			if (_is_connected) break;
-			if (!_first_conn) misc.pause_secs(1);
+			count++;
+			
+			connect_internal();
+			
+			if (_is_connected || count > max) break;
+			
+			if (!_first_conn || is_test_) misc.pause_secs(1);
 			
 			update_port();
 		}
 		
-		if (_is_connected) apps.update_is_connected(true);
-		
-		if (status != null) db_ib.apps.update_status(status);
-		
+		if (is_test_) 
+		{
+			if (_is_connected) end();
+		}
+		else
+		{
+			if (_is_connected) apps.update_is_connected(true);
+			
+			if (status != null) db_ib.apps.update_status(status);			
+		}
+				
 		return _is_connected;
 	}
 
@@ -209,12 +242,22 @@ public abstract class conn extends parent_static
 		
 		return message;	
 	}
+
+	public static boolean encrypt_credentials_ib(String username_, String password_) { return apps_ib.encrypt_credentials(username_, password_); }
+
+	public static boolean encrypt_credentials_ib(boolean is_real_, String username_, String password_) { return apps_ib.encrypt_credentials(is_real_, username_, password_); }
 	
+	public static boolean encrypt_credentials_ib(boolean is_real_, String user_, String username_, String password_) { return apps_ib.encrypt_credentials(is_real_, user_, username_, password_); }
+	
+	public static boolean run_ib() { return apps_ib.run(); }
+	
+	public static boolean run_ib(String user_credentials_) { return apps_ib.run(user_credentials_); }
+
 	static boolean type_is_real() { return type_is_real(get_conn_type()); }
 	
 	static boolean type_is_real(String type_) { return (strings.matches_any(new String[] { TYPE_TWS_REAL, TYPE_GATEWAY_REAL }, type_, false)); }
 
-	private static boolean type_is_gateway() { return type_is_gateway(get_conn_type()); }
+	static boolean type_is_gateway() { return type_is_gateway(get_conn_type()); }
 	
 	private static boolean type_is_gateway(String type_) { return (strings.matches_any(new String[] { TYPE_GATEWAY_PAPER, TYPE_GATEWAY_REAL }, type_, false)); }
 	

@@ -3,14 +3,20 @@ package ib;
 import java.util.HashMap;
 
 import accessory._keys;
-import accessory.arrays;
 import accessory.misc;
 import accessory.strings;
 import accessory_ib.errors;
 
 public abstract class wrapper_errors 
 {
+	public static final boolean DEFAULT_LOG_ERRORS = true;
+	
 	private static volatile boolean _triggered = false;
+	private static volatile boolean _log_errors = DEFAULT_LOG_ERRORS;
+	
+	public static void log_errors(boolean log_errors_) { _log_errors = log_errors_; }
+	
+	public static boolean log_errors() { return _log_errors; }
 	
 	public static boolean triggered() 
 	{ 
@@ -27,7 +33,7 @@ public abstract class wrapper_errors
 	{
 		String message = (strings.is_ok(message_) ? message_ : strings.DEFAULT);
 		
-		if (external_ib.errors.is_warning(code_)) 
+		if (errors.is_warning(code_, message_)) 
 		{
 			if (common_xsync.req_id_is_ok(id_))
 			{
@@ -40,10 +46,13 @@ public abstract class wrapper_errors
 		else 
 		{
 			if (external_ib.errors.is_ok(code_)) _triggered = true;
+	
+			message = errors.get_message_common(message);
 			
 			HashMap<String, Object> info = get_error_info(id_, code_, message);
 			
-			errors.manage(errors.ERROR_GENERIC, errors.get_message_common((String)arrays.get_value(info, errors.MESSAGE)), info);			
+			if (_log_errors) errors.manage(errors.ERROR_GENERIC, message, info);
+			else errors.manage_warning(message);
 		}	
 	}
 	

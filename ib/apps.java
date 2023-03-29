@@ -130,7 +130,7 @@ public abstract class apps
 	public static String get_status_type(String status_key_) { return _keys.get_startup_type(status_key_, STATUS); }
 
 	public static String get_app(String app_) { return (strings.is_ok(app_) ? app_ : ini_apps.get_app_name()); }
-	
+
 	private static String get_app_name(boolean is_ini_) 
 	{
 		if (is_ini_) db_ib.apps.update_app_name(); 

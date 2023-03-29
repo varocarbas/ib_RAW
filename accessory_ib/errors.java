@@ -18,7 +18,7 @@ public abstract class errors
 	public static final String DEFAULT_WARNING = "WARNING";
 	public static final String DEFAULT_MESSAGE = accessory.errors.DEFAULT_MESSAGE;	
 
-	public static boolean is_warning(int code_) { return external_ib.errors.is_warning(code_); }
+	public static boolean is_warning(int code_, String message_) { return (external_ib.errors.is_warning(code_) || strings.contains("warning", message_, true)); }
 	
 	public static void manage(String type_, String message_) { manage(type_, get_message_common(message_), null); }
 	

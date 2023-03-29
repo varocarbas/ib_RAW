@@ -32,8 +32,11 @@ public class _ini_config extends parent_ini_config
 		String type = accessory._types.CONFIG_BASIC;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
+		
 		vals.put(basic.CONFIG_ID_MAIN, _defaults.ID_MAIN);
-
+		vals.put(paths.CONFIG_DIR_TWS, paths.get_default_dir(true));
+		vals.put(paths.CONFIG_DIR_GATEWAY, paths.get_default_dir(false));
+		
 		return populate(type, null, vals);
 	}
 

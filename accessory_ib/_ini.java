@@ -2,6 +2,7 @@ package accessory_ib;
 
 import java.util.HashMap;
 
+import accessory.crypto;
 import accessory.db;
 import accessory.generic;
 import accessory.numbers;
@@ -89,9 +90,9 @@ public class _ini extends parent_ini
 	{
 		if (_instance._populated) return;
 
-		String name = (String)_ini.get_info_val(info_, INFO_APP_NAME);
+		String name = (String)get_info_val(info_, INFO_APP_NAME);
 		
-		if (!accessory._ini.is_populated()) accessory._ini.start(name, (boolean)_ini.get_info_val(info_, INFO_INCLUDES_LEGACY));
+		if (!accessory._ini.is_populated()) accessory._ini.start(name, (boolean)get_info_val(info_, INFO_INCLUDES_LEGACY));
 			
 		_instance.populate_all(name);
 
@@ -107,8 +108,8 @@ public class _ini extends parent_ini
 		HashMap<String, Object> info = (info_ == null ? new HashMap<String, Object>() : new HashMap<String, Object>(info_));
 		HashMap<String, Object> dbs_setup = (dbs_setup_ == null ? new HashMap<String, Object>() : new HashMap<String, Object>(dbs_setup_));
 
-		String user = (String)_ini.get_info_val(info_, INFO_USER);
-		String name = (String)_ini.get_info_val(info_, INFO_APP_NAME);
+		String user = (String)get_info_val(info_, INFO_USER);
+		String name = (String)get_info_val(info_, INFO_APP_NAME);
 		
 		boolean update_dbs_user = false;
 		
@@ -119,7 +120,7 @@ public class _ini extends parent_ini
 			dbs_setup.put(DBS_SETUP_CREDENTIALS_USER, user);
 		}
 		
-		if (!accessory._ini.is_populated()) accessory._ini.start(name, (boolean)_ini.get_info_val(info, INFO_INCLUDES_LEGACY), dbs_setup);		
+		if (!accessory._ini.is_populated()) accessory._ini.start(name, (boolean)get_info_val(info, INFO_INCLUDES_LEGACY), dbs_setup);		
 		
 		_instance.populate_all(name, dbs_setup, types_to_ignore_); 
 
@@ -132,6 +133,8 @@ public class _ini extends parent_ini
 	
 	private static void populate_inis(HashMap<String, Object> info_) 
 	{
+		crypto.store_in_db();
+		
 		ini_common.start();
 		
 		ini_market.start();

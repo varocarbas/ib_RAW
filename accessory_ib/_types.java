@@ -10,6 +10,10 @@ public class _types extends parent_types
 	public static void populate() { _instance.populate_internal(); }
 	
 	public static final String CONFIG_BASIC_ID_MAIN = "config_basic_id_main";
+
+	public static final String CONFIG_BASIC_DIR_IB = "config_basic_dir_ib";
+	public static final String CONFIG_BASIC_DIR_IB_TWS = "config_basic_dir_ib_tws";
+	public static final String CONFIG_BASIC_DIR_IB_GATEWAY = "config_basic_dir_ib_gateway";
 	
 	public static final String CONFIG_ORDERS = "config_orders";
 	public static final String CONFIG_ORDERS_TIF = "config_orders_tif";
