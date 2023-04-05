@@ -243,16 +243,18 @@ public abstract class conn extends parent_static
 		return message;	
 	}
 
-	public static boolean encrypt_credentials_ib(String username_, String password_) { return apps_ib.encrypt_credentials(username_, password_); }
+	public static boolean encrypt_credentials_app(String username_, String password_) { return encrypt_credentials_app(type_is_real(), username_, password_); }
 
-	public static boolean encrypt_credentials_ib(boolean is_real_, String username_, String password_) { return apps_ib.encrypt_credentials(is_real_, username_, password_); }
+	public static boolean encrypt_credentials_app(boolean is_real_, String username_, String password_) { return encrypt_credentials_app(is_real_, basic.get_user(), username_, password_); }
 	
-	public static boolean encrypt_credentials_ib(boolean is_real_, String user_, String username_, String password_) { return apps_ib.encrypt_credentials(is_real_, user_, username_, password_); }
+	public static boolean encrypt_credentials_app(boolean is_real_, String user_, String username_, String password_) { return conn_apps.encrypt_credentials(is_real_, user_, username_, password_); }
 	
-	public static boolean run_ib() { return apps_ib.run(); }
+	public static boolean run_app() { return run_app(basic.get_user()); }
 	
-	public static boolean run_ib(String user_credentials_) { return apps_ib.run(user_credentials_); }
-
+	public static boolean run_app(String user_credentials_) { return run_app(type_is_gateway(), type_is_real(), user_credentials_); }
+	
+	public static boolean run_app(boolean is_gateway_, boolean is_real_, String user_credentials_) { return conn_apps.run(is_gateway_, is_real_, user_credentials_); }
+	
 	static boolean type_is_real() { return type_is_real(get_conn_type()); }
 	
 	static boolean type_is_real(String type_) { return (strings.matches_any(new String[] { TYPE_TWS_REAL, TYPE_GATEWAY_REAL }, type_, false)); }
