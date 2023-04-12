@@ -33,7 +33,7 @@ public abstract class wrapper_errors
 	{
 		String message = (strings.is_ok(message_) ? message_ : strings.DEFAULT);
 		
-		if (errors.is_warning(code_, message_)) 
+		if (external_ib.errors.is_warning(code_, message_)) 
 		{
 			if (common_xsync.req_id_is_ok(id_))
 			{

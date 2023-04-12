@@ -7,7 +7,6 @@ import accessory.db;
 import accessory.generic;
 import accessory.numbers;
 import accessory.parent_ini;
-import accessory.parent_ini_db;
 import accessory.strings;
 import ib.conn;
 import ib.ini_apps;
@@ -53,6 +52,7 @@ public class _ini extends parent_ini
 	
 	public static final boolean DEFAULT_INFO_INCLUDES_LEGACY = false;
 	public static final int DEFAULT_INFO_CONN_ID_IB = conn.WRONG_ID;	
+	public static final boolean DEFAULT_IGNORE_IB_INFO = false;
 	
 	private static _ini _instance = new _ini();
 		
@@ -76,17 +76,19 @@ public class _ini extends parent_ini
 		return info;
 	}
 	
-	public static HashMap<String, Object> get_dbs_setup(String db_name_, String setup_, String user_, String host_, boolean encrypted_) { return parent_ini_db.get_setup_vals(db_name_, setup_, user_, host_, encrypted_); }
+	public static HashMap<String, Object> get_dbs_setup(String db_name_, String setup_, String user_, String host_, boolean encrypted_) { return db.get_setup_vals(db_name_, setup_, user_, host_, encrypted_); }
 	
-	public static HashMap<String, Object> get_dbs_setup(String setup_, String user_, String host_, boolean encrypted_) { return parent_ini_db.get_setup_vals(setup_, user_, host_, encrypted_); }
+	public static HashMap<String, Object> get_dbs_setup(String setup_, String user_, String host_, boolean encrypted_) { return db.get_setup_vals(setup_, user_, host_, encrypted_); }
 
-	public static HashMap<String, Object> get_dbs_setup(String setup_, String username_, String password_, String host_) { return parent_ini_db.get_setup_vals(setup_, username_, password_, host_); }
+	public static HashMap<String, Object> get_dbs_setup(String setup_, String username_, String password_, String host_) { return db.get_setup_vals(setup_, username_, password_, host_); }
 
 	//One of the start() overloads below these lines has to be called before using any of the resources of this library.
 	
-	public static void start() { if (!_instance._populated) start(null); }
+	public static void start() { if (!_instance._populated) start(null, DEFAULT_IGNORE_IB_INFO); }
 	
-	public static void start(HashMap<String, Object> info_) 
+	public static void start(HashMap<String, Object> info_) { start(info_, DEFAULT_IGNORE_IB_INFO); }
+	
+	public static void start(HashMap<String, Object> info_, boolean ignore_ib_info_) 
 	{
 		if (_instance._populated) return;
 
@@ -96,12 +98,14 @@ public class _ini extends parent_ini
 			
 		_instance.populate_all(name);
 
-		populate_inis(info_);
+		populate_inis(info_, ignore_ib_info_);
 	}
 
 	public static void start(HashMap<String, Object> info_, HashMap<String, Object> dbs_setup_) { start(info_, dbs_setup_, null); }
 	
-	public static void start(HashMap<String, Object> info_, HashMap<String, Object> dbs_setup_, String[] types_to_ignore_) 
+	public static void start(HashMap<String, Object> info_, HashMap<String, Object> dbs_setup_, String[] types_to_ignore_) { start(info_, dbs_setup_, types_to_ignore_, DEFAULT_IGNORE_IB_INFO); }
+	
+	public static void start(HashMap<String, Object> info_, HashMap<String, Object> dbs_setup_, String[] types_to_ignore_, boolean ignore_ib_info_) 
 	{ 
 		if (_instance._populated) return;
 
@@ -126,12 +130,12 @@ public class _ini extends parent_ini
 
 		info.put(INFO_USER, user);
 		
-		populate_inis(info);
+		populate_inis(info, ignore_ib_info_);
 		
 		if (update_dbs_user) accessory.config.update(db.get_current_setup(), DBS_SETUP_CREDENTIALS_USER, ini_basic.get_user());
 	}
 	
-	private static void populate_inis(HashMap<String, Object> info_) 
+	private static void populate_inis(HashMap<String, Object> info_, boolean ignore_ib_info_) 
 	{
 		crypto.store_in_db();
 		
@@ -139,9 +143,9 @@ public class _ini extends parent_ini
 		
 		ini_market.start();
 		
-		ini_basic.start((String)get_info_val(info_, INFO_USER), (String)get_info_val(info_, INFO_ACCOUNT_IB));
+		ini_basic.start((String)get_info_val(info_, INFO_USER), (String)get_info_val(info_, INFO_ACCOUNT_IB), ignore_ib_info_);
 
-		ini_apps.start((String)get_info_val(info_, INFO_APP_NAME), (String)get_info_val(info_, INFO_CONN_TYPE_IB), (int)get_info_val(info_, INFO_CONN_ID_IB));
+		ini_apps.start((String)get_info_val(info_, INFO_APP_NAME), (String)get_info_val(info_, INFO_CONN_TYPE_IB), (int)get_info_val(info_, INFO_CONN_ID_IB), ignore_ib_info_);
 	}
 
 	private static Object get_info_val(HashMap<String, Object> info_, String key_)

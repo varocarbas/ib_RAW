@@ -1,6 +1,7 @@
 package external_ib;
 
 import accessory.numbers;
+import accessory.strings;
 
 public abstract class errors 
 {
@@ -36,20 +37,23 @@ public abstract class errors
 
 	public static boolean is_ok(int code_) { return (code_ >= MIN && code_ <= MAX); }
 	
-	public static boolean is_warning(int code_) 
+	public static boolean is_warning(int code_, String message_) 
 	{ 
 		boolean is_warning = numbers.is_ok(code_, MIN_WARNING, MAX_WARNING); 
-	
-		if (!is_warning) 
-		{
-			is_warning = 
-			(
-				code_ == ERROR_202 || code_ == ERROR_300 || code_ == ERROR_322 || code_ == ERROR_354 || 
-				code_ == ERROR_1100 || code_ == ERROR_1102 || code_ == ERROR_10090 || code_ == ERROR_10147 || 
-				code_ == ERROR_10148 || code_ == ERROR_10186 || code_ == ERROR_10197
-			);
-		}
-			
+		if (is_warning) return is_warning;
+
+		is_warning = 
+		(
+			code_ == ERROR_202 || code_ == ERROR_300 || code_ == ERROR_322 || code_ == ERROR_354 || 
+			code_ == ERROR_1100 || code_ == ERROR_1102 || code_ == ERROR_10090 || code_ == ERROR_10147 || 
+			code_ == ERROR_10148 || code_ == ERROR_10186 || code_ == ERROR_10197
+		);
+		if (is_warning) return is_warning;
+		
+		String[] targets = new String[] { "warning", "requests limitation exceeded" };
+		
+		is_warning = strings.matches_any(targets, message_, true);
+		
 		return is_warning;
 	}
 }

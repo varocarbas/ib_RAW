@@ -15,25 +15,15 @@ public abstract class ini_basic
 
 	public static String get_account_ib() { return _account_ib; }
 	
-	public static void start(String user_, String account_ib_)
+	public static void start(String user_, String account_ib_, boolean ignore_ib_info_)
 	{
 		db.create_table(SOURCE, false);
 
+		basic.ignore_ib_info(ignore_ib_info_);
+		
 		populate_user(user_);
-		
-		populate_account_ib(get_account_ib(account_ib_));
-	}
-	
-	private static String get_account_ib(String account_ib_)
-	{
-		String account_ib = account_ib_;
-		
-		if (!strings.is_ok(account_ib))
-		{
-			
-		}
-		
-		return account_ib;
+
+		populate_account_ib(account_ib_, ignore_ib_info_);
 	}
 	
 	private static String populate_user(String user_) 
@@ -50,22 +40,26 @@ public abstract class ini_basic
 	}
 	
 	private static String get_user_prelimary(String user_) { return db_common.adapt_string((strings.is_ok(user_) ? user_ : basic.DEFAULT_USER), db_ib.common.MAX_SIZE_USER); }
-
-	private static void populate_account_ib(String account_ib_) 
+	
+	private static void populate_account_ib(String account_ib_, boolean ignore_ib_info_) 
 	{ 
-		String account_ib = (strings.is_ok(account_ib_) ? account_ib_ : get_account_ib_from_file());
-		if (!strings.is_ok(account_ib)) account_ib = strings.DEFAULT;
+		String account_ib = strings.DEFAULT;
 		
-		String current = get_account_ib(true);
-		
-		if (strings.is_ok(account_ib) && !account_ib.equals(current))
+		if (!ignore_ib_info_)
 		{
-			account_ib = encrypt_account_ib(account_ib);
+			account_ib = (strings.is_ok(account_ib_) ? account_ib_ : get_account_ib_from_file());
+			
+			if (strings.is_ok(account_ib) && !account_ib.equals(get_account_ib(true)))
+			{
+				account_ib = encrypt_account_ib(account_ib);
 
-			db_ib.basic.update_account_ib(account_ib); 
+				db_ib.basic.update_account_ib(account_ib); 
+			}
+
+			account_ib = get_account_ib(false);
 		}
 
-		_account_ib = get_account_ib(false);
+		_account_ib = account_ib;
 	}
 
 	private static String encrypt_account_ib(String plain_) { return basic.encrypt(basic.get_account_ib_id(), plain_); }

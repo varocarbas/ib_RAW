@@ -8,8 +8,8 @@ import accessory.arrays;
 import accessory.dates;
 import accessory.db_common;
 import accessory.io;
-import accessory.paths;
 import accessory.strings;
+import accessory_ib.paths;
 
 public abstract class market 
 {	
@@ -45,11 +45,6 @@ public abstract class market
 	
 	private static boolean _is_holiday = false;
 	private static boolean _is_holiday_populated = false;
-	
-	//--- Each line of these files is expected to follow the pattern defined by dates.get_pattern(common.FORMAT_DATE).
-	private static String _path_market_holidays = paths.build(new String[] { paths.get_dir(paths.DIR_INFO), ("market_holidays" + paths.EXTENSION_TEXT) }, true);
-	private static String _path_market_early_closes = paths.build(new String[] { paths.get_dir(paths.DIR_INFO), ("market_early_closes" + paths.EXTENSION_TEXT) }, true);
-	//---
 	
 	public static boolean is_quick() { return db_common.is_quick(DB_SOURCE); }
 	
@@ -90,37 +85,13 @@ public abstract class market
 	
 	public static boolean update_tz() { return ini_market.update_tz(); }
 	
-	public static String path_market_holidays() { return _path_market_holidays; }
+	public static String path_market_holidays() { return paths.get_path_market_holidays(); }
 
-	public static boolean path_market_holidays(String path_) 
-	{
-		boolean updated = false;
-		
-		if (paths.exists(path_)) 
-		{
-			_path_market_holidays = path_;
-			
-			updated = true;
-		}
-	
-		return updated;
-	}
+	public static boolean path_market_holidays(String path_) { return paths.update_path_market_holidays(path_); }
 
-	public static String path_market_early_closes() { return _path_market_early_closes; }
+	public static String path_market_early_closes() { return paths.get_path_market_early_closes(); }
 
-	public static boolean path_market_early_closes(String path_) 
-	{
-		boolean updated = false;
-		
-		if (paths.exists(path_)) 
-		{
-			_path_market_early_closes = path_;
-			
-			updated = true;
-		}
-	
-		return updated;
-	}
+	public static boolean path_market_early_closes(String path_) { return paths.update_path_market_early_closes(path_); }
 
 	public static LocalTime get_time_open() 
 	{
@@ -159,23 +130,22 @@ public abstract class market
 
 	private static void populate_time_open() { _time_open = TIME_OPEN; }
 
-	private static void populate_time_close() { _time_close = (is_today(_path_market_early_closes, dates.get_now_date()) ? TIME_CLOSE_EARLY : TIME_CLOSE); }
+	private static void populate_time_close() { _time_close = (is_today(path_market_early_closes(), dates.get_now_date()) ? TIME_CLOSE_EARLY : TIME_CLOSE); }
 
 	private static void populate_is_holiday() { _is_holiday = is_holiday(dates.get_now_date()); }
 
 	private static boolean day_is_ok(LocalDate date_) { return (!is_holiday(date_) && !dates.is_weekend(date_)); }
 
-	private static boolean is_holiday(LocalDate date_) { return is_today(_path_market_holidays, date_); }
+	private static boolean is_holiday(LocalDate date_) { return is_today(path_market_holidays(), date_); }
 	
 	private static boolean is_today(String path_, LocalDate date_) 
 	{
 		String[] lines = io.file_to_array(path_);
 		if (!arrays.is_ok(lines)) return false;
-		
+
 		for (String line: lines)
 		{
-			LocalDate date = dates.date_from_string(line);
-			if (date != null && date.isEqual(date_)) return true;
+			if (dates.are_equal(dates.date_from_string(line), date_)) return true;
 		}
 		
 		return false;

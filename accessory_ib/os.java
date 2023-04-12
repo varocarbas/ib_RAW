@@ -1,5 +1,6 @@
 package accessory_ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
@@ -23,7 +24,7 @@ public abstract class os
 		
 		if (accessory.os.execute_command(executable, false)) 
 		{
-			misc.pause_secs(10);
+			misc.pause_secs(60);
 			
 			output = accessory.os.get_running_window_id_app(executable);
 		}
@@ -33,6 +34,8 @@ public abstract class os
 	
 	public static boolean click_ib_real_paper(int window_id_, boolean is_gateway_, boolean is_real_) 
 	{
+		if (!accessory.os.can_move_mouse()) return true;
+		
 		boolean output = false;
 		
 		xy xy = get_xy_ib_real_paper(is_gateway_, is_real_);
@@ -47,19 +50,19 @@ public abstract class os
 	
 	public static boolean fill_form_ib(int window_id_, HashMap<String, String> credentials_, boolean is_gateway_) 
 	{ 
-		xy[] xys = get_xys_ib_form(is_gateway_);
+		xy[] xys = (accessory.os.can_move_mouse() ? get_xys_ib_form(is_gateway_) : null);
 		
 		String username = (String)arrays.get_value(credentials_, credentials.USERNAME);
 		String password = (String)arrays.get_value(credentials_, credentials.PASSWORD);
 		
-		return ((xys != null && strings.are_ok(new String[] { username, password })) ? accessory.os.fill_running_form(window_id_, new String[] { username, password }, xys) : false); 
+		return (strings.are_ok(new String[] { username, password }) ? accessory.os.fill_running_form(window_id_, new String[] { username, password }, xys) : false); 
 	}
 	
 	private static String get_executable_ib(boolean is_gateway_) 
 	{ 
 		String output = null;
 		
-		if (!accessory.os.is_windows()) output = paths.get_path_ib(!is_gateway_); 
+		if (!accessory.os.is_windows()) output = paths.get_path_app_ib(!is_gateway_); 
 	
 		return output;
 	}
@@ -77,19 +80,20 @@ public abstract class os
 	{
 		xy[] output = null;
 		
-		int i = 0;	
-		
 		if (accessory.os.is_linux())
 		{
-			output = new xy[3];
+			ArrayList<xy> temp0 = new ArrayList<xy>(); 
 			
-			output[i] = os_linux.get_xy_ib_username(is_gateway_);
+			xy temp = os_linux.get_xy_ib_username(is_gateway_);
+			if (temp != null) temp0.add(temp);
 			
-			i++;
-			output[i] = os_linux.get_xy_ib_password(is_gateway_);
+			temp = os_linux.get_xy_ib_password(is_gateway_);
+			if (temp != null) temp0.add(temp);
 			
-			i++;
-			output[i] = os_linux.get_xy_ib_button(is_gateway_);			
+			temp = os_linux.get_xy_ib_button(is_gateway_);
+			if (temp != null) temp0.add(temp);
+			
+			if (temp0.size() > 0) output = arrays.to_array(temp0);
 		}
 		
 		return output;	

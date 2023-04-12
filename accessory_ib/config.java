@@ -21,4 +21,8 @@ public abstract class config
 	public static boolean get_conn_boolean(String key_) { return accessory.config.get_boolean(_types.CONFIG_CONN, key_); }
 
 	public static boolean update_conn(String key_, Object val_) { return accessory.config.update(_types.CONFIG_CONN, key_, val_); }
+
+	public static Object get_basic(String key_) { return accessory.config.get(_types.CONFIG_BASIC_IB, key_); }
+
+	public static boolean update_basic(String key_, Object val_) { return accessory.config.update(_types.CONFIG_BASIC_IB, key_, val_); }
 }

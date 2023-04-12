@@ -8,12 +8,14 @@ public class _types extends parent_types
 
 	public _types() { }
 	public static void populate() { _instance.populate_internal(); }
-	
-	public static final String CONFIG_BASIC_ID_MAIN = "config_basic_id_main";
 
-	public static final String CONFIG_BASIC_DIR_IB = "config_basic_dir_ib";
-	public static final String CONFIG_BASIC_DIR_IB_TWS = "config_basic_dir_ib_tws";
-	public static final String CONFIG_BASIC_DIR_IB_GATEWAY = "config_basic_dir_ib_gateway";
+	public static final String CONFIG_BASIC_IB = "config_basic_ib";
+	public static final String CONFIG_BASIC_IB_ID_MAIN = "config_basic_ib_id_main";
+	public static final String CONFIG_BASIC_IB_DIR = "config_basic_ib_dir";
+	public static final String CONFIG_BASIC_IB_DIR_TWS = "config_basic_ib_dir_tws";
+	public static final String CONFIG_BASIC_IB_DIR_GATEWAY = "config_basic_ib_dir_gateway";	
+	public static final String CONFIG_BASIC_IB_PATH_MARKET_HOLIDAYS = "config_basic_ib_path_market_holidays";
+	public static final String CONFIG_BASIC_IB_PATH_MARKET_EARLY_CLOSES = "config_basic_ib_path_market_early_closes";
 	
 	public static final String CONFIG_ORDERS = "config_orders";
 	public static final String CONFIG_ORDERS_TIF = "config_orders_tif";

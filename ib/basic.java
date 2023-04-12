@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import accessory.arrays;
-import accessory.config;
 import accessory.credentials;
 import accessory.db_common;
 import accessory.misc;
@@ -12,6 +11,7 @@ import accessory.parent_static;
 import accessory.strings;
 import accessory_ib._defaults;
 import accessory_ib._types;
+import accessory_ib.config;
 import external_ib.calls;
 import external_ib.contracts;
 
@@ -26,8 +26,8 @@ public abstract class basic extends parent_static
 	public static final String DB_CURRENCY = db_ib.basic.CURRENCY;
 	public static final String DB_MONEY_FREE = db_ib.basic.MONEY_FREE;
 
-	public static final String CONFIG_ID_MAIN = _types.CONFIG_BASIC_ID_MAIN;
-
+	public static final String CONFIG_ID_MAIN = _types.CONFIG_BASIC_IB_ID_MAIN;
+	
 	public static final String SEPARATOR = misc.SEPARATOR_NAME;
 
 	public static final double WRONG_MONEY2 = common.WRONG_MONEY2;
@@ -35,6 +35,8 @@ public abstract class basic extends parent_static
 	public static final String DEFAULT_USER = _defaults.USER;
 	
 	private static final String ID_ACCOUNT_IB = "account_ib";
+	
+	private static boolean _ignore_ib_info = false;
 	
 	public static boolean is_quick() { return db_common.is_quick(DB_SOURCE); }
 	
@@ -59,9 +61,16 @@ public abstract class basic extends parent_static
 	
 	public static String get_account_ib() 
 	{
-		db_ib.basic.update_account_ib(); 
+		String account_ib = ini_basic.get_account_ib();
 		
-		return get_account_ib_last(ini_basic.get_account_ib(), true);
+		if (!ignore_ib_info())
+		{
+			db_ib.basic.update_account_ib(); 
+			
+			account_ib = get_account_ib_last(account_ib, true);			
+		}
+		
+		return account_ib;
 	} 
 
 	public static String get_account_ib_id() { return ID_ACCOUNT_IB; }
@@ -203,6 +212,10 @@ public abstract class basic extends parent_static
 
 		return account_ib;
 	} 
+	
+	static boolean ignore_ib_info() { return _ignore_ib_info; }
+	
+	static void ignore_ib_info(boolean ignore_ib_info_) { _ignore_ib_info = ignore_ib_info_; }
 		
 	private static void __start_internal()
 	{

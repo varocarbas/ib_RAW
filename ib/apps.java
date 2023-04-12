@@ -97,17 +97,29 @@ public abstract class apps
 	
 	public static String get_conn_type() 
 	{ 
-		String conn_type = db_ib.apps.get_conn_type();
+		String conn_type = strings.DEFAULT;
+		
+		if (basic.ignore_ib_info()) conn_type = ini_apps.get_conn_type();
+		else
+		{
+			conn_type = db_ib.apps.get_conn_type();
 
-		return update_conn_type(conn_type);
+			conn_type = update_conn_type(conn_type);
+		}
+
+		return conn_type;
 	} 
 	
 	public static String update_conn_type(String conn_type_) 
 	{ 
-		String conn_type = conn_type_;
+		String conn_type = strings.DEFAULT;
 		
-		if (!conn.type_is_ok(conn_type)) conn_type = ini_apps.get_conn_type();
-		if (!conn.type_is_ok(conn_type)) conn_type = conn.DEFAULT_TYPE;
+		if (basic.ignore_ib_info()) conn_type = ini_apps.get_conn_type();
+		else
+		{
+			if (!conn.type_is_ok(conn_type)) conn_type = ini_apps.get_conn_type();
+			if (!conn.type_is_ok(conn_type)) conn_type = conn.DEFAULT_TYPE;
+		}
 
 		db_ib.apps.update_conn_type(conn_type);
 		
@@ -116,9 +128,11 @@ public abstract class apps
 
 	public static int get_conn_id() 
 	{
-		db_ib.apps.update_conn_id(); 
+		int conn_id = ini_apps.get_conn_id();
 		
-		return ini_apps.get_conn_id();
+		if (!basic.ignore_ib_info()) db_ib.apps.update_conn_id();
+
+		return conn_id;
 	}
 
 	public static boolean status_is_ok(String status_) { return strings.is_ok(check_status(status_)); }
