@@ -42,7 +42,7 @@ abstract class conn_apps
 		return (arrays.is_ok(credentials) ? os.fill_form_ib(window_id, credentials, is_gateway_) : false);
 	}
 	
-	private static HashMap<String, String> get_credentials(boolean is_real_, String user_) { return credentials.get_username_password_file(get_encryption_id(is_real_), user_, true); }
+	public static HashMap<String, String> get_credentials(boolean is_real_, String user_) { return credentials.get_username_password_file(get_encryption_id(is_real_), user_, true); }
 	
 	private static String get_encryption_id(boolean is_real_) { return basic.get_encryption_id(new String[] { _ID, (is_real_ ? ID_REAL : ID_PAPER) }); }
 }

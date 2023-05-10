@@ -188,7 +188,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		double price_old = Double.parseDouble(db_.get(COL_FLUS_PRICE));	
 		
 		double var = (common.price_is_ok(price_old) ? numbers.get_perc_hist(price_, price_old) : 0.0);				
-		if (var == 0.0 || Math.abs(var) > watchlist.MAX_VAR) return (var == 0.0 ? vals : null);		
+		if (var == 0.0 || Math.abs(var) > async_data_quicker.MAX_VAR) return (var == 0.0 ? vals : null);		
 		
 		vals = tick_price_flus_flu(symbol_, vals, var);
 		vals = tick_price_flus_flu2(symbol_, vals, var);

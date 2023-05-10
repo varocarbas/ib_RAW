@@ -30,8 +30,6 @@ public abstract class watchlist extends parent_static
 	public static final String DB_FLUS_PRICE = db_ib.watchlist.FLUS_PRICE;
 	public static final String DB_VAR_TOT = db_ib.watchlist.VAR_TOT;
 	
-	public static final double MAX_VAR = 30.0;
-	
 	public static boolean is_quick() { return db_common.is_quick(DB_SOURCE); }
 	
 	public static void is_quick(boolean is_quick_) { db_common.is_quick(DB_SOURCE, is_quick_); }

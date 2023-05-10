@@ -16,18 +16,17 @@ public class async_data_quicker extends parent_static
 {	
 	public static final double FACTOR_VOLUME = 1.0 / 1000.0;
 	
+	public static final double MAX_VAR = market.MAX_VAR;
+	
 	public static final int MIN_ID = common_xsync.MIN_REQ_ID_ASYNC;	
 	public static final long MIN_SECS_HALT_BASIC = 300l;
-	
-	public static final double MAX_VAR = 30.0;
-	public static final long MAX_SECS_MAX_VAR = MIN_SECS_HALT_BASIC - 120l;
 	
 	public static final int WRONG_ID = MIN_ID - 1;
 	public static final int WRONG_I = common.WRONG_I;
 	public static final int WRONG_HALTED = data.WRONG_HALTED;
 
-	public static final boolean DEFAULT_LOG = true;
-
+	public static final boolean DEFAULT_LOG = true;	
+	
 	static final int PRICE_IB = external_ib.data.TICK_LAST;
 	static final int OPEN_IB = external_ib.data.TICK_OPEN;
 	static final int CLOSE_IB = external_ib.data.TICK_CLOSE;

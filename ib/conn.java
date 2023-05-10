@@ -257,6 +257,8 @@ public abstract class conn extends parent_static
 	
 	public static boolean run_app(boolean is_gateway_, boolean is_real_, String user_credentials_) { return conn_apps.run(is_gateway_, is_real_, user_credentials_); }
 	
+	public static HashMap<String, String> get_credentials(boolean is_real_, String user_) { return conn_apps.get_credentials(is_real_, user_); }
+
 	static boolean type_is_real() { return type_is_real(get_conn_type()); }
 	
 	static boolean type_is_real(String type_) { return (strings.matches_any(new String[] { TYPE_TWS_REAL, TYPE_GATEWAY_REAL }, type_, false)); }
