@@ -9,9 +9,9 @@ Required external dependencies:
 
 Tested with OpenJDK 11.0.15.
 
-Articles about this code (["Everything is very normal"](https://www.codeproject.com/Articles/5352157/Friendliness-Safety-Efficiency-and-Adaptability#_comments)):
-- [Context, conventions, structure, evolution -- accessory_java](https://www.codeproject.com/Articles/5351092/Context-conventions-structure-evolution-accessory).
-- [Friendliness, safety, efficiency and adaptability -- accessory_java](https://www.codeproject.com/Articles/5352157/Friendliness-safety-efficiency-and-adaptability).
+Articles about this code:
+- [Context, conventions, structure, evolution -- accessory_java](https://gist.github.com/varocarbas/27fe96fc6c9c9073a43fa19a82d43b7b).
+- [Friendliness, safety, efficiency and adaptability -- accessory_java](https://gist.github.com/varocarbas/5ba3b9af59328dd02806fc9305bac430).
 - [Types and classes -- accessory_java](https://gist.github.com/varocarbas/dbc87154b96ef39b10cb7ce768794e66).
 - [Arrays -- accessory_java](https://gist.github.com/varocarbas/a234af99ff7f0b6862ae99726b5e232a).
 - [Database management (I): general approach -- accessory_java](https://gist.github.com/varocarbas/6d36332732bf30cda490fab075ef3ab9).
