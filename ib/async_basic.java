@@ -25,6 +25,7 @@ abstract class async_basic
 		
 		_id = async.get_req_id();
 		
+		//Methods called in external_ib.wrapper: accountSummary, accountSummaryEnd.
 		calls.reqAccountSummary(_id);
 	}
 	

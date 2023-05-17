@@ -84,7 +84,7 @@ public abstract class ini_apps
 			if (!conn.type_is_ok(conn_type)) conn_type = db_ib.apps.get_conn_type();
 			if (!conn.type_is_ok(conn_type)) conn_type = conn.DEFAULT_TYPE;
 		}
-		
+
 		_conn_type = conn_type;
 	}
 }

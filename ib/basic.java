@@ -3,6 +3,7 @@ package ib;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import accessory._keys;
 import accessory.arrays;
 import accessory.credentials;
 import accessory.db_common;
@@ -26,15 +27,20 @@ public abstract class basic extends parent_static
 	public static final String DB_CURRENCY = db_ib.basic.CURRENCY;
 	public static final String DB_MONEY_FREE = db_ib.basic.MONEY_FREE;
 
-	public static final String CONFIG_ID_MAIN = _types.CONFIG_BASIC_IB_ID_MAIN;
+	public static final String TYPE = _types.ACCOUNT_TYPE;
+	public static final String TYPE_REAL = _types.ACCOUNT_TYPE_REAL;
+	public static final String TYPE_PAPER = _types.ACCOUNT_TYPE_PAPER;
+	
+	private static final String ID_ACCOUNT_IB = "account_ib";
 	
 	public static final String SEPARATOR = misc.SEPARATOR_NAME;
 
+	public static final String CONFIG_ID_MAIN = _types.CONFIG_BASIC_IB_ID_MAIN;
+	
 	public static final double WRONG_MONEY2 = common.WRONG_MONEY2;
 	
 	public static final String DEFAULT_USER = _defaults.USER;
-	
-	private static final String ID_ACCOUNT_IB = "account_ib";
+	public static final String DEFAULT_TYPE = TYPE_REAL;
 	
 	private static boolean _ignore_ib_info = false;
 	
@@ -59,21 +65,27 @@ public abstract class basic extends parent_static
 	
 	public static String get_user() { return ini_basic.get_user(); }
 	
-	public static String get_account_ib() 
+	public static String get_account_ib() { return get_account_ib(ini_basic.get_account_type_ib()); }
+
+	public static String get_account_ib(String type_) 
 	{
 		String account_ib = ini_basic.get_account_ib();
-		
+
 		if (!ignore_ib_info())
 		{
 			db_ib.basic.update_account_ib(); 
 			
-			account_ib = get_account_ib_last(account_ib, true);			
+			account_ib = get_account_ib_last(account_ib, type_, true);			
 		}
-		
+
 		return account_ib;
 	} 
+	
+	public static String get_account_ib_id() { return get_account_ib_id(basic.get_type_from_conn(conn.get_conn_type())); }
 
-	public static String get_account_ib_id() { return ID_ACCOUNT_IB; }
+	public static String get_account_ib_id(String type_) { return (ID_ACCOUNT_IB + SEPARATOR + _keys.get_key((type_is_ok(type_) ? type_ : DEFAULT_TYPE), TYPE)); }
+
+	public static String get_file_id(String id_) { return (strings.is_ok(id_) ? (id_ + SEPARATOR + "file") : strings.DEFAULT); }
 	
 	public static boolean account_ib_is_ok(String account_ib_) 
 	{ 
@@ -84,9 +96,13 @@ public abstract class basic extends parent_static
 		return (!strings.is_ok(account_ib) || strings.are_equal(account_ib_, account_ib));
 	}
 
-	public static String get_encryption_id(String id_) { return get_encryption_id(new String[] { id_ }); }
+	public static String get_encryption_id(String id_) { return get_encryption_id(id_, false); }
+
+	public static String get_encryption_id(String id_, boolean is_file_) { return get_encryption_id(new String[] { id_ }, is_file_); }
 	
-	public static String get_encryption_id(String[] ids_) 
+	public static String get_encryption_id(String[] ids_) { return get_encryption_id(ids_, false); }
+	
+	public static String get_encryption_id(String[] ids_, boolean is_file_) 
 	{
 		String output = strings.DEFAULT;
 		
@@ -103,20 +119,24 @@ public abstract class basic extends parent_static
 			output += id;				
 		}
 		
+		if (is_file_) output += SEPARATOR + "file";
+		
 		return output;
 	}
 	
 	public static String encrypt(String id_, String plain_) { return encrypt_internal(get_encryption_id(id_), get_user(), plain_); }
 
-	public static String decrypt_account_ib(String encrypted_) { return decrypt(get_account_ib_id(), encrypted_); }
+	public static String decrypt_account_ib(String encrypted_, String type_) { return decrypt(get_account_ib_id(type_), encrypted_); }
 
 	public static String decrypt(String id_, String encrypted_) { return credentials.decrypt_string(get_encryption_id(id_), get_user(), encrypted_); }
 
-	public static boolean encrypt_account_ib_to_file(String plain_) { return encrypt_to_file(get_account_ib_id(), plain_); }
+	public static boolean encrypt_account_ib_to_file(String plain_, String type_) { return encrypt_account_ib_to_file(plain_, get_user(), type_); }
 
-	public static boolean encrypt_to_file(String id_, String plain_) { return credentials.encrypt_string_to_file(get_encryption_id(id_), get_user(), plain_); }
+	public static boolean encrypt_account_ib_to_file(String plain_, String user_, String type_) { return encrypt_to_file(get_account_ib_id(type_), user_, plain_); }
 
-	public static String get_from_file(String id_) { return credentials.get_string_from_file(get_encryption_id(id_), get_user(), true); }
+	public static boolean encrypt_to_file(String id_, String user_, String plain_) { return credentials.encrypt_string_to_file(get_encryption_id(id_, true), user_, plain_); }
+
+	public static String get_from_file(String id_, String user_) { return credentials.get_string_from_file(get_encryption_id(id_, true), user_, true); }
 
 	public static String get_encrypted_file_path(String id_) { return credentials.get_path(get_encryption_id(id_), get_user(), true); }
 
@@ -198,15 +218,21 @@ public abstract class basic extends parent_static
 		return currency;
 	}
 	
-	static boolean update_funds_is_ok(String account_id_, String key_, String value_, String currency_) { return (arrays.is_ok(calls.get_funds_fields(key_)) && strings.is_ok(value_) && ib.basic.account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
+	public static boolean type_is_ok(String type_) { return strings.is_ok(check_type(type_)); }
+	
+	public static String check_type(String type_) { return accessory._types.check_type(type_, TYPE); }
+	
+	public static String get_type_from_conn(String conn_type_) { return conn.get_account_type(conn_type_); }
+	
+	static boolean update_funds_is_ok(String account_id_, String key_, String value_, String currency_) { return (arrays.is_ok(calls.get_funds_fields(key_)) && strings.is_ok(value_) && account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
 
-	static String get_account_ib_last(String account_ib_, boolean decrypt_) 
+	static String get_account_ib_last(String account_ib_, String type_, boolean decrypt_) 
 	{
 		String account_ib = account_ib_;
 		
 		if (strings.is_ok(account_ib))
 		{
-			if (decrypt_) account_ib = decrypt_account_ib(account_ib);	
+			if (decrypt_) account_ib = decrypt_account_ib(account_ib, type_);	
 		}
 		else account_ib = strings.DEFAULT;
 

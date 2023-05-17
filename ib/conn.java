@@ -222,6 +222,13 @@ public abstract class conn extends parent_static
 	
 	public static String check_type(String type_) { return accessory._types.check_type(type_, TYPE); }
 	
+	public static String get_account_type(String conn_type_) 
+	{
+		if (!type_is_ok(conn_type_)) return null;
+		
+		return (type_is_real(conn_type_) ? basic.TYPE_REAL : basic.TYPE_PAPER); 
+	}
+
 	public static boolean port_is_ok() { return port_is_ok(_port); }
 	
 	public static boolean port_is_ok(int port_) { return (port_ == PORT_TWS_REAL || port_ == PORT_TWS_PAPER || port_ == PORT_GATEWAY_REAL || port_ == PORT_GATEWAY_PAPER); }
@@ -258,10 +265,10 @@ public abstract class conn extends parent_static
 	public static boolean run_app(boolean is_gateway_, boolean is_real_, String user_credentials_) { return conn_apps.run(is_gateway_, is_real_, user_credentials_); }
 	
 	public static HashMap<String, String> get_credentials(boolean is_real_, String user_) { return conn_apps.get_credentials(is_real_, user_); }
+	
+	public static boolean type_is_real(String type_) { return (strings.matches_any(new String[] { TYPE_TWS_REAL, TYPE_GATEWAY_REAL }, type_, false)); }
 
 	static boolean type_is_real() { return type_is_real(get_conn_type()); }
-	
-	static boolean type_is_real(String type_) { return (strings.matches_any(new String[] { TYPE_TWS_REAL, TYPE_GATEWAY_REAL }, type_, false)); }
 
 	static boolean type_is_gateway() { return type_is_gateway(get_conn_type()); }
 	

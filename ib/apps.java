@@ -99,14 +99,14 @@ public abstract class apps
 	{ 
 		String conn_type = strings.DEFAULT;
 		
-		if (basic.ignore_ib_info()) conn_type = ini_apps.get_conn_type();
-		else
+		if (basic.ignore_ib_info()) 
 		{
 			conn_type = db_ib.apps.get_conn_type();
 
 			conn_type = update_conn_type(conn_type);
 		}
-
+		else conn_type = ini_apps.get_conn_type();
+		
 		return conn_type;
 	} 
 	

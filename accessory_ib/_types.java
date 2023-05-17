@@ -149,12 +149,24 @@ public class _types extends parent_types
 	public static final String CONFIG_DB_IB_FIELD_KEY = "config_db_ib_field_key";
 	public static final String CONFIG_DB_IB_FIELD_VALUE = "config_db_ib_field_value";
 
+	public static final String ACCOUNT = "account";
+	public static final String ACCOUNT_TYPE = "account_type";
+	public static final String ACCOUNT_TYPE_REAL = "account_type_real";
+	public static final String ACCOUNT_TYPE_PAPER = "account_type_paper";
+	
 	public static final String CONN = "conn";
 	public static final String CONN_TYPE = "conn_type";
 	public static final String CONN_TYPE_TWS_REAL = "conn_type_tws_real";
 	public static final String CONN_TYPE_TWS_PAPER = "conn_type_tws_paper";
 	public static final String CONN_TYPE_GATEWAY_REAL = "conn_type_gateway_real";
 	public static final String CONN_TYPE_GATEWAY_PAPER = "conn_type_gateway_paper";
+		
+	//INI_INFO_USER isn't just used for overall identification, but also as the default user value (e.g., replacement for a non-existent DBS_USER which is expected because username/password weren't provided).
+	public static final String INI_INFO_USER = "ini_info_user";
+	public static final String INI_INFO_ACCOUNT_IB = "ini_info_account_ib";
+	public static final String INI_INFO_ACCOUNT_TYPE_IB = "ini_info_account_type_ib";
+	public static final String INI_INFO_CONN_ID_IB = "ini_info_conn_id_ib";
+	public static final String INI_INFO_CONN_TYPE_IB = "ini_info_conn_type_ib";
 	
 	public static final String ORDERS = "orders";
 	public static final String ORDERS_CANCEL = "orders_cancel";
