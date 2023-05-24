@@ -17,7 +17,6 @@ import accessory.generic;
 import accessory.strings;
 import accessory_ib._alls;
 import accessory_ib._types;
-import external_ib.contracts;
 
 public abstract class common 
 {
@@ -29,13 +28,15 @@ public abstract class common
 	public static final String SOURCE_TRADES = _types.CONFIG_DB_IB_TRADES_SOURCE;
 	public static final String SOURCE_WATCHLIST = _types.CONFIG_DB_IB_WATCHLIST_SOURCE;
 	public static final String SOURCE_APPS = _types.CONFIG_DB_IB_APPS_SOURCE;
-	
+	public static final String SOURCE_SYMBOLS = _types.CONFIG_DB_IB_SYMBOLS_SOURCE;
+
 	public static final String SOURCE_EXECS_OLD = _types.CONFIG_DB_IB_EXECS_OLD_SOURCE;
 	public static final String SOURCE_BASIC_OLD = _types.CONFIG_DB_IB_BASIC_OLD_SOURCE;
 	public static final String SOURCE_REMOTE_OLD = _types.CONFIG_DB_IB_REMOTE_OLD_SOURCE;
 	public static final String SOURCE_ORDERS_OLD = _types.CONFIG_DB_IB_ORDERS_OLD_SOURCE;
 	public static final String SOURCE_TRADES_OLD = _types.CONFIG_DB_IB_TRADES_OLD_SOURCE;
 	public static final String SOURCE_APPS_OLD = _types.CONFIG_DB_IB_APPS_OLD_SOURCE;
+	public static final String SOURCE_SYMBOLS_OLD = _types.CONFIG_DB_IB_SYMBOLS_OLD_SOURCE;
 	
 	public static final String FIELD_SYMBOL = _types.CONFIG_DB_IB_FIELD_SYMBOL;
 	public static final String FIELD_PRICE = _types.CONFIG_DB_IB_FIELD_PRICE;
@@ -122,6 +123,10 @@ public abstract class common
 	public static final String FIELD_KEY = _types.CONFIG_DB_IB_FIELD_KEY;
 	public static final String FIELD_VALUE = _types.CONFIG_DB_IB_FIELD_VALUE;
 
+	public static final String FIELD_NAME = _types.CONFIG_DB_IB_FIELD_NAME;
+	public static final String FIELD_COUNTRY = _types.CONFIG_DB_IB_FIELD_COUNTRY;
+	public static final String FIELD_EXCHANGE = _types.CONFIG_DB_IB_FIELD_EXCHANGE;
+	
 	public static final String SEPARATOR = accessory._types.SEPARATOR;
 
 	public static final String BACKUP_ENDING = SEPARATOR + "last";
@@ -306,7 +311,7 @@ public abstract class common
 	{ 
 		return (String[])arrays.add
 		(
-			populate_all_sources_new(), new String[] { SOURCE_EXECS_OLD, SOURCE_BASIC_OLD, SOURCE_REMOTE_OLD, SOURCE_ORDERS_OLD, SOURCE_TRADES_OLD, SOURCE_APPS_OLD }
+			populate_all_sources_new(), new String[] { SOURCE_EXECS_OLD, SOURCE_BASIC_OLD, SOURCE_REMOTE_OLD, SOURCE_ORDERS_OLD, SOURCE_TRADES_OLD, SOURCE_APPS_OLD, SOURCE_SYMBOLS_OLD }
 		);
 	}
 	
@@ -451,7 +456,7 @@ public abstract class common
 
 	public static String get_where(String source_, String field_, String val_, boolean add_user_) { return get_where_internal(source_, field_, val_, add_user_); }
 
-	public static db_field get_field_symbol(boolean is_unique_) { return db_common.get_field_string(contracts.MAX_LENGTH_SYMBOL_US_ANY, is_unique_); }
+	public static db_field get_field_symbol(boolean is_unique_) { return db_common.get_field_string(symbols.MAX_SIZE_SYMBOLS, is_unique_); }
 	
 	public static db_field get_field_order_id(boolean is_unique_) { return (is_unique_ ? new db_field(data.INT, db_field.DEFAULT_SIZE, db_field.WRONG_DECIMALS, ib.common.WRONG_ORDER_ID, new String[] { db_field.KEY_UNIQUE }) : new db_field(data.INT)); }
 	
@@ -481,7 +486,7 @@ public abstract class common
 	
 	public static db_field get_field_status_type() { return get_field_status_type(null); }
 	
-	public static db_field get_field_status_type(String default_) { return db_common.get_field_string(db_common.DEFAULT_SIZE_STRING, false, default_); }
+	public static db_field get_field_status_type(String default_) { return db_common.get_field_string(db_common.DEFAULT_SIZE_STRING, false, default_, true); }
 	
 	public static db_field get_field_app(boolean is_unique_) { return get_field_name(db_ib.common.MAX_SIZE_APP_NAME, is_unique_); }
 	

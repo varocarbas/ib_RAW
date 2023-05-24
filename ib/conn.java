@@ -155,7 +155,6 @@ public abstract class conn extends parent_static
 		if (_wrapper == null || _client == null || !id_is_ok() || !type_is_ok() || !port_is_ok()) return start(get_conn_id(), get_conn_type(), force_running_, is_test_);
 		if (_is_connected) return true;
 		
-		String status = null;
 		boolean check_running = false;
 		
 		if (!is_test_)
@@ -164,18 +163,7 @@ public abstract class conn extends parent_static
 			
 			check_running = check_running();
 			
-			if (!_first_conn && check_running && force_running_) 
-			{
-				status = db_ib.apps.get_status();
-				
-				if (!strings.are_equal(status, ib.apps.STATUS_RUNNING)) 
-				{
-					db_ib.apps.update_status(ib.apps.STATUS_RUNNING);
-					
-					if (!strings.is_ok(status)) status = ib.apps.STATUS_STOPPED;
-				}
-				else status = null;
-			}					
+			if (!_first_conn && check_running && force_running_) check_running = false;
 		}
 	
 		int count = 0;
@@ -194,15 +182,10 @@ public abstract class conn extends parent_static
 			update_port();
 		}
 		
-		if (is_test_) 
+		if (_is_connected)
 		{
-			if (_is_connected) end();
-		}
-		else
-		{
-			if (_is_connected) apps.update_is_connected(true);
-			
-			if (status != null) db_ib.apps.update_status(status);			
+			if (is_test_) end();
+			else apps.update_is_connected(true);
 		}
 				
 		return _is_connected;

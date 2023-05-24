@@ -62,6 +62,10 @@ public class _types extends parent_types
 	public static final String CONFIG_DB_IB_APPS_SOURCE = "config_db_ib_apps_source";
 	public static final String CONFIG_DB_IB_APPS_OLD = "config_db_ib_apps_old";
 	public static final String CONFIG_DB_IB_APPS_OLD_SOURCE = "config_db_ib_apps_old_source";
+	public static final String CONFIG_DB_IB_SYMBOLS = "config_db_ib_symbols";
+	public static final String CONFIG_DB_IB_SYMBOLS_SOURCE = "config_db_ib_symbols_source";
+	public static final String CONFIG_DB_IB_SYMBOLS_OLD = "config_db_ib_symbols_old";
+	public static final String CONFIG_DB_IB_SYMBOLS_OLD_SOURCE = "config_db_ib_symbols_old_source";
 
 	public static final String CONFIG_DB_IB_FIELD = "config_db_ib_field";
 	public static final String CONFIG_DB_IB_FIELD_USER = "config_db_ib_field_user";
@@ -149,6 +153,10 @@ public class _types extends parent_types
 	public static final String CONFIG_DB_IB_FIELD_KEY = "config_db_ib_field_key";
 	public static final String CONFIG_DB_IB_FIELD_VALUE = "config_db_ib_field_value";
 
+	public static final String CONFIG_DB_IB_FIELD_NAME = "config_db_ib_field_name";
+	public static final String CONFIG_DB_IB_FIELD_EXCHANGE = "config_db_ib_field_exchange";
+	public static final String CONFIG_DB_IB_FIELD_COUNTRY = "config_db_ib_field_country";
+	
 	public static final String ACCOUNT = "account";
 	public static final String ACCOUNT_TYPE = "account_type";
 	public static final String ACCOUNT_TYPE_REAL = "account_type_real";
@@ -244,7 +252,14 @@ public class _types extends parent_types
 	public static final String ASYNC_DATA = "async_data";
 	public static final String ASYNC_DATA_SNAPSHOT = "async_data_snapshot";
 	public static final String ASYNC_DATA_STREAM = "async_data_stream";
-
+	
+	public static final String EXCHANGE = "exchange";
+	public static final String EXCHANGE_ANY = "exchange_any";
+	public static final String EXCHANGE_US = "exchange_us";
+	public static final String EXCHANGE_US_ANY = "exchange_us_any";
+	public static final String EXCHANGE_US_NYSE = "exchange_us_nyse";
+	public static final String EXCHANGE_US_NASDAQ = "exchange_us_nasdaq";
+	
 	public static final String ERROR_IB = "error_ib";
 	public static final String ERROR_IB_GENERIC = "error_ib_generic";
 	public static final String ERROR_IB_INI = "error_ib_ini";

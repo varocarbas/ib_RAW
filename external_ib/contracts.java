@@ -8,6 +8,7 @@ import accessory.arrays;
 import accessory.strings;
 import accessory_ib._alls;
 import accessory_ib.config;
+import ib.symbols;
 import accessory_ib._types;
 
 public abstract class contracts 
@@ -19,6 +20,11 @@ public abstract class contracts
 	public static final String CONFIG_EXCHANGE_COUNTRY = _types.CONFIG_CONTRACT_EXCHANGE_COUNTRY;
 	public static final String CONFIG_EXCHANGE_COUNTRY_US = _types.CONFIG_CONTRACT_EXCHANGE_COUNTRY_US;
 
+	public static final String EXCHANGE_US = "SMART";
+	public static final String EXCHANGE_PRIMARY_US = "NASDAQ";
+	
+	public static final String CURRENCY_US = "USD";
+	
 	//--- To be synced with the contract.SecType values (https://interactivebrokers.github.io/tws-api/classIBApi_1_1Contract.html).
 	public static final String SECURITY_STOCK_ETF = "STK";
 	public static final String SECURITY_OPTION = "OPT";
@@ -34,14 +40,11 @@ public abstract class contracts
 	public static final String SECURITY_MUTUAL_FUND = "FUND";
 	//---
 
-	public static final int MAX_LENGTH_SYMBOL_US_STOCKS = 4;
-	public static final int MAX_LENGTH_SYMBOL_US_ANY = 5;
-
 	public static final String DEFAULT_EXCHANGE_COUNTRY = CONFIG_EXCHANGE_COUNTRY_US;
-	public static final String DEFAULT_SECURITY_TYPE = contracts.SECURITY_STOCK_ETF;
-	public static final String DEFAULT_CURRENCY = "USD";
-	public static final String DEFAULT_EXCHANGE = "SMART";
-	public static final String DEFAULT_EXCHANGE_PRIMARY = "ISLAND";
+	public static final String DEFAULT_SECURITY_TYPE = SECURITY_STOCK_ETF;
+	public static final String DEFAULT_CURRENCY = CURRENCY_US;
+	public static final String DEFAULT_EXCHANGE = EXCHANGE_US;
+	public static final String DEFAULT_EXCHANGE_PRIMARY = EXCHANGE_PRIMARY_US;
 	
 	public static final String ERROR_INFO_STOCK_ETF = _types.ERROR_IB_CONTRACTS_INFO_STOCK_ETF;
 
@@ -50,6 +53,33 @@ public abstract class contracts
 	public static String get_currency() { return (String)config.get_contract(CONFIG_CURRENCY); }
 	
 	public static boolean currency_is_ok(String currency_) { return strings.are_equivalent(currency_, get_currency()); }
+	
+	public static boolean update_exchanges(String exchange_type_)
+	{
+		boolean output = false;
+		
+		String type = ib.symbols.check_exchange(exchange_type_);
+		if (!strings.is_ok(type)) return output;
+		
+		String exchange = null;
+		String exchange_primary = null;
+		
+		if (ib.symbols.exchange_is_us(type)) 
+		{
+			exchange = EXCHANGE_US;
+			exchange_primary = EXCHANGE_PRIMARY_US;
+		}
+		
+		if (exchange != null && exchange_primary != null) 
+		{			
+			config.update_contract(CONFIG_EXCHANGE, exchange);
+			config.update_contract(CONFIG_EXCHANGE_PRIMARY, exchange_primary);
+			
+			output = true;
+		}
+		
+		return output;
+	}
 	
 	public static Contract get_contract(String symbol_)
 	{	
@@ -62,11 +92,11 @@ public abstract class contracts
 		boolean is_us = strings.are_equal(country, CONFIG_EXCHANGE_COUNTRY_US);
 		
 		int length = strings.get_length(symbol_);
-		if (length < 1 || (is_us && (length > MAX_LENGTH_SYMBOL_US_ANY))) return null;
+		if (length < 1 || (is_us && (length > symbols.MAX_LENGTH_SYMBOL_US_ANY))) return null;
 		
 		if (security.equals(SECURITY_STOCK_ETF)) 
 		{
-			if (is_us && (length > MAX_LENGTH_SYMBOL_US_STOCKS)) return null;
+			if (is_us && (length > symbols.MAX_LENGTH_SYMBOL_US_STOCKS)) return null;
 			
 			contract = get_contract_stock_etf(symbol_);
 		}

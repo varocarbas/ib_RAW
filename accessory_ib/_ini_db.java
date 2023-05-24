@@ -17,6 +17,7 @@ import db_ib.execs;
 import db_ib.market;
 import db_ib.orders;
 import db_ib.remote;
+import db_ib.symbols;
 import db_ib.trades;
 import db_ib.watchlist;
 
@@ -53,6 +54,7 @@ public class _ini_db extends parent_ini_db
 		sources = add_source_trades(db, sources);
 		sources = add_source_watchlist(db, sources);
 		sources = add_source_apps(db, sources);
+		sources = add_source_symbols(db, sources);
 		
 		boolean is_ok = populate_db(db, name, sources, setup_vals);
 		
@@ -364,7 +366,43 @@ public class _ini_db extends parent_ini_db
 		
 		return sources;
 	}	
+	
+	private HashMap<String, Object[]> add_source_symbols(String db_, HashMap<String, Object[]> sources_)
+	{
+		HashMap<String, Object[]> sources = (sources_ == null ? new HashMap<String, Object[]>() : new HashMap<String, Object[]>(sources_));
+		
+		HashMap<String, db_field> info = new HashMap<String, db_field>();
+		HashMap<String, db_field> info2 = new HashMap<String, db_field>();	
 
+		String source = symbols.SOURCE;
+
+		String table = "ib_symbols";
+
+		if (!ignore_source(source))
+		{	
+			info.put(symbols.NAME, db_common.get_field_string(false));
+			info.put(symbols.EXCHANGE, db_common.get_field_string(false));
+			info.put(symbols.COUNTRY, db_common.get_field_string(false));
+			
+			info2 = new HashMap<String, db_field>(info);		
+			info2.put(symbols.SYMBOL, common.get_field_symbol(true));
+			
+			sources = add_source_common(db_, source, table, info2, sources);					
+		}
+
+		source = symbols.SOURCE_OLD;
+
+		if (!ignore_source(source))
+		{
+			info2 = new HashMap<String, db_field>(info);	
+			info2.put(symbols.SYMBOL, common.get_field_symbol(false));
+
+			sources = add_source_common(db_, source, get_table_old(table), info2, sources, true);
+		}
+		
+		return sources;
+	}
+	
 	private HashMap<String, Object[]> add_source_common(String db_, String source_, String table_, HashMap<String, db_field> info_, HashMap<String, Object[]> sources_) { return add_source_common(db_, source_, table_, info_, sources_, false); }
 	
 	private HashMap<String, Object[]> add_source_common(String db_, String source_, String table_, HashMap<String, db_field> info_, HashMap<String, Object[]> sources_, boolean is_old_) 
