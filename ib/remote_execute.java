@@ -64,7 +64,7 @@ abstract class remote_execute
 			double perc = remote.get_perc_money(vals_);
 			double price = remote.get_price(vals_);
 			
-			HashMap<String, Object> temp = remote.get_quantity(symbol, quantity, perc, price);			
+			HashMap<String, Object> temp = remote.__get_quantity(symbol, quantity, perc, price);			
 			if (!arrays.is_ok(temp)) 
 			{
 				update_error_quantity(request, quantity, perc, price);

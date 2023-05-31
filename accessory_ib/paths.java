@@ -41,13 +41,13 @@ public abstract class paths
 
 	public static String get_default_dir_app_ib(boolean is_tws_) { return accessory.paths.build(new String[] { accessory.paths.get_dir_home(), (is_tws_ ? DEFAULT_DIR_TWS : DEFAULT_DIR_GATEWAY) }, false); }
 
-	public static String get_path_market_holidays() { return (String)accessory.config.get_basic(CONFIG_PATH_MARKET_HOLIDAYS); }
+	public static String get_path_market_holidays() { return (String)config.get_basic(CONFIG_PATH_MARKET_HOLIDAYS); }
 
-	public static boolean update_path_market_holidays(String path_) { return (accessory.paths.exists(path_) ? accessory.config.update_basic(CONFIG_PATH_MARKET_HOLIDAYS, path_) : false); }
+	public static boolean update_path_market_holidays(String path_) { return (accessory.paths.exists(path_) ? config.update_basic(CONFIG_PATH_MARKET_HOLIDAYS, path_) : false); }
 
-	public static String get_path_market_early_closes() { return (String)accessory.config.get_basic(CONFIG_PATH_MARKET_EARLY_CLOSES); }
+	public static String get_path_market_early_closes() { return (String)config.get_basic(CONFIG_PATH_MARKET_EARLY_CLOSES); }
 
-	public static boolean update_path_market_early_closes(String path_) { return (accessory.paths.exists(path_) ? accessory.config.update_basic(CONFIG_PATH_MARKET_EARLY_CLOSES, path_) : false); }
+	public static boolean update_path_market_early_closes(String path_) { return (accessory.paths.exists(path_) ? config.update_basic(CONFIG_PATH_MARKET_EARLY_CLOSES, path_) : false); }
 
 	public static String get_default_path_market_holidays() { return accessory.paths.build(new String[] { accessory.paths.get_dir(accessory.paths.DIR_INFO), DEFAULT_FILE_MARKET_HOLIDAYS }, true); }
 

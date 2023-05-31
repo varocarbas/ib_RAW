@@ -149,7 +149,7 @@ public abstract class remote
 
 	public static String get_status2_execute(boolean is_ok_) { return (is_ok_ ? remote.STATUS2_EXECUTED : remote.STATUS2_ERROR); }
 
-	public static HashMap<String, Object> get_quantity(String symbol_, double quantity_, double perc_money_, double price_)
+	public static HashMap<String, Object> __get_quantity(String symbol_, double quantity_, double perc_money_, double price_)
 	{
 		HashMap<String, Object> output = new HashMap<String, Object>();
 		
@@ -161,7 +161,7 @@ public abstract class remote
 			if (!common.price_is_ok(price)) price = common.get_price(symbol_);
 			if (!common.price_is_ok(price)) return null;
 			
-			double investment = get_investment(perc_money_, true);
+			double investment = __get_investment(perc_money_, true);
 			if (investment <= WRONG_MONEY2) return null;
 			
 			quantity = investment / price;
@@ -174,7 +174,7 @@ public abstract class remote
 		return output;
 	}
 
-	public static double get_investment(double perc_) { return get_investment(perc_, false); }
+	public static double __get_investment(double perc_) { return __get_investment(perc_, false); }
 
 	public static int get_order_id_main(int request_) { return db_ib.remote.get_order_id(request_, is_quick()); }
 
@@ -356,12 +356,12 @@ public abstract class remote
 		update_error(request_, (is_request_ ? remote_request.ERROR_PLACE : remote_execute.ERROR_PLACE), vals, type);		
 	}
 	
-	private static double get_investment(double perc_, boolean log_)
+	private static double __get_investment(double perc_, boolean log_)
 	{
 		double investment = WRONG_MONEY2;
 		if (!common.percent_is_ok(perc_, false)) return investment;
 		
-		HashMap<String, Double> money_all = ib.basic.get_money_and_free();
+		HashMap<String, Double> money_all = ib.basic.__get_money_and_free();
 		if (!arrays.is_ok(money_all)) 
 		{
 			if (log_) log("not enough money");

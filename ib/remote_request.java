@@ -12,7 +12,7 @@ import accessory_ib._types;
 
 abstract class remote_request extends parent_static 
 {
-	public static final long TIMEOUT = 10l;
+	public static final long TIMEOUT = 20l;
 
 	public static final String REQUEST_OK = _types.REMOTE_REQUEST_OK;
 	public static final String REQUEST_ERROR = _types.REMOTE_REQUEST_ERROR;
@@ -237,7 +237,7 @@ abstract class remote_request extends parent_static
 
 		long start = dates.start_elapsed();
 			
-		while (dates.get_elapsed(start) < remote_request.TIMEOUT)
+		while (dates.get_elapsed(start) < TIMEOUT)
 		{
 			temp = is_executed_internal(request_, ignore_error_, inactive_ok_);
 			

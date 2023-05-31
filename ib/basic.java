@@ -187,23 +187,14 @@ public abstract class basic extends parent_static
 		return (output == db_ib.basic.WRONG_MONEY ? WRONG_MONEY2 : output);
 	}	
 
-	public static HashMap<String, Double> get_money_and_free() 
+	public static HashMap<String, Double> __get_money_and_free() 
 	{ 
-		HashMap<String, Double> temp = db_ib.basic.get_money_and_free(); 
-		if (!arrays.is_ok(temp)) return temp;
+		__update_money();
 		
-		HashMap<String, Double> output = new HashMap<String, Double>(); 
-		
-		for (Entry<String, Double> item: temp.entrySet())
-		{
-			double val = item.getValue();
-			if (val < WRONG_MONEY2) val = WRONG_MONEY2;
-			
-			output.put(item.getKey(), val);
-		}
-		
-		return output;
+		return get_money_and_free_internal();
 	}
+	
+	public static HashMap<String, Double> get_money_and_free() { return get_money_and_free_internal(); }
 	
 	public static void update_money() { async_basic.get_funds(); }
 	
@@ -266,4 +257,22 @@ public abstract class basic extends parent_static
 	}
 
 	private static String encrypt_internal(String id_, String user_, String plain_) { return credentials.encrypt_string(id_, user_, plain_); }
+	
+	private static HashMap<String, Double> get_money_and_free_internal() 
+	{ 
+		HashMap<String, Double> temp = db_ib.basic.get_money_and_free(); 
+		if (!arrays.is_ok(temp)) return temp;
+		
+		HashMap<String, Double> output = new HashMap<String, Double>(); 
+		
+		for (Entry<String, Double> item: temp.entrySet())
+		{
+			double val = item.getValue();
+			if (val < WRONG_MONEY2) val = WRONG_MONEY2;
+			
+			output.put(item.getKey(), val);
+		}
+		
+		return output;
+	}
 }
