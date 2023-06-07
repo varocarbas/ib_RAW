@@ -25,4 +25,8 @@ public abstract class config
 	public static Object get_basic(String key_) { return accessory.config.get(_types.CONFIG_BASIC_IB, key_); }
 
 	public static boolean update_basic(String key_, Object val_) { return accessory.config.update(_types.CONFIG_BASIC_IB, key_, val_); }
+
+	public static boolean get_remote_boolean(String key_) { return accessory.config.get_boolean(_types.CONFIG_REMOTE, key_); }
+
+	public static boolean update_remote(String key_, Object val_) { return accessory.config.update(_types.CONFIG_REMOTE, key_, val_); }
 }

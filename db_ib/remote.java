@@ -88,12 +88,7 @@ public abstract class remote extends parent_static
 
 	public static int get_order_id(int request_, boolean is_main_) { return db_common.get_int(SOURCE, (is_main_ ? ORDER_ID_MAIN : ORDER_ID_SEC), get_where_request(request_), ib.common.WRONG_ORDER_ID); }
 
-	public static int get_request(String symbol_) 
-	{
-		String where = db_common.join_wheres(common.get_where_symbol(SOURCE, symbol_), get_where_active());
-
-		return (db_common.get_count(SOURCE, where) == 1 ? db_common.get_int(SOURCE, REQUEST, where, ib.common.WRONG_REQUEST) : ib.common.WRONG_REQUEST);
-	}
+	public static int get_any_request(String symbol_) { return db_common.get_int(SOURCE, REQUEST, db_common.join_wheres(common.get_where_symbol(SOURCE, symbol_), get_where_active()), ib.common.WRONG_REQUEST); }
 
 	public static int get_request(int order_id_main_) { return db_common.get_int(SOURCE, REQUEST, get_where_order_id(order_id_main_), ib.common.WRONG_REQUEST); }
 

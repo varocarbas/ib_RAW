@@ -38,7 +38,7 @@ public abstract class sync extends parent_static
 	
 	public static final long TIMEOUT_GET_ORDERS = 3l;
 	public static final long TIMEOUT_EXECUTE_ORDER = 5l;
-	public static final long TIMEOUT_UPDATE_ORDER = 1l;
+	public static final long TIMEOUT_UPDATE_ORDER = 3l;
 	
 	public static final String ERROR_TIMEOUT = _types.ERROR_IB_SYNC_TIMEOUT;
 	
@@ -434,7 +434,7 @@ public abstract class sync extends parent_static
 	private static boolean wait_exit_get(String type_)
 	{
 		if (_getting) return false;
-		
+			
 		boolean exit = true;
 		
 		if (type_.equals(GET_ORDERS))

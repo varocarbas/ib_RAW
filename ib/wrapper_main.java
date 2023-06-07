@@ -11,7 +11,7 @@ public abstract class wrapper_main
 	public static void account_summary(int id_, String account_, String tag_, String value_, String currency_) 
 	{ 
 		if (!basic.update_funds_is_ok(account_, tag_, value_, currency_)) return;
-		
+
 		if (sync_basic.is_ok(id_)) sync_basic.update_funds(tag_, value_); 
 		else if (async_basic.is_ok(id_)) async_basic.update_funds(tag_, value_);
 	}

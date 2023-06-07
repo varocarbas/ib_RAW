@@ -6,6 +6,7 @@ import accessory.parent_ini_config;
 import external_ib.contracts;
 import ib.basic;
 import ib.conn;
+import ib.remote;
 import ib._order;
 
 public class _ini_config extends parent_ini_config 
@@ -18,16 +19,18 @@ public class _ini_config extends parent_ini_config
 	
 	protected void populate_all_internal()
 	{
-		load_config_basic();
+		load_basic();
 		
-		load_config_order();
+		load_order();
 		
-		load_config_contract();
+		load_contract();
 		
-		load_config_conn();
+		load_conn();
+		
+		load_remote();
 	}
 
-	private boolean load_config_basic()
+	private boolean load_basic()
 	{
 		String type = _types.CONFIG_BASIC_IB;
 
@@ -42,7 +45,7 @@ public class _ini_config extends parent_ini_config
 		return populate(type, null, vals);
 	}
 
-	private boolean load_config_order()
+	private boolean load_order()
 	{
 		String type = _types.CONFIG_ORDERS;
 
@@ -54,7 +57,7 @@ public class _ini_config extends parent_ini_config
 		return populate(type, null, vals);
 	}	
 
-	private boolean load_config_contract()
+	private boolean load_contract()
 	{
 		String type = _types.CONFIG_CONTRACT;
 
@@ -69,13 +72,24 @@ public class _ini_config extends parent_ini_config
 		return populate(type, null, vals);
 	}
 
-	private boolean load_config_conn()
+	private boolean load_conn()
 	{
 		String type = _types.CONFIG_CONN;
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
 		vals.put(conn.CONFIG_CHECK_RUNNING, conn.DEFAULT_CHECK_RUNNING);
+
+		return populate(type, null, vals);
+	}
+
+	private boolean load_remote()
+	{
+		String type = _types.CONFIG_REMOTE;
+
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		
+		vals.put(remote.CONFIG_MULTIPLE_TRADES_SYMBOL, remote.DEFAULT_MULTIPLE_TRADES_SYMBOL);
 
 		return populate(type, null, vals);
 	}

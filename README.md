@@ -3,9 +3,8 @@
 Library easing the automated communication with Interactive Brokers (IB).
 
 Required external dependencies:
-- My accessory library for Java ([https://github.com/varocarbas/accessory_java_RAW](https://github.com/varocarbas/accessory_java_RAW)).
+- accessory_java ([https://github.com/varocarbas/accessory_java_RAW](https://github.com/varocarbas/accessory_java_RAW)) with DB/MySQL features.
 - IB API libraries (v. 9.76.01 or above) and a running instance of their workstation/gateway.
-- MySQL Java connector (v. 8.0.21 or above).
 
 Tested with OpenJDK 11.0.15.
 

@@ -190,7 +190,16 @@ abstract class remote_request extends parent_static
 	}
 	
 	private static int __place_common(String type_place_, String symbol_, double stop_, double start_, double start2_, double quantity_, double perc_money_, double price_)
-	{
+	{	
+		int output = common.WRONG_REQUEST;
+		
+		if (!remote.multiple_trades_symbol())
+		{
+			output = db_ib.remote.get_any_request(symbol_);
+			
+			if (output != common.WRONG_REQUEST) return output;			
+		}
+		
 		double quantity = quantity_;
 		double perc_money = common.WRONG_MONEY; 
 		double price = common.WRONG_PRICE;
@@ -204,7 +213,6 @@ abstract class remote_request extends parent_static
 		
 		_order order = new _order(type_place_, symbol_, quantity, stop_, start_, start2_);
 
-		int output = common.WRONG_REQUEST;
 		if (order.is_ok()) output = db_ib.remote.__request_start(order, perc_money, price);
 	
 		if (output != common.WRONG_REQUEST) remote.log(remote.get_ok_message_default(type_place_, output, symbol_, order.get_id_main(), true));

@@ -11,6 +11,7 @@ import accessory.logs;
 import accessory.strings;
 import accessory_ib.errors;
 import accessory_ib._types;
+import accessory_ib.config;
 
 public abstract class remote 
 {
@@ -66,6 +67,8 @@ public abstract class remote
 
 	public static final double MAX_PERC_MONEY = 90.0;
 	
+	public static final String CONFIG_MULTIPLE_TRADES_SYMBOL = _types.CONFIG_REMOTE_MULTIPLE_TRADES_SYMBOL;
+	
 	public static final int WRONG_REQUEST = common.WRONG_REQUEST;
 	public static final double WRONG_MONEY2 = common.WRONG_MONEY2;
 
@@ -75,6 +78,7 @@ public abstract class remote
 	public static final boolean DEFAULT_IS_QUICK = true;
 	public static final boolean DEFAULT_LOGS_TO_FILE = false;
 	public static final String DEFAULT_PATH_LOGS = common.get_log_file_id(_ID);
+	public static final boolean DEFAULT_MULTIPLE_TRADES_SYMBOL = true;
 	
 	static String _temp_type_error = null;
 
@@ -92,6 +96,10 @@ public abstract class remote
 	public static void path_logs(String path_logs_) { _path_logs = path_logs_; }
 	
 	public static void logs_to_file(boolean logs_to_file_) { _logs_to_file = logs_to_file_; }
+	
+	public static boolean multiple_trades_symbol() { return config.get_remote_boolean(CONFIG_MULTIPLE_TRADES_SYMBOL); }
+
+	public static boolean multiple_trades_symbol(boolean multiple_trades_symbol_) { return config.update_remote(CONFIG_MULTIPLE_TRADES_SYMBOL, multiple_trades_symbol_); }
 	
 	public static int __request_place(String type_place_, String symbol_, double stop_, double start_, double quantity_) { return __request_place(type_place_, symbol_, stop_, start_, quantity_, DEFAULT_WAIT_FOR_EXECUTION); }
 
@@ -180,7 +188,7 @@ public abstract class remote
 
 	public static int get_request(int order_id_main_) { return db_ib.remote.get_request(order_id_main_); }
 
-	public static int get_request(String symbol_) { return db_ib.remote.get_request(symbol_); }
+	public static int get_any_request(String symbol_) { return db_ib.remote.get_any_request(symbol_); }
 
 	public static String get_symbol(int request_) { return db_ib.remote.get_symbol(request_); }
 

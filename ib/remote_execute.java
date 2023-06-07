@@ -6,6 +6,7 @@ import java.util.HashMap;
 import accessory.arrays;
 import accessory.db_common;
 import accessory.db_quick;
+import accessory.misc;
 import accessory.strings;
 import accessory_ib._types;
 
@@ -53,13 +54,11 @@ abstract class remote_execute
 			return executed;
 		}
 
-		String symbol = null;
+		String symbol = remote.get_symbol(vals_);
 		int order_id = common.WRONG_ORDER_ID;
 		
 		if (remote.is_place(type))
 		{
-			symbol = remote.get_symbol(vals_);
-			
 			double quantity = remote.get_quantity(vals_);
 			double perc = remote.get_perc_money(vals_);
 			double price = remote.get_price(vals_);
@@ -116,7 +115,7 @@ abstract class remote_execute
 				double val = Double.parseDouble(vals_.get(field_col));	
 				executed = __update(request, order_id, type, val);
 				
-				if (!executed) update_error_update(request, db_ib.remote.get_symbol(request), type, order_id, val);
+				if (!executed) update_error_update(request, symbol, type, order_id, val);
 			}			
 		}
 
@@ -184,9 +183,15 @@ abstract class remote_execute
 
 	private static boolean __cancel(int request_, int order_id_) 
 	{
-		boolean is_ok = false;
+		boolean is_ok = orders.__cancel(order_id_);
+
+		if (!is_ok) 
+		{
+			misc.pause_secs(5);
+			
+			if (orders.__is_inactive_ib(order_id_)) is_ok = true;
+		}
 		
-		is_ok = orders.__cancel(order_id_);
 		if (is_ok) db_ib.remote.deactivate_order_id(order_id_);
 		
 		db_ib.remote.update_status2_execute(request_, is_ok);

@@ -32,6 +32,9 @@ public class _types extends parent_types
 	public static final String CONFIG_CONN = "config_conn";
 	public static final String CONFIG_CONN_CHECK = "config_conn_check";
 	public static final String CONFIG_CONN_CHECK_RUNNING = "config_conn_check_running";
+
+	public static final String CONFIG_REMOTE = "config_remote";
+	public static final String CONFIG_REMOTE_MULTIPLE_TRADES_SYMBOL = "config_remote_multiple_trades_symbol";
 	
 	public static final String CONFIG_DB_IB = "config_db_ib";
 	public static final String CONFIG_DB_IB_MARKET = "config_db_ib_market";
