@@ -25,6 +25,7 @@ public abstract class watchlist
 	public static final String FLU2 = common.FIELD_FLU2;
 	public static final String FLU2_MIN = common.FIELD_FLU2_MIN;
 	public static final String FLU2_MAX = common.FIELD_FLU2_MAX;
+	public static final String FLU3 = common.FIELD_FLU3;
 	public static final String FLUS_PRICE = common.FIELD_FLUS_PRICE;
 	public static final String VAR_TOT = common.FIELD_VAR_TOT;
 

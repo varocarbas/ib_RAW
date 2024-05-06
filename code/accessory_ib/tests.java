@@ -51,7 +51,8 @@ public class tests extends parent_tests
 		String[] sources = new String[] 
 		{ 
 			common.SOURCE_MARKET, common.SOURCE_EXECS, common.SOURCE_BASIC, common.SOURCE_REMOTE, 
-			common.SOURCE_ORDERS, common.SOURCE_TRADES, common.SOURCE_WATCHLIST, common.SOURCE_APPS,
+			common.SOURCE_ORDERS, common.SOURCE_WATCHLIST, common.SOURCE_APPS,
+			common.SOURCE_TEMP_PRICE
 		};
 
 		HashMap<String, String> olds = db_ib.common.get_sources_old();
@@ -161,9 +162,9 @@ public class tests extends parent_tests
 		
 		double quantity = 1;
 		double price = symbol_info.getValue();
-		double stop = numbers.apply_perc(price, -3, true);
-		double start = numbers.apply_perc(price, 2, true);
-		double start2 = numbers.apply_perc(price, 1, true);
+		double stop = accessory_ib.numbers.round_price(numbers.apply_perc(price, -3, false));
+		double start = accessory_ib.numbers.round_price(numbers.apply_perc(price, 2, false));
+		double start2 = accessory_ib.numbers.round_price(numbers.apply_perc(price, 1, false));
 		
 		ArrayList<Object> args0 = new ArrayList<Object>();
 		args0.add(symbol);
@@ -179,9 +180,9 @@ public class tests extends parent_tests
 		items.put(orders.PLACE_LIMIT, "_place_limit");
 		items.put(orders.PLACE_STOP_LIMIT, "_place_stop_limit");
 		
-		double stop_new = numbers.apply_perc(stop, -2, true);
-		double start_new = numbers.apply_perc(start, 3, true);
-		double start2_new = numbers.apply_perc(start2, 2, true);
+		double stop_new = accessory_ib.numbers.round_price(numbers.apply_perc(stop, -2, false));
+		double start_new = accessory_ib.numbers.round_price(numbers.apply_perc(start, 3, false));
+		double start2_new = accessory_ib.numbers.round_price(numbers.apply_perc(start2, 2, false));
 		
 		HashMap<String, String[]> items2 = new HashMap<String, String[]>();
 		items2.put(orders.PLACE_MARKET, new String[] { "__update_stop", "__update_stop_market" });
@@ -289,9 +290,9 @@ public class tests extends parent_tests
 		double perc = 50;
 		double price = symbol_info.getValue();
 		
-		double stop = numbers.apply_perc(price, -3, true);
-		double start = numbers.apply_perc(price, 2, true);
-		double start2 = numbers.apply_perc(price, 1, true);
+		double stop = accessory_ib.numbers.round_price(numbers.apply_perc(price, -3, false));
+		double start = accessory_ib.numbers.round_price(numbers.apply_perc(price, 2, false));
+		double start2 = accessory_ib.numbers.round_price(numbers.apply_perc(price, 1, false));
 				
 		boolean wait_for_execution = false;
 		
@@ -336,7 +337,7 @@ public class tests extends parent_tests
 		
 		name = "__request_update";
 		
-		double stop_new = numbers.apply_perc(stop, -2, true);
+		double stop_new = accessory_ib.numbers.round_price(numbers.apply_perc(stop, -2, false));
 		
 		params = new Class<?>[] { int.class, String.class, double.class, boolean.class };
 		

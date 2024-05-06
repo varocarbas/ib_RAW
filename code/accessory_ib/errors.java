@@ -1,5 +1,6 @@
 package accessory_ib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import accessory.arrays;
@@ -8,6 +9,7 @@ import accessory.misc;
 import accessory.strings;
 import ib.conn;
 import ib.sync;
+import ib.wrapper_errors;
 
 public abstract class errors
 {
@@ -17,6 +19,8 @@ public abstract class errors
 	
 	public static final String DEFAULT_WARNING = "WARNING";
 	public static final String DEFAULT_MESSAGE = accessory.errors.DEFAULT_MESSAGE;	
+	
+	private static ArrayList<String> _ignore_errors = new ArrayList<String>();
 	
 	public static void manage(String type_, String message_) { manage(type_, get_message_common(message_), null); }
 	
@@ -28,6 +32,8 @@ public abstract class errors
 
 	public static void manage(String type_, String message_, HashMap<String, Object> info_)
 	{	
+		if (type_ != null && _ignore_errors.contains(type_)) return;
+		
 		String message = message_;
 		if (!strings.is_ok(message)) message = get_message(type_);
 	
@@ -58,6 +64,13 @@ public abstract class errors
 		
 		return message;
 	}
+	
+	public static void ignore_errors(String error_type_)
+	{
+		if (!_ignore_errors.contains(error_type_)) _ignore_errors.add(error_type_);
+	}
+	
+	public static void ignore_errors_ib_code(int ib_code_) { wrapper_errors.ignore_errors(ib_code_); }
 	
 	private static String get_message(String type_)
 	{

@@ -47,7 +47,7 @@ public abstract class orders
 	public static final String STATUS_IB_FILLED = "Filled"; //Indicates that the order has been completely filled. Market orders executions will not always trigger a Filled status.
 	public static final String STATUS_IB_INACTIVE = "Inactive"; //Indicates that the order was received by the system but is no longer active because it was rejected or canceled.
 	//---
-
+	
 	public static int get_max_length_side() { return EXEC_SIDE_BOUGHT.length(); }
 	
 	public static Order get_order_new(_order order_, boolean is_main_) { return get_order(order_, is_main_, null, common.WRONG_PRICE, false); }

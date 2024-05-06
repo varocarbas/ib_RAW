@@ -98,28 +98,10 @@ abstract class async_execs extends parent_static
 	
 	private static void update_others(HashMap<String, Object> vals_)
 	{		
-		String symbol = (String)vals_.get(SYMBOL);	
 		int order_id = (int)vals_.get(ORDER_ID);
-		double price = (double)vals_.get(PRICE);
 		
-		if (execs.side_is_main((String)vals_.get(SIDE))) 
-		{
-			ib.orders.update_status(order_id, ib.orders.STATUS_FILLED);
-
-			double temp = execs.get_start_price(order_id);
-			if (common.price_is_ok(temp)) price = temp;
-			
-			async_trades.start(symbol, order_id, price);		
-		}
-		else 
-		{
-			ib.orders.deactivate(_order.get_id_main(order_id));
-			
-			double temp = execs.get_end_price(order_id);
-			if (common.price_is_ok(temp)) price = temp;
-			
-			async_trades.end(symbol, order_id, price);
-		}
+		if (execs.side_is_main((String)vals_.get(SIDE))) ib.orders.update_status(order_id, ib.orders.STATUS_FILLED);
+		else ib.orders.deactivate(_order.get_id_main(order_id));
 		
 		basic.update_money();
 	}

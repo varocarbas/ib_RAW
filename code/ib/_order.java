@@ -177,8 +177,15 @@ public class _order extends parent
 	{
 		int order_id = sync.__get_order_id();
 		
-		if (order_id <= common.WRONG_ORDER_ID) order_id = orders.get_highest_order_id() + 1;
+		int order_id2 = orders.get_highest_order_id();
 		
+		if (order_id2 > ib.orders.MIN_ORDER_ID) 
+		{
+			order_id2++;
+			
+			if (order_id <= common.WRONG_ORDER_ID || order_id < order_id2) order_id = order_id2;
+		}
+				
 		return order_id;
 	}
 	

@@ -15,8 +15,8 @@ public abstract class symbols
 	public static final String EXCHANGE_NYSE = _types.EXCHANGE_US_NYSE;
 	public static final String EXCHANGE_NASDAQ = _types.EXCHANGE_US_NASDAQ;
 
-	public static final int MAX_LENGTH_SYMBOL_US_STOCKS = 4;
-	public static final int MAX_LENGTH_SYMBOL_US_ANY = 5;
+	public static final int MAX_LENGTH_SYMBOL_US_STOCKS = 5;
+	public static final int MAX_LENGTH_SYMBOL_US_ANY = 7;
 	
 	public static final String DEFAULT_COUNTRY = strings.DEFAULT;
 	public static final String DEFAULT_EXCHANGE = EXCHANGE_US_ANY;

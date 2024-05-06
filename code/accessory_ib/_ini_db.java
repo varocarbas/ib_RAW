@@ -18,7 +18,7 @@ import db_ib.market;
 import db_ib.orders;
 import db_ib.remote;
 import db_ib.symbols;
-import db_ib.trades;
+import db_ib.temp_price;
 import db_ib.watchlist;
 
 public class _ini_db extends parent_ini_db 
@@ -51,10 +51,10 @@ public class _ini_db extends parent_ini_db
 		sources = add_source_basic(db, sources);
 		sources = add_source_remote(db, sources);
 		sources = add_source_orders(db, sources);
-		sources = add_source_trades(db, sources);
 		sources = add_source_watchlist(db, sources);
 		sources = add_source_apps(db, sources);
 		sources = add_source_symbols(db, sources);
+		sources = add_source_temp_price(db, sources);
 		
 		boolean is_ok = populate_db(db, name, sources, setup_vals);
 		
@@ -250,52 +250,6 @@ public class _ini_db extends parent_ini_db
 		return sources;
 	}
 	
-	private HashMap<String, Object[]> add_source_trades(String db_, HashMap<String, Object[]> sources_)
-	{
-		HashMap<String, Object[]> sources = (sources_ == null ? new HashMap<String, Object[]>() : new HashMap<String, Object[]>(sources_));
-		
-		HashMap<String, db_field> info = new HashMap<String, db_field>();
-		HashMap<String, db_field> info2 = new HashMap<String, db_field>();	
-
-		String source = trades.SOURCE;
-		
-		String table = "ib_trades";
-		
-		if (!ignore_source(source))
-		{
-			info.put(trades.SYMBOL, common.get_field_symbol(false));
-			info.put(trades.PRICE, common.get_field_price());
-			info.put(trades.TIME_ELAPSED, common.get_field_time_elapsed());
-			info.put(trades.START, common.get_field_price());
-			info.put(trades.STOP, common.get_field_price());
-			info.put(trades.UNREALISED, common.get_field_money());
-			info.put(trades.IS_ACTIVE, db_common.get_field_boolean(true));
-			info.put(trades.INVESTMENT, common.get_field_money());
-			info.put(trades.END, common.get_field_price());
-			info.put(trades.ELAPSED_INI, common.get_field_elapsed_ini());
-			info.put(trades.REALISED, common.get_field_money());
-			
-			info2 = new HashMap<String, db_field>(info);	
-			info2.put(trades.ORDER_ID_MAIN, common.get_field_order_id(true));
-			info2.put(trades.ORDER_ID_SEC, common.get_field_order_id(true));
-			
-			sources = add_source_common(db_, source, table, info2, sources);			
-		}
-
-		source = trades.SOURCE_OLD;
-		
-		if (!ignore_source(source))
-		{
-			info2 = new HashMap<String, db_field>(info);	
-			info2.put(trades.ORDER_ID_MAIN, common.get_field_order_id(false));
-			info2.put(trades.ORDER_ID_SEC, common.get_field_order_id(false));
-
-			sources = add_source_common(db_, source, get_table_old(table), info2, sources, true);			
-		}
-				
-		return sources;
-	}
-	
 	private HashMap<String, Object[]> add_source_watchlist(String db_, HashMap<String, Object[]> sources_)
 	{
 		String source = watchlist.SOURCE;
@@ -319,6 +273,7 @@ public class _ini_db extends parent_ini_db
 		info.put(watchlist.FLU2, db_common.get_field_decimal_tiny());
 		info.put(watchlist.FLU2_MIN, db_common.get_field_decimal_tiny());
 		info.put(watchlist.FLU2_MAX, db_common.get_field_decimal_tiny());
+		info.put(watchlist.FLU3, db_common.get_field_tiny());
 		info.put(watchlist.FLUS_PRICE, common.get_field_price());
 		info.put(watchlist.ELAPSED_INI, common.get_field_elapsed_ini());
 		info.put(watchlist.VAR_TOT, db_common.get_field_decimal_tiny());
@@ -401,6 +356,21 @@ public class _ini_db extends parent_ini_db
 		}
 		
 		return sources;
+	}
+	
+	private HashMap<String, Object[]> add_source_temp_price(String db_, HashMap<String, Object[]> sources_)
+	{
+		String source = temp_price.SOURCE;
+		if (ignore_source(source)) return sources_;
+		
+		String table = "ib_temp_price";
+		
+		HashMap<String, db_field> info = new HashMap<String, db_field>();
+		
+		info.put(temp_price.SYMBOL, common.get_field_symbol(true));
+		info.put(temp_price.PRICE, common.get_field_price());
+		
+		return add_source_common(db_, source, table, info, sources_);
 	}
 	
 	private HashMap<String, Object[]> add_source_common(String db_, String source_, String table_, HashMap<String, db_field> info_, HashMap<String, Object[]> sources_) { return add_source_common(db_, source_, table_, info_, sources_, false); }

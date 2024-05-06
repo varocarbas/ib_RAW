@@ -17,6 +17,7 @@ import accessory.generic;
 import accessory.strings;
 import accessory_ib._alls;
 import accessory_ib._types;
+import accessory_ib.numbers;
 
 public abstract class common 
 {
@@ -25,16 +26,15 @@ public abstract class common
 	public static final String SOURCE_BASIC = _types.CONFIG_DB_IB_BASIC_SOURCE;
 	public static final String SOURCE_REMOTE = _types.CONFIG_DB_IB_REMOTE_SOURCE;
 	public static final String SOURCE_ORDERS = _types.CONFIG_DB_IB_ORDERS_SOURCE;
-	public static final String SOURCE_TRADES = _types.CONFIG_DB_IB_TRADES_SOURCE;
 	public static final String SOURCE_WATCHLIST = _types.CONFIG_DB_IB_WATCHLIST_SOURCE;
 	public static final String SOURCE_APPS = _types.CONFIG_DB_IB_APPS_SOURCE;
 	public static final String SOURCE_SYMBOLS = _types.CONFIG_DB_IB_SYMBOLS_SOURCE;
+	public static final String SOURCE_TEMP_PRICE = _types.CONFIG_DB_IB_TEMP_PRICE_SOURCE;
 
 	public static final String SOURCE_EXECS_OLD = _types.CONFIG_DB_IB_EXECS_OLD_SOURCE;
 	public static final String SOURCE_BASIC_OLD = _types.CONFIG_DB_IB_BASIC_OLD_SOURCE;
 	public static final String SOURCE_REMOTE_OLD = _types.CONFIG_DB_IB_REMOTE_OLD_SOURCE;
 	public static final String SOURCE_ORDERS_OLD = _types.CONFIG_DB_IB_ORDERS_OLD_SOURCE;
-	public static final String SOURCE_TRADES_OLD = _types.CONFIG_DB_IB_TRADES_OLD_SOURCE;
 	public static final String SOURCE_APPS_OLD = _types.CONFIG_DB_IB_APPS_OLD_SOURCE;
 	public static final String SOURCE_SYMBOLS_OLD = _types.CONFIG_DB_IB_SYMBOLS_OLD_SOURCE;
 	
@@ -103,6 +103,7 @@ public abstract class common
 	public static final String FIELD_FLU2 = _types.CONFIG_DB_IB_FIELD_FLU2;
 	public static final String FIELD_FLU2_MIN = _types.CONFIG_DB_IB_FIELD_FLU2_MIN;
 	public static final String FIELD_FLU2_MAX = _types.CONFIG_DB_IB_FIELD_FLU2_MAX;
+	public static final String FIELD_FLU3 = _types.CONFIG_DB_IB_FIELD_FLU3;
 	public static final String FIELD_FLUS_PRICE = _types.CONFIG_DB_IB_FIELD_FLUS_PRICE;
 	public static final String FIELD_VAR_TOT = _types.CONFIG_DB_IB_FIELD_VAR_TOT;
 	
@@ -133,7 +134,7 @@ public abstract class common
 
 	public static final int MAX_SIZE_USER = 15;
 	public static final int MAX_SIZE_MONEY = db_common.DEFAULT_SIZE_DECIMAL;
-	public static final int MAX_SIZE_PRICE = 4;
+	public static final int MAX_SIZE_PRICE = 6;
 	public static final int MAX_SIZE_VOLUME = 5;
 	public static final int MAX_SIZE_APP_NAME = db_common.MAX_SIZE_KEY;
 	public static final int MAX_SIZE_ADDITIONAL = 50;
@@ -192,7 +193,7 @@ public abstract class common
 	
 	public static boolean is_enabled(String source_, String where_) { return (!arrays.value_exists(get_all_sources_enabled(), source_) || get_boolean(source_, FIELD_ENABLED, where_)); }
 
-	public static void delete_symbol(String symbol_) { delete_symbol(SOURCE_MARKET, symbol_); }
+	public static boolean has_enabled(String source_) { return arrays.value_exists(get_all_sources_enabled(), source_); }
 	
 	public static void delete_symbol(String source_, String symbol_) { db_common.delete(source_, get_where_symbol(source_, symbol_)); }
 	
@@ -264,7 +265,15 @@ public abstract class common
 
 		return db_common.update(source_, vals, where_);
 	}
+
+	public static boolean enable(String source_, String where_) { return enable_disable(source_, where_, true); }
 	
+	public static boolean enable_symbol(String source_, String symbol_) { return enable(source_, get_where_symbol(source_, symbol_)); }
+
+	public static boolean disable(String source_, String where_) { return enable_disable(source_, where_, false); }
+	
+	public static boolean disable_symbol(String source_, String symbol_) { return disable(source_, get_where_symbol(source_, symbol_)); }
+
 	public static boolean insert_update(String source_, String field_, Object val_, String where_) { return insert_update(source_, db_common.add_to_vals(source_, field_, val_, null), where_); }
 
 	public static boolean insert_update(String source_, Object vals_, String where_) { return db_common.insert_update(source_, get_insert_vals(source_, vals_), where_, db.FIELD_ID); }
@@ -311,15 +320,15 @@ public abstract class common
 	{ 
 		return (String[])arrays.add
 		(
-			populate_all_sources_new(), new String[] { SOURCE_EXECS_OLD, SOURCE_BASIC_OLD, SOURCE_REMOTE_OLD, SOURCE_ORDERS_OLD, SOURCE_TRADES_OLD, SOURCE_APPS_OLD, SOURCE_SYMBOLS_OLD }
+			populate_all_sources_new(), new String[] { SOURCE_EXECS_OLD, SOURCE_BASIC_OLD, SOURCE_REMOTE_OLD, SOURCE_ORDERS_OLD, SOURCE_APPS_OLD, SOURCE_SYMBOLS_OLD }
 		);
 	}
 	
-	public static String[] populate_all_sources_new() { return new String[] { SOURCE_MARKET, SOURCE_EXECS, SOURCE_BASIC, SOURCE_REMOTE, SOURCE_ORDERS, SOURCE_TRADES, SOURCE_WATCHLIST, SOURCE_APPS }; }
+	public static String[] populate_all_sources_new() { return new String[] { SOURCE_MARKET, SOURCE_EXECS, SOURCE_BASIC, SOURCE_REMOTE, SOURCE_ORDERS, SOURCE_WATCHLIST, SOURCE_APPS, SOURCE_TEMP_PRICE }; }
 	
 	public static String[] populate_all_sources_enabled() { return new String[] { SOURCE_MARKET }; }
 
-	public static String[] populate_all_sources_elapsed() { return new String[] { SOURCE_TRADES, SOURCE_WATCHLIST }; }
+	public static String[] populate_all_sources_elapsed() { return new String[] { SOURCE_WATCHLIST }; }
 
 	public static String[] get_all_sources_elapsed() { return _alls.DB_SOURCES_ELAPSED; }
 
@@ -369,7 +378,15 @@ public abstract class common
 	{
 		int max = get_max_size_number(field_);
 		
-		return (max <= db_common.WRONG_MAX_SIZE ? val_ : db_common.adapt_number(val_, max, arrays.key_exists(get_all_negative_numbers(), field_)));
+		int decimals = accessory.numbers.get_round_decimals();
+		
+		accessory.numbers.update_round_decimals(numbers.get_price_round_decimals(val_));
+		
+		double output = (max <= db_common.WRONG_MAX_SIZE ? val_ : db_common.adapt_number(val_, max, arrays.key_exists(get_all_negative_numbers(), field_)));
+	
+		accessory.numbers.update_round_decimals(decimals);
+		
+		return output;
 	}
 	
 	public static double get_max_val(String field_) 
@@ -464,9 +481,9 @@ public abstract class common
 	
 	public static db_field get_field_quantity() { return db_common.get_field_decimal(); }
 	
-	public static db_field get_field_size_volume() { return db_common.get_field_decimal(common.MAX_SIZE_VOLUME); }
+	public static db_field get_field_size_volume() { return db_common.get_field_decimal(MAX_SIZE_VOLUME); }
 	
-	public static db_field get_field_price() { return new db_field(data.DECIMAL, common.MAX_SIZE_PRICE, 2); }
+	public static db_field get_field_price() { return new db_field(data.DECIMAL, MAX_SIZE_PRICE, numbers.MAX_ROUND_DECIMALS_PRICES); }
 	
 	public static db_field get_field_halted() { return db_common.get_field_tiny(); }
 	
@@ -503,7 +520,6 @@ public abstract class common
 		add_to_sources_old(SOURCE_REMOTE, SOURCE_REMOTE_OLD);
 		
 		add_to_sources_old(SOURCE_ORDERS, SOURCE_ORDERS_OLD);
-		add_to_sources_old(SOURCE_TRADES, SOURCE_TRADES_OLD);
 		add_to_sources_old(SOURCE_APPS, SOURCE_APPS_OLD);
 	
 		_sources_old_populated = true;
@@ -523,7 +539,9 @@ public abstract class common
 
 		for (HashMap<String, String> vals: all_vals)
 		{
-			HashMap<String, String> vals2 = new HashMap<String, String>(vals);
+			HashMap<String, String> vals2 = new HashMap<String, String>();
+			
+			for (Entry<String, String> val: vals.entrySet()) { vals2.put(val.getKey(), db.adapt_input(val.getValue())); }
 			
 			if (vals2.containsKey(col_id)) vals2.remove(col_id);
 			vals2.put(col_date, date);
@@ -548,6 +566,8 @@ public abstract class common
 
 	private static long get_timestamp_elapsed(String source_, String where_, String unit_) { return dates.get_diff(get_string(source_, db.FIELD_TIMESTAMP, where_), ib.common.FORMAT_TIMESTAMP, dates.get_now_string(ib.common.FORMAT_TIMESTAMP, 0), ib.common.FORMAT_TIMESTAMP, unit_); }
 	
+	private static boolean enable_disable(String source_, String where_, boolean enable_) { return db_common.update(source_, FIELD_ENABLED, db.adapt_input(enable_), where_); }
+
 	private static String[] get_all_negative_numbers() { return _alls.DB_NEGATIVE_NUMBERS; }
 
 	private static Object get_insert_vals(String source_, Object vals_)
@@ -577,7 +597,7 @@ public abstract class common
 	private static HashMap<String, Double> get_all_max_vals() { return _alls.DB_MAX_VALS; }
 	
 	private static String[] get_all_sources_user() { return _alls.DB_SOURCES_USER; }
-
+	
 	private static String[] get_all_sources_enabled() { return _alls.DB_SOURCES_ENABLED; }
 	
 	private static String get_where_internal(String source_, String field_, String val_, boolean add_user_) 

@@ -134,6 +134,8 @@ public abstract class orders
 
 	public static _order to_order(HashMap<String, String> db_)
 	{
+		if (!arrays.is_ok(db_)) return new _order(null);
+		
 		String type_place = get_place_type((String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, TYPE_PLACE)));
 		String symbol = (String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, SYMBOL));
 		
@@ -249,7 +251,7 @@ public abstract class orders
 	{
 		int output = ib.orders.MIN_ORDER_ID;
 		
-		String[] fields = new String[] { orders.SOURCE, ORDER_ID_SEC };
+		String[] fields = new String[] { orders.ORDER_ID_MAIN, ORDER_ID_SEC };
 			
 		ArrayList<HashMap<String, String>> all = db_common.get_all_vals(SOURCE, fields, null);
 		if (!arrays.is_ok(all)) return output;
@@ -297,11 +299,7 @@ public abstract class orders
 
 	private static String get_status_common(String where_) { return common.get_type(SOURCE, STATUS, ib.orders.STATUS, where_); }
 
-	private static void sync_tables(_order order_)
-	{
-		sync_tables_remote(order_);
-		sync_tables_trades(order_);		
-	}
+	private static void sync_tables(_order order_) { sync_tables_remote(order_); }
 
 	private static void sync_tables_remote(_order order_)
 	{	
@@ -322,11 +320,6 @@ public abstract class orders
 		}
 		
 		remote.update_order_id(order_.get_id_main(), vals);
-	}
-
-	private static void sync_tables_trades(_order order_)
-	{
-		if (ib.common.price_is_ok(order_.get_stop())) trades.update_stop(order_.get_id_main(), order_.get_stop());	
 	}
 	
 	private static boolean exists_internal(int order_id_, boolean is_main_, String where_) 

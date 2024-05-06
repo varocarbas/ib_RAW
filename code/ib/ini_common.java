@@ -1,10 +1,8 @@
 package ib;
 
-import accessory.numbers;
+import accessory_ib.numbers;
 
 public abstract class ini_common 
 {
-	public static final int DEFAULT_ROUND_DECIMALS = 2;
-
-	public static void start() { numbers.update_round_decimals(DEFAULT_ROUND_DECIMALS); }
+	public static void start() { accessory.numbers.update_round_decimals(numbers.DEFAULT_ROUND_DECIMALS); }
 }

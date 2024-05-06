@@ -1,6 +1,8 @@
 package ib;
 
 import accessory.strings;
+import accessory_ib._types;
+import accessory_ib.config;
 import accessory._keys;
 import accessory.arrays;
 import accessory.dates;
@@ -8,13 +10,15 @@ import accessory.misc;
 import accessory.numbers;
 
 public abstract class common
-{	
+{
 	public static final String FORMAT_TIME = dates.FORMAT_TIME_FULL;
 	public static final String FORMAT_TIME2 = dates.FORMAT_TIME_FULL;
 	public static final String FORMAT_TIME_ELAPSED = dates.FORMAT_TIME_FULL;
 	public static final String FORMAT_DATE = dates.FORMAT_DATE;
 	public static final String FORMAT_TIMESTAMP = dates.FORMAT_TIMESTAMP;
-		
+
+	public static final String CONFIG_ALWAYS_DISABLE_SYMBOL = _types.CONFIG_COMMON_ALWAYS_DISABLE_SYMBOL;
+
 	public static final double WRONG_VALUE = 0.0;
 	public static final double WRONG_PRICE = 0.0;
 	public static final double WRONG_SIZE = 0.0;
@@ -30,7 +34,13 @@ public abstract class common
 	public static final int WRONG_I = arrays.WRONG_I;
 	
 	public static final String DEFAULT_FORMAT_TIME = FORMAT_TIME;
+	public static final int DEFAULT_WAIT_SECS_PRICE = 2;
+	public static final boolean DEFAULT_ALWAYS_DISABLE_SYMBOL = false;
 	
+	public static boolean always_disable_symbol() { return config.get_common_boolean(CONFIG_ALWAYS_DISABLE_SYMBOL); }
+
+	public static boolean always_disable_symbol(boolean always_disable_symbol_) { return config.update_common(CONFIG_ALWAYS_DISABLE_SYMBOL, always_disable_symbol_); }
+
 	public static String get_current_time() { return get_current_time(true); }
 
 	public static String get_current_time2() { return get_current_time(false); }
@@ -97,14 +107,16 @@ public abstract class common
 
 	public static double _get_price(String symbol_, boolean check_ib_) 
 	{ 
-		double output = get_price(symbol_);
+		double output = WRONG_PRICE;
 		
 		if (check_ib_)
 		{
 			double temp = __get_price(symbol_);
 			
-			if (ib.common.price_is_ok(temp)) output = temp;
+			if (price_is_ok(temp)) output = temp;
 		}
+		
+		if (!price_is_ok(output)) output = get_price(symbol_);
 		
 		return output; 
 	}
@@ -116,11 +128,10 @@ public abstract class common
 		String symbol = check_symbol(symbol_);
 		if (!strings.is_ok(symbol)) return price;
 		
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 2; i++)
 		{
 			if (i == 0) price = watchlist.get_price(symbol_);
 			else if (i == 1) price = market.get_price(symbol_);
-			else if (i == 2) price = trades.get_price(symbol_);
 			
 			if (price_is_ok(price)) break;	
 		}
@@ -128,8 +139,10 @@ public abstract class common
 		return price;
 	}
 
-	public static double __get_price(String symbol_) { return watchlist.__get_price(symbol_); }
+	public static double __get_price(String symbol_) { return __get_price(symbol_, DEFAULT_WAIT_SECS_PRICE); }
 
+	public static double __get_price(String symbol_, int pause_secs_) { return watchlist_quicker.__get_price(symbol_, pause_secs_); }
+	
 	public static String get_symbol(int order_id_main_)
 	{
 		String symbol = strings.DEFAULT;
@@ -167,7 +180,13 @@ public abstract class common
 
 	public static String get_type(String key_, String root_) { return _keys.get_startup_type(key_, root_); }
 
-	public static void delete_symbol(String symbol_) { db_ib.common.delete_symbol(symbol_); }
+	public static void delete_symbol(String symbol_) { delete_symbol(db_ib.common.SOURCE_MARKET, symbol_); }
+	
+	public static void delete_symbol(String source_, String symbol_) 
+	{
+		if (always_disable_symbol() && db_ib.common.has_enabled(source_)) db_ib.common.disable_symbol(source_, symbol_);
+		else db_ib.common.delete_symbol(source_, symbol_); 
+	}
 	
 	static String get_log_file_id(String id_) 
 	{

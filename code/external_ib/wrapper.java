@@ -85,7 +85,7 @@ public class wrapper implements EWrapper
 	public void tickSnapshotEnd(int id_) { wrapper_main.__tick_snapshot_end(id_); }
 
 	@Override
-	public void error(int id_, int code_, String message_) { wrapper_errors.manage(id_, code_, message_); }
+	public void error(int id_, int code_, String message_) { wrapper_errors.__manage(id_, code_, message_); }
 
 	@Override
 	public void orderStatus(int order_id_, String status_ib_, double filled_, double remaining_, double avg_fill_price_, int perm_id_, int parent_id_, double last_fill_price_, int client_id_, String why_held_, double mkt_cap_price_) { wrapper_main.order_status(order_id_, status_ib_); }

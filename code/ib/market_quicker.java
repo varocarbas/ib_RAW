@@ -22,6 +22,10 @@ public abstract class market_quicker
 	public static boolean is_only_essential() { return async_data_market_quicker.is_only_essential(); }
 	
 	public static void __only_essential(boolean only_essential_) { async_data_market_quicker.__only_essential(only_essential_); }	
+	
+	public static boolean is_only_halts() { return async_data_market_quicker.is_only_halts(); }
+	
+	public static void __only_halts(boolean only_halts_) { async_data_market_quicker.__only_halts(only_halts_); }	
 
 	public static void __start(ArrayList<String> symbols_) 
 	{ 

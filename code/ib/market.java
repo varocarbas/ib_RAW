@@ -2,7 +2,6 @@ package ib;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 
 import accessory.arrays;
 import accessory.dates;
@@ -49,26 +48,6 @@ public abstract class market
 	public static boolean is_quick() { return db_common.is_quick(DB_SOURCE); }
 	
 	public static void is_quick(boolean is_quick_) { db_common.is_quick(DB_SOURCE, is_quick_); }
-
-	public static boolean logs_to_screen() { return async_data_market.logs_to_screen(); }
-
-	public static void logs_to_screen(boolean logs_to_screen_) { async_data_market.logs_to_screen(logs_to_screen_); }
-
-	public static boolean snapshot_nonstop() { return async_data_market.snapshot_nonstop(); }
-
-	public static void snapshot_nonstop(boolean snapshot_nonstop_) { async_data_market.snapshot_nonstop(snapshot_nonstop_); }
-
-	public static int max_simultaneous_symbols() { return async_data_market.MAX_SIMULTANEOUS_SYMBOLS; }
-	
-	public static boolean start(String symbol_) { return async_data_market.start(symbol_); }
-
-	public static boolean start_snapshot(String symbol_) { return async_data_market.start_snapshot(symbol_); }
-
-	public static boolean start_stream(String symbol_) { return async_data_market.start_stream(symbol_); }
-
-	public static void stop(String symbol_) { async_data_market.stop(symbol_); }
-
-	public static void stop_all() { async_data_market.stop_all(); }
 	
 	public static double get_price(String symbol_) 
 	{ 
@@ -76,10 +55,6 @@ public abstract class market
 		
 		return (strings.is_ok(symbol) ? db_ib.async_data.get_price(DB_SOURCE, symbol) : common.WRONG_PRICE); 
 	}
-	
-	public static ArrayList<String> get_active_symbols() { return async_data_market.get_active_symbols(); }
-	
-	public static ArrayList<String> get_all_symbols() { return async_data_market.get_all_symbols(); }
 
 	public static int get_offset() { return ini_market.get_offset(); }
 	

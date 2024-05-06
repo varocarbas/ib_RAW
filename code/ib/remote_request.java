@@ -116,17 +116,23 @@ abstract class remote_request extends parent_static
 			return REQUEST_ERROR;
 		}
 				
-		String symbol = db_ib.remote.get_symbol(request_);
+		HashMap<String, String> temp = db_ib.remote.get_vals(request_, new String[] { db_ib.remote.SYMBOL, db_ib.remote.ORDER_ID_MAIN });
+		
+		String symbol = ib.remote.get_symbol(temp);
+		int order_id = ib.remote.get_order_id_main(temp);
 		
 		remote.log(remote.get_ok_message_default(remote.CANCEL, request_, symbol, common.WRONG_ORDER_ID, true)); 
 		
 		String output = REQUEST_OK;
 
 		if (wait_for_execution_ && !__wait_for_execution(request_, true)) 
-		{				
-			update_error_wait(request_, symbol, remote.CANCEL);
-			
-			output = (ib.orders.is_submitted(symbol) ? REQUEST_ERROR : REQUEST_IGNORED);
+		{
+			if (!ib.orders._is_inactive_both(order_id))
+			{
+				update_error_wait(request_, symbol, remote.CANCEL);
+				
+				output = REQUEST_ERROR;
+			}
 		}
 		
 		return output;
@@ -193,7 +199,7 @@ abstract class remote_request extends parent_static
 	{	
 		int output = common.WRONG_REQUEST;
 		
-		if (!remote.multiple_trades_symbol())
+		if (!basic.multiple_trades_symbol())
 		{
 			output = db_ib.remote.get_any_request(symbol_);
 			

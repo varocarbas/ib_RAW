@@ -55,6 +55,7 @@ public abstract class orders
 	
 	public static final String DEFAULT_STATUS = STATUS_SUBMITTED;
 	public static final boolean DEFAULT_IS_QUICK = true;
+	public static final boolean DEFAULT_WAIT_AFTER_EXECUTE_ORDER = true;
 	
 	public static boolean is_quick() { return db_common.is_quick(DB_SOURCE); }
 	
@@ -68,18 +69,24 @@ public abstract class orders
 
 	public static boolean _place_stop_limit(String symbol_, double quantity_, double stop_, double start_limit_, double start_stop_) { return sync_orders._place(PLACE_STOP_LIMIT, symbol_, quantity_, stop_, start_limit_, start_stop_); }
 
-	public static boolean update(int id_, String type_, double val_) { return sync_orders.update(sync_orders.__get_order(id_), check_update(type_), val_); }
+	public static boolean __update(int id_, String type_, double val_) { return __update(id_, type_, val_, DEFAULT_WAIT_AFTER_EXECUTE_ORDER); }
 
-	public static boolean __update_start(String symbol_, double start_) { return sync_orders.__update(symbol_, UPDATE_START_VALUE, start_); }
+	public static boolean __update(int id_, String type_, double val_, boolean wait_) { return sync_orders.update(__get_order(id_), check_update(type_), val_, wait_); }
 
-	public static boolean __update_start_market(String symbol_) { return sync_orders.__update(symbol_, UPDATE_START_MARKET, common.WRONG_PRICE); }
+	public static boolean __update_start(String symbol_, double start_) { return sync_orders.__update(symbol_, UPDATE_START_VALUE, start_, DEFAULT_WAIT_AFTER_EXECUTE_ORDER); }
 
-	public static boolean __update_stop(String symbol_, double stop_) { return sync_orders.__update(symbol_, UPDATE_STOP_VALUE, stop_); }
+	public static boolean __update_start_market(String symbol_) { return sync_orders.__update(symbol_, UPDATE_START_MARKET, common.WRONG_PRICE, DEFAULT_WAIT_AFTER_EXECUTE_ORDER); }
 
-	public static boolean __update_stop_market(String symbol_) { return sync_orders.__update(symbol_, UPDATE_STOP_MARKET, common.WRONG_PRICE); }
+	public static boolean __update_stop(String symbol_, double stop_) { return sync_orders.__update(symbol_, UPDATE_STOP_VALUE, stop_, DEFAULT_WAIT_AFTER_EXECUTE_ORDER); }
 
-	public static boolean __update_start2(String symbol_, double start2_) { return sync_orders.__update(symbol_, UPDATE_START2_VALUE, start2_); }
+	public static boolean __update_stop_market(String symbol_) { return sync_orders.__update(symbol_, UPDATE_STOP_MARKET, common.WRONG_PRICE, DEFAULT_WAIT_AFTER_EXECUTE_ORDER); }
 
+	public static boolean __update_start2(String symbol_, double start2_) { return sync_orders.__update(symbol_, UPDATE_START2_VALUE, start2_, DEFAULT_WAIT_AFTER_EXECUTE_ORDER); }
+
+	public static boolean _place_update(_order order_, boolean wait_) { return sync_orders._place_update(order_, wait_); }
+
+	public static boolean _place_update(_order order_, String update_type_, double update_val_, boolean wait_) { return sync_orders._place_update(order_, update_type_, update_val_, wait_); }
+	
 	public static boolean __cancel(int order_id_main_)
 	{ 	
 		boolean output = false;
@@ -91,15 +98,19 @@ public abstract class orders
 		else output = sync_orders.cancel(order_id_main_);
 		
 		return output;
-	}	
+	}
+	
+	public static _order __get_order(int id_main_) { return sync_orders.__get_order(id_main_); }
 
+	public static _order __get_order(int id_main_, boolean perform_checks_) { return sync_orders.__get_order(id_main_, perform_checks_); }
+	
 	public static boolean is_submitted(int order_id_main_) { return order_is_common(order_id_main_, STATUS_SUBMITTED); }
 
 	public static boolean is_submitted(String symbol_) { return order_is_common(symbol_, STATUS_SUBMITTED); }
 
 	public static boolean __is_submitted_ib(int order_id_main_) { return sync_orders.is_submitted(order_id_main_, sync.__get_orders()); }	
 	
-	public static boolean __is_submitted_both(int order_id_main_) { return (is_submitted(order_id_main_) || __is_submitted_ib(order_id_main_)); }
+	public static boolean _is_submitted_both(int order_id_main_) { return (is_submitted(order_id_main_) || __is_submitted_ib(order_id_main_)); }
 
 	public static boolean is_filled(int order_id_main_) { return order_is_common(order_id_main_, STATUS_FILLED); }	
 
@@ -107,7 +118,7 @@ public abstract class orders
 
 	public static boolean __is_filled_ib(int order_id_main_) { return is_filled_ib(order_id_main_, sync.__get_orders()); }	
 
-	public static boolean __is_filled_both(int order_id_main_) { return (is_filled(order_id_main_) || __is_filled_ib(order_id_main_)); }
+	public static boolean _is_filled_both(int order_id_main_) { return (is_filled(order_id_main_) || __is_filled_ib(order_id_main_)); }
 
 	public static boolean is_filled_ib(int order_id_main_, HashMap<Integer, String> orders_) { return sync_orders.is_filled(order_id_main_, orders_); }	
 
@@ -116,7 +127,9 @@ public abstract class orders
 	public static boolean is_inactive(String symbol_) { return (!db_ib.orders.exists(symbol_) || order_is_common(symbol_, STATUS_INACTIVE)); }	
 
 	public static boolean __is_inactive_ib(int order_id_main_) { return sync_orders.is_inactive(order_id_main_, sync.__get_orders()); }	
-	
+
+	public static boolean _is_inactive_both(int order_id_main_) { return (is_inactive(order_id_main_) || __is_inactive_ib(order_id_main_)); }
+
 	public static boolean is_active(int order_id_main_) { return !is_inactive(order_id_main_); }	
 	
 	public static boolean is_active(String symbol_) { return !is_inactive(symbol_); }	

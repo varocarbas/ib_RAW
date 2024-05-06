@@ -5,6 +5,7 @@ import java.util.HashMap;
 import accessory.parent_ini_config;
 import external_ib.contracts;
 import ib.basic;
+import ib.common;
 import ib.conn;
 import ib.remote;
 import ib._order;
@@ -20,6 +21,8 @@ public class _ini_config extends parent_ini_config
 	protected void populate_all_internal()
 	{
 		load_basic();
+		
+		load_common();
 		
 		load_order();
 		
@@ -37,14 +40,28 @@ public class _ini_config extends parent_ini_config
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
 		vals.put(basic.CONFIG_ID_MAIN, _defaults.ID_MAIN);
+		vals.put(basic.CONFIG_MULTIPLE_TRADES, basic.DEFAULT_MULTIPLE_TRADES);
+		vals.put(basic.CONFIG_MULTIPLE_TRADES_SYMBOL, basic.DEFAULT_MULTIPLE_TRADES_SYMBOL);
+		
 		vals.put(paths.CONFIG_DIR_TWS, paths.get_default_dir_app_ib(true));
 		vals.put(paths.CONFIG_DIR_GATEWAY, paths.get_default_dir_app_ib(false));
 		vals.put(paths.CONFIG_PATH_MARKET_HOLIDAYS, paths.get_default_path_market_holidays());
 		vals.put(paths.CONFIG_PATH_MARKET_EARLY_CLOSES, paths.get_default_path_market_early_closes());
-		
+
 		return populate(type, null, vals);
 	}
+	
+	private boolean load_common()
+	{
+		String type = _types.CONFIG_COMMON;
 
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		
+		vals.put(common.CONFIG_ALWAYS_DISABLE_SYMBOL, common.DEFAULT_ALWAYS_DISABLE_SYMBOL);
+
+		return populate(type, null, vals);
+	}
+	
 	private boolean load_order()
 	{
 		String type = _types.CONFIG_ORDERS;
@@ -89,7 +106,7 @@ public class _ini_config extends parent_ini_config
 
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
-		vals.put(remote.CONFIG_MULTIPLE_TRADES_SYMBOL, remote.DEFAULT_MULTIPLE_TRADES_SYMBOL);
+		vals.put(remote.CONFIG_UPDATE_WAIT_FOR_ERRORS, remote.DEFAULT_UPDATE_WAIT_FOR_ERRORS);
 
 		return populate(type, null, vals);
 	}

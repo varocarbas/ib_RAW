@@ -34,9 +34,7 @@ public abstract class basic
 
 		orders.__truncate(only_if_not_active_);
 		
-		remote.__truncate(only_if_not_active_);
-		
-		trades.__truncate(only_if_not_active_);		
+		remote.__truncate(only_if_not_active_);	
 	}
 	
 	public static boolean exists() { return db_common.exists(SOURCE, get_where_user()); }

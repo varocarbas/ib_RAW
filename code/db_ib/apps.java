@@ -56,7 +56,7 @@ public abstract class apps
 	
 	public static boolean is_running(String app_) { return apps_cache.is_running(app_); }
 	
-	public static boolean is_stopped(String app_) { return  apps_cache.is_stopped(app_); }
+	public static boolean is_stopped(String app_) { return apps_cache.is_stopped(app_); }
 	
 	public static boolean is_connected(String app_) { return db_common.exists(SOURCE, db_common.join_wheres(get_where_app(app_), get_where_connected(true))); }
 	

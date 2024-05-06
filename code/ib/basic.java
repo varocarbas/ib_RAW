@@ -35,25 +35,27 @@ public abstract class basic extends parent_static
 	
 	public static final String SEPARATOR = misc.SEPARATOR_NAME;
 
-	public static final String CONFIG_ID_MAIN = _types.CONFIG_BASIC_IB_ID_MAIN;
+	public static final double MAX_PERC_MONEY = 90.0;
 	
+	public static final String CONFIG_ID_MAIN = _types.CONFIG_BASIC_IB_ID_MAIN;
+	public static final String CONFIG_MULTIPLE_TRADES = _types.CONFIG_BASIC_IB_MULTIPLE_TRADES;
+	public static final String CONFIG_MULTIPLE_TRADES_SYMBOL = _types.CONFIG_BASIC_IB_MULTIPLE_TRADES_SYMBOL;
+
 	public static final double WRONG_MONEY2 = common.WRONG_MONEY2;
 	
 	public static final String DEFAULT_USER = _defaults.USER;
 	public static final String DEFAULT_TYPE = TYPE_REAL;
+	public static final boolean DEFAULT_MULTIPLE_TRADES = true;
+	public static final boolean DEFAULT_MULTIPLE_TRADES_SYMBOL = (DEFAULT_MULTIPLE_TRADES ? true : false);
 	
 	private static boolean _ignore_ib_info = false;
 	
 	public static boolean is_quick() { return db_common.is_quick(DB_SOURCE); }
 	
 	public static void is_quick(boolean is_quick_) { db_common.is_quick(DB_SOURCE, is_quick_); }
-
-	public static void __start() { __start(trades.DEFAULT_SYNCED_WITH_EXECS); }
 	
-	public static void __start(boolean trades_synced_with_execs_) 
+	public static void __start() 
 	{
-		trades.synced_with_execs(trades_synced_with_execs_);
-		
 		__start_internal(); 
 		
 		db_ib.basic.__start();
@@ -63,6 +65,22 @@ public abstract class basic extends parent_static
 
 	public static boolean update_id_main(String id_) { return config.update_basic(CONFIG_ID_MAIN, id_); }
 	
+	public static boolean multiple_trades() { return config.get_basic_boolean(CONFIG_MULTIPLE_TRADES); }
+
+	public static boolean multiple_trades(boolean multiple_trades_) { return config.update_basic(CONFIG_MULTIPLE_TRADES, multiple_trades_); }
+	
+	public static boolean multiple_trades_symbol() { return config.get_basic_boolean(CONFIG_MULTIPLE_TRADES_SYMBOL); }
+
+	public static boolean multiple_trades_symbol(boolean multiple_trades_symbol_) 
+	{ 
+		boolean output = false;
+
+		if (multiple_trades_symbol_ && !multiple_trades()) config.update_basic(CONFIG_MULTIPLE_TRADES_SYMBOL, false); 
+		else output = config.update_basic(CONFIG_MULTIPLE_TRADES_SYMBOL, multiple_trades_symbol_); 
+	
+		return output;
+	}
+
 	public static String get_user() { return ini_basic.get_user(); }
 	
 	public static String get_account_ib() { return get_account_ib(ini_basic.get_account_type_ib()); }
@@ -215,6 +233,10 @@ public abstract class basic extends parent_static
 	
 	public static String get_type_from_conn(String conn_type_) { return conn.get_account_type(conn_type_); }
 	
+	public static double __get_investment(double perc_) { return get_investment_common(__get_money_and_free(), perc_); }
+	
+	public static double get_investment(double perc_) { return get_investment_common(get_money_and_free(), perc_); }
+	
 	static boolean update_funds_is_ok(String account_id_, String key_, String value_, String currency_) { return (arrays.is_ok(calls.get_funds_fields(key_)) && strings.is_ok(value_) && account_ib_is_ok(account_id_) && contracts.currency_is_ok(currency_)); }
 
 	static String get_account_ib_last(String account_ib_, String type_, boolean decrypt_) 
@@ -272,6 +294,25 @@ public abstract class basic extends parent_static
 			
 			output.put(item.getKey(), val);
 		}
+		
+		return output;
+	}
+
+	private static double get_investment_common(HashMap<String, Double> money_and_free_, double perc_)
+	{
+		double output = WRONG_MONEY2;
+		if (!common.percent_is_ok(perc_, false) || !arrays.is_ok(money_and_free_)) return output;
+	
+		double money = money_and_free_.get(DB_MONEY);	
+		double free = money_and_free_.get(DB_MONEY_FREE);
+		
+		if (money <= WRONG_MONEY2 || free <= WRONG_MONEY2) return output;
+
+		double perc = (perc_ > MAX_PERC_MONEY ? MAX_PERC_MONEY : perc_);	
+		output = money * perc / 100.0;			
+
+		free *= MAX_PERC_MONEY / 100;
+		if (output > free) output = free;
 		
 		return output;
 	}

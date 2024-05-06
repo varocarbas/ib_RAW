@@ -39,4 +39,10 @@ public abstract class watchlist_quicker
 	public static void __remove_all() { async_data_watchlist_quicker.__remove_all(); }
 
 	public static ArrayList<String> get_all_symbols() { return async_data_watchlist_quicker.get_all_symbols(); }
+
+	public static double __get_price(String symbol_) { return __get_price(symbol_, common.DEFAULT_WAIT_SECS_PRICE); }
+	
+	public static double __get_price(String symbol_, int pause_secs_) { return async_data_watchlist_quicker.__get_price(symbol_, pause_secs_); }
+
+	public static double get_price(String symbol_) { return async_data_watchlist_quicker.get_price(symbol_); }
 }

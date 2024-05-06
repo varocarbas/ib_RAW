@@ -64,11 +64,9 @@ public abstract class remote
 	public static final String UPDATE_START2_VALUE = _types.REMOTE_ORDERS_UPDATE_START2_VALUE;
 	public static final String UPDATE_STOP_VALUE = _types.REMOTE_ORDERS_UPDATE_STOP_VALUE;
 	public static final String UPDATE_STOP_MARKET = _types.REMOTE_ORDERS_UPDATE_STOP_MARKET;
+	
+	public static final String CONFIG_UPDATE_WAIT_FOR_ERRORS = _types.CONFIG_REMOTE_UPDATE_WAIT_FOR_ERRORS;
 
-	public static final double MAX_PERC_MONEY = 90.0;
-	
-	public static final String CONFIG_MULTIPLE_TRADES_SYMBOL = _types.CONFIG_REMOTE_MULTIPLE_TRADES_SYMBOL;
-	
 	public static final int WRONG_REQUEST = common.WRONG_REQUEST;
 	public static final double WRONG_MONEY2 = common.WRONG_MONEY2;
 
@@ -79,7 +77,8 @@ public abstract class remote
 	public static final boolean DEFAULT_LOGS_TO_FILE = false;
 	public static final String DEFAULT_PATH_LOGS = common.get_log_file_id(_ID);
 	public static final boolean DEFAULT_MULTIPLE_TRADES_SYMBOL = true;
-	
+	public static final boolean DEFAULT_UPDATE_WAIT_FOR_ERRORS = true;
+
 	static String _temp_type_error = null;
 
 	private static boolean _logs_to_file = DEFAULT_LOGS_TO_FILE;
@@ -97,9 +96,9 @@ public abstract class remote
 	
 	public static void logs_to_file(boolean logs_to_file_) { _logs_to_file = logs_to_file_; }
 	
-	public static boolean multiple_trades_symbol() { return config.get_remote_boolean(CONFIG_MULTIPLE_TRADES_SYMBOL); }
+	public static boolean update_wait_for_errors() { return config.get_remote_boolean(CONFIG_UPDATE_WAIT_FOR_ERRORS); }
 
-	public static boolean multiple_trades_symbol(boolean multiple_trades_symbol_) { return config.update_remote(CONFIG_MULTIPLE_TRADES_SYMBOL, multiple_trades_symbol_); }
+	public static boolean update_wait_for_errors(boolean update_wait_for_errors_) { return config.update_remote(CONFIG_UPDATE_WAIT_FOR_ERRORS, update_wait_for_errors_); }
 	
 	public static int __request_place(String type_place_, String symbol_, double stop_, double start_, double quantity_) { return __request_place(type_place_, symbol_, stop_, start_, quantity_, DEFAULT_WAIT_FOR_EXECUTION); }
 
@@ -366,34 +365,11 @@ public abstract class remote
 	
 	private static double __get_investment(double perc_, boolean log_)
 	{
-		double investment = WRONG_MONEY2;
-		if (!common.percent_is_ok(perc_, false)) return investment;
+		double output = basic.__get_investment(perc_);
 		
-		HashMap<String, Double> money_all = ib.basic.__get_money_and_free();
-		if (!arrays.is_ok(money_all)) 
-		{
-			if (log_) log("not enough money");
-
-			return investment;
-		}
+		if (output <= basic.WRONG_MONEY2 && log_) log("not enough money");
 		
-		double money = money_all.get(ib.basic.DB_MONEY);	
-		double free = money_all.get(ib.basic.DB_MONEY_FREE);
-		
-		if (money <= basic.WRONG_MONEY2 || free <= basic.WRONG_MONEY2) 
-		{
-			if (log_) log("not enough money (" + strings.to_string(money_all) + ")");
-
-			return investment;
-		}
-
-		double perc = (perc_ > MAX_PERC_MONEY ? MAX_PERC_MONEY : perc_);	
-		investment = money * perc / 100.0;			
-
-		free = MAX_PERC_MONEY * free / 100;
-		if (investment > free) investment = free;
-		
-		return investment;
+		return output;
 	}
 
 	private static String get_error_message(String type_, Object vals_)

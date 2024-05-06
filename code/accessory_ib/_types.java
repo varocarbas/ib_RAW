@@ -16,7 +16,12 @@ public class _types extends parent_types
 	public static final String CONFIG_BASIC_IB_DIR_GATEWAY = "config_basic_ib_dir_gateway";	
 	public static final String CONFIG_BASIC_IB_PATH_MARKET_HOLIDAYS = "config_basic_ib_path_market_holidays";
 	public static final String CONFIG_BASIC_IB_PATH_MARKET_EARLY_CLOSES = "config_basic_ib_path_market_early_closes";
-	
+	public static final String CONFIG_BASIC_IB_MULTIPLE_TRADES = "config_basic_ib_multiple_trades";
+	public static final String CONFIG_BASIC_IB_MULTIPLE_TRADES_SYMBOL = "config_basic_ib_multiple_trades_symbol";
+
+	public static final String CONFIG_COMMON = "config_common";
+	public static final String CONFIG_COMMON_ALWAYS_DISABLE_SYMBOL = "config_common_always_disable_symbol";
+
 	public static final String CONFIG_ORDERS = "config_orders";
 	public static final String CONFIG_ORDERS_TIF = "config_orders_tif";
 	public static final String CONFIG_ORDERS_QUANTITIES_INT = "config_orders_quantities_int";
@@ -34,7 +39,7 @@ public class _types extends parent_types
 	public static final String CONFIG_CONN_CHECK_RUNNING = "config_conn_check_running";
 
 	public static final String CONFIG_REMOTE = "config_remote";
-	public static final String CONFIG_REMOTE_MULTIPLE_TRADES_SYMBOL = "config_remote_multiple_trades_symbol";
+	public static final String CONFIG_REMOTE_UPDATE_WAIT_FOR_ERRORS = "config_remote_update_wait_for_errors";
 	
 	public static final String CONFIG_DB_IB = "config_db_ib";
 	public static final String CONFIG_DB_IB_MARKET = "config_db_ib_market";
@@ -55,10 +60,6 @@ public class _types extends parent_types
 	public static final String CONFIG_DB_IB_ORDERS_SOURCE = "config_db_ib_orders_source";
 	public static final String CONFIG_DB_IB_ORDERS_OLD = "config_db_ib_orders_old";
 	public static final String CONFIG_DB_IB_ORDERS_OLD_SOURCE = "config_db_ib_orders_old_source";
-	public static final String CONFIG_DB_IB_TRADES = "config_db_ib_trades";
-	public static final String CONFIG_DB_IB_TRADES_SOURCE = "config_db_ib_trades_source";
-	public static final String CONFIG_DB_IB_TRADES_OLD = "config_db_ib_trades_old";
-	public static final String CONFIG_DB_IB_TRADES_OLD_SOURCE = "config_db_ib_trades_old_source";
 	public static final String CONFIG_DB_IB_WATCHLIST = "config_db_ib_watchlist";
 	public static final String CONFIG_DB_IB_WATCHLIST_SOURCE = "config_db_ib_watchlist_source";
 	public static final String CONFIG_DB_IB_APPS = "config_db_ib_apps";
@@ -69,7 +70,9 @@ public class _types extends parent_types
 	public static final String CONFIG_DB_IB_SYMBOLS_SOURCE = "config_db_ib_symbols_source";
 	public static final String CONFIG_DB_IB_SYMBOLS_OLD = "config_db_ib_symbols_old";
 	public static final String CONFIG_DB_IB_SYMBOLS_OLD_SOURCE = "config_db_ib_symbols_old_source";
-
+	public static final String CONFIG_DB_IB_TEMP_PRICE = "config_db_ib_temp_price";
+	public static final String CONFIG_DB_IB_TEMP_PRICE_SOURCE = "config_db_ib_temp_price_source";
+	
 	public static final String CONFIG_DB_IB_FIELD = "config_db_ib_field";
 	public static final String CONFIG_DB_IB_FIELD_USER = "config_db_ib_field_user";
 	public static final String CONFIG_DB_IB_FIELD_SIZE = "config_db_ib_field_size";
@@ -135,6 +138,7 @@ public class _types extends parent_types
 	public static final String CONFIG_DB_IB_FIELD_FLU2 = "config_db_ib_field_flu2";
 	public static final String CONFIG_DB_IB_FIELD_FLU2_MIN = "config_db_ib_field_flu2_min";
 	public static final String CONFIG_DB_IB_FIELD_FLU2_MAX = "config_db_ib_field_flu2_max";	
+	public static final String CONFIG_DB_IB_FIELD_FLU3 = "config_db_ib_field_flu3";	
 	public static final String CONFIG_DB_IB_FIELD_FLUS_PRICE = "config_db_ib_field_flus_price";
 	public static final String CONFIG_DB_IB_FIELD_VAR_TOT = "config_db_ib_field_var_tot";	
 

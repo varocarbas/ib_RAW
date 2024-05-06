@@ -11,24 +11,45 @@ abstract class async_data_market_quicker extends parent_static
 	public static final String SOURCE = db_ib.market.SOURCE;
 	public static final int MAX_SIMULTANEOUS_SYMBOLS = 5000;
 	
-	static final int SIZE_GLOBALS = 2000;
-	static final int MAX_ID = SIZE_GLOBALS + async_data_quicker.MIN_ID - 1;	
+	static final int SIZE_GLOBALS = 2500;
 	static final boolean INCLUDES_TIME = true;
 	static final boolean INCLUDES_TIME_ELAPSED = false;
 	static final boolean INCLUDES_HALTED = true;
 	static final boolean INCLUDES_HALTED_TOT = true;
-
+	
 	static volatile String[] _symbols = new String[SIZE_GLOBALS];
 	static volatile double[][] _vals = new double[SIZE_GLOBALS][];
 	static volatile int[] _fields_ib = null;
 	
-	static volatile int _last_id = async_data_quicker.MIN_ID;
+	static int _min_id = async_data_quicker.WRONG_ID;
+	static int _max_id = async_data_quicker.WRONG_ID;
+	
+	static volatile int _last_id = get_min_id() - 1;
 	static volatile boolean _only_db = false;
 	static volatile boolean _check_enabled = true;
 	static volatile boolean _only_essential = false;
-
+	static volatile boolean _only_halts = false;
+	
+	private static final int DEFAULT_MIN_ID = 2013;
+	
 	private static boolean _log = async_data_quicker.DEFAULT_LOG;
+	
+	public static int get_max_id() 
+	{ 
+		if (_max_id <= async_data_quicker.WRONG_ID) _max_id = async_data_quicker.get_max_id(get_min_id(), SIZE_GLOBALS);
+	
+		return _max_id; 
+	}
+	
+	public static int get_min_id() 
+	{ 
+		if (_min_id <= async_data_quicker.WRONG_ID) _min_id = DEFAULT_MIN_ID;
 		
+		return _min_id; 
+	}
+	
+	public static boolean __update_min_id(int min_id_) { return async_data_apps_quicker.__update_min_id(_APP, min_id_); }
+
 	public static boolean log() { return _log; }
 	
 	public static void log(boolean log_) { _log = log_; }	
@@ -69,6 +90,17 @@ abstract class async_data_market_quicker extends parent_static
 
 		__unlock();
 	}	
+	
+	public static boolean is_only_halts() { return _only_halts; }
+	
+	public static void __only_halts(boolean only_halts_) 
+	{ 
+		__lock();
+		
+		_only_halts = only_halts_; 
+
+		__unlock();
+	}
 	
 	public static boolean __start(String symbol_) { return async_data_quicker.__start(_APP, symbol_); }
 	

@@ -60,12 +60,14 @@ public abstract class remote extends parent_static
 
 	public static boolean delete(int request_) { return db_common.delete(SOURCE, get_where_request(request_)); }
 
-	public static HashMap<String, String> get_vals(int request_) 
+	public static HashMap<String, String> get_vals(int request_) { return get_vals(request_, null); }
+	
+	public static HashMap<String, String> get_vals(int request_, String[] fields_) 
 	{ 
 		String source = SOURCE;
 		String where = get_where_request(request_);
 		
-		return db_common.get_vals(source, db_common.get_fields(SOURCE), where); 
+		return db_common.get_vals(source, (arrays.is_ok(fields_) ? fields_ : db_common.get_fields(SOURCE)), where); 
 	}
 
 	public static HashMap<String, String> get_vals_order_id(int order_id_main_) 
@@ -260,15 +262,7 @@ public abstract class remote extends parent_static
 		return vals;
 	}
 
-	private static boolean field_is_boolean(String field_) { return field_.equals(IS_MARKET); }
-	
-	private static boolean field_is_int(String field_) { return (field_.equals(ORDER_ID_MAIN) || field_.equals(ORDER_ID_SEC) || field_.equals(REQUEST)); }
-	
-	private static boolean field_is_decimal(String field_) { return (field_.equals(START) || field_.equals(START2) || field_.equals(STOP) || field_.equals(QUANTITY) || field_.equals(PERC_MONEY) || field_.equals(PRICE)); }
-	
-	private static Object get_vals_common(String status2_key_) { return get_vals_common(status2_key_, null); }
-
-	private static int get_new_request() 
+	public static int get_new_request() 
 	{	
 		int min = ib.common.WRONG_REQUEST + 1;
 		int request = numbers.get_random_int(min, numbers.MAX_INT);
@@ -277,6 +271,14 @@ public abstract class remote extends parent_static
 
 		return request;
 	}
+	
+	private static boolean field_is_boolean(String field_) { return field_.equals(IS_MARKET); }
+	
+	private static boolean field_is_int(String field_) { return (field_.equals(ORDER_ID_MAIN) || field_.equals(ORDER_ID_SEC) || field_.equals(REQUEST)); }
+	
+	private static boolean field_is_decimal(String field_) { return (field_.equals(START) || field_.equals(START2) || field_.equals(STOP) || field_.equals(QUANTITY) || field_.equals(PERC_MONEY) || field_.equals(PRICE)); }
+	
+	private static Object get_vals_common(String status2_key_) { return get_vals_common(status2_key_, null); }
 
 	private static boolean update(int request_, String field_, Object val_) { return db_common.update(SOURCE, field_, val_, get_where_request(request_)); }
 

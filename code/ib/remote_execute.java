@@ -129,7 +129,7 @@ abstract class remote_execute
 		_order order = new _order(type_place_, symbol_, quantity_, stop_, start_, start2_);
 		if (!order.is_ok()) return false;
 
-		boolean is_ok = sync_orders._place_update(order);
+		boolean is_ok = orders._place_update(order, orders.DEFAULT_WAIT_AFTER_EXECUTE_ORDER);
 
 		Object vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_MAIN, order.get_id_main(), null);
 		vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ORDER_ID_SEC, order.get_id_sec(), vals);
@@ -152,7 +152,7 @@ abstract class remote_execute
 		String type_update = ib.orders.check_update(type_update_);
 		if (!strings.is_ok(type_update) || (val_ <= common.WRONG_PRICE && !remote.is_update_market(type_update))) return is_ok;
 		
-		_order order = sync_orders.__get_order(order_id_, false);
+		_order order = orders.__get_order(order_id_, false);
 		if (order == null || !order.is_ok()) return is_ok;
 		
 		double stop = common.WRONG_PRICE;
@@ -173,7 +173,7 @@ abstract class remote_execute
 		
 		vals = db_common.add_to_vals(db_ib.remote.SOURCE, db_ib.remote.ERROR, "", vals);
 
-		is_ok = sync_orders._place_update(order, type_update, val_);
+		is_ok = orders._place_update(order, type_update, val_, remote.update_wait_for_errors());
 		vals = db_ib.remote.get_vals_common(db_ib.remote.get_status2_key_execute(is_ok), vals);
 			
 		db_ib.remote.update(request_, vals);

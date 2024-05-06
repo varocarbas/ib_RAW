@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import accessory.arrays;
 import accessory.db_common;
+import accessory.misc;
 import external_ib.orders;
 
 public abstract class execs 
@@ -22,7 +23,11 @@ public abstract class execs
 	public static final String SIDE_BOUGHT = orders.EXEC_SIDE_BOUGHT;
 	public static final String SIDE_SOLD = orders.EXEC_SIDE_SOLD;
 	
+	public static final int PAUSE_SECS_RETRY = 5;
+	
 	public static final double WRONG_MONEY = common.WRONG_MONEY;
+	public static final double WRONG_PRICE = common.WRONG_PRICE;
+	public static final int WRONG_QUANTITY = (int)common.WRONG_QUANTITY;
 	
 	public static final boolean DEFAULT_IS_QUICK = true;
 	
@@ -34,27 +39,17 @@ public abstract class execs
 
 	public static boolean is_ok() { return enabled(); }
 
-	public static void enable() { enable(true); }
+	public static void enable() { enabled(true); }
 	
-	public static void enable(boolean trades_too_) { enabled(true, trades_too_); }
-	
-	public static void disable() { disable(true); }
-	
-	public static void disable(boolean trades_too_) { enabled(false, trades_too_); }
+	public static void disable() { enabled(false); }
 	
 	public static boolean enabled() { return async_execs._enabled; }
 
-	public static void enabled(boolean enabled_) { enabled(enabled_, true); }
+	public static void enabled(boolean enabled_) { async_execs._enabled = enabled_; }
 	
-	public static void enabled(boolean enabled_, boolean trades_too_) 
-	{ 
-		async_execs._enabled = enabled_; 
+	public static int get_order_id_buy(int order_id_sell_) { return _order.get_id_main(order_id_sell_); }
 	
-		if (trades_too_)
-		{
-			if (trades.synced_with_execs()) trades.enabled(enabled_);
-		}
-	}
+	public static int get_order_id_sell(int order_id_buy_) { return _order.get_id_sec(order_id_buy_); }
 
 	public static String get_side(boolean is_main_) { return (is_main_ ? SIDE_BOUGHT : SIDE_SOLD); }
 
@@ -87,6 +82,8 @@ public abstract class execs
 	public static ArrayList<Integer> get_order_ids_completed(String symbol_) { return db_ib.execs.get_order_ids_completed(symbol_); }
 
 	public static ArrayList<HashMap<String, String>> get_all_filled() { return db_ib.execs.get_all_filled(); }
+
+	public static double get_average_fees() { return db_ib.execs.get_average_fees(); }
 
 	public static double get_start_price(int order_id_main_) { return (db_ib.execs.order_id_exists(order_id_main_, true) ? get_start_end_price(order_id_main_) : common.WRONG_PRICE); }
 
@@ -129,21 +126,80 @@ public abstract class execs
 		ArrayList<Integer> order_ids = db_ib.execs.get_order_ids_completed(null);
 		if (!arrays.is_ok(order_ids)) return output;
 
-		for (int order_id: order_ids) { output += get_realised(_order.get_id_sec(order_id)); }
+		for (int order_id: order_ids) { output += get_realised_main(order_id); }
 		
 		return output;
 	}
 	
-	public static double get_realised(int order_id_sec_) 
+	public static double get_realised(int order_id_sec_) { return get_realised_internal(_order.get_id_main(order_id_sec_), order_id_sec_, true); }
+	
+	public static double get_realised_main(int order_id_main_) { return get_realised_internal(order_id_main_, _order.get_id_sec(order_id_main_), true); }
+
+	public static boolean is_ok(double val_) { return (val_ > WRONG_MONEY); }
+	
+	public static boolean is_ok(int val_) { return (val_ > WRONG_QUANTITY); }
+	
+	public static double get_max_sell_price(String symbol_)
 	{
-		int order_id_main = _order.get_id_main(order_id_sec_);
+		double output = WRONG_PRICE;
 		
-		double start = get_investment(order_id_main, true);
-		double end = get_investment(order_id_sec_, false);
+		ArrayList<HashMap<String, String>> all = db_ib.execs.get_all_completed(symbol_);
+		if (!arrays.is_ok(all)) return output;
 		
-		return ((start != WRONG_MONEY && end != WRONG_MONEY) ? (end - start) : WRONG_MONEY);
+		output = 0.0;
+		
+		for (HashMap<String, String> item: all)
+		{
+			double price = get_sell_price(get_order_id_sell(get_order_id(item)));
+
+			if (price > output) output = price;
+		}
+		
+		return output;
 	}
 	
+	public static double get_sell_price(int order_id_sell_) { return db_ib.execs.get_end_price(order_id_sell_); }
+	
+	private static double get_realised_internal(int order_id_main_, int order_id_sec_, boolean retry_) 
+	{
+		double output = 0.0;
+		
+		double sum = 0.0;
+		double fees = 0.0;
+		
+		double[] quantities = new double[] { 0.0, 0.0 };
+		
+		for (int i = 0; i < 2; i++)
+		{
+			ArrayList<HashMap<String, String>> info = db_ib.execs.get_basic_info(i == 0 ? order_id_main_ : order_id_sec_); 
+			if (!arrays.is_ok(info)) return output;
+
+			for (HashMap<String, String> item: info) 
+			{
+				double quantity = get_quantity(item);
+						
+				quantities[i] += quantity;
+				
+				sum += (i == 0 ? -1 : 1) * (get_price(item) * quantity); 
+
+				fees += get_fees(item);
+			}
+		}
+		
+		if (quantities[0] != quantities[1])
+		{
+			if (retry_)
+			{
+				misc.pause_secs(PAUSE_SECS_RETRY);
+				
+				output = get_realised_internal(order_id_main_, order_id_sec_, false);
+			}
+		}
+		else output = sum - fees;
+		
+		return output;
+	}
+
 	private static double get_start_end_price(int order_id_)
 	{
 		double output = common.WRONG_PRICE;
@@ -200,27 +256,32 @@ public abstract class execs
 		double sum = 0.0;
 		double quantity_tot = 0.0;
 
+		double fees = 0.0;
+		
 		for (HashMap<String, String> item: info_) 
 		{
 			if (is_price || is_investment)
 			{
 				double price = get_price(item);
 				double quantity = get_quantity(item);			
-				double fees = (is_price ? 0.0 : get_fees(item));
 				
-				sum += get_investment(price, quantity, fees);
+				fees += (is_price ? 0.0 : get_fees(item));
+				
+				sum += get_investment(price, quantity);
 				
 				if (is_price) quantity_tot += quantity;				
 			}
 			else sum += db_ib.execs.get_val(item, what_); 
 		}
 		
+		if (is_price || is_investment) sum -= fees;
+		
 		return (is_price ? (sum / quantity_tot) : sum);
 	}
 
 	private static double get_investment(HashMap<String, String> item_) { return get_investment(get_price(item_), get_quantity(item_), get_fees(item_)); }
 
-	private static double get_investment(double price_, double quantity_) { return get_investment(price_, quantity_, 0.0); }
+	private static double get_investment(double price_, double quantity_) { return (price_ * quantity_); }
 	
 	private static double get_investment(double price_, double quantity_, double fees_) { return ((price_ * quantity_) - fees_); }
 }
