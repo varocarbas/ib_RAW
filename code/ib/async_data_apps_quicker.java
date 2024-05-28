@@ -76,7 +76,8 @@ abstract class async_data_apps_quicker extends parent_static
 		else if (async_data_quicker.id_is_ok(id_)) 
 		{
 			int i = async_data_quicker.get_i(id_, true);
-			if (i > 0) symbol = get_symbols()[i];
+			
+			if (i >= 0) symbol = get_symbols()[i];
 		}
 
 		if (lock_) __unlock();

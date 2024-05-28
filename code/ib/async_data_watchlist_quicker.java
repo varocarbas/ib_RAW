@@ -31,6 +31,8 @@ abstract class async_data_watchlist_quicker extends parent_static
 	static final boolean ONLY_ESSENTIAL = true;
 	static final boolean ONLY_HALTS = false;
 	
+	static final boolean DEFAULT_ONLY_DB = false;
+	
 	static String COL_FLU = null;
 	static String COL_FLUS_PRICE = null;
 	static String COL_FLU2 = null;
@@ -54,7 +56,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	static int _max_id = async_data_quicker.WRONG_ID;
 
 	static volatile int _last_id = get_min_id() - 1;
-	static volatile boolean _only_db = false;
+	static volatile boolean _only_db = DEFAULT_ONLY_DB;
 	static volatile boolean _check_enabled = false;
 	
 	private static final int SIZE_GLOBALS_FLUS = 2 * MAX_SIMULTANEOUS_SYMBOLS;

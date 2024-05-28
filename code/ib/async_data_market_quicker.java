@@ -17,6 +17,8 @@ abstract class async_data_market_quicker extends parent_static
 	static final boolean INCLUDES_HALTED = true;
 	static final boolean INCLUDES_HALTED_TOT = true;
 	
+	static final boolean DEFAULT_ONLY_DB = true;
+	
 	static volatile String[] _symbols = new String[SIZE_GLOBALS];
 	static volatile double[][] _vals = new double[SIZE_GLOBALS][];
 	static volatile int[] _fields_ib = null;
@@ -25,7 +27,7 @@ abstract class async_data_market_quicker extends parent_static
 	static int _max_id = async_data_quicker.WRONG_ID;
 	
 	static volatile int _last_id = get_min_id() - 1;
-	static volatile boolean _only_db = false;
+	static volatile boolean _only_db = DEFAULT_ONLY_DB;
 	static volatile boolean _check_enabled = true;
 	static volatile boolean _only_essential = false;
 	static volatile boolean _only_halts = false;
@@ -104,9 +106,13 @@ abstract class async_data_market_quicker extends parent_static
 	
 	public static boolean __start(String symbol_) { return async_data_quicker.__start(_APP, symbol_); }
 	
-	public static void __stop(String symbol_) { async_data_quicker.__stop(_APP, symbol_); }
+	public static void __stop(String symbol_) { __stop(symbol_, async_data_quicker.DEFAULT_STOP_REMOVE_SYMBOL); }
+	
+	public static void __stop(String symbol_, boolean remove_symbols_) { async_data_quicker.__stop(_APP, symbol_, remove_symbols_); }
 
-	public static void __stop_all() { async_data_quicker.__stop_all(_APP, _symbols); }
+	public static void __stop_all() { __stop_all(async_data_quicker.DEFAULT_STOP_REMOVE_SYMBOL); }
+	
+	public static void __stop_all(boolean remove_symbols_) { async_data_quicker.__stop_all(_APP, _symbols, remove_symbols_); }
 
 	public static ArrayList<String> get_all_symbols() { return async_data_quicker.get_all_symbols(SOURCE); }
 	

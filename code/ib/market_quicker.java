@@ -42,9 +42,13 @@ public abstract class market_quicker
 
 	public static boolean __start(String symbol_) { return async_data_market_quicker.__start(symbol_); }
 	
-	public static void __stop(String symbol_) { async_data_market_quicker.__stop(symbol_); }
+	public static void __stop(String symbol_) { __stop(symbol_, async_data_quicker.DEFAULT_STOP_REMOVE_SYMBOL); }
+	
+	public static void __stop(String symbol_, boolean remove_symbols_) { async_data_market_quicker.__stop(symbol_, remove_symbols_); }
 
-	public static void __stop_all() { async_data_market_quicker.__stop_all(); }
+	public static void __stop_all() { __stop_all(async_data_quicker.DEFAULT_STOP_REMOVE_SYMBOL); }
+	
+	public static void __stop_all(boolean remove_symbols_) { async_data_market_quicker.__stop_all(remove_symbols_); }
 
 	public static ArrayList<String> get_all_symbols() { return async_data_market_quicker.get_all_symbols(); }
 }

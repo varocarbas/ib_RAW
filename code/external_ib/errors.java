@@ -56,6 +56,4 @@ public abstract class errors
 		
 		return is_warning;
 	}
-	
-	public static boolean delete_symbol(int code_) { return ((code_ == ERROR_200) || (code_ == ERROR_354) || (code_ == ERROR_10090) || (code_ == ERROR_10186)); }
 }

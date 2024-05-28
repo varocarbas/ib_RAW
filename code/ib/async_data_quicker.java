@@ -24,12 +24,14 @@ public class async_data_quicker extends parent_static
 	public static final int MAX_ID = common_xsync.MAX_REQ_ID_ASYNC;	
 	
 	public static final long MIN_SECS_HALT_BASIC = 300l;
-	
+
 	public static final int WRONG_ID = RETRIEVE_ID - 1;
 	public static final int WRONG_I = common.WRONG_I;
 	public static final int WRONG_HALTED = data.WRONG_HALTED;
-
+	public static final int WRONG_SIZE = 0;
+	
 	public static final boolean DEFAULT_LOG = true;	
+	public static final boolean DEFAULT_STOP_REMOVE_SYMBOL = true;	
 	
 	static final int PRICE_IB = external_ib.data.TICK_LAST;
 	static final int OPEN_IB = external_ib.data.TICK_OPEN;
@@ -124,19 +126,23 @@ public class async_data_quicker extends parent_static
 		return output;
 	}
 
-	static void __stop(String app_, String symbol_) 
+	static void __stop(String app_, String symbol_) { __stop(app_, symbol_, DEFAULT_STOP_REMOVE_SYMBOL); }
+	
+	static void __stop(String app_, String symbol_, boolean remove_symbol_) 
 	{
 		String symbol = common.normalise_symbol(symbol_);
 		if (!strings.is_ok(symbol)) return;
 
 		async_data_apps_quicker.update_app(app_);
 
-		__stop(WRONG_ID, symbol_, true, true); 
+		__stop(WRONG_ID, symbol_, true, remove_symbol_); 
 		
 		_enabled = true;
 	}
 
-	static void __stop_all(String app_, String[] symbols_) 
+	static void __stop_all(String app_, String[] symbols_) { __stop_all(app_, symbols_, DEFAULT_STOP_REMOVE_SYMBOL); }
+	
+	static void __stop_all(String app_, String[] symbols_, boolean remove_symbols_) 
 	{ 
 		if (!arrays.is_ok(symbols_)) return;
 		
@@ -144,7 +150,7 @@ public class async_data_quicker extends parent_static
 		{
 			if (!strings.is_ok(symbol)) continue;
 			
-			__stop(app_, symbol);
+			__stop(app_, symbol, remove_symbols_);
 		}
 	}
 	

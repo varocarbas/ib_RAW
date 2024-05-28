@@ -41,8 +41,6 @@ public abstract class wrapper_errors
 		String symbol = async_data_quicker.__get_symbol(id_, false);
 		if (!strings.is_ok(symbol)) symbol = null;
 		
-		if ((symbol != null) && external_ib.errors.delete_symbol(code_)) common.delete_symbol(symbol);
-		
 		if (external_ib.errors.is_warning(code_, message_)) 
 		{				
 			if (common_xsync.req_id_is_ok(id_))
