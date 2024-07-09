@@ -82,12 +82,13 @@ abstract class remote_execute
 			price = (double)temp.get(db_ib.remote.PRICE);
 			
 			double stop = remote.get_stop(vals_);
+			double stop2 = remote.get_stop2(vals_);
 			double start = remote.get_start(vals_);
 			double start2 = remote.get_start2(vals_);
 
-			executed = __place(request, type, symbol, quantity, stop, start, start2, price);
+			executed = __place(request, type, symbol, quantity, stop, stop2, start, start2, price);
 			
-			if (!executed) update_error_place(request, symbol, type, quantity, stop, start, start2);
+			if (!executed) update_error_place(request, symbol, type, quantity, stop, stop2, start, start2);
 		}
 		else
 		{
@@ -124,9 +125,12 @@ abstract class remote_execute
 		return executed;
 	}
 
-	private static boolean __place(int request_, String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_, double price_) 
+	private static boolean __place(int request_, String type_place_, String symbol_, double quantity_, double stop_, double stop2_, double start_, double start2_, double price_) 
 	{ 
 		_order order = new _order(type_place_, symbol_, quantity_, stop_, start_, start2_);
+		
+		if (common.price_is_ok(stop2_)) order.update_stop2(stop2_);
+		
 		if (!order.is_ok()) return false;
 
 		boolean is_ok = orders._place_update(order, orders.DEFAULT_WAIT_AFTER_EXECUTE_ORDER);
@@ -224,7 +228,7 @@ abstract class remote_execute
 		remote.update_error(request_, ERROR_ORDER_ID, vals, type_);		
 	}
 
-	private static void update_error_place(int request_, String symbol_, String type_, double quantity_, double stop_, double start_, double start2_) { remote.update_error_place(request_, symbol_, type_, quantity_, stop_, start_, start2_, false); }
-
+	private static void update_error_place(int request_, String symbol_, String type_, double quantity_, double stop_, double stop2_, double start_, double start2_) { remote.update_error_place(request_, symbol_, type_, quantity_, stop_, stop2_, start_, start2_, false); }
+	
 	private static void update_error_update(int request_, String symbol_, String type_, int order_id_, double val_) { remote.update_error_update(request_, symbol_, type_, order_id_, val_, false); }
 }

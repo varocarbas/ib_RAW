@@ -24,6 +24,7 @@ public abstract class orders
 	public static final String START = common.FIELD_START;
 	public static final String START2 = common.FIELD_START2;
 	public static final String STOP = common.FIELD_STOP;
+	public static final String STOP2 = common.FIELD_STOP2;
 	public static final String IS_MARKET = common.FIELD_IS_MARKET;
 	public static final String TYPE_PLACE = common.FIELD_TYPE_PLACE;
 	public static final String TYPE_MAIN = common.FIELD_TYPE_MAIN;
@@ -141,13 +142,18 @@ public abstract class orders
 		
 		double quantity = strings.to_number_decimal((String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, QUANTITY)));
 		double stop = strings.to_number_decimal((String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, STOP))); 
+		double stop2 = strings.to_number_decimal((String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, STOP2)));
 
 		double start = strings.to_number_decimal((String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, START)));
 		double start2 = strings.to_number_decimal((String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, START2)));
 		
 		int id_main = strings.to_number_int((String)arrays.get_value(db_, db_common.get_field_quick_col(SOURCE, ORDER_ID_MAIN)));
 
-		return new _order(type_place, symbol, quantity, stop, start, start2, id_main);
+		_order order = new _order(type_place, symbol, quantity, stop, start, start2, id_main);
+	
+		if (ib.common.price_is_ok(stop2)) order.update_stop2(stop2);
+		
+		return order;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -178,6 +184,8 @@ public abstract class orders
 			db = db_common.add_to_vals(SOURCE, TYPE_MAIN, order_.get_type_main(), db);
 			db = db_common.add_to_vals(SOURCE, TYPE_SEC, order_.get_type_sec(), db);
 		}
+		
+		if (ib.common.price_is_ok(order_.get_stop2())) db = db_common.add_to_vals(SOURCE, STOP2, order_.get_stop2(), db);
 		
 		return db;
 	}
@@ -289,7 +297,7 @@ public abstract class orders
 		return val;
 	}
 	
-	private static boolean field_is_decimal(String field_) { return (field_.equals(START) || field_.equals(START2) || field_.equals(STOP) || field_.equals(QUANTITY)); }
+	private static boolean field_is_decimal(String field_) { return (field_.equals(START) || field_.equals(START2) || field_.equals(STOP) || field_.equals(STOP2) || field_.equals(QUANTITY)); }
 	
 	private static boolean field_is_int(String field_) { return (field_.equals(ORDER_ID_MAIN) || field_.equals(ORDER_ID_SEC)); }
 	
@@ -310,6 +318,7 @@ public abstract class orders
 		items.put(remote.START, order_.get_start());
 		items.put(remote.START2, order_.get_start2());
 		items.put(remote.STOP, order_.get_stop());
+		items.put(remote.STOP2, order_.get_stop2());
 		
 		for (Entry<String, Double> item: items.entrySet())
 		{			

@@ -406,7 +406,7 @@ abstract class async_data_apps_quicker extends parent_static
 			async_data_watchlist_quicker.COL_VOLUME_MAX = db_quick.get_col(SOURCE, db_ib.watchlist.VOLUME_MAX);
 			async_data_watchlist_quicker.COL_VAR_TOT = db_quick.get_col(SOURCE, db_ib.watchlist.VAR_TOT);
 
-			fields_ib = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.VOLUME_IB };
+			fields_ib = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.ASK_IB, async_data_quicker.BID_IB, async_data_quicker.VOLUME_IB };
 			
 			async_data_watchlist_quicker.FIELDS_IB = arrays_quick.get_new(fields_ib);
 		}
@@ -414,7 +414,7 @@ abstract class async_data_apps_quicker extends parent_static
 		{	
 			if (lock_) __lock();
 			
-			if (_is_only_essential(false)) fields_ib = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.VOLUME_IB, async_data_quicker.HALTED_IB };
+			if (_is_only_essential(false)) fields_ib = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.ASK_IB, async_data_quicker.BID_IB, async_data_quicker.VOLUME_IB, async_data_quicker.HALTED_IB };
 			else
 			{				
 				fields_ib = new int[] 
@@ -462,8 +462,8 @@ abstract class async_data_apps_quicker extends parent_static
 		async_data_cache_quicker.populate(SOURCE);
 		
 		if (lock_) __unlock();
-	}	
-	
+	}
+
 	private static void _stop(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_, boolean lock_)
 	{
 		if (lock_) __lock();

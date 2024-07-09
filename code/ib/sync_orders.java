@@ -35,7 +35,21 @@ abstract class sync_orders extends parent_static
 
 	public static boolean _place(String type_place_, String symbol_, double quantity_, double stop_, double start_) { return _place(type_place_, symbol_, quantity_, stop_, start_, common.WRONG_PRICE); }
 
-	public static boolean _place(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_) { return (orders.is_inactive(symbol_) ? _place_update(new _order(type_place_, symbol_, quantity_, stop_, start_, start2_), orders.DEFAULT_WAIT_AFTER_EXECUTE_ORDER) : false); }
+	public static boolean _place(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_) { return _place(type_place_, symbol_, quantity_, stop_, common.WRONG_PRICE, start_, start2_); }
+
+	public static boolean _place(String type_place_, String symbol_, double quantity_, double stop_, double stop2_, double start_, double start2_) 
+	{
+		boolean output = false;
+		if (!orders.is_inactive(symbol_)) return output;
+		
+		_order order = new _order(type_place_, symbol_, quantity_, stop_, start_, start2_);
+		
+		if (ib.common.price_is_ok(stop2_)) order.update_stop2(stop2_);
+		
+		if (_place_update(order, orders.DEFAULT_WAIT_AFTER_EXECUTE_ORDER)) output = true;
+		
+		return output;
+	}
 
 	public static _order __get_order(int id_main_) { return __get_order(id_main_, true); }
 

@@ -124,6 +124,8 @@ public abstract class orders
 		output.tif(tif);	
 		output.totalQuantity(quantity);
 		if (!is_main_) output.parentId(order_.get_id_main());
+
+		output.outsideRth(_order.outside_rth());
 		
 		double val = order_.get_val(is_main_);
 		double val2 = order_.get_start2();
@@ -140,8 +142,17 @@ public abstract class orders
 		if (type.equals(TYPE_STOP)) output.auxPrice(val);	
 		else if (type.equals(TYPE_LIMIT) || type.equals(TYPE_STOP_LIMIT)) 
 		{
-			output.lmtPrice(val);	
-			if (type.equals(TYPE_STOP_LIMIT)) output.auxPrice(val2);
+			output.lmtPrice(val);
+			
+			if (type.equals(TYPE_STOP_LIMIT)) 
+			{
+				if (is_main_) output.auxPrice(val2);
+				else
+				{
+					output.lmtPrice(order_.get_sec_stop_limit_limit());
+					output.auxPrice(order_.get_sec_stop_limit_stop());					
+				}	
+			}	
 		}
 
 		boolean transmit = (!is_main_ || (is_main_ && ib.orders.is_update_start_start2(update_type_)));

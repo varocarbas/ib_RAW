@@ -35,4 +35,10 @@ public abstract class config
 	public static boolean get_remote_boolean(String key_) { return accessory.config.get_boolean(_types.CONFIG_REMOTE, key_); }
 
 	public static boolean update_remote(String key_, Object val_) { return accessory.config.update(_types.CONFIG_REMOTE, key_, val_); }
+	
+	public static Object get_async_data(String key_) { return accessory.config.get(_types.CONFIG_ASYNC_DATA, key_); }
+
+	public static boolean get_async_data_boolean(String key_) { return accessory.config.get_boolean(_types.CONFIG_ASYNC_DATA, key_); }
+
+	public static boolean update_async_data(String key_, Object val_) { return accessory.config.update(_types.CONFIG_ASYNC_DATA, key_, val_); }
 }

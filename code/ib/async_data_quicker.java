@@ -9,6 +9,8 @@ import accessory.db_common;
 import accessory.generic;
 import accessory.parent_static;
 import accessory.strings;
+import accessory_ib._types;
+import accessory_ib.config;
 import db_ib.temp_price;
 import external_ib.calls;
 import external_ib.data;
@@ -18,6 +20,7 @@ public class async_data_quicker extends parent_static
 	public static final double FACTOR_VOLUME = 1.0 / 1000.0;
 	
 	public static final double MAX_VAR = market.MAX_VAR;
+	public static final double MAX_VAR_ASK_BID = 50.0;
 	
 	public static final int RETRIEVE_ID = common_xsync.MIN_REQ_ID_ASYNC;	
 	public static final int MIN_ID = RETRIEVE_ID + 1;	
@@ -25,6 +28,8 @@ public class async_data_quicker extends parent_static
 	
 	public static final long MIN_SECS_HALT_BASIC = 300l;
 
+	public static final String CONFIG_ASK_BID_AS_PRICE = _types.CONFIG_ASYNC_DATA_ASK_BID_AS_PRICE;
+	
 	public static final int WRONG_ID = RETRIEVE_ID - 1;
 	public static final int WRONG_I = common.WRONG_I;
 	public static final int WRONG_HALTED = data.WRONG_HALTED;
@@ -32,6 +37,7 @@ public class async_data_quicker extends parent_static
 	
 	public static final boolean DEFAULT_LOG = true;	
 	public static final boolean DEFAULT_STOP_REMOVE_SYMBOL = true;	
+	public static final boolean DEFAULT_ASK_BID_AS_PRICE = false;
 	
 	static final int PRICE_IB = external_ib.data.TICK_LAST;
 	static final int OPEN_IB = external_ib.data.TICK_OPEN;
@@ -68,6 +74,10 @@ public class async_data_quicker extends parent_static
 	public static void enable() { _enabled = true; }
 	
 	public static void disable() { _enabled = false; }
+	
+	public static boolean ask_bid_as_price() { return config.get_async_data_boolean(CONFIG_ASK_BID_AS_PRICE); }
+	
+	public static boolean ask_bid_as_price(boolean ask_bid_as_price_) { return config.update_async_data(CONFIG_ASK_BID_AS_PRICE, ask_bid_as_price_); }
 	
 	public static String __get_symbol(int id_, boolean ignore_retrieve_) { return ((!ignore_retrieve_ || id_ != RETRIEVE_ID) ? async_data_apps_quicker.__get_symbol(id_) : strings.DEFAULT); }
 	
@@ -541,9 +551,7 @@ public class async_data_quicker extends parent_static
 		{
 			for (int i = 0; i < vals_.length; i++) 
 			{
-				if (!async_data_apps_quicker.__field_is_ok(i)) continue;
-				
-				vals.put(async_data_apps_quicker.get_col(i), Double.toString(vals_[i]));
+				if (async_data_apps_quicker.__field_is_ok(i)) vals = add_db_val(vals_, i, vals);
 			}
 		}
 				
@@ -556,6 +564,37 @@ public class async_data_quicker extends parent_static
 		if (async_data_apps_quicker.includes_time()) vals.put(_col_time, get_time());
 	
 		return vals;
+	}
+	
+	private static HashMap<String, String> add_db_val(double[] in_, int i_, HashMap<String, String> out_)
+	{
+		HashMap<String, String> output = new HashMap<String, String>(out_);
+	
+		double val = in_[i_];
+		
+		if (i_ == async_data_quicker.PRICE_IB) val = add_db_val_last(in_, val);
+		
+		if (common.price_is_ok(val)) output.put(async_data_apps_quicker.get_col(i_), Double.toString(val));
+		
+		return output;
+	}
+	
+	private static double add_db_val_last(double[] in_, double val_)
+	{
+		double output = val_;
+		if (common.price_is_ok(output) || !ask_bid_as_price()) return output;
+		
+		double ask = in_[ASK_IB];
+		double bid = in_[BID_IB];
+		
+		if 
+		(
+			common.price_is_ok(ask) && common.price_is_ok(bid) && 
+			(accessory.numbers.get_perc(ask, bid, false, true) < MAX_VAR_ASK_BID)
+		)
+		{ output = ((ask > bid) ? bid : ask); }
+		
+		return output;
 	}
 	
 	private static String get_time_elapsed(String source_, String symbol_) { return dates.seconds_to_time((int)get_elapsed(source_, symbol_, null)); }

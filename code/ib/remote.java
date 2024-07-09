@@ -27,6 +27,7 @@ public abstract class remote
 	public static final String DB_START = db_ib.remote.START;
 	public static final String DB_START2 = db_ib.remote.START2;
 	public static final String DB_STOP = db_ib.remote.STOP;
+	public static final String DB_STOP2 = db_ib.remote.STOP2;
 	public static final String DB_IS_MARKET = db_ib.remote.IS_MARKET;
 	public static final String DB_QUANTITY = db_ib.remote.QUANTITY;
 	public static final String DB_PERC_MONEY = db_ib.remote.PERC_MONEY;
@@ -105,8 +106,10 @@ public abstract class remote
 	public static int __request_place(String type_place_, String symbol_, double stop_, double start_, double quantity_, boolean wait_for_execution_) { return remote_request.__place(type_place_, symbol_, stop_, start_, quantity_, wait_for_execution_); }
 
 	public static int __request_place(String type_place_, String symbol_, double stop_, double start_, double start2_, double quantity_) { return __request_place(type_place_, symbol_, stop_, start_, start2_, quantity_, DEFAULT_WAIT_FOR_EXECUTION); }
+
+	public static int __request_place(String type_place_, String symbol_, double stop_, double start_, double start2_, double quantity_, boolean wait_for_execution_) { return __request_place(type_place_, symbol_, stop_, ib.common.WRONG_PRICE, start_, start2_, quantity_, wait_for_execution_); }
 	
-	public static int __request_place(String type_place_, String symbol_, double stop_, double start_, double start2_, double quantity_, boolean wait_for_execution_) { return remote_request.__place(type_place_, symbol_, stop_, start_, start2_, quantity_, wait_for_execution_); }
+	public static int __request_place(String type_place_, String symbol_, double stop_, double stop2_, double start_, double start2_, double quantity_, boolean wait_for_execution_) { return remote_request.__place(type_place_, symbol_, stop_, stop2_, start_, start2_, quantity_, wait_for_execution_); }
 
 	public static int __request_place_perc(String type_place_, String symbol_, double stop_, double start_, double perc_money_, double price_) { return __request_place_perc(type_place_, symbol_, stop_, start_, perc_money_, price_, DEFAULT_WAIT_FOR_EXECUTION); }
 
@@ -114,7 +117,9 @@ public abstract class remote
 
 	public static int __request_place_perc(String type_place_, String symbol_, double stop_, double start_, double start2_, double perc_money_, double price_) { return __request_place_perc(type_place_, symbol_, stop_, start_, start2_, perc_money_, price_, DEFAULT_WAIT_FOR_EXECUTION); }
 
-	public static int __request_place_perc(String type_place_, String symbol_, double stop_, double start_, double start2_, double perc_money_, double price_, boolean wait_for_execution_) { return remote_request.__place_perc(type_place_, symbol_, stop_, start_, start2_, perc_money_, price_, wait_for_execution_); }
+	public static int __request_place_perc(String type_place_, String symbol_, double stop_, double start_, double start2_, double perc_money_, double price_, boolean wait_for_execution_) { return __request_place_perc(type_place_, symbol_, stop_, ib.common.WRONG_PRICE, start_, start2_, perc_money_, price_, wait_for_execution_); }
+
+	public static int __request_place_perc(String type_place_, String symbol_, double stop_, double stop2_, double start_, double start2_, double perc_money_, double price_, boolean wait_for_execution_) { return remote_request.__place_perc(type_place_, symbol_, stop_, stop2_, start_, start2_, perc_money_, price_, wait_for_execution_); }
 
 	public static String __request_cancel(int request_) { return __request_cancel(request_, DEFAULT_WAIT_FOR_EXECUTION); }
 
@@ -219,6 +224,8 @@ public abstract class remote
 
 	public static double get_stop(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(DB_STOP, vals_); }
 
+	public static double get_stop2(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(DB_STOP2, vals_); }
+
 	public static double get_start(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(DB_START, vals_); }
 
 	public static double get_start2(HashMap<String, String> vals_) { return (double)db_ib.remote.get_val(DB_START2, vals_); }
@@ -280,23 +287,25 @@ public abstract class remote
 		errors.manage(type, message);
 	}
 
-	static void update_error_place(int request_, String symbol_, String type_, double quantity_, double stop_, double start_, double start2_, boolean is_request_)
+	static void update_error_place(int request_, String symbol_, String type_, double quantity_, double stop_, double start_, double start2_, boolean is_request_) { update_error_place(request_, symbol_, type_, quantity_, stop_, ib.common.WRONG_PRICE, start_, start2_, is_request_); }
+	
+	static void update_error_place(int request_, String symbol_, String type_, double quantity_, double stop_, double stop2_, double start_, double start2_, boolean is_request_)
 	{
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
 		vals.put(db_quick.get_col(DB_SOURCE, DB_QUANTITY), quantity_);
 		
-		update_error_place(request_, symbol_, type_, stop_, start_, start2_, is_request_, vals);
+		update_error_place(request_, symbol_, type_, stop_, stop2_, start_, start2_, is_request_, vals);
 	}
 
-	static void update_error_place(int request_, String symbol_, String type_, double price_, double perc_, double stop_, double start_, double start2_, boolean is_request_)
+	static void update_error_place(int request_, String symbol_, String type_, double price_, double perc_, double stop_, double stop2_, double start_, double start2_, boolean is_request_)
 	{
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
 		vals.put(db_quick.get_col(DB_SOURCE, DB_PRICE), price_);
 		vals.put(db_quick.get_col(DB_SOURCE, DB_PERC_MONEY), perc_);
 		
-		update_error_place(request_, symbol_, type_, stop_, start_, start2_, is_request_, vals);
+		update_error_place(request_, symbol_, type_, stop_, stop2_, start_, start2_, is_request_, vals);
 	}
 
 	static void update_error_update(int request_, String symbol_, String type_, int order_id_, double val_, boolean is_request_)
@@ -348,7 +357,7 @@ public abstract class remote
 		if (_logs_to_file) logs.update_file(message_, _path_logs, false, true); 
 	}
 
-	private static void update_error_place(int request_, String symbol_, String type_, double stop_, double start_, double start2_, boolean is_request_, HashMap<String, Object> vals_)
+	private static void update_error_place(int request_, String symbol_, String type_, double stop_, double stop2_, double start_, double start2_, boolean is_request_, HashMap<String, Object> vals_)
 	{
 		HashMap<String, Object> vals = new HashMap<String, Object>(vals_);
 
@@ -357,6 +366,7 @@ public abstract class remote
 		vals.put(db_quick.get_col(DB_SOURCE, DB_SYMBOL), strings.to_string(symbol_));
 		vals.put(db_quick.get_col(DB_SOURCE, DB_TYPE_ORDER), db_ib.orders.store_order_type(type));
 		vals.put(db_quick.get_col(DB_SOURCE, DB_STOP), stop_);
+		vals.put(db_quick.get_col(DB_SOURCE, DB_STOP2), stop2_);
 		vals.put(db_quick.get_col(DB_SOURCE, DB_START), start_);
 		vals.put(db_quick.get_col(DB_SOURCE, DB_START2), start2_);
 		

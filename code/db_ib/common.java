@@ -71,6 +71,7 @@ public abstract class common
 	public static final String FIELD_START = _types.CONFIG_DB_IB_FIELD_START;
 	public static final String FIELD_START2 = _types.CONFIG_DB_IB_FIELD_START2;
 	public static final String FIELD_STOP = _types.CONFIG_DB_IB_FIELD_STOP;
+	public static final String FIELD_STOP2 = _types.CONFIG_DB_IB_FIELD_STOP2;
 	public static final String FIELD_ORDER_ID_MAIN = _types.CONFIG_DB_IB_FIELD_ORDER_ID_MAIN;
 	public static final String FIELD_ORDER_ID_SEC = _types.CONFIG_DB_IB_FIELD_ORDER_ID_SEC;
 	public static final String FIELD_STATUS = _types.CONFIG_DB_IB_FIELD_STATUS;
@@ -106,7 +107,7 @@ public abstract class common
 	public static final String FIELD_FLU3 = _types.CONFIG_DB_IB_FIELD_FLU3;
 	public static final String FIELD_FLUS_PRICE = _types.CONFIG_DB_IB_FIELD_FLUS_PRICE;
 	public static final String FIELD_VAR_TOT = _types.CONFIG_DB_IB_FIELD_VAR_TOT;
-	
+
 	public static final String FIELD_APP = _types.CONFIG_DB_IB_FIELD_APP;
 	public static final String FIELD_CONN_ID = _types.CONFIG_DB_IB_FIELD_CONN_ID;
 	public static final String FIELD_CONN_TYPE = _types.CONFIG_DB_IB_FIELD_CONN_TYPE;

@@ -12,11 +12,13 @@ public class _order extends parent
 {
 	public static final String CONFIG_TIF = _types.CONFIG_ORDERS_TIF;
 	public static final String CONFIG_QUANTITIES_INT = _types.CONFIG_ORDERS_QUANTITIES_INT;
+	public static final String CONFIG_OUTSIDE_RTH = _types.CONFIG_ORDERS_OUTSIDE_RTH;
 	
 	public static final String TYPE_MARKET = external_ib.orders.TYPE_MARKET;
 	public static final String TYPE_STOP = external_ib.orders.TYPE_STOP;
 	public static final String TYPE_LIMIT = external_ib.orders.TYPE_LIMIT;
 	public static final String TYPE_STOP_LIMIT = external_ib.orders.TYPE_STOP_LIMIT;
+	
 	public static final String TYPE_PLACE_MARKET = _types.ORDERS_PLACE_MARKET;
 	public static final String TYPE_PLACE_STOP = _types.ORDERS_PLACE_STOP;
 	public static final String TYPE_PLACE_LIMIT = _types.ORDERS_PLACE_LIMIT;
@@ -26,6 +28,7 @@ public class _order extends parent
 	
 	public static final String DEFAULT_TIF = external_ib.orders.TIF_GTC; 
 	public static final boolean DEFAULT_QUANTITIES_INT = true;
+	public static final boolean DEFAULT_OUTSIDE_RTH = false;
 	
 	private int _id_main = common.WRONG_ORDER_ID;
 	private int _id_sec = common.WRONG_ORDER_ID;	
@@ -35,6 +38,7 @@ public class _order extends parent
 	private String _symbol = strings.DEFAULT;
 	private double _quantity = common.WRONG_QUANTITY;
 	private double _stop = common.WRONG_PRICE;
+	private double _stop2 = common.WRONG_PRICE;
 	private double _start = common.WRONG_PRICE;
 	private double _start2 = common.WRONG_PRICE;
 	
@@ -53,8 +57,16 @@ public class _order extends parent
 		
 		return (external_ib.orders.tif_is_ok(tif) ? tif : strings.DEFAULT);
 	}
+	
+	public static boolean update_tif(String tif_) { return (external_ib.orders.tif_is_ok(tif_) ? config.update_order(CONFIG_TIF, tif_) : false);  }
 
 	public static boolean quantities_int() { return config.get_order_boolean(CONFIG_QUANTITIES_INT); }
+	
+	public static boolean update_quantities_int(boolean quantities_int_) { return config.update_order(CONFIG_QUANTITIES_INT, quantities_int_); }
+
+	public static boolean outside_rth() { return config.get_order_boolean(CONFIG_OUTSIDE_RTH); }
+	
+	public static boolean update_outside_rth(boolean outside_rth_) { return config.update_order(CONFIG_OUTSIDE_RTH, outside_rth_); }
 
 	public static String check_symbol(String symbol_) { return common.check_symbol(symbol_); }
 	
@@ -99,30 +111,83 @@ public class _order extends parent
 	public int get_id_sec() { return _id_sec; }
 	
 	public double get_quantity() { return adapt_quantity(_quantity); }
-
+		
 	public double get_stop() { return _stop; }
 
+	public double get_stop2() { return _stop2; }
+	
 	public double get_start() { return _start; }
 
 	public double get_start2() { return _start2; }
-
+	
 	public boolean update_start(double start_) { return update_val(start_, true); }
 	
 	public boolean update_start2(double start2_) 
 	{ 
-		_start2 = ib.common.adapt_price(start2_); 
+		boolean output = false;
 		
-		return true;
+		double start2 = ib.common.adapt_price(start2_);
+		
+		if (common.price_is_ok(start2))
+		{
+			output = true;
+			
+			_start2 = start2; 			
+		}
+		
+		return output;
 	}
 
 	public boolean update_stop(double stop_) { return update_val(stop_, false); }
 	
+	public boolean update_stop2(double stop2_) 
+	{ 
+		boolean output = false;
+		
+		double stop2 = ib.common.adapt_price(stop2_);
+		
+		if (common.price_is_ok(stop2))
+		{
+			output = true;
+			
+			_stop2 = stop2;
+			_type_sec = TYPE_STOP_LIMIT;
+		}
+		
+		return output;
+	}
+	
+	public boolean update_stop_limit(double stop_) { return update_val(stop_, false); }
+
+	public double get_main_stop_limit_stop() { return get_start2(); }
+	
+	public double get_main_stop_limit_limit() { return get_start(); }
+	
+	public double get_sec_stop_limit_stop() { return get_stop2(); }
+	
+	public double get_sec_stop_limit_limit() { return get_stop(); }
+	
+	public boolean update_main_stop_limit_stop(double stop_) { return update_start2(stop_); }
+	
+	public boolean update_main_stop_limit_limit(double limit_) { return update_start(limit_); }
+	
+	public boolean update_sec_stop_limit_stop(double stop_) { return update_stop2(stop_); }
+	
+	public boolean update_sec_stop_limit_limit(double limit_) { return update_stop(limit_); }
+
 	public boolean update_val(double val_, boolean is_main_) 
 	{ 
-		if (is_main_) _start = ib.common.adapt_price(val_);
-		else _stop = ib.common.adapt_price(val_);
+		boolean output = false;
 		
-		return true;
+		double val = ib.common.adapt_price(val_);
+		if (!common.price_is_ok(val)) return output;
+		
+		output = true;
+		
+		if (is_main_) _start = val;
+		else _stop = val;
+		
+		return output;
 	}
 	
 	public boolean update_type_main(String type_) { return update_type(type_, true); }
@@ -155,6 +220,7 @@ public class _order extends parent
 		vals.put("symbol", _symbol);
 		vals.put("quantity", _quantity);
 		vals.put("stop", _stop);
+		vals.put("stop2", _stop2);
 		vals.put("start", _start);
 		vals.put("start2", _start2);
 		
@@ -204,7 +270,7 @@ public class _order extends parent
 
 		populate(_temp_type, _temp_symbol, quantity_, stop_, start_, start2_, id_main_);
 	}
-
+	
 	public boolean is_ok() { return is_ok(_type_place, _symbol, _quantity, _stop, _start, _start2, _id_main); }
 			
 	private boolean is_ok(String type_place_, String symbol_, double quantity_, double stop_, double start_, double start2_, int id_main_)

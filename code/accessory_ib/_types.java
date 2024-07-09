@@ -25,6 +25,7 @@ public class _types extends parent_types
 	public static final String CONFIG_ORDERS = "config_orders";
 	public static final String CONFIG_ORDERS_TIF = "config_orders_tif";
 	public static final String CONFIG_ORDERS_QUANTITIES_INT = "config_orders_quantities_int";
+	public static final String CONFIG_ORDERS_OUTSIDE_RTH = "config_orders_outside_rth";
 
 	public static final String CONFIG_CONTRACT = "config_contract";
 	public static final String CONFIG_CONTRACT_SECURITY_TYPE = "config_contract_security_type";
@@ -107,6 +108,7 @@ public class _types extends parent_types
 	public static final String CONFIG_DB_IB_FIELD_START = "config_db_ib_field_start";
 	public static final String CONFIG_DB_IB_FIELD_START2 = "config_db_ib_field_start2";
 	public static final String CONFIG_DB_IB_FIELD_STOP = "config_db_ib_field_stop";
+	public static final String CONFIG_DB_IB_FIELD_STOP2 = "config_db_ib_field_stop2";
 	public static final String CONFIG_DB_IB_FIELD_ORDER_ID_MAIN = "config_db_ib_field_order_id_main";
 	public static final String CONFIG_DB_IB_FIELD_ORDER_ID_SEC = "config_db_ib_field_order_id_sec";
 	public static final String CONFIG_DB_IB_FIELD_STATUS = "config_db_ib_field_status";
@@ -164,6 +166,10 @@ public class _types extends parent_types
 	public static final String CONFIG_DB_IB_FIELD_EXCHANGE = "config_db_ib_field_exchange";
 	public static final String CONFIG_DB_IB_FIELD_COUNTRY = "config_db_ib_field_country";
 	
+	public static final String CONFIG_ASYNC = "config_async";
+	public static final String CONFIG_ASYNC_DATA = "config_async_data";
+	public static final String CONFIG_ASYNC_DATA_ASK_BID_AS_PRICE = "config_async_data_ask_bid_as_price";
+
 	public static final String ACCOUNT = "account";
 	public static final String ACCOUNT_TYPE = "account_type";
 	public static final String ACCOUNT_TYPE_REAL = "account_type_real";
@@ -254,11 +260,6 @@ public class _types extends parent_types
 	public static final String SYNC_OUT_INT = "sync_out_int";
 	public static final String SYNC_OUT_ORDERS = "sync_out_orders";
 	public static final String SYNC_OUT_FUNDS = "sync_out_funds";
-	
-	public static final String ASYNC = "async";
-	public static final String ASYNC_DATA = "async_data";
-	public static final String ASYNC_DATA_SNAPSHOT = "async_data_snapshot";
-	public static final String ASYNC_DATA_STREAM = "async_data_stream";
 	
 	public static final String EXCHANGE = "exchange";
 	public static final String EXCHANGE_ANY = "exchange_any";

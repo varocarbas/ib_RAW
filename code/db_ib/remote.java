@@ -25,6 +25,7 @@ public abstract class remote extends parent_static
 	public static final String START = common.FIELD_START;
 	public static final String START2 = common.FIELD_START2;
 	public static final String STOP = common.FIELD_STOP;
+	public static final String STOP2 = common.FIELD_STOP2;
 	public static final String IS_MARKET = common.FIELD_IS_MARKET;
 	public static final String QUANTITY = common.FIELD_QUANTITY;
 	public static final String PERC_MONEY = common.FIELD_PERC_MONEY;
@@ -276,7 +277,7 @@ public abstract class remote extends parent_static
 	
 	private static boolean field_is_int(String field_) { return (field_.equals(ORDER_ID_MAIN) || field_.equals(ORDER_ID_SEC) || field_.equals(REQUEST)); }
 	
-	private static boolean field_is_decimal(String field_) { return (field_.equals(START) || field_.equals(START2) || field_.equals(STOP) || field_.equals(QUANTITY) || field_.equals(PERC_MONEY) || field_.equals(PRICE)); }
+	private static boolean field_is_decimal(String field_) { return (field_.equals(START) || field_.equals(START2) || field_.equals(STOP) || field_.equals(STOP2) || field_.equals(QUANTITY) || field_.equals(PERC_MONEY) || field_.equals(PRICE)); }
 	
 	private static Object get_vals_common(String status2_key_) { return get_vals_common(status2_key_, null); }
 

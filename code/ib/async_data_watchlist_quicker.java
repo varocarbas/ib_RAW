@@ -156,7 +156,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		
 		async_data_quicker.update_db(symbol_, vals);
 	}
-
+	
 	public static void tick_size(int id_, int field_ib_, double size_, String symbol_)
 	{
 		if (field_ib_ != async_data_quicker.VOLUME_IB) return;
@@ -172,7 +172,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	public static void start(String symbol_, boolean is_restart_) { start_globals(symbol_, is_restart_); }
 	
 	public static void stop(String symbol_, boolean remove_symbol_) { stop_globals(symbol_, remove_symbol_); }
-
+	
 	private static void start_globals(String symbol_, boolean is_restart_)
 	{
 		if (is_restart_) return;
@@ -190,7 +190,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		_flus[i] = new ArrayList<Double>();
 		_flus2_minus[i] = new ArrayList<Double>();
 		_flus2_plus[i] = new ArrayList<Double>();
-		_flus2_remove[i] = true;		
+		_flus2_remove[i] = true;
 		
 		_last_i_flus = i;
 	}
@@ -212,7 +212,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		_flus[i] = null;
 		_flus2_minus[i] = null;
 		_flus2_plus[i] = null;
-		_flus2_remove[i] = true;	
+		_flus2_remove[i] = true;
 	}
 	
 	private static int get_i_flus(String symbol_) { return async_data_quicker.get_id_i(symbol_, _symbols_flus, _last_i_flus, MAX_I_FLUS, false); }
@@ -259,7 +259,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	
 		return output;
 	}
-
+	
 	private static HashMap<String, String> tick_price_basic(String symbol_, double price_, HashMap<String, String> db_, HashMap<String, String> vals_) { return tick_basic(symbol_, price_, db_, vals_, true); }
 
 	private static HashMap<String, String> tick_price_flus(String symbol_, double price_, HashMap<String, String> db_, HashMap<String, String> vals_)

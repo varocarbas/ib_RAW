@@ -15,6 +15,8 @@ public abstract class watchlist
 	public static final String PRICE_INI = common.FIELD_PRICE_INI;
 	public static final String PRICE_MIN = common.FIELD_PRICE_MIN;
 	public static final String PRICE_MAX = common.FIELD_PRICE_MAX;
+	public static final String ASK = common.FIELD_ASK;
+	public static final String BID = common.FIELD_BID;
 	public static final String VOLUME = common.FIELD_VOLUME;
 	public static final String VOLUME_INI = common.FIELD_VOLUME_INI;
 	public static final String VOLUME_MIN = common.FIELD_VOLUME_MIN;
@@ -28,7 +30,7 @@ public abstract class watchlist
 	public static final String FLU3 = common.FIELD_FLU3;
 	public static final String FLUS_PRICE = common.FIELD_FLUS_PRICE;
 	public static final String VAR_TOT = common.FIELD_VAR_TOT;
-
+	
 	public static void __truncate() { common.__truncate(SOURCE); }
 	
 	public static void __backup() { common.__backup(SOURCE); }	

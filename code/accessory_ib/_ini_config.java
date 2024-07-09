@@ -9,6 +9,7 @@ import ib.common;
 import ib.conn;
 import ib.remote;
 import ib._order;
+import ib.async_data_quicker;
 
 public class _ini_config extends parent_ini_config 
 {
@@ -31,6 +32,8 @@ public class _ini_config extends parent_ini_config
 		load_conn();
 		
 		load_remote();
+		
+		load_async_data();
 	}
 
 	private boolean load_basic()
@@ -70,6 +73,7 @@ public class _ini_config extends parent_ini_config
 		
 		vals.put(_order.CONFIG_TIF, _order.DEFAULT_TIF);
 		vals.put(_order.CONFIG_QUANTITIES_INT, _order.DEFAULT_QUANTITIES_INT);
+		vals.put(_order.CONFIG_OUTSIDE_RTH, _order.DEFAULT_OUTSIDE_RTH);
 
 		return populate(type, null, vals);
 	}	
@@ -107,6 +111,17 @@ public class _ini_config extends parent_ini_config
 		HashMap<String, Object> vals = new HashMap<String, Object>();
 		
 		vals.put(remote.CONFIG_UPDATE_WAIT_FOR_ERRORS, remote.DEFAULT_UPDATE_WAIT_FOR_ERRORS);
+
+		return populate(type, null, vals);
+	}
+
+	private boolean load_async_data()
+	{
+		String type = _types.CONFIG_ASYNC_DATA;
+
+		HashMap<String, Object> vals = new HashMap<String, Object>();
+		
+		vals.put(async_data_quicker.CONFIG_ASK_BID_AS_PRICE, async_data_quicker.DEFAULT_ASK_BID_AS_PRICE);
 
 		return populate(type, null, vals);
 	}

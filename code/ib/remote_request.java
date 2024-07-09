@@ -30,7 +30,7 @@ abstract class remote_request extends parent_static
 	{ 
 		int request = __place(type_place_, symbol_, stop_, start_, common.WRONG_PRICE, quantity_, wait_for_execution_); 
 
-		if (request == common.WRONG_REQUEST) update_error_place(request, symbol_, type_place_, quantity_, stop_, start_, common.WRONG_PRICE);
+		if (request == common.WRONG_REQUEST) update_error_place(request, symbol_, type_place_, quantity_, stop_, common.WRONG_PRICE, start_, common.WRONG_PRICE);
 		else if (wait_for_execution_)
 		{
 			if (!__wait_for_execution(request)) 
@@ -44,11 +44,13 @@ abstract class remote_request extends parent_static
 		return request;
 	}
 	
-	public static int __place(String type_place_, String symbol_, double stop_, double start_, double start2_, double quantity_, boolean wait_for_execution_) 
+	public static int __place(String type_place_, String symbol_, double stop_, double start_, double start2_, double quantity_, boolean wait_for_execution_) { return __place(type_place_, symbol_, stop_, ib.common.WRONG_PRICE, start_, start2_, quantity_, wait_for_execution_); }
+		
+	public static int __place(String type_place_, String symbol_, double stop_, double stop2_, double start_, double start2_, double quantity_, boolean wait_for_execution_) 
 	{ 
-		int request = __place_common(type_place_, symbol_, stop_, start_, start2_, quantity_, common.WRONG_MONEY, common.WRONG_PRICE); 
+		int request = __place_common(type_place_, symbol_, stop_, stop2_, start_, start2_, quantity_, common.WRONG_MONEY, common.WRONG_PRICE); 
 
-		if (request == common.WRONG_REQUEST) update_error_place(request, symbol_, type_place_, quantity_, stop_, start_, start2_);
+		if (request == common.WRONG_REQUEST) update_error_place(request, symbol_, type_place_, quantity_, stop_, stop2_, start_, start2_);
 		else if (wait_for_execution_)
 		{
 			if (!__wait_for_execution(request)) 
@@ -66,7 +68,7 @@ abstract class remote_request extends parent_static
 	{ 
 		int request = __place_perc(type_place_, symbol_, stop_, start_, common.WRONG_PRICE, perc_money_, price_, wait_for_execution_); 
 
-		if (request == common.WRONG_REQUEST) update_error_place(request, symbol_, type_place_, price_, perc_money_, stop_, start_, common.WRONG_PRICE);
+		if (request == common.WRONG_REQUEST) update_error_place(request, symbol_, type_place_, price_, perc_money_, stop_, common.WRONG_PRICE, start_, common.WRONG_PRICE);
 		else if (wait_for_execution_)
 		{
 			if (!__wait_for_execution(request)) 
@@ -80,11 +82,13 @@ abstract class remote_request extends parent_static
 		return request;
 	}
 	
-	public static int __place_perc(String type_place_, String symbol_, double stop_, double start_, double start2_, double perc_money_, double price_, boolean wait_for_execution_) 
+	public static int __place_perc(String type_place_, String symbol_, double stop_, double start_, double start2_, double perc_money_, double price_, boolean wait_for_execution_) { return __place_perc(type_place_, symbol_, stop_, ib.common.WRONG_PRICE, start_, start2_, perc_money_, price_, wait_for_execution_); }
+	
+	public static int __place_perc(String type_place_, String symbol_, double stop_, double stop2_, double start_, double start2_, double perc_money_, double price_, boolean wait_for_execution_) 
 	{ 
-		int request = __place_common(type_place_, symbol_, stop_, start_, start2_, common.WRONG_QUANTITY, perc_money_, price_); 
+		int request = __place_common(type_place_, symbol_, stop_, stop2_, start_, start2_, common.WRONG_QUANTITY, perc_money_, price_); 
 
-		if (request == common.WRONG_REQUEST) update_error_place(request, symbol_, type_place_, price_, perc_money_, stop_, start_, start2_);
+		if (request == common.WRONG_REQUEST) update_error_place(request, symbol_, type_place_, price_, perc_money_, stop_, stop2_, start_, start2_);
 		else if (wait_for_execution_)
 		{
 			if (!__wait_for_execution(request)) 
@@ -195,7 +199,7 @@ abstract class remote_request extends parent_static
 		return message;
 	}
 	
-	private static int __place_common(String type_place_, String symbol_, double stop_, double start_, double start2_, double quantity_, double perc_money_, double price_)
+	private static int __place_common(String type_place_, String symbol_, double stop_, double stop2_, double start_, double start2_, double quantity_, double perc_money_, double price_)
 	{	
 		int output = common.WRONG_REQUEST;
 		
@@ -219,6 +223,8 @@ abstract class remote_request extends parent_static
 		
 		_order order = new _order(type_place_, symbol_, quantity, stop_, start_, start2_);
 
+		if (common.price_is_ok(stop2_)) order.update_stop2(stop2_);
+		
 		if (order.is_ok()) output = db_ib.remote.__request_start(order, perc_money, price);
 	
 		if (output != common.WRONG_REQUEST) remote.log(remote.get_ok_message_default(type_place_, output, symbol_, order.get_id_main(), true));
@@ -290,9 +296,9 @@ abstract class remote_request extends parent_static
 		return output;
 	}
 	
-	private static void update_error_place(int request_, String symbol_, String type_, double quantity_, double stop_, double start_, double start2_) { remote.update_error_place(request_, symbol_, type_, quantity_, stop_, start_, start2_, true); }
+	private static void update_error_place(int request_, String symbol_, String type_, double quantity_, double stop_, double stop2_, double start_, double start2_) { remote.update_error_place(request_, symbol_, type_, quantity_, stop_, stop2_, start_, start2_, true); }
 
-	private static void update_error_place(int request_, String symbol_, String type_, double price_, double perc_, double stop_, double start_, double start2_) { remote.update_error_place(request_, symbol_, type_, price_, perc_, stop_, start_, start2_, true); }
+	private static void update_error_place(int request_, String symbol_, String type_, double price_, double perc_, double stop_, double stop2_, double start_, double start2_) { remote.update_error_place(request_, symbol_, type_, price_, perc_, stop_, stop2_, start_, start2_, true); }
 
 	private static void update_error_update(int request_, String symbol_, String type_, double val_) { remote.update_error_update(request_, symbol_, type_, common.WRONG_ORDER_ID, val_, true); }
 

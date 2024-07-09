@@ -19,6 +19,7 @@ public abstract class orders
 	public static final String DB_START = db_ib.orders.START;
 	public static final String DB_START2 = db_ib.orders.START2;
 	public static final String DB_STOP = db_ib.orders.STOP;
+	public static final String DB_STOP2 = db_ib.orders.STOP2;
 	public static final String DB_IS_MARKET = db_ib.orders.IS_MARKET;
 	public static final String DB_TYPE_PLACE = db_ib.orders.TYPE_PLACE;
 	public static final String DB_TYPE_MAIN = db_ib.orders.TYPE_MAIN;
@@ -93,7 +94,7 @@ public abstract class orders
 		
 		async_orders.__check_all();
 		
-		if (is_inactive(order_id_main_)) output = true;
+		if (is_inactive(order_id_main_)) output = !db_ib.execs.order_id_exists(order_id_main_, true);
 		else if (is_filled(order_id_main_)) output = false;
 		else output = sync_orders.cancel(order_id_main_);
 		
@@ -275,6 +276,8 @@ public abstract class orders
 	public static double get_start2(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(DB_START2, vals_); }
 
 	public static double get_stop(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(DB_STOP, vals_); }
+
+	public static double get_stop2(HashMap<String, String> vals_) { return (double)db_ib.orders.get_val(DB_STOP2, vals_); }
 
 	public static boolean get_is_market(HashMap<String, String> vals_) { return (boolean)db_ib.orders.get_val(DB_IS_MARKET, vals_); }
 

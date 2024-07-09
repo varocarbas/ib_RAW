@@ -178,6 +178,7 @@ public class _ini_db extends parent_ini_db
 			info.put(remote.START, common.get_field_price());
 			info.put(remote.START2, common.get_field_price());
 			info.put(remote.STOP, common.get_field_price());
+			info.put(remote.STOP2, common.get_field_price());
 			info.put(remote.IS_MARKET, db_common.get_field_boolean(false));	
 			info.put(remote.QUANTITY, common.get_field_quantity());	
 			info.put(remote.PERC_MONEY, db_common.get_field_decimal_tiny());
@@ -223,6 +224,7 @@ public class _ini_db extends parent_ini_db
 			info.put(orders.START, common.get_field_price());
 			info.put(orders.START2, common.get_field_price());
 			info.put(orders.STOP, common.get_field_price());
+			info.put(orders.STOP2, common.get_field_price());
 			info.put(orders.IS_MARKET, db_common.get_field_boolean(false));
 			info.put(orders.TYPE_PLACE, common.get_field_status_type());
 			info.put(orders.TYPE_MAIN, common.get_field_status_type());
@@ -264,6 +266,8 @@ public class _ini_db extends parent_ini_db
 		info.put(watchlist.PRICE_INI, common.get_field_price());
 		info.put(watchlist.PRICE_MIN, common.get_field_price());
 		info.put(watchlist.PRICE_MAX, common.get_field_price());
+		info.put(watchlist.ASK, common.get_field_price());
+		info.put(watchlist.BID, common.get_field_price());
 		info.put(watchlist.VOLUME, common.get_field_size_volume());
 		info.put(watchlist.VOLUME_INI, common.get_field_size_volume());
 		info.put(watchlist.VOLUME_MIN, common.get_field_size_volume());
