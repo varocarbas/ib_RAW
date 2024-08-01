@@ -129,7 +129,7 @@ public abstract class remote
 
 	public static String __request_update(int request_, String type_update_, double val_, boolean wait_for_execution_) { return remote_request.__update(request_, type_update_, val_, wait_for_execution_); }
 
-	public static void __execute_all() { remote_execute.__execute_all(); }
+	public static void _execute_all() { remote_execute._execute_all(); }
 
 	public static void __wait_for_execution(int request_, boolean is_cancel_) { remote_request.__wait_for_execution(request_, is_cancel_); }
 

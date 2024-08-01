@@ -20,12 +20,12 @@ abstract class remote_execute
 	public static final String ERROR_CANCEL = _types.ERROR_IB_REMOTE_EXECUTE_CANCEL;
 	public static final String ERROR_UPDATE = _types.ERROR_IB_REMOTE_EXECUTE_UPDATE;
 
-	public static void __execute_all()
+	public static void _execute_all()
 	{
 		ArrayList<HashMap<String, String>> all = db_ib.remote.get_all_pending();
 		if (!arrays.is_ok(all)) return;
 		
-		for (HashMap<String, String> vals: all) { __execute(vals); }	
+		for (HashMap<String, String> vals: all) { _execute(vals); }	
 	}
 
 	static String get_error_message(String type_)
@@ -40,7 +40,7 @@ abstract class remote_execute
 		return message;
 	}
 	
-	private static boolean __execute(HashMap<String, String> vals_)
+	private static boolean _execute(HashMap<String, String> vals_)
 	{
 		boolean executed = false;
 
@@ -103,7 +103,7 @@ abstract class remote_execute
 
 			if (remote.is_cancel(type)) 
 			{
-				executed = __cancel(request, order_id);
+				executed = _cancel(request, order_id);
 
 				if (!executed) remote.update_error(request, ERROR_CANCEL, order_id, remote.CANCEL);
 
@@ -185,9 +185,9 @@ abstract class remote_execute
 		return is_ok;
 	}
 
-	private static boolean __cancel(int request_, int order_id_) 
+	private static boolean _cancel(int request_, int order_id_) 
 	{
-		boolean is_ok = orders.__cancel(order_id_);
+		boolean is_ok = orders._cancel(order_id_);
 
 		if (!is_ok) 
 		{

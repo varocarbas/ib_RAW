@@ -88,13 +88,14 @@ public abstract class orders
 
 	public static boolean _place_update(_order order_, String update_type_, double update_val_, boolean wait_) { return sync_orders._place_update(order_, update_type_, update_val_, wait_); }
 	
-	public static boolean __cancel(int order_id_main_)
+	public static boolean _cancel(int order_id_main_)
 	{ 	
 		boolean output = false;
+		if (db_ib.execs.order_id_exists(order_id_main_, true)) return output;
 		
 		async_orders.__check_all();
 		
-		if (is_inactive(order_id_main_)) output = !db_ib.execs.order_id_exists(order_id_main_, true);
+		if (is_inactive(order_id_main_)) output = true;
 		else if (is_filled(order_id_main_)) output = false;
 		else output = sync_orders.cancel(order_id_main_);
 		

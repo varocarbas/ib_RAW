@@ -7,6 +7,7 @@ import accessory.arrays_quick;
 import accessory.db_quick;
 import accessory.parent_static;
 import accessory.strings;
+import external_ib.calls;
 
 abstract class async_data_apps_quicker extends parent_static
 {
@@ -34,9 +35,9 @@ abstract class async_data_apps_quicker extends parent_static
 
 	public static String get_source() { return SOURCE; }
 	
-	public static void tick_price(int id_, int field_ib_, double price_, String symbol_)
+	public static void _tick_price(int id_, int field_ib_, double price_, String symbol_)
 	{
-		if (APP.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker.tick_price(id_, field_ib_, price_, symbol_);
+		if (APP.equals(async_data_watchlist_quicker._APP)) async_data_watchlist_quicker._tick_price(id_, field_ib_, price_, symbol_);
 		else if (APP.equals(async_data_market_quicker._APP)) async_data_market_quicker.tick_price(id_, field_ib_, price_, symbol_);
 	}
 
@@ -155,6 +156,18 @@ abstract class async_data_apps_quicker extends parent_static
 		else if (APP.equals(async_data_market_quicker._APP)) output = async_data_market_quicker.is_only_db();
 
 		if (lock_) __unlock();
+		
+		return output;
+	}
+	
+	public static double get_max_var() { return (is_snapshot() ? async_data_quicker.MAX_VAR_SNAPSHOT : async_data_quicker.MAX_VAR_STREAM); }
+	
+	public static boolean is_snapshot()
+	{
+		boolean output = async_data_quicker.DEFAULT_IS_SNAPSHOT;
+		
+		if (APP.equals(async_data_watchlist_quicker._APP)) output = async_data_watchlist_quicker.is_snapshot();
+		else if (APP.equals(async_data_market_quicker._APP)) output = async_data_market_quicker.IS_SNAPSHOT;
 		
 		return output;
 	}
@@ -406,6 +419,17 @@ abstract class async_data_apps_quicker extends parent_static
 			async_data_watchlist_quicker.COL_VOLUME_MAX = db_quick.get_col(SOURCE, db_ib.watchlist.VOLUME_MAX);
 			async_data_watchlist_quicker.COL_VAR_TOT = db_quick.get_col(SOURCE, db_ib.watchlist.VAR_TOT);
 
+			async_data_watchlist_quicker.ALL_COLS = new String[] 
+			{
+				async_data_watchlist_quicker.COL_FLU, async_data_watchlist_quicker.COL_FLUS_PRICE, 
+				async_data_watchlist_quicker.COL_FLU2, async_data_watchlist_quicker.COL_FLU2_MIN, 
+				async_data_watchlist_quicker.COL_FLU2_MAX, async_data_watchlist_quicker.COL_FLU3,
+				async_data_watchlist_quicker.COL_PRICE_INI, async_data_watchlist_quicker.COL_PRICE_MIN, 
+				async_data_watchlist_quicker.COL_PRICE_MAX, async_data_watchlist_quicker.COL_VOLUME_INI, 
+				async_data_watchlist_quicker.COL_VOLUME_MIN, async_data_watchlist_quicker.COL_VOLUME_MAX,
+				async_data_watchlist_quicker.COL_VAR_TOT
+			};
+			
 			fields_ib = new int[] { async_data_quicker.PRICE_IB, async_data_quicker.ASK_IB, async_data_quicker.BID_IB, async_data_quicker.VOLUME_IB };
 			
 			async_data_watchlist_quicker.FIELDS_IB = arrays_quick.get_new(fields_ib);
@@ -511,6 +535,8 @@ abstract class async_data_apps_quicker extends parent_static
 
 			if (symbol_ok) async_data_market_quicker.stop(symbol_, remove_symbol_);
 		}
+		
+		if (!is_snapshot()) calls.cancelMktData(id_);
 		
 		if (lock_) __unlock();
 	}

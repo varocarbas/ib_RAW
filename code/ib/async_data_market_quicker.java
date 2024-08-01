@@ -16,6 +16,7 @@ abstract class async_data_market_quicker extends parent_static
 	static final boolean INCLUDES_TIME_ELAPSED = false;
 	static final boolean INCLUDES_HALTED = true;
 	static final boolean INCLUDES_HALTED_TOT = true;
+	static final boolean IS_SNAPSHOT = true;
 	
 	static final boolean DEFAULT_ONLY_DB = true;
 	
@@ -108,7 +109,7 @@ abstract class async_data_market_quicker extends parent_static
 	
 	public static void __stop(String symbol_) { __stop(symbol_, async_data_quicker.DEFAULT_STOP_REMOVE_SYMBOL); }
 	
-	public static void __stop(String symbol_, boolean remove_symbols_) { async_data_quicker.__stop(_APP, symbol_, remove_symbols_); }
+	public static void __stop(String symbol_, boolean remove_symbol_) { async_data_quicker.__stop(_APP, symbol_, remove_symbol_); }
 
 	public static void __stop_all() { __stop_all(async_data_quicker.DEFAULT_STOP_REMOVE_SYMBOL); }
 	

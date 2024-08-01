@@ -251,7 +251,7 @@ public class tests extends parent_tests
 				misc.pause_secs(pause);
 			}
 			
-			name = "__cancel";
+			name = "_cancel";
 			String name2 = name + "_" + type;
 			
 			int id = orders.get_last_id_main();
@@ -397,7 +397,7 @@ public class tests extends parent_tests
 
 		HashMap<String, Boolean> output = new HashMap<String, Boolean>();
 		
-		String name = "__execute_all";
+		String name = "_execute_all";
 		boolean is_ok = _instance.run_method(class0_, name, null, null, null);
 		
 		output.put(name, is_ok);

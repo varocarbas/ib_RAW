@@ -44,7 +44,7 @@ public abstract class market_quicker
 	
 	public static void __stop(String symbol_) { __stop(symbol_, async_data_quicker.DEFAULT_STOP_REMOVE_SYMBOL); }
 	
-	public static void __stop(String symbol_, boolean remove_symbols_) { async_data_market_quicker.__stop(symbol_, remove_symbols_); }
+	public static void __stop(String symbol_, boolean remove_symbol_) { async_data_market_quicker.__stop(symbol_, remove_symbol_); }
 
 	public static void __stop_all() { __stop_all(async_data_quicker.DEFAULT_STOP_REMOVE_SYMBOL); }
 	

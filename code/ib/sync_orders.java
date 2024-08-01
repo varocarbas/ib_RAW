@@ -103,7 +103,7 @@ abstract class sync_orders extends parent_static
 		{
 			output = false;
 			
-			if (!is_update && !orders.__cancel(main)) output = orders.is_active(main);
+			if (!is_update && !orders._cancel(main)) output = orders.is_active(main);
 		}
 		else
 		{

@@ -19,7 +19,8 @@ public class async_data_quicker extends parent_static
 {	
 	public static final double FACTOR_VOLUME = 1.0 / 1000.0;
 	
-	public static final double MAX_VAR = market.MAX_VAR;
+	public static final double MAX_VAR_SNAPSHOT = market.MAX_VAR;
+	public static final double MAX_VAR_STREAM = 15.0;
 	public static final double MAX_VAR_ASK_BID = 50.0;
 	
 	public static final int RETRIEVE_ID = common_xsync.MIN_REQ_ID_ASYNC;	
@@ -38,6 +39,7 @@ public class async_data_quicker extends parent_static
 	public static final boolean DEFAULT_LOG = true;	
 	public static final boolean DEFAULT_STOP_REMOVE_SYMBOL = true;	
 	public static final boolean DEFAULT_ASK_BID_AS_PRICE = false;
+	public static final boolean DEFAULT_IS_SNAPSHOT = true;
 	
 	static final int PRICE_IB = external_ib.data.TICK_LAST;
 	static final int OPEN_IB = external_ib.data.TICK_OPEN;
@@ -202,7 +204,7 @@ public class async_data_quicker extends parent_static
 		if (_retrieving) update_retrieve(id_, symbol, price_);
 		else
 		{
-			async_data_apps_quicker.tick_price(id_, field_ib_, price, symbol);	
+			async_data_apps_quicker._tick_price(id_, field_ib_, price, symbol);	
 
 			_update(id_, symbol, field_ib_, price);			
 		}
@@ -453,7 +455,7 @@ public class async_data_quicker extends parent_static
 		else if (!async_data_apps_quicker.__checks_enabled() || db_ib.async_data.is_enabled(source, symbol_)) db_ib.async_data.update_timestamp(source, symbol_);
 		else return output;	
 
-		return (id_is_ok(id) ? calls.reqMktData(id, symbol_, true) : output);
+		return (id_is_ok(id) ? calls.reqMktData(id, symbol_, async_data_apps_quicker.is_snapshot()) : output);
 	}
 	
 	private static int __get_new_id(String symbol_)

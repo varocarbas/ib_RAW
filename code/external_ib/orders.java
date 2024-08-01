@@ -107,7 +107,7 @@ public abstract class orders
 
 		String type = get_type(order_, is_main_, update_type_, is_update_);
 		if (!strings.is_ok(type)) return null;
-		
+	
 		boolean is_market = type.equals(TYPE_MARKET);
 		int id = order_.get_id(is_main_);
 		
@@ -116,7 +116,7 @@ public abstract class orders
 
 		double quantity = order_.get_quantity();
 		if (quantity <= 0) return null;
-		
+
 		Order output = new Order();
 
 		output.orderType(type);
@@ -135,11 +135,11 @@ public abstract class orders
 			if (type.equals(TYPE_STOP_LIMIT) && update_type_.equals(ib.orders.UPDATE_START2_VALUE)) val2 = update_val_;
 			else val = update_val_;
 		}
-		if ((val <= common.WRONG_PRICE && !is_market) || (val2 <= common.WRONG_PRICE && type.equals(TYPE_STOP_LIMIT))) return null;
+		if (val <= common.WRONG_PRICE && !is_market) return null;
 		
 		output.action((is_main_ ? ACTION_BUY : ACTION_SELL));		
-
-		if (type.equals(TYPE_STOP)) output.auxPrice(val);	
+				
+		if (type.equals(TYPE_STOP)) output.auxPrice(val);
 		else if (type.equals(TYPE_LIMIT) || type.equals(TYPE_STOP_LIMIT)) 
 		{
 			output.lmtPrice(val);
@@ -154,7 +154,7 @@ public abstract class orders
 				}	
 			}	
 		}
-
+		
 		boolean transmit = (!is_main_ || (is_main_ && ib.orders.is_update_start_start2(update_type_)));
 
 		output.transmit(transmit);

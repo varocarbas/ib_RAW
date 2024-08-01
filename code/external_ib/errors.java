@@ -6,7 +6,7 @@ import accessory.strings;
 public abstract class errors 
 {
 	//------ To be synced with the corresponding get_all_[...]() methods.
-
+	
 	//--- To be synced with the info from https://interactivebrokers.github.io/tws-api/message_codes.html.	
 	public static final int ERROR_200 = 200; //The specified contract does not match any in IB's database, usually because of an incorrect or missing parameter.
                                              //Ambiguity may occur when the contract definition provided is not unique.
@@ -16,6 +16,7 @@ public abstract class errors
 	public static final int ERROR_300 = 300; //An attempt was made to cancel market data for a ticker ID that was not associated with a current subscription. With the DDE API this occurs by clearing the spreadsheet cell.
 	public static final int ERROR_322 = 322; //Server error when processing an API client request.
 	public static final int ERROR_354 = 354; //You do not have live market data available in your account for the specified instruments. For further details please refer to Streaming Market Data.
+	public static final int ERROR_504 = 504; //You are trying to perform a request without properly connecting and/or after connection to the TWS has been broken probably due to an unhandled exception within your client application.
 	public static final int ERROR_1100 = 1100; //Your TWS/IB Gateway has been disconnected from IB servers. This can occur because of an internet connectivity issue, a nightly reset of the IB servers, or a competing session.
 	public static final int ERROR_1102 = 1102; //The TWS/IB Gateway has successfully reconnected to IB's servers. Your market data requests have been recovered and there is no need for you to re-submit them.
 	public static final int ERROR_10090 = 10090; //Indicates that some tick types requested require additional market data subscriptions not held in the account. 

@@ -19,6 +19,10 @@ public abstract class watchlist_quicker
 	
 	public static void __check_enabled(boolean check_enabled_) { async_data_watchlist_quicker.__check_enabled(check_enabled_); }	
 
+	public static boolean is_snapshot() { return async_data_watchlist_quicker.is_snapshot(); }
+	
+	public static void __is_snapshot(boolean is_snapshot_) { async_data_watchlist_quicker.__is_snapshot(is_snapshot_); }
+	
 	public static void __add(ArrayList<String> symbols_) 
 	{ 
 		int tot = arrays.get_size(symbols_);
@@ -34,9 +38,13 @@ public abstract class watchlist_quicker
 
 	public static boolean __add(String symbol_) { return async_data_watchlist_quicker.__add(symbol_); }
 	
-	public static void __remove(String symbol_) { async_data_watchlist_quicker.__remove(symbol_); }
+	public static void __remove(String symbol_) { __remove(symbol_, async_data_quicker.DEFAULT_STOP_REMOVE_SYMBOL); }
 
-	public static void __remove_all() { async_data_watchlist_quicker.__remove_all(); }
+	public static void __remove(String symbol_, boolean remove_symbol_) { async_data_watchlist_quicker.__remove(symbol_, remove_symbol_); }
+
+	public static void __remove_all() { __remove_all(async_data_quicker.DEFAULT_STOP_REMOVE_SYMBOL); }
+
+	public static void __remove_all(boolean remove_symbols_) { async_data_watchlist_quicker.__remove_all(remove_symbols_); }
 
 	public static ArrayList<String> get_all_symbols() { return async_data_watchlist_quicker.get_all_symbols(); }
 
