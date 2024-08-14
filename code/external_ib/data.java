@@ -8,7 +8,6 @@ public abstract class data
 {
 	//------ To be synced with the corresponding get_all_[...]() methods.
 
-	//--- To be synced with the info from https://interactivebrokers.github.io/tws-api/tick_types.html.
 	public static final int TICK_BID_SIZE = 0;
 	public static final int TICK_BID = 1;
 	public static final int TICK_ASK = 2;
@@ -26,14 +25,11 @@ public abstract class data
 	public static final int HALTED_NOT = 0;
 	public static final int HALTED_GENERAL = 1;	
 	public static final int HALTED_VOLATILITY = 2;	
-	//---
 
-	//--- To be synced with the info from https://interactivebrokers.github.io/tws-api/market_data_type.html.
 	public static final int DATA_LIVE = 1;
 	public static final int DATA_FROZEN = 2;
 	public static final int DATA_DELAYED = 3;
 	public static final int DATA_DELAYED_FROZEN = 4;
-	//---
 	
 	//------
 

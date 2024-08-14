@@ -14,10 +14,8 @@ import ib.conn;
 
 public abstract class calls 
 {
-	//--- To be synced with the info from https://interactivebrokers.github.io/tws-api/interfaceIBApi_1_1EWrapper.html#acd761f48771f61dd0fb9e9a7d88d4f04.
 	public static final String NET_LIQUIDATION = "NetLiquidation"; //The basis for determining the price of the assets in your account. Total cash value + stock value + options value + bond value.
 	public static final String TOTAL_CASH_VALUE = "TotalCashValue"; //Total cash balance recognized at the time of trade + futures PNL.
-	//---
 	
 	public static void eConnect(String arg0_, int arg1_, int arg2_) { if (conn._client != null) conn._client.eConnect(arg0_, arg1_, arg2_); }
 
@@ -39,7 +37,7 @@ public abstract class calls
 
 	public static void placeOrder(int id_, Contract contract_, Order order_) { if (conn._client != null) conn._client.placeOrder(id_, contract_, order_); }
 
-	public static void cancelOrder(int id_) { if (conn._client != null) conn._client.cancelOrder(id_); }
+	public static void cancelOrder(int id_) { if (conn._client != null) conn._client.cancelOrder(id_, Order.EMPTY_STR); }
 
 	public static void reqAccountSummary(int id_) { if (conn._client != null) conn._client.reqAccountSummary(id_, "All", get_account_summary_tags()); }
 

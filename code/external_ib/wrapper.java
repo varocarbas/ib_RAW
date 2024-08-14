@@ -2,34 +2,10 @@ package external_ib;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import com.ib.client.Bar;
-import com.ib.client.CommissionReport;
-import com.ib.client.Contract;
-import com.ib.client.ContractDescription;
-import com.ib.client.ContractDetails;
-import com.ib.client.DeltaNeutralContract;
-import com.ib.client.DepthMktDataDescription;
-import com.ib.client.EClientSocket;
-import com.ib.client.EJavaSignal;
-import com.ib.client.EReaderSignal;
-import com.ib.client.EWrapper;
-import com.ib.client.Execution;
-import com.ib.client.FamilyCode;
-import com.ib.client.HistogramEntry;
-import com.ib.client.HistoricalTick;
-import com.ib.client.HistoricalTickBidAsk;
-import com.ib.client.HistoricalTickLast;
-import com.ib.client.NewsProvider;
-import com.ib.client.Order;
-import com.ib.client.OrderState;
-import com.ib.client.PriceIncrement;
-import com.ib.client.SoftDollarTier;
-import com.ib.client.TickAttrib;
-import com.ib.client.TickAttribBidAsk;
-import com.ib.client.TickAttribLast;
+import com.ib.client.*;
 
 import accessory.strings;
 import accessory_ib.logs;
@@ -37,10 +13,11 @@ import ib.common;
 import ib.wrapper_errors;
 import ib.wrapper_main;
 
-//Implementation of the IB's EWrapper interface (https://interactivebrokers.github.io/tws-api/interfaceIBApi_1_1EWrapper.html).
+//Implementation of the EWrapper interface (v. 10.19.04) from the 
+//Interactive Brokers's TWS API (https://ibkrcampus.com/campus/ibkr-api-page/twsapi-doc/).
 
 public class wrapper implements EWrapper 
-{	
+{
 	protected int currentOrderId = common.WRONG_ORDER_ID;
 	
 	private EReaderSignal _reader_signal;
@@ -76,7 +53,13 @@ public class wrapper implements EWrapper
 	public void tickPrice(int id_, int field_ib_, double price_, TickAttrib attribs_) { wrapper_main.__tick_price(id_, field_ib_, price_); }
 
 	@Override
-	public void tickSize(int id_, int field_ib_, int size_) { wrapper_main.__tick_size(id_, field_ib_, size_); }
+	public void tickSize(int id_, int field_ib_, Decimal size_) 
+	{
+		int size = 0;
+		if ((size_ != null) && (size_.value().doubleValue() <= Integer.MAX_VALUE)) size = size_.value().intValue();
+		
+		wrapper_main.__tick_size(id_, field_ib_, size); 
+	}
 
 	@Override
 	public void tickGeneric(int id_, int tick_, double value_) { wrapper_main.__tick_generic(id_, tick_, value_); }
@@ -85,10 +68,10 @@ public class wrapper implements EWrapper
 	public void tickSnapshotEnd(int id_) { wrapper_main.__tick_snapshot_end(id_); }
 
 	@Override
-	public void error(int id_, int code_, String message_) { wrapper_errors.__manage(id_, code_, message_); }
+	public void error(int id_, int code_, String message_, String advanced_order_rejectJson_) { wrapper_errors.__manage(id_, code_, message_, advanced_order_rejectJson_); }
 
 	@Override
-	public void orderStatus(int order_id_, String status_ib_, double filled_, double remaining_, double avg_fill_price_, int perm_id_, int parent_id_, double last_fill_price_, int client_id_, String why_held_, double mkt_cap_price_) { wrapper_main.order_status(order_id_, status_ib_); }
+	public void orderStatus(int order_id_, String status_ib_, Decimal filled_, Decimal remaining_, double avg_fill_price_, int perm_id_, int parent_id_, double last_fill_price_, int client_id_, String why_held_, double mkt_cap_price_) { wrapper_main.order_status(order_id_, status_ib_); }
 
 	@Override
 	public void openOrderEnd() { wrapper_main.open_order_end(); }
@@ -121,33 +104,46 @@ public class wrapper implements EWrapper
 
 	//-----------------------------------------------------
 	//-----------------------------------------------------
-
-	@Override
-	public void position(String account_, Contract contract_, double pos_, double avg_cost_) { }
-
-	@Override
-	public void updatePortfolio(Contract contract_, double position_, double market_price_, double market_value_, double average_cost_, double unrealized_pnl_, double realized_pnl_, String account_name_) { }
-
-	@Override
-	public void updateAccountValue(String key, String value, String currency, String accountName) { }
-
-	@Override
-	public void accountDownloadEnd(String account_name_) { }
 	
 	@Override
-	public void tickOptionComputation(int tickerId, int field, double impliedVol, double delta, double optPrice, double pvDividend, double gamma, double vega, double theta, double undPrice) { }
+	public void tickOptionComputation
+	(
+		int tickerId, int field, int tickAttrib, double impliedVol, double delta, 
+		double optPrice, double pvDividend, double gamma, double vega, double theta, double undPrice
+	) 
+	{ }
 
 	@Override
 	public void tickString(int tickerId, int tickType, String value) { }
 
 	@Override
-	public void tickEFP(int tickerId, int tickType, double basisPoints, String formattedBasisPoints, double impliedFuture, int holdDays, String futureLastTradeDate, double dividendImpact, double dividendsToLastTradeDate) { }
+	public void tickEFP
+	(
+		int tickerId, int tickType, double basisPoints, String formattedBasisPoints, 
+		double impliedFuture, int holdDays, String futureLastTradeDate, 
+		double dividendImpact, double dividendsToLastTradeDate
+	) 
+	{ }
 
 	@Override
 	public void openOrder(int orderId, Contract contract, Order order, OrderState orderState) { }
 
 	@Override
+	public void updateAccountValue(String key, String value, String currency, String accountName) { }
+
+	@Override
+	public void updatePortfolio
+	(
+		Contract contract, Decimal position, double marketPrice, double marketValue, 
+		double averageCost, double unrealizedPNL, double realizedPNL, String accountName
+	) 
+	{ }
+
+	@Override
 	public void updateAccountTime(String timeStamp) { }
+
+	@Override
+	public void accountDownloadEnd(String accountName) { }
 
 	@Override
 	public void contractDetails(int reqId, ContractDetails contractDetails) { }
@@ -162,10 +158,10 @@ public class wrapper implements EWrapper
 	public void execDetailsEnd(int reqId) { }
 
 	@Override
-	public void updateMktDepth(int tickerId, int position, int operation, int side, double price, int size) { }
+	public void updateMktDepth(int tickerId, int position, int operation, int side, double price, Decimal size) { }
 
 	@Override
-	public void updateMktDepthL2(int tickerId, int position, String marketMaker, int operation, int side, double price, int size, boolean isSmartDepth) { }
+	public void updateMktDepthL2(int tickerId, int position, String marketMaker, int operation, int side, double price, Decimal size, boolean isSmartDepth) { }
 
 	@Override
 	public void updateNewsBulletin(int msgId, int msgType, String message, String origExchange) { }
@@ -192,7 +188,7 @@ public class wrapper implements EWrapper
 	public void scannerDataEnd(int reqId) { }
 
 	@Override
-	public void realtimeBar(int reqId, long time, double open, double high, double low, double close, long volume, double wap, int count) { }
+	public void realtimeBar(int reqId, long time, double open, double high, double low, double close, Decimal volume, Decimal wap, int count) { }
 
 	@Override
 	public void currentTime(long time) { }
@@ -207,8 +203,11 @@ public class wrapper implements EWrapper
 	public void marketDataType(int reqId, int marketDataType) { }
 
 	@Override
+	public void position(String account, Contract contract, Decimal pos, double avgCost) { }
+
+	@Override
 	public void positionEnd() { }
-	
+
 	@Override
 	public void verifyMessageAPI(String apiData) { }
 
@@ -228,7 +227,7 @@ public class wrapper implements EWrapper
 	public void displayGroupUpdated(int reqId, String contractInfo) { }
 
 	@Override
-	public void positionMulti(int reqId, String account, String modelCode, Contract contract, double pos, double avgCost) { }
+	public void positionMulti(int reqId, String account, String modelCode, Contract contract, Decimal pos, double avgCost) { }
 
 	@Override
 	public void positionMultiEnd(int reqId) { }
@@ -240,7 +239,12 @@ public class wrapper implements EWrapper
 	public void accountUpdateMultiEnd(int reqId) { }
 
 	@Override
-	public void securityDefinitionOptionalParameter(int reqId, String exchange, int underlyingConId, String tradingClass, String multiplier, Set<String> expirations, Set<Double> strikes) { }
+	public void securityDefinitionOptionalParameter
+	(
+		int reqId, String exchange, int underlyingConId, String tradingClass, 
+		String multiplier, Set<String> expirations, Set<Double> strikes
+	) 
+	{ }
 
 	@Override
 	public void securityDefinitionOptionalParameterEnd(int reqId) { }
@@ -300,22 +304,32 @@ public class wrapper implements EWrapper
 	public void pnl(int reqId, double dailyPnL, double unrealizedPnL, double realizedPnL) { }
 
 	@Override
-	public void pnlSingle(int reqId, int pos, double dailyPnL, double unrealizedPnL, double realizedPnL, double value) { }
+	public void pnlSingle(int reqId, Decimal pos, double dailyPnL, double unrealizedPnL, double realizedPnL, double value) { }
 
 	@Override
 	public void historicalTicks(int reqId, List<HistoricalTick> ticks, boolean done) { }
 
 	@Override
-	public void historicalTicksBidAsk(int reqId, List<HistoricalTickBidAsk> ticks, boolean done) { }   
+	public void historicalTicksBidAsk(int reqId, List<HistoricalTickBidAsk> ticks, boolean done) { }
 
 	@Override
 	public void historicalTicksLast(int reqId, List<HistoricalTickLast> ticks, boolean done) { }
 
 	@Override
-	public void tickByTickAllLast(int reqId, int tickType, long time, double price, int size, TickAttribLast tickAttribLast,String exchange, String specialConditions) { }
+	public void tickByTickAllLast
+	(
+		int reqId, int tickType, long time, double price, Decimal size, 
+		TickAttribLast tickAttribLast, String exchange, String specialConditions
+	) 
+	{ }
 
 	@Override
-	public void tickByTickBidAsk(int reqId, long time, double bidPrice, double askPrice, int bidSize, int askSize, TickAttribBidAsk tickAttribBidAsk) { }
+	public void tickByTickBidAsk
+	(
+		int reqId, long time, double bidPrice, double askPrice, 
+		Decimal bidSize, Decimal askSize, TickAttribBidAsk tickAttribBidAsk
+	) 
+	{ }
 
 	@Override
 	public void tickByTickMidPoint(int reqId, long time, double midPoint) { }
@@ -328,4 +342,19 @@ public class wrapper implements EWrapper
 
 	@Override
 	public void completedOrdersEnd() { }
+
+	@Override
+	public void replaceFAEnd(int reqId, String text) { }
+
+	@Override
+	public void wshMetaData(int reqId, String dataJson) { }
+
+	@Override
+	public void wshEventData(int reqId, String dataJson) { }
+
+	@Override
+	public void historicalSchedule(int reqId, String startDateTime, String endDateTime, String timeZone, List<HistoricalSession> sessions) { }
+
+	@Override
+	public void userInfo(int reqId, String whiteBrandingId) { }
 }

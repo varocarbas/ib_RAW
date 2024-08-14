@@ -1,5 +1,6 @@
 package external_ib;
 
+import com.ib.client.Decimal;
 import com.ib.client.Order;
 
 import accessory.arrays;
@@ -10,24 +11,17 @@ import ib._order;
 
 public abstract class orders 
 {
-	//--- To be synced with the execution.side values (https://interactivebrokers.github.io/tws-api/classIBApi_1_1Execution.html).
 	public static final String EXEC_SIDE_BOUGHT = "BOT";
 	public static final String EXEC_SIDE_SOLD = "SLD";
-	//---
 
-	//--- To be synced with the order.action values (https://interactivebrokers.github.io/tws-api/classIBApi_1_1Order.html).
 	public static final String ACTION_BUY = "buy";
 	public static final String ACTION_SELL = "sell";
-	//---
 	
-	//--- To be synced with the order.OrderType (samples: https://interactivebrokers.github.io/tws-api/basic_orders.html).
 	public static final String TYPE_MARKET = "MKT";
 	public static final String TYPE_STOP = "STP";
 	public static final String TYPE_LIMIT = "LMT";
 	public static final String TYPE_STOP_LIMIT = "STP LMT";
-	//---
 	
-	//--- To be synced with the order.tif values (https://interactivebrokers.github.io/tws-api/classIBApi_1_1Order.html#a6b82712a718127487631727db08f67d4).
 	public static final String TIF_DAY = "DAY"; //Valid for the day only.
 	public static final String TIF_GTC = "GTC"; //Good until canceled. The order will continue to work within the system and in the marketplace until it executes or is canceled. GTC orders will be automatically be cancelled under the following conditions: [...].
 	public static final String TIF_IOC = "IOC"; //Immediate or Cancel. Any portion that is not filled as soon as it becomes available in the market is canceled.
@@ -35,9 +29,7 @@ public abstract class orders
 	public static final String TIF_OPG = "OPG"; //Use OPG to send a market-on-open (MOO) or limit-on-open (LOO) order.
 	public static final String TIF_FOK = "FOK"; //If the entire Fill-or-Kill order does not execute as soon as it becomes available, the entire order is canceled.
 	public static final String TIF_DTC = "DTC"; //Day until Canceled.	
-	//---
 
-	//--- To be synced with the status values in wrapper.orderStatus (https://interactivebrokers.github.io/tws-api/interfaceIBApi_1_1EWrapper.html#a27ec36f07dff982f50968c8a8887d676).
 	public static final String STATUS_IB_PENDING_SUBMIT = "PendingSubmit"; //Indicates that you have transmitted the order, but have not yet received confirmation that it has been accepted by the order destination.
 	public static final String STATUS_IB_PENDING_CANCEL = "PendingCancel"; //Indicates that you have sent a request to cancel the order but have not yet received cancel confirmation from the order destination. At this point, your order is not confirmed canceled. It is not guaranteed that the cancellation will be successful.
 	public static final String STATUS_IB_PRESUBMITTED = "PreSubmitted"; //Indicates that a simulated order type has been accepted by the IB system and that this order has yet to be elected. The order is held in the IB system until the election criteria are met. At that time the order is transmitted to the order destination as specified.
@@ -46,7 +38,6 @@ public abstract class orders
 	public static final String STATUS_IB_CANCELLED = "Cancelled"; //Indicates that the balance of your order has been confirmed canceled by the IB system. This could occur unexpectedly when IB or the destination has rejected your order.
 	public static final String STATUS_IB_FILLED = "Filled"; //Indicates that the order has been completely filled. Market orders executions will not always trigger a Filled status.
 	public static final String STATUS_IB_INACTIVE = "Inactive"; //Indicates that the order was received by the system but is no longer active because it was rejected or canceled.
-	//---
 	
 	public static int get_max_length_side() { return EXEC_SIDE_BOUGHT.length(); }
 	
@@ -122,7 +113,9 @@ public abstract class orders
 		output.orderType(type);
 		output.orderId(id);
 		output.tif(tif);	
-		output.totalQuantity(quantity);
+		
+		output.totalQuantity(Decimal.get(quantity));
+		
 		if (!is_main_) output.parentId(order_.get_id_main());
 
 		output.outsideRth(_order.outside_rth());

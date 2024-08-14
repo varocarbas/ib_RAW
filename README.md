@@ -4,9 +4,9 @@ Library easing the automated communication with Interactive Brokers (IB).
 
 Required external dependencies:
 - accessory_java ([https://github.com/varocarbas/accessory_java_RAW](https://github.com/varocarbas/accessory_java_RAW)) with DB/MySQL features.
-- IB API libraries (v. 9.76.01 or above) and a running instance of their workstation/gateway.
+- Interactive Brokers' TWS API libraries (v. 10.19.04; [https://www.interactivebrokers.com/en/trading/ib-api.php](https://www.interactivebrokers.com/en/trading/ib-api.php)) and a running instance of their workstation/gateway.
 
-Tested with OpenJDK 11.0.15.
+Tested from versions: OpenJDK 11.0.15 and MySQL 8.0.21.
 
 Articles about this code:
 - [Context, conventions, structure, evolution -- accessory_java](https://gist.github.com/varocarbas/27fe96fc6c9c9073a43fa19a82d43b7b).

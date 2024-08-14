@@ -32,11 +32,18 @@ public abstract class wrapper_errors
 	
 	public static void reset() { _triggered = false; }
 	
-	public static void __manage(int id_, int code_, String message_) 
+	public static void __manage(int id_, int code_, String message_, String message2_) 
 	{
 		if (_ignore_errors.contains(code_)) return;
 		
 		String message = (strings.is_ok(message_) ? message_ : strings.DEFAULT);
+		
+		if (strings.is_ok(message2_))
+		{
+			if (strings.is_ok(message)) message += misc.SEPARATOR_CONTENT;
+			
+			message += message2_;
+		}
 		
 		String symbol = async_data_quicker.__get_symbol(id_, false);
 		if (!strings.is_ok(symbol)) symbol = null;

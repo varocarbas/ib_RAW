@@ -25,7 +25,6 @@ public abstract class contracts
 	
 	public static final String CURRENCY_US = "USD";
 	
-	//--- To be synced with the contract.SecType values (https://interactivebrokers.github.io/tws-api/classIBApi_1_1Contract.html).
 	public static final String SECURITY_STOCK_ETF = "STK";
 	public static final String SECURITY_OPTION = "OPT";
 	public static final String SECURITY_FUTURE = "FUT";
@@ -38,7 +37,6 @@ public abstract class contracts
 	public static final String SECURITY_COMMODITY = "CMDTY";
 	public static final String SECURITY_NEWS = "NEWS";
 	public static final String SECURITY_MUTUAL_FUND = "FUND";
-	//---
 
 	public static final String DEFAULT_EXCHANGE_COUNTRY = CONFIG_EXCHANGE_COUNTRY_US;
 	public static final String DEFAULT_SECURITY_TYPE = SECURITY_STOCK_ETF;

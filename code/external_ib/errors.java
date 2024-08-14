@@ -7,7 +7,6 @@ public abstract class errors
 {
 	//------ To be synced with the corresponding get_all_[...]() methods.
 	
-	//--- To be synced with the info from https://interactivebrokers.github.io/tws-api/message_codes.html.	
 	public static final int ERROR_200 = 200; //The specified contract does not match any in IB's database, usually because of an incorrect or missing parameter.
                                              //Ambiguity may occur when the contract definition provided is not unique.
                                              //For some stocks that has the same Symbol, Currency and Exchange, you need to specify the IBApi.Contract.PrimaryExch attribute to avoid ambiguity. Please refer to a sample stock contract here.
