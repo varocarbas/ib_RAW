@@ -13,6 +13,7 @@ public class _order extends parent
 	public static final String CONFIG_TIF = _types.CONFIG_ORDERS_TIF;
 	public static final String CONFIG_QUANTITIES_INT = _types.CONFIG_ORDERS_QUANTITIES_INT;
 	public static final String CONFIG_OUTSIDE_RTH = _types.CONFIG_ORDERS_OUTSIDE_RTH;
+	public static final String CONFIG_WAIT_UPDATE = _types.CONFIG_ORDERS_WAIT_UPDATE;
 	
 	public static final String TYPE_MARKET = external_ib.orders.TYPE_MARKET;
 	public static final String TYPE_STOP = external_ib.orders.TYPE_STOP;
@@ -29,6 +30,7 @@ public class _order extends parent
 	public static final String DEFAULT_TIF = external_ib.orders.TIF_GTC; 
 	public static final boolean DEFAULT_QUANTITIES_INT = true;
 	public static final boolean DEFAULT_OUTSIDE_RTH = false;
+	public static final boolean DEFAULT_WAIT_UPDATE = true;
 	
 	private int _id_main = common.WRONG_ORDER_ID;
 	private int _id_sec = common.WRONG_ORDER_ID;	
@@ -65,8 +67,12 @@ public class _order extends parent
 	public static boolean update_quantities_int(boolean quantities_int_) { return config.update_order(CONFIG_QUANTITIES_INT, quantities_int_); }
 
 	public static boolean outside_rth() { return config.get_order_boolean(CONFIG_OUTSIDE_RTH); }
-	
+
 	public static boolean update_outside_rth(boolean outside_rth_) { return config.update_order(CONFIG_OUTSIDE_RTH, outside_rth_); }
+
+	public static boolean wait_update() { return config.get_order_boolean(CONFIG_WAIT_UPDATE); }
+
+	public static boolean update_wait_update(boolean wait_update_) { return config.update_order(CONFIG_WAIT_UPDATE, wait_update_); }
 
 	public static String check_symbol(String symbol_) { return common.check_symbol(symbol_); }
 	

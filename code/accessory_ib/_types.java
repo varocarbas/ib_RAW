@@ -26,7 +26,8 @@ public class _types extends parent_types
 	public static final String CONFIG_ORDERS_TIF = "config_orders_tif";
 	public static final String CONFIG_ORDERS_QUANTITIES_INT = "config_orders_quantities_int";
 	public static final String CONFIG_ORDERS_OUTSIDE_RTH = "config_orders_outside_rth";
-
+	public static final String CONFIG_ORDERS_WAIT_UPDATE = "config_orders_wait_update";
+	
 	public static final String CONFIG_CONTRACT = "config_contract";
 	public static final String CONFIG_CONTRACT_SECURITY_TYPE = "config_contract_security_type";
 	public static final String CONFIG_CONTRACT_CURRENCY = "config_contract_currency";

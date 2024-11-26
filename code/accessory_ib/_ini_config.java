@@ -74,7 +74,8 @@ public class _ini_config extends parent_ini_config
 		vals.put(_order.CONFIG_TIF, _order.DEFAULT_TIF);
 		vals.put(_order.CONFIG_QUANTITIES_INT, _order.DEFAULT_QUANTITIES_INT);
 		vals.put(_order.CONFIG_OUTSIDE_RTH, _order.DEFAULT_OUTSIDE_RTH);
-
+		vals.put(_order.CONFIG_WAIT_UPDATE, _order.DEFAULT_WAIT_UPDATE);
+		
 		return populate(type, null, vals);
 	}	
 

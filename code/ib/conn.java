@@ -59,7 +59,9 @@ public abstract class conn extends parent_static
 	private static final int PORT_GATEWAY_PAPER = DEFAULT_PORT_GATEWAY_PAPER;
 
 	private static final int IS_TEST_MAX_ATTEMPTS = 5;
-
+	private static final int MANY_ATTEMPTS = 5000;
+	private static final int CONN_TOO_LONG = 1000;
+	
 	private static final int DEFAULT_MAX_ATTEMPTS = numbers.MAX_INT;
 	private static final boolean DEFAULT_FORCE_RUNNING = true;
 	private static final boolean DEFAULT_IS_TEST = false;
@@ -113,8 +115,10 @@ public abstract class conn extends parent_static
 	public static boolean start() { return start(get_conn_id(), get_conn_type(), DEFAULT_FORCE_RUNNING, DEFAULT_IS_TEST); }
 
 	public static boolean start(int id_, String type_) { return start(id_, type_, DEFAULT_FORCE_RUNNING, DEFAULT_IS_TEST); }
-		
-	public static boolean start(int id_, String type_, boolean force_running_, boolean is_test_)
+	
+	public static boolean start(int id_, String type_, boolean force_running_, boolean is_test_) { return start(id_, type_, force_running_, is_test_, DEFAULT_MAX_ATTEMPTS); }
+	
+	public static boolean start(int id_, String type_, boolean force_running_, boolean is_test_, int max_attempts_)
 	{
 		boolean output = false;
 		
@@ -141,7 +145,7 @@ public abstract class conn extends parent_static
 		_wrapper = new wrapper();
 		_client = _wrapper.get_client();
 
-		output = connect(force_running_, is_test_);
+		output = connect(force_running_, is_test_, max_attempts_);
 		
 		if (is_test_) wrapper_errors.log_errors(wrapper_errors.DEFAULT_LOG_ERRORS);
 		
@@ -150,7 +154,9 @@ public abstract class conn extends parent_static
 	
 	public static boolean connect() { return connect(DEFAULT_FORCE_RUNNING, DEFAULT_IS_TEST); }
 	
-	public static boolean connect(boolean force_running_, boolean is_test_)
+	public static boolean connect(boolean force_running_, boolean is_test_) { return connect(force_running_, is_test_, DEFAULT_MAX_ATTEMPTS); }
+	
+	public static boolean connect(boolean force_running_, boolean is_test_, int max_attempts_)
 	{	
 		if (_wrapper == null || _client == null || !id_is_ok() || !type_is_ok() || !port_is_ok()) return start(get_conn_id(), get_conn_type(), force_running_, is_test_);
 		if (_is_connected) return true;
@@ -165,9 +171,16 @@ public abstract class conn extends parent_static
 			
 			if (!_first_conn && check_running && force_running_) check_running = false;
 		}
-	
+		
+		int max = max_attempts_;
+		
+		if (is_test_) max = IS_TEST_MAX_ATTEMPTS;
+		else if (max <= 0) max = DEFAULT_MAX_ATTEMPTS;
+		
+		boolean many_attempts = (max >= MANY_ATTEMPTS);
+		boolean stopped = false;
+		
 		int count = 0;
-		int max = (is_test_ ? IS_TEST_MAX_ATTEMPTS : DEFAULT_MAX_ATTEMPTS); 
 		
 		while (!_is_connected && (is_test_ || !check_running || apps.is_running()))
 		{
@@ -178,12 +191,26 @@ public abstract class conn extends parent_static
 			if (_is_connected || count > max) break;
 			
 			if (!_first_conn || is_test_) misc.pause_secs(1);
+			else if (_first_conn)
+			{
+				misc.pause_loop();
+				
+				if (!stopped && many_attempts && (count >= CONN_TOO_LONG))
+				{
+					check_running = false;
+					stopped = true;
+					
+					apps.stop();				
+				}
+			}
 			
 			update_port();
 		}
 		
 		if (_is_connected)
 		{
+			if (stopped) apps.start();
+			
 			if (is_test_) end();
 			else apps.update_is_connected(true);
 		}

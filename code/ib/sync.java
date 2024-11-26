@@ -149,11 +149,11 @@ public abstract class sync extends parent_static
 		
 		if (orders.is_update(type_))
 		{
-			timeout = TIMEOUT_UPDATE_ORDER;
+			timeout = (_order.wait_update() ? TIMEOUT_UPDATE_ORDER : 0l);
 			can_timeout = true;
 		}
 		
-		return wait(timeout, can_timeout, type_); 
+		return ((timeout > 0) ? wait(timeout, can_timeout, type_) : true); 
 	}
 	
 	static boolean next_valid_id(int id_) 
@@ -223,7 +223,9 @@ public abstract class sync extends parent_static
 
 		return funds;
 	}
-
+	
+	private static HashMap<Integer, String> get_orders() { return _get_orders(false, false); }
+	
 	@SuppressWarnings("unchecked")
 	private static HashMap<Integer, String> _get_orders(boolean lock_, boolean start_) 
 	{
@@ -236,10 +238,12 @@ public abstract class sync extends parent_static
 		
 		return orders;
 	}
-
-	private static boolean order_is_submitted(int order_id_) { return sync_orders.is_submitted(order_id_, _get_orders(false, false)); }
 	
-	private static boolean order_is_inactive(int order_id_) { return sync_orders.is_inactive(order_id_, _get_orders(false, false)); }
+	private static boolean order_is_submitted(int order_id_) { return sync_orders.is_submitted(order_id_, get_orders()); }
+	
+	private static boolean order_is_filled(int order_id_, HashMap<Integer, String> orders_) { return sync_orders.is_filled(order_id_, orders_); }
+	
+	private static boolean order_is_inactive(int order_id_, HashMap<Integer, String> orders_) { return sync_orders.is_inactive(order_id_, orders_); }
 	
 	private static HashMap<String, String> get_all_get_outs() { return _alls.SYNC_GET_OUTS; }
 	
@@ -406,10 +410,18 @@ public abstract class sync extends parent_static
 			}
 			
 			if (is_update) { }
-			else if (is_get && wait_exit_get(type_)) break;
-			else if (is_place || is_cancel)
+			else if ((is_get && wait_exit_get(type_)) || (is_place && order_is_submitted(_order_id))) break;
+			else if (is_cancel)
 			{
-				if ((is_place && order_is_submitted(_order_id)) || (is_cancel && order_is_inactive(_order_id))) break;
+				HashMap<Integer, String> orders = get_orders();
+				
+				if (order_is_inactive(_order_id, orders)) break;
+				else if (order_is_filled(_order_id, orders))
+				{
+					is_ok = false;
+					
+					break;
+				}
 			}
 			
 			if (dates.get_elapsed(start) >= timeout_) 

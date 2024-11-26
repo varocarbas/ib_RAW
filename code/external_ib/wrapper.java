@@ -13,8 +13,7 @@ import ib.common;
 import ib.wrapper_errors;
 import ib.wrapper_main;
 
-//Implementation of the EWrapper interface (v. 10.19.04) from the 
-//Interactive Brokers's TWS API (https://ibkrcampus.com/campus/ibkr-api-page/twsapi-doc/).
+//Implementation of the EWrapper interface from the Interactive Brokers's TWS API (v. 10.19.04).
 
 public class wrapper implements EWrapper 
 {
