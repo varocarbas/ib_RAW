@@ -28,6 +28,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	static final boolean INCLUDES_TIME_ELAPSED = true;
 	static final boolean INCLUDES_HALTED = false;
 	static final boolean INCLUDES_HALTED_TOT = false;
+	static final boolean RECENTLY_HALTED_ENABLED = true;
 	static final boolean ONLY_ESSENTIAL = true;
 	static final boolean ONLY_HALTS = false;
 	
@@ -48,6 +49,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 	static String COL_VOLUME_MIN = null;
 	static String COL_VOLUME_MAX = null;
 	static String COL_VAR_TOT = null;
+	static String COL_ELAPSED_INI = null;
 	
 	static String[] ALL_COLS = null;
 	
@@ -147,38 +149,48 @@ abstract class async_data_watchlist_quicker extends parent_static
 	
 	public static ArrayList<String> get_all_symbols() { return async_data_quicker.get_all_symbols(SOURCE); }
 	
-	public static double __get_price(String symbol_, int pause_secs_) 
+	public static double __get_price(String symbol_, int pause_secs_, boolean from_db_too_) 
 	{ 
 		double price = (strings.is_ok(symbol_) ? __get_price_internal(symbol_, pause_secs_) : common.WRONG_PRICE);
 
-		return (common.price_is_ok(price) ? price : get_price_internal(symbol_, false));  
+		if (from_db_too_ && !common.price_is_ok(price)) price = get_price_internal(symbol_, false);
+		
+		return price;  
 	}
 
 	public static double get_price(String symbol_) { return (strings.is_ok(symbol_) ? get_price_internal(symbol_, false) : common.WRONG_PRICE); }
 
-	public static void _tick_price(int id_, int field_ib_, double price_, String symbol_)
+	public static boolean _tick_price(int id_, int field_ib_, double price_, String symbol_)
 	{
-		if (field_ib_ != async_data_quicker.PRICE_IB) return;
+		boolean output = true;
+		if (field_ib_ != async_data_quicker.PRICE_IB) return output;
 	
 		HashMap<String, String> db = db_ib.watchlist.get_vals(symbol_);
 		HashMap<String, String> vals = new HashMap<String, String>();
 
 		boolean restart = false;
 		
-		vals = tick_price_basic(symbol_, price_, db, vals);
+		vals = _tick_price_basic(symbol_, price_, db, vals);
 		
 		if (arrays.is_ok(vals))
 		{
-			HashMap<String, String> temp = tick_price_flus(symbol_, price_, db, vals);
+			HashMap<String, String> temp = _tick_price_flus(symbol_, price_, db, vals);
 			
 			if (arrays.is_ok(temp)) vals = new HashMap<String, String>(temp);	
 			else restart = true;
 		}
 		else restart = true;
 		
-		if (restart) vals = get_restart_db_vals();
+		if (restart) 
+		{
+			vals = get_restart_db_vals();
+			
+			output = false;
+		}
 		
 		async_data_quicker.update_db(symbol_, vals);
+		
+		return output;
 	}
 	
 	public static void tick_size(int id_, int field_ib_, double size_, String symbol_)
@@ -202,6 +214,10 @@ abstract class async_data_watchlist_quicker extends parent_static
 		HashMap<String, String> output = new HashMap<String, String>();
 		
 		for (String col: ALL_COLS) { output.put(col, "0.0"); }
+		
+		output.put(get_col_price(), "0.0");
+		output.put(get_col_volume(), "0.0");
+		output.put(get_col_elapsed_ini(), Long.toString(dates.start_elapsed()));
 		
 		return output;
 	}
@@ -282,20 +298,36 @@ abstract class async_data_watchlist_quicker extends parent_static
 	{ 
 		double output = 0.0;
 		
-		if (is_retrieve_price_) output = temp_price.get(symbol_);
-		else
-		{
-			if (COL_PRICE == null) COL_PRICE = db_quick.get_col(SOURCE, db_ib.watchlist.PRICE);
-
-			output = db_common.get_decimal(SOURCE, COL_PRICE, db_ib.common.get_where_symbol(SOURCE, symbol_), common.WRONG_PRICE, false, true); 			
-		}
+		if (is_retrieve_price_) output = temp_price.get(symbol_, async_data_quicker.get_retrieve_id());
+		else output = db_common.get_decimal(SOURCE, get_col_price(), db_ib.common.get_where_symbol(SOURCE, symbol_), common.WRONG_PRICE, false, true);
 	
 		return output;
 	}
 	
-	private static HashMap<String, String> tick_price_basic(String symbol_, double price_, HashMap<String, String> db_, HashMap<String, String> vals_) { return tick_basic(symbol_, price_, db_, vals_, true); }
+	private static String get_col_price()
+	{
+		if (COL_PRICE == null) COL_PRICE = db_quick.get_col(SOURCE, db_ib.watchlist.PRICE);
+		
+		return COL_PRICE;
+	}
+	
+	private static String get_col_volume()
+	{
+		if (COL_VOLUME == null) COL_VOLUME = db_quick.get_col(SOURCE, db_ib.watchlist.VOLUME);
+		
+		return COL_VOLUME;
+	}
+	
+	private static String get_col_elapsed_ini()
+	{
+		if (COL_ELAPSED_INI == null) COL_ELAPSED_INI = db_quick.get_col(SOURCE, db_ib.watchlist.ELAPSED_INI);
+		
+		return COL_ELAPSED_INI;
+	}
+	
+	private static HashMap<String, String> _tick_price_basic(String symbol_, double price_, HashMap<String, String> db_, HashMap<String, String> vals_) { return _tick_basic(symbol_, price_, db_, vals_, true); }
 
-	private static HashMap<String, String> tick_price_flus(String symbol_, double price_, HashMap<String, String> db_, HashMap<String, String> vals_)
+	private static HashMap<String, String> _tick_price_flus(String symbol_, double price_, HashMap<String, String> db_, HashMap<String, String> vals_)
 	{	
 		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_);
 		vals.put(COL_FLUS_PRICE, Double.toString(price_));
@@ -303,7 +335,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		double price_old = Double.parseDouble(db_.get(COL_FLUS_PRICE));	
 		
 		double var = (common.price_is_ok(price_old) ? numbers.get_perc_hist(price_, price_old) : 0.0);				
-		if (var == 0.0 || Math.abs(var) > async_data_apps_quicker.get_max_var()) return (var == 0.0 ? vals : null);		
+		if ((var == 0.0) || _var_is_wrong(symbol_, var)) return (var == 0.0 ? vals : null);		
 		
 		vals = tick_price_flus_flu(symbol_, vals, var);
 		vals = tick_price_flus_flu2(symbol_, vals, var);
@@ -497,11 +529,11 @@ abstract class async_data_watchlist_quicker extends parent_static
 		return vals;
 	}
 
-	private static HashMap<String, String> tick_size_basic(String symbol_, double volume_, HashMap<String, String> db_) { return tick_basic(symbol_, volume_, db_, new HashMap<String, String>(), false); }
+	private static HashMap<String, String> tick_size_basic(String symbol_, double volume_, HashMap<String, String> db_) { return _tick_basic(symbol_, volume_, db_, new HashMap<String, String>(), false); }
 	
-	private static HashMap<String, String> tick_basic(String symbol_, double val_, HashMap<String, String> db_, HashMap<String, String> vals_, boolean is_price_)
+	private static HashMap<String, String> _tick_basic(String symbol_, double val_, HashMap<String, String> db_, HashMap<String, String> vals_, boolean is_price_)
 	{
-		HashMap<String, String> vals = tick_basic_start(symbol_, val_, db_, vals_, is_price_);
+		HashMap<String, String> vals = _tick_basic_start(symbol_, val_, db_, vals_, is_price_);
 		if (!arrays.is_ok(vals)) return null;
 		
 		String col = (is_price_ ? COL_PRICE_MIN : COL_VOLUME_MIN);
@@ -519,13 +551,13 @@ abstract class async_data_watchlist_quicker extends parent_static
 		return vals;
 	}
 
-	private static HashMap<String, String> tick_basic_start(String symbol_, double val_, HashMap<String, String> db_, HashMap<String, String> vals_, boolean is_price_)
+	private static HashMap<String, String> _tick_basic_start(String symbol_, double val_, HashMap<String, String> db_, HashMap<String, String> vals_, boolean is_price_)
 	{
 		HashMap<String, String> vals = arrays.get_new_hashmap_xx(vals_);		
 				
 		HashMap<String, String> items = new HashMap<String, String>();
 		
-		items.put(COL_PRICE, COL_VOLUME);
+		items.put(get_col_price(), get_col_volume());
 		items.put(COL_PRICE_INI, COL_VOLUME_INI);
 		items.put(COL_FLUS_PRICE, strings.DEFAULT);
 
@@ -551,7 +583,7 @@ abstract class async_data_watchlist_quicker extends parent_static
 		if (is_price_) 
 		{
 			double var = numbers.get_perc_hist(val_, price_ini);
-			if (Math.abs(var) > async_data_apps_quicker.get_max_var()) return null;
+			if (_var_is_wrong(symbol_, var)) return null;
 			
 			vals.put(COL_VAR_TOT, Double.toString(var));
 		}
@@ -560,4 +592,6 @@ abstract class async_data_watchlist_quicker extends parent_static
 	}
 
 	private static boolean tick_app_val_is_ok(double val_, boolean is_price_) { return (is_price_ ? ib.common.price_is_ok(val_) : ib.common.size_is_ok(val_)); }
+	
+	private static boolean _var_is_wrong(String symbol_, double var_) { return ((Math.abs(var_) > async_data_apps_quicker.get_max_var()) && (!RECENTLY_HALTED_ENABLED || !async_data_quicker._is_recently_halted(symbol_, true))); }
 }

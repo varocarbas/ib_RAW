@@ -371,8 +371,9 @@ public class _ini_db extends parent_ini_db
 		
 		HashMap<String, db_field> info = new HashMap<String, db_field>();
 		
-		info.put(temp_price.SYMBOL, common.get_field_symbol(true));
+		info.put(temp_price.SYMBOL, common.get_field_symbol(false));
 		info.put(temp_price.PRICE, common.get_field_price());
+		info.put(temp_price.ID, db_common.get_field_int());
 		
 		return add_source_common(db_, source, table, info, sources_);
 	}

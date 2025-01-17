@@ -2,10 +2,10 @@ package ib;
 
 public abstract class common_xsync 
 {
-	static final int MIN_REQ_ID_SYNC = 0;
-	static final int MAX_REQ_ID_SYNC = MIN_REQ_ID_SYNC + 10; 
-	static final int MIN_REQ_ID_ASYNC = MAX_REQ_ID_SYNC + 1;
-	static final int MAX_REQ_ID_ASYNC = MIN_REQ_ID_ASYNC + 10000;
+	public static final int MIN_REQ_ID_SYNC = 0;
+	public static final int MAX_REQ_ID_SYNC = MIN_REQ_ID_SYNC + 10; 
+	public static final int MIN_REQ_ID_ASYNC = MAX_REQ_ID_SYNC + 1;
+	public static final int MAX_REQ_ID_ASYNC = MIN_REQ_ID_ASYNC + 10000;
 	
 	public static boolean req_id_is_ok(int id_) { return common.id_is_ok(id_, MIN_REQ_ID_SYNC, MAX_REQ_ID_ASYNC); }
 	

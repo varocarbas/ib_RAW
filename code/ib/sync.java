@@ -36,7 +36,7 @@ public abstract class sync extends parent_static
 	public static final String OUT_FUNDS = _types.SYNC_OUT_FUNDS;
 	
 	public static final long TIMEOUT_GET_ORDERS = 3l;
-	public static final long TIMEOUT_EXECUTE_ORDER = 10l;
+	public static final long TIMEOUT_EXECUTE_ORDER = 15l;
 	public static final long TIMEOUT_UPDATE_ORDER = 3l;
 	
 	public static final String ERROR_TIMEOUT = _types.ERROR_IB_SYNC_TIMEOUT;
@@ -239,7 +239,7 @@ public abstract class sync extends parent_static
 		return orders;
 	}
 	
-	private static boolean order_is_submitted(int order_id_) { return sync_orders.is_submitted(order_id_, get_orders()); }
+	private static boolean order_is_submitted(int order_id_, HashMap<Integer, String> orders_) { return sync_orders.is_submitted(order_id_, orders_); }
 	
 	private static boolean order_is_filled(int order_id_, HashMap<Integer, String> orders_) { return sync_orders.is_filled(order_id_, orders_); }
 	
@@ -410,17 +410,23 @@ public abstract class sync extends parent_static
 			}
 			
 			if (is_update) { }
-			else if ((is_get && wait_exit_get(type_)) || (is_place && order_is_submitted(_order_id))) break;
-			else if (is_cancel)
+			else if (is_get && wait_exit_get(type_)) break;
+			else if (is_cancel || is_place)
 			{
 				HashMap<Integer, String> orders = get_orders();
 				
-				if (order_is_inactive(_order_id, orders)) break;
-				else if (order_is_filled(_order_id, orders))
+				if (is_cancel && order_is_inactive(_order_id, orders)) break;
+				else
 				{
-					is_ok = false;
+					boolean is_filled = order_is_filled(_order_id, orders);
 					
-					break;
+					if (is_place && (is_filled || order_is_submitted(_order_id, orders))) break;
+					else if (is_cancel && is_filled)
+					{
+						is_ok = false;
+						
+						break;
+					}
 				}
 			}
 			

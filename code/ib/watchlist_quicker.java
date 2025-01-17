@@ -50,7 +50,13 @@ public abstract class watchlist_quicker
 
 	public static double __get_price(String symbol_) { return __get_price(symbol_, common.DEFAULT_WAIT_SECS_PRICE); }
 	
-	public static double __get_price(String symbol_, int pause_secs_) { return async_data_watchlist_quicker.__get_price(symbol_, pause_secs_); }
+	public static double __get_price(String symbol_, int pause_secs_) { return __get_price(symbol_, pause_secs_, true); }
+	
+	public static double __get_price(String symbol_, int pause_secs_, boolean from_db_too_) { return async_data_watchlist_quicker.__get_price(symbol_, pause_secs_, from_db_too_); }
 
 	public static double get_price(String symbol_) { return async_data_watchlist_quicker.get_price(symbol_); }
+	
+	public static int get_data_request_min_id() { return async_data_watchlist_quicker.get_min_id(); }
+	
+	public static boolean __update_data_request_min_id(int min_id_) { return async_data_watchlist_quicker.__update_min_id(min_id_); }
 }

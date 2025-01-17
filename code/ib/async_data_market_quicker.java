@@ -16,6 +16,7 @@ abstract class async_data_market_quicker extends parent_static
 	static final boolean INCLUDES_TIME_ELAPSED = false;
 	static final boolean INCLUDES_HALTED = true;
 	static final boolean INCLUDES_HALTED_TOT = true;
+	static final boolean RECENTLY_HALTED_ENABLED = false;
 	static final boolean IS_SNAPSHOT = true;
 	
 	static final boolean DEFAULT_ONLY_DB = true;
@@ -117,7 +118,7 @@ abstract class async_data_market_quicker extends parent_static
 
 	public static ArrayList<String> get_all_symbols() { return async_data_quicker.get_all_symbols(SOURCE); }
 	
-	public static void tick_price(int id_, int field_ib_, double price_, String symbol_) { }
+	public static boolean tick_price(int id_, int field_ib_, double price_, String symbol_) { return true; }
 
 	public static void tick_size(int id_, int field_ib_, double size_, String symbol_) { }
 	

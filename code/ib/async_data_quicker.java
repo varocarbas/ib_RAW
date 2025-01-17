@@ -19,19 +19,20 @@ public class async_data_quicker extends parent_static
 {	
 	public static final double FACTOR_VOLUME = 1.0 / 1000.0;
 	
-	public static final double MAX_VAR_SNAPSHOT = market.MAX_VAR;
-	public static final double MAX_VAR_STREAM = 15.0;
+	public static final double MAX_VAR_SNAPSHOT = 25.0;
+	public static final double MAX_VAR_STREAM = 25.0;
 	public static final double MAX_VAR_ASK_BID = 50.0;
 	
-	public static final int RETRIEVE_ID = common_xsync.MIN_REQ_ID_ASYNC;	
-	public static final int MIN_ID = RETRIEVE_ID + 1;	
-	public static final int MAX_ID = common_xsync.MAX_REQ_ID_ASYNC;	
+	public static final int DEFAULT_RETRIEVE_ID = common_xsync.MIN_REQ_ID_ASYNC;
+	
+	public static final int MIN_ID = common_xsync.MIN_REQ_ID_ASYNC + 1;	
+	public static final int MAX_ID = common_xsync.MAX_REQ_ID_ASYNC - 10;	
 	
 	public static final long MIN_SECS_HALT_BASIC = 300l;
 
 	public static final String CONFIG_ASK_BID_AS_PRICE = _types.CONFIG_ASYNC_DATA_ASK_BID_AS_PRICE;
 	
-	public static final int WRONG_ID = RETRIEVE_ID - 1;
+	public static final int WRONG_ID = DEFAULT_RETRIEVE_ID - 1;
 	public static final int WRONG_I = common.WRONG_I;
 	public static final int WRONG_HALTED = data.WRONG_HALTED;
 	public static final int WRONG_SIZE = 0;
@@ -63,8 +64,13 @@ public class async_data_quicker extends parent_static
 	static String _col_timestamp = null;
 	
 	private static final long MIN_SECS_HALT = MIN_SECS_HALT_BASIC + 60l;
+	private static final long MAX_SECS_RECENTLY_HALTED = 10l;
+	
+	private static int _retrieve_id = DEFAULT_RETRIEVE_ID;
 	
 	private static volatile HashMap<String, Long> _halts = new HashMap<String, Long>();
+	private static volatile ArrayList<String> _recently_halted = new ArrayList<String>();
+	private static volatile HashMap<String, Long> _recently_halted_elapsed = new HashMap<String, Long>();
 	
 	private static volatile boolean _retrieving = false;
 	private static volatile boolean _retrieved = false;
@@ -81,7 +87,23 @@ public class async_data_quicker extends parent_static
 	
 	public static boolean ask_bid_as_price(boolean ask_bid_as_price_) { return config.update_async_data(CONFIG_ASK_BID_AS_PRICE, ask_bid_as_price_); }
 	
-	public static String __get_symbol(int id_, boolean ignore_retrieve_) { return ((!ignore_retrieve_ || id_ != RETRIEVE_ID) ? async_data_apps_quicker.__get_symbol(id_) : strings.DEFAULT); }
+	public static int get_retrieve_id() { return _retrieve_id; }
+	
+	public static boolean __update_retrieve_id(int retrieve_id_) 
+	{
+		boolean output = false;
+		
+		if ((retrieve_id_ >= common_xsync.MIN_REQ_ID_ASYNC) && (retrieve_id_ <= common_xsync.MAX_REQ_ID_ASYNC))
+		{
+			_retrieve_id = retrieve_id_;
+			
+			output = true;
+		}
+		
+		return output; 
+	}
+	
+	public static String __get_symbol(int id_, boolean ignore_retrieve_) { return ((!ignore_retrieve_ || id_ != get_retrieve_id()) ? async_data_apps_quicker.__get_symbol(id_) : strings.DEFAULT); }
 	
 	public static boolean __start_retrieve(String app_, String symbol_) 
 	{
@@ -97,14 +119,16 @@ public class async_data_quicker extends parent_static
 			return output;
 		}
 		
-		if (calls.reqMktData(RETRIEVE_ID, symbol, true)) 
+		int id = get_retrieve_id();
+		
+		if (calls.reqMktData(id, symbol, true)) 
 		{
 			_retrieving = true;
 			_retrieved = false;
 			
 			_retrieve_symbol = symbol;
 			
-			temp_price.add(symbol);
+			temp_price.add(symbol, id);
 		
 			output = true;
 			
@@ -147,7 +171,7 @@ public class async_data_quicker extends parent_static
 
 		async_data_apps_quicker.update_app(app_);
 
-		__stop(WRONG_ID, symbol_, true, remove_symbol_); 
+		__stop(WRONG_ID, symbol_, true, remove_symbol_, false); 
 		
 		_enabled = true;
 	}
@@ -201,13 +225,8 @@ public class async_data_quicker extends parent_static
 		double price = adapt_val(price_, field_ib_);
 		if (!ib.common.price_is_ok(price)) return;
 
-		if (_retrieving) update_retrieve(id_, symbol, price_);
-		else
-		{
-			async_data_apps_quicker._tick_price(id_, field_ib_, price, symbol);	
-
-			_update(id_, symbol, field_ib_, price);			
-		}
+		if (_retrieving) update_retrieve(symbol, price_);
+		else if (async_data_apps_quicker._tick_price(id_, field_ib_, price, symbol)) _update(id_, symbol, field_ib_, price);
 	}
 	
 	static void __tick_size(int id_, int field_ib_, int size_)
@@ -253,7 +272,7 @@ public class async_data_quicker extends parent_static
 	
 	static void __tick_generic(int id_, int field_ib_, double value_)
 	{
-		if (_retrieving) return;
+		if (_retrieving || (field_ib_ != HALTED_IB)) return;
 		
 		__lock();
 		
@@ -266,20 +285,22 @@ public class async_data_quicker extends parent_static
 			return;	
 		}
 		
-		boolean update = true;
-		
-		double value = value_;
-		
-		if (field_ib_ == HALTED_IB) 
-		{
-			value = adapt_halted(id_, value, symbol);
-
-			update = (value != WRONG_HALTED);
-		}		
-		
-		if (update) _update(id_, symbol, field_ib_, value, true, false);
+		boolean includes_halted = async_data_apps_quicker.includes_halted();
+		boolean includes_halted_tot = async_data_apps_quicker.includes_halted_tot();
+		boolean recently_halted_enabled = async_data_apps_quicker.recently_halted_enabled();
 		
 		__unlock();
+		
+		if (includes_halted || includes_halted_tot || recently_halted_enabled)
+		{	
+			__lock();
+			
+			double value = adapt_halted(id_, value_, symbol, includes_halted, includes_halted_tot, recently_halted_enabled);	
+			
+			__unlock();
+			
+			if (value != WRONG_HALTED) _update(id_, symbol, field_ib_, value, true, false);		
+		}
 	}
 	
 	static void __tick_snapshot_end(int id_) 
@@ -390,7 +411,24 @@ public class async_data_quicker extends parent_static
 				
 		return fields;
 	}
-
+	
+	static boolean _is_recently_halted(String symbol_, boolean lock_)
+	{
+		boolean output = false;
+		
+		if (lock_) __lock();
+		
+		if (_recently_halted_elapsed.containsKey(symbol_))
+		{
+			if (dates.get_elapsed(_recently_halted_elapsed.get(symbol_)) > MAX_SECS_RECENTLY_HALTED) end_recently_halted(symbol_);
+			else output = true;
+		}
+		
+		if (lock_) __unlock();
+		
+		return output;
+	}
+	
 	private static HashMap<Integer, String> get_field_equivalent(int field_ib_, HashMap<Integer, String> fields_)
 	{
 		String field = null;
@@ -410,19 +448,24 @@ public class async_data_quicker extends parent_static
 		if (field != null) fields_.put(field_ib_, field);
 		
 		return fields_;
-	}	
+	}
 	
-	private static void __complete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, true, false); }
+	private static void __complete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, true, false, false); }
 	
-	private static void __precomplete_snapshot(int id_, String symbol_) { __stop(id_, symbol_, async_data_apps_quicker.__is_only_essential(), false); }
+	private static void __precomplete_snapshot(int id_, String symbol_) 
+	{
+		boolean is_essential = async_data_apps_quicker.__is_only_essential();
+		
+		__stop(id_, symbol_, is_essential, false, is_essential); 
+	}
 	
-	private static void __stop(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_)
+	private static void __stop(int id_, String symbol_, boolean snapshot_completed_, boolean remove_symbol_, boolean cancel_data_)
 	{
 		int id = (id_ > WRONG_ID ? id_ : _get_id(symbol_, true));
 		
 		if (!async_data_apps_quicker.__is_only_db()) __store_vals(id, symbol_);
 
-		async_data_apps_quicker.__stop(id, symbol_, snapshot_completed_, remove_symbol_);
+		async_data_apps_quicker.__stop(id, symbol_, snapshot_completed_, remove_symbol_, cancel_data_);
 		
 		if (remove_symbol_) db_ib.async_data.delete(async_data_apps_quicker.get_source(), symbol_);
 	}
@@ -431,9 +474,11 @@ public class async_data_quicker extends parent_static
 	{	
 		__lock();
 	
-		if (cancel_data_) calls.cancelMktData(RETRIEVE_ID);
+		int id = get_retrieve_id();
 		
-		temp_price.delete(symbol_);
+		if (cancel_data_) calls.cancelMktData(id);
+		
+		temp_price.delete(symbol_, id);
 		
 		_retrieving = false; 
 		_retrieved = false;
@@ -488,12 +533,7 @@ public class async_data_quicker extends parent_static
 			
 			if (is_first || symbols[i] == null) 
 			{
-				if (is_first && symbols[i] != null) 
-				{
-					async_data_apps_quicker.stop(id, symbols[i], true, false);
-					
-					calls.cancelMktData(id);
-				}
+				if (is_first && symbols[i] != null) id = WRONG_ID;
 
 				break;
 			}
@@ -514,9 +554,9 @@ public class async_data_quicker extends parent_static
 		update_db(symbol_, _start_db_vals(symbol_, vals));
 	}
 	
-	private static void update_retrieve(int id_, String symbol_, double price_) 
+	private static void update_retrieve(String symbol_, double price_) 
 	{ 
-		temp_price.update(symbol_, price_);
+		temp_price.update(symbol_, get_retrieve_id(), price_);
 		
 		_retrieved = true;
 	}
@@ -630,11 +670,17 @@ public class async_data_quicker extends parent_static
 		return output;
 	}
 
-	private static double adapt_halted(int id_, double val_, String symbol_)
+	private static double adapt_halted(int id_, double val_, String symbol_, boolean includes_halted_, boolean includes_halted_tot_, boolean recently_halted_enabled_)
 	{
 		boolean halted = data.is_halted((int)val_);
 		boolean halted_db = db_ib.async_data.is_halted(symbol_);
-			
+		
+		if (recently_halted_enabled_)
+		{
+			if (!halted && halted_db) start_recently_halted(symbol_);
+			else check_recently_halted(symbol_);
+		}
+		
 		if (async_data_apps_quicker.includes_halted_tot()) 
 		{
 			boolean update = false;
@@ -656,5 +702,23 @@ public class async_data_quicker extends parent_static
 		}
 		
 		return ((async_data_apps_quicker.includes_halted() && (halted != halted_db)) ? val_ : WRONG_HALTED);
+	}
+	
+	private static void check_recently_halted(String symbol_) { _is_recently_halted(symbol_, false); }
+
+	private static void start_recently_halted(String symbol_)
+	{
+		end_recently_halted(symbol_);
+		
+		_recently_halted.add(symbol_);
+		
+		_recently_halted_elapsed.put(symbol_, dates.start_elapsed());
+	}
+	
+	private static void end_recently_halted(String symbol_)
+	{	
+		_recently_halted_elapsed.remove(symbol_);
+	
+		_recently_halted.remove(symbol_);
 	}
 }

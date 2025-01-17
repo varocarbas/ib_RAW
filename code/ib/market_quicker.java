@@ -50,5 +50,9 @@ public abstract class market_quicker
 	
 	public static void __stop_all(boolean remove_symbols_) { async_data_market_quicker.__stop_all(remove_symbols_); }
 
-	public static ArrayList<String> get_all_symbols() { return async_data_market_quicker.get_all_symbols(); }
+	public static ArrayList<String> get_all_symbols() { return async_data_market_quicker.get_all_symbols(); }	
+	
+	public static int get_data_request_min_id() { return async_data_market_quicker.get_min_id(); }
+	
+	public static boolean __update_data_request_min_id(int min_id_) { return async_data_market_quicker.__update_min_id(min_id_); }
 }
